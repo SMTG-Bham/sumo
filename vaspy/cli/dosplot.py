@@ -13,9 +13,12 @@ import itertools
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
-import matplotlib.pyplot as plt
 
-from vaspy.electronic_structure.dos import sort_orbitals
+from vaspy.electronic_structure.dos import sort_orbitals, get_pdos, write_files
+from vaspy.misc.plotting import pretty_plot, pretty_subplot
+
+from pymatgen.io.vasp.outputs import Vasprun
+from pymatgen.electric_structure.core import Spin
 
 try:
     import configparser
@@ -33,12 +36,11 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "March 13, 2017"
 
 
-mpl.rcParams['text.usetex'] = False
-mpl.rcParams['pdf.fonttype'] = 42  # make text editable in illustrator
 mpl.rcParams['font.family'] = 'sans-serif'
 mpl.rcParams['font.sans-serif'] = ['Whitney Book Extended', 'Arial',
-                                   'Helvetica', 'Liberation Sans', 'Andale Sans']
-#mpl.rcParams['mathtext.fontset'] = 'stixsans'
+                                   'Helvetica', 'Liberation Sans',
+                                   'Andale Sans']
+mpl.rcParams['mathtext.fontset'] = 'stixsans'
 axis_label_size = 20
 tick_label_size = 18
 tick_width = 1.0
@@ -59,12 +61,13 @@ colour_cycle = itertools.cycle(def_colours)
 # TODO:
 #   - implement magnify state
 
+
 def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
-            lm_orbitals=None, atoms=None, subplot=False, shift=True, 
+            lm_orbitals=None, atoms=None, subplot=False, shift=True,
             plot_total=True, legend_on=True, legend_frame_on=False,
-            legend_cutoff=3., gaussian=None, height=6, width=8, xmin=-6, 
+            legend_cutoff=3., gaussian=None, height=6, width=8, xmin=-6,
             xmax=6, num_columns=2, colours=None, yscale=1, image_format='pdf',
-            plot_format='mpl'):
+            dpi=400, plot_format='mpl', plt=None):
     """Plot the DOS on a single graph.
 
     Args:
@@ -104,47 +107,56 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
         logging.info('DOS band gap: {:.3f}'.format(dos.get_gap()))
         zero_point = band.get_vbm()['energy']
 
-    if not unshifted:
+    if shift:
         dos.densities -= zero_point
 
-    if broaden:
-        dos = dos.get_smeared_vaspdos(broaden)
+    if gaussian:
+        dos = dos.get_smeared_vaspdos(gaussian)
 
     pdos = {}
     if not plot_total:
-        pdos = get_pdos(dos, lm_orbitals=orbitals, atoms=atoms, elements=elements)
+        pdos = get_pdos(dos, lm_orbitals=lm_orbitals, atoms=atoms,
+                        elements=elements)
 
     write_files(dos, pdos, prefix=prefix, directory=directory)
 
-    return plot_figure(dos, pdos, plot_format=plot_format, prefix=prefix, directory=directory, subplot=subplot, width=width,
+    return plot_figure(dos, pdos, plot_format=plot_format, prefix=prefix,
+                       directory=directory, subplot=subplot, width=width,
                        height=height, xmin=xmin, xmax=xmax, yscale=yscale,
                        colours=colours, plot_total=plot_total,
-                       legend_on=legend_on, legend_col=legend_col, legend_box_on=legend_box_on,
-                       legend_cutoff=legend_cutoff, image_format=image_format, dpi=dpi, plt=plt)
+                       legend_on=legend_on, num_columns=num_columns,
+                       legend_frame_on=legend_frame_on,
+                       legend_cutoff=legend_cutoff,
+                       image_format=image_format, dpi=dpi, plt=plt)
 
 
-def plot_figure(dos, pdos, plot_format='mpl', prefix=None directory=None, subplot=False, width=8, height=6,
-                xmin=-6, xmax=6, yscale=1, colours=None, plot_total=True,
-                legend_on=True, legend_box_on=False, legend_cutoff=3, image_format='pdf', dpi=400, plt=None):
+def plot_figure(dos, pdos, plot_format='mpl', prefix=None, directory=None,
+                subplot=False, width=8, height=6, xmin=-6, xmax=6, yscale=1,
+                colours=None, plot_total=True, legend_on=True, num_columns=2,
+                legend_frame_on=False, legend_cutoff=3, image_format='pdf',
+                dpi=400, plt=None):
     # build a big dictionary of our plotting data then pass to relevant method
     # mask needed to prevent unwanted data in pdf and for finding y limit
     mask = (dos.energies >= xmin - 0.05) & (dos.energies <= xmax + 0.05)
-    plot_data = {'mask': mask, 'xmin': 0, 'xmax': 0, 'eners': dos.energies, 
-                 'width': width, 'height': height, 'legend_on': legend_on, 
-                 'legend_box_on': legend_box_on, 'subplot': subplot}
+    plot_data = {'mask': mask, 'xmin': 0, 'xmax': 0, 'eners': dos.energies,
+                 'width': width, 'height': height, 'legend_on': legend_on,
+                 'legend_frame_on': legend_frame_on, 'subplot': subplot,
+                 'ncol': num_columns}
     spins = dos.densities.keys()
     ymax = 0
 
-    lines = []
     if plot_total:
-        tdos = [{'label': 'Total DOS', 'dens': dos.densities, 'colour': 'k',
-                 'alpha': 0.15}]}
+        lines = []
+        tdos = {'label': 'Total DOS', 'dens': dos.densities, 'colour': 'k',
+                'alpha': 0.15}
         # subplot data formatted as a list of lists of dicts, with each list of
-        # dicts being plotted on a seperate graph
-        # otherwise data formatted as list of dicts, all plotted on same graph
-        lines.append([tdos] if subplot else tdos)
+        # dicts being plotted on a seperate graph, if only one list then solo
+        # plot
+        lines.append([tdos])
         dmax = max([max(d[mask]) for d in dos.densities.values()])
         ymax = dmax if dmax > ymax else ymax
+    elif not subplot:
+        lines = [[]] # need a blank list to add lines into
 
     # TODO: Fix broken behaviour if plot_total is off
     cutoff = (legend_cutoff / 100.) * (ymax / 1.05)
@@ -161,7 +173,7 @@ def plot_figure(dos, pdos, plot_format='mpl', prefix=None directory=None, subplo
         if subplot:
             lines.append(el_lines)
         else:
-            lines.extend(el_lines)
+            lines[0].extend(el_lines)
 
     ymax = ymax * empty_space / yscale
     ymin = 0 if len(spins) == 1 else -ymax
@@ -169,14 +181,14 @@ def plot_figure(dos, pdos, plot_format='mpl', prefix=None directory=None, subplo
 
     if plot_format == 'mpl':
         return _plot_mpl(plot_data, prefix=prefix, directory=directory,
-                        save_format=image_format, dpi=dpi, plt=plt)
+                         save_format=image_format, dpi=dpi, plt=plt)
     elif plot_format == 'xmgrace':
         return _plot_xmgrace(plot_data, prefix=prefix, directory=directory,
                              dpi=dpi)
 
 
 def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
-             dpi=dpi, plt=None):
+              dpi=400, plt=None):
 
     if plot_data['subplot']:
         nplots = len(plot_data['lines']) + 1
@@ -189,8 +201,12 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
     fig = plt.gcf()
     lines = plot_data['lines']
     spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else [Spin.up, Spin.down]
-    for line_set in plot_data['lines']:
-        ax = plt.gca()
+    for i, line_set in enumerate(plot_data['lines']):
+        if plot_data['subplot']:
+            ax = fig.axes[i]
+        else:
+            ax = plt.gca()
+
         for line in line_set:
             for spin in spins:
                 if spin == Spin.up:
@@ -201,11 +217,8 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
                     densities = -line['dens'][spin]
                 ax.fill_between(plot_data['energies'], densities, lw=0,
                                 facecolor=line['colour'], alpha=line['alpha'])
-                ax.plot(plot_data['energies'], densitites, label=label,
+                ax.plot(plot_data['energies'], densities, label=label,
                         color=line['colour'], lw=line_width)
-
-            plt.legend(loc='best', frameon=legend_box, ncol=ncol,
-                       prop={'size': tick_label_size - 2})
 
         ax.set_ylim([plot_data['ymin'], plot_data['ymax']])
         ax.set_xlim([plot_data['xmin'], plot_data['xmax']])
@@ -213,13 +226,13 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
         ax.tick_params(axis='x', which='both', width=tick_width, top='off')
         ax.tick_params(axis='x', which='major', length=tick_major_length)
         ax.tick_params(axis='x', which='minor', length=tick_minor_length)
-        ax.tick_params(axis='y', which='both', labelleft='off', labelright='off',
-                       left='off', right='off')
+        ax.tick_params(axis='y', which='both', labelleft='off',
+                       labelright='off', left='off', right='off')
         ax.tick_params(axis='both', labelsize=tick_label_size)
 
         sw = 0.9 if plot_data['subplot'] else 1.1
         loc = 'upper right' if plot_data['subplot'] else 'best'
-        ncol = 1 if plot_data['subplot'] else ncol
+        ncol = 1 if plot_data['subplot'] else plot_data['ncol']
         for spine in ax.spines.values():
             spine.set_linewidth(sw)
         if plot_data['legend_on']:
@@ -228,12 +241,12 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
 
     # no add axis labels and sort out ticks
     if plot_data['subplot']:
-        f.text(0.08, 0.5, ' Arb.units', fontsize=axis_label_size, ha='center',
-               va='center', rotation='vertical')
-        axes[-1].set_xlabel('Energy (eV)', fontsize=axis_label_size)
-        f.subplots_adjust(hspace=0)
+        fig.text(0.08, 0.5, 'Arb.units', fontsize=axis_label_size, ha='center',
+                 va='center', rotation='vertical')
+        ax.set_xlabel('Energy (eV)', fontsize=axis_label_size)
+        fig.subplots_adjust(hspace=0)
         plt.tick_params(axis='both', labelsize=tick_label_size)
-        plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
+        plt.setp([a.get_xticklabels() for a in fig.axes[:-1]], visible=False)
     else:
         ax.xlabel('Energy (eV)', fontsize=axis_label_size)
         ax.ylabel('Arb.units', fontsize=axis_label_size)
@@ -244,11 +257,11 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
     if directory:
         filename = os.path.join(directory, filename)
 
-    plt.savefig(filename, format=save_format, dpi=dpi)
+    plt.savefig(filename, format=image_format, dpi=dpi)
     return plt
 
 
-def _plot_xmgrace(plot_data, prefix=None, directory=None, dpi=dpi):
+def _plot_xmgrace(plot_data, prefix=None, directory=None, dpi=400):
     return 0
 
 
@@ -395,6 +408,8 @@ def main():
                         help='plot using xmgrace instead of matplotlib')
     parser.add_argument('--image_format', type=str,
                         help='select image format from pdf, svg, jpg, & png')
+    parser.add_argument('--dpi', type=int,
+                        help='pixel density for generated images')
 
     args = parser.parse_args()
     logging.basicConfig(filename='vaspy-dosplot.log', level=logging.DEBUG,
@@ -422,7 +437,7 @@ def main():
             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
             height=args.height, width=args.width, xmin=args.xmin,
             xmax=args.xmax, num_columns=args.columns, colours=colours,
-            yscale=args.yscale, image_format=args.image_format,
+            yscale=args.yscale, image_format=args.image_format, dpi=args.dpi,
             plot_format=plot_format)
 
 
