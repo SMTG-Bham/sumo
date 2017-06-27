@@ -32,10 +32,10 @@ Some handy tools developed by and for the Scanlon Materials Theory Group
     packages=find_packages(),
     install_requires=['ase', 'spglib', 'numpy', 'scipy'],
     entry_points={'console_scripts': [
-                      'vaspy-bandgen = vaspy.utils.bandgen:main',
-                      'vaspy-bandplot = vaspy.utils.bandplot:main',
-                      'vaspy-bandstats = vaspy.utils.bandstats:main',
-                      'vaspy-dosplot = vaspy.utils.dosplot:main',
-                      'vaspy-kgen = vaspy.utils.kgen:main',
-                      'vaspy-optics = vaspy.utils.optics:main']}
+                      'vaspy-bandgen = vaspy.cli.bandgen:main',
+                      'vaspy-bandplot = vaspy.cli.bandplot:main',
+                      'vaspy-bandstats = vaspy.cli.bandstats:main',
+                      'vaspy-dosplot = vaspy.cli.dosplot:main',
+                      'vaspy-kgen = vaspy.cli.kgen:main',
+                      'vaspy-optics = vaspy.cli.optics:main']}
     )
