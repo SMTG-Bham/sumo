@@ -4,10 +4,13 @@
 
 from __future__ import unicode_literals
 
+import os
+import numpy as np
+
 from itertools import product
 
 from pymatgen.core.periodic_table import get_el_sp
-from pymatgen.electronic_structure.core import Orbital
+from pymatgen.electronic_structure.core import Orbital, Spin
 
 """
 This module contains helper functions for dealing with pymatgen Dos objects
@@ -51,11 +54,11 @@ def get_pdos(dos, lm_orbitals=None, atoms=None, elements=None):
         lm = lm_orbitals[el] if (lm_orbitals and el in lm_orbitals) else None
         orbitals = elements[el] if elements and el in elements else None
 
-        pdos[el] = get_element_pdos(dos, el, lm, orbitals)
+        pdos[el] = get_element_pdos(dos, el, sites, lm, orbitals)
     return pdos
 
 
-def get_element_pdos(dos, element, lm_orbitals=None, orbitals=None):
+def get_element_pdos(dos, element, sites, lm_orbitals=None, orbitals=None):
     """Get the projected DOS for an element.
 
     Args:
@@ -74,10 +77,11 @@ def get_element_pdos(dos, element, lm_orbitals=None, orbitals=None):
         # First consider only the spd orbitals
         spd = [orb.name for orb in dos.get_element_spd_dos(element).keys() if
                ((orbitals and orb.name in orbitals) or not orbitals) and
-               ((lm_orbitals and orb.name not in lm_orbitals) or not lm_orbitals)]
+               ((lm_orbitals and orb.name not in lm_orbitals) or
+                not lm_orbitals)]
         # Now add the lm decomposed orbitals
-        lm += [orb for orb in Orbital
-               if lm_orbitals and orb.name[0] in lm_orbitals]
+        lm = [orb for orb in Orbital
+              if lm_orbitals and orb.name[0] in lm_orbitals]
         for orb in spd:
             pdos = dos.get_site_spd_dos(site, orb)
             el_dos[orb] = el_dos[orb] + pdos if orb in el_dos else pdos
