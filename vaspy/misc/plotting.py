@@ -15,8 +15,8 @@ default_fonts = ['Whitney Book Extended', 'Arial', 'Whitney Book', 'Helvetica',
 
 _ticklabelsize = 22
 _labelsize = 22
-_ticksize = 12
-_linewidth = 1.5
+_ticksize = 15
+_linewidth = 1.3
 
 def pretty_plot(width=5, height=5, plt=None, dpi=None, fonts=None):
     from matplotlib import rc
@@ -83,3 +83,16 @@ def pretty_subplot(nplots, width=5, height=5, dpi=None, fonts=None, plt=None):
     rc('pdf', fonttype=42)
     rc('mathtext', fontset='stixsans')
     return plt
+
+
+def colour_cycle():
+    from numpy import array
+    rgb_colours = array(default_colours)/255.
+    return cycle(rgb_colours)
+
+
+def colour_cycler():
+    from numpy import array
+    from cycler import cycler
+    rgb_colours = array(default_colours)/255.
+    return cycler('color', rgb_colours)

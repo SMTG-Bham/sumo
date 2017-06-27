@@ -7,8 +7,6 @@ from __future__ import unicode_literals
 import os
 import numpy as np
 
-from itertools import product
-
 from pymatgen.core.periodic_table import get_el_sp
 from pymatgen.electronic_structure.core import Orbital, Spin
 
@@ -37,8 +35,10 @@ def get_pdos(dos, lm_orbitals=None, atoms=None, elements=None):
     Returns:
         The pdos in the form {Element: {Orbital: dos}}
     """
+    if not elements:
+        symbols = dos.structure.symbol_set
+        elements = dict(zip(symbols, [None] * len(symbols)))
     pdos = {}
-    elements = elements if elements else dos.structure.symbol_set
     for el in elements:
         if atoms and el not in atoms:
             continue
@@ -50,7 +50,7 @@ def get_pdos(dos, lm_orbitals=None, atoms=None, elements=None):
         element_sites = [site for site in dos.structure.sites
                          if site.specie == get_el_sp(el)]
         sites = [site for i, site in enumerate(element_sites)
-                 if (el in atoms and i in atoms[el]) or not atoms]
+                 if not atoms or (el in atoms and i in atoms[el])]
         lm = lm_orbitals[el] if (lm_orbitals and el in lm_orbitals) else None
         orbitals = elements[el] if elements and el in elements else None
 
@@ -75,7 +75,7 @@ def get_element_pdos(dos, element, sites, lm_orbitals=None, orbitals=None):
     for site in sites:
         # No we build up a list of exactly which elements we are after
         # First consider only the spd orbitals
-        spd = [orb.name for orb in dos.get_element_spd_dos(element).keys() if
+        spd = [orb for orb in dos.get_element_spd_dos(element).keys() if
                ((orbitals and orb.name in orbitals) or not orbitals) and
                ((lm_orbitals and orb.name not in lm_orbitals) or
                 not lm_orbitals)]
@@ -83,11 +83,13 @@ def get_element_pdos(dos, element, sites, lm_orbitals=None, orbitals=None):
         lm = [orb for orb in Orbital
               if lm_orbitals and orb.name[0] in lm_orbitals]
         for orb in spd:
-            pdos = dos.get_site_spd_dos(site, orb)
-            el_dos[orb] = el_dos[orb] + pdos if orb in el_dos else pdos
+            pdos = dos.get_site_spd_dos(site)[orb]
+            el_dos[orb.name] = el_dos[orb.name] + pdos if orb.name in el_dos \
+                               else pdos
         for orb in lm:
             pdos = dos.get_site_orbital_dos(site, orb)
-            el_dos[orb] = el_dos[orb] + pdos if orb in el_dos else pdos
+            el_dos[orb.name] = el_dos[orb.name] + pdos if orb.name in el_dos \
+                               else pdos
     return el_dos
 
 
@@ -115,15 +117,16 @@ def write_files(dos, pdos, prefix=None, directory=None):
     filename = "{}_total_dos.dat".format(prefix) if prefix else 'total_dos.dat'
     if directory:
         filename = os.path.join(directory, filename)
-    np.savefile(filename, tdos_data, header=" ".join(header))
+    np.savetxt(filename, tdos_data, header=" ".join(header))
 
     spin = len(dos.densities)
     for el, el_pdos in pdos.iteritems():
         header = ['#energy']
         pdos_data = [dos.energies]
-        for orb, spin, sign, label in product(sort_orbitals(el_pdos), sdata):
-            header.append('{}{}'.format(orb, label))
-            tdos_data.append(dos.densities[spin] * sign)
+        for orb in sort_orbitals(el_pdos):
+            for spin, sign, label in sdata:
+                header.append('{}{}'.format(orb, label))
+                pdos_data.append(dos.densities[spin] * sign)
         pdos_data = np.stack(pdos_data, axis=1)
 
         if prefix:
@@ -132,7 +135,7 @@ def write_files(dos, pdos, prefix=None, directory=None):
             filename = '{}_dos.dat'.format(el)
         if directory:
             filename = os.path.join(directory, filename)
-        np.savefile(filename, pdos_data, header=" ".join(header))
+        np.savetxt(filename, pdos_data, header=" ".join(header))
 
 
 def sort_orbitals(element_pdos):

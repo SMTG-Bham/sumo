@@ -6,19 +6,21 @@
 from __future__ import unicode_literals
 
 import os
+import sys
 import logging
 import argparse
 import itertools
+import warnings
 
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 
 from vaspy.electronic_structure.dos import sort_orbitals, get_pdos, write_files
-from vaspy.misc.plotting import pretty_plot, pretty_subplot
+from vaspy.misc.plotting import pretty_plot, pretty_subplot, colour_cycle
 
 from pymatgen.io.vasp.outputs import Vasprun
-from pymatgen.electric_structure.core import Spin
+from pymatgen.electronic_structure.core import Spin
 
 try:
     import configparser
@@ -36,27 +38,10 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "March 13, 2017"
 
 
-mpl.rcParams['font.family'] = 'sans-serif'
-mpl.rcParams['font.sans-serif'] = ['Whitney Book Extended', 'Arial',
-                                   'Helvetica', 'Liberation Sans',
-                                   'Andale Sans']
-mpl.rcParams['mathtext.fontset'] = 'stixsans'
-axis_label_size = 20
-tick_label_size = 18
-tick_width = 1.0
-tick_major_length = 15
-tick_minor_length = 7.5
-line_width = 1.3
+line_width = 1.5
 empty_space = 1.05
-
-def_colours = [[240, 163, 255], [0, 117, 220], [153, 63, 0], [76, 0, 92],
-               [66, 102, 0], [255, 0, 16], [157, 204, 0], [194, 0, 136],
-               [0, 51, 128], [255, 164, 5], [255, 255, 0], [255, 80, 5],
-               [94, 241, 242], [116, 10, 255], [153, 0, 0], [0, 153, 143],
-               [0, 92, 49], [43, 206, 72], [255, 204, 153], [148, 255, 181],
-               [143, 124, 0], [255, 168, 187], [128, 128, 128]]
-
-colour_cycle = itertools.cycle(def_colours)
+label_size = 22
+col_cycle = colour_cycle()
 
 # TODO:
 #   - implement magnify state
@@ -64,10 +49,10 @@ colour_cycle = itertools.cycle(def_colours)
 
 def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
             lm_orbitals=None, atoms=None, subplot=False, shift=True,
-            plot_total=True, legend_on=True, legend_frame_on=False,
-            legend_cutoff=3., gaussian=None, height=6, width=8, xmin=-6,
-            xmax=6, num_columns=2, colours=None, yscale=1, image_format='pdf',
-            dpi=400, plot_format='mpl', plt=None):
+            total_only=False, plot_total=True, legend_on=True,
+            legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6,
+            width=8, xmin=-6, xmax=6, num_columns=2, colours=None, yscale=1,
+            image_format='pdf', dpi=400, plot_format='mpl', plt=None):
     """Plot the DOS on a single graph.
 
     Args:
@@ -108,13 +93,15 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
         zero_point = band.get_vbm()['energy']
 
     if shift:
-        dos.densities -= zero_point
+        dos.energies -= zero_point
+        if vr.parameters['ISMEAR'] == 0 or vr.parameters['ISMEAR'] == -1:
+            dos.energies -= vr.parameters['SIGMA']
 
     if gaussian:
         dos = dos.get_smeared_vaspdos(gaussian)
 
     pdos = {}
-    if not plot_total:
+    if not total_only:
         pdos = get_pdos(dos, lm_orbitals=lm_orbitals, atoms=atoms,
                         elements=elements)
 
@@ -138,10 +125,10 @@ def plot_figure(dos, pdos, plot_format='mpl', prefix=None, directory=None,
     # build a big dictionary of our plotting data then pass to relevant method
     # mask needed to prevent unwanted data in pdf and for finding y limit
     mask = (dos.energies >= xmin - 0.05) & (dos.energies <= xmax + 0.05)
-    plot_data = {'mask': mask, 'xmin': 0, 'xmax': 0, 'eners': dos.energies,
-                 'width': width, 'height': height, 'legend_on': legend_on,
-                 'legend_frame_on': legend_frame_on, 'subplot': subplot,
-                 'ncol': num_columns}
+    plot_data = {'mask': mask, 'xmin': xmin, 'xmax': xmax, 'ncol': num_columns,
+                 'energies': dos.energies, 'width': width, 'height': height, 
+                 'legend_on': legend_on, 'legend_frame_on': legend_frame_on, 
+                 'subplot': subplot}
     spins = dos.densities.keys()
     ymax = 0
 
@@ -177,11 +164,11 @@ def plot_figure(dos, pdos, plot_format='mpl', prefix=None, directory=None,
 
     ymax = ymax * empty_space / yscale
     ymin = 0 if len(spins) == 1 else -ymax
-    plot_data.extend({'lines': lines, 'ymax': ymax, 'ymin': ymin})
+    plot_data.update({'lines': lines, 'ymax': ymax, 'ymin': ymin})
 
     if plot_format == 'mpl':
         return _plot_mpl(plot_data, prefix=prefix, directory=directory,
-                         save_format=image_format, dpi=dpi, plt=plt)
+                         image_format=image_format, dpi=dpi, plt=plt)
     elif plot_format == 'xmgrace':
         return _plot_xmgrace(plot_data, prefix=prefix, directory=directory,
                              dpi=dpi)
@@ -220,36 +207,30 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
                 ax.plot(plot_data['energies'], densities, label=label,
                         color=line['colour'], lw=line_width)
 
-        ax.set_ylim([plot_data['ymin'], plot_data['ymax']])
-        ax.set_xlim([plot_data['xmin'], plot_data['xmax']])
+        ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
+        ax.set_xlim(plot_data['xmin'], plot_data['xmax'])
 
-        ax.tick_params(axis='x', which='both', width=tick_width, top='off')
-        ax.tick_params(axis='x', which='major', length=tick_major_length)
-        ax.tick_params(axis='x', which='minor', length=tick_minor_length)
+        ax.tick_params(axis='x', which='both', top='off')
         ax.tick_params(axis='y', which='both', labelleft='off',
                        labelright='off', left='off', right='off')
-        ax.tick_params(axis='both', labelsize=tick_label_size)
 
-        sw = 0.9 if plot_data['subplot'] else 1.1
         loc = 'upper right' if plot_data['subplot'] else 'best'
         ncol = 1 if plot_data['subplot'] else plot_data['ncol']
-        for spine in ax.spines.values():
-            spine.set_linewidth(sw)
         if plot_data['legend_on']:
             ax.legend(loc=loc, frameon=plot_data['legend_frame_on'], ncol=ncol,
-                      prop={'size': tick_label_size - 2})
+                      prop={'size': label_size - 3})
 
     # no add axis labels and sort out ticks
     if plot_data['subplot']:
-        fig.text(0.08, 0.5, 'Arb.units', fontsize=axis_label_size, ha='center',
+        fig.text(0.08, 0.5, 'Arb.units', fontsize=label_size, ha='center',
                  va='center', rotation='vertical')
-        ax.set_xlabel('Energy (eV)', fontsize=axis_label_size)
+        ax.set_xlabel('Energy (eV)', fontsize=label_size)
         fig.subplots_adjust(hspace=0)
-        plt.tick_params(axis='both', labelsize=tick_label_size)
+        #plt.tick_params(axis='both', labelsize=label_size)
         plt.setp([a.get_xticklabels() for a in fig.axes[:-1]], visible=False)
     else:
-        ax.xlabel('Energy (eV)', fontsize=axis_label_size)
-        ax.ylabel('Arb.units', fontsize=axis_label_size)
+        ax.set_xlabel('Energy (eV)')
+        ax.set_ylabel('Arb.units')
 
     plt.tight_layout()
     basename = 'dos.{}'.format(image_format)
@@ -303,7 +284,7 @@ def get_colour_for_element_and_orbital(element, orbital, colours=None):
     try:
         return colours.get(element, orbital)
     except (configparser.NoSectionError, configparser.NoOptionError):
-        return [a/255. for a in colour_cycle.next()]
+        return [a/255. for a in col_cycle.next()]
 
 
 def atoms(string):
@@ -337,7 +318,7 @@ def main():
     parser.add_argument('-f', '--filename', help='vasprun.xml file to plot',
                         default='vasprun.xml')
     parser.add_argument('-p', '--prefix', help='prefix for the files generated')
-    parser.add_argument('-o', '--output', help='output directory for files')
+    parser.add_argument('-d', '--directory', help='output directory for files')
     parser.add_argument('-e', '--elements', type=el_orb, help="""Choose the
                         elements to plot. These should be listed using the
                         symbols from the POSCAR and seperated via commas.
@@ -404,9 +385,9 @@ def main():
                         help='Colour configuration file')
     parser.add_argument('--yscale', type=float, default=1,
                         help='Scaling factor for the y axis')
-    parser.add_argument('--xmgrace', action='store_false',
+    parser.add_argument('--xmgrace', action='store_true',
                         help='plot using xmgrace instead of matplotlib')
-    parser.add_argument('--image_format', type=str,
+    parser.add_argument('--image_format', type=str, default='pdf',
                         help='select image format from pdf, svg, jpg, & png')
     parser.add_argument('--dpi', type=int,
                         help='pixel density for generated images')
@@ -415,6 +396,7 @@ def main():
     logging.basicConfig(filename='vaspy-dosplot.log', level=logging.DEBUG,
                         filemode='w', format='%(message)s')
     console = logging.StreamHandler()
+    logging.info(" ".join(sys.argv[:]))
     logging.getLogger('').addHandler(console)
 
     if args.config is None:
@@ -429,11 +411,14 @@ def main():
         plot_format = 'xmgrace'
     else:
         plot_format = 'mpl'
+        warnings.filterwarnings("ignore", category=UserWarning, 
+                                module="matplotlib")
 
-    dosplot(filename=args.filename, prefix=args.prefix, directory=args.output,
+    dosplot(filename=args.filename, prefix=args.prefix, directory=args.directory,
             elements=args.elements, lm_orbitals=args.orbitals, atoms=args.atoms,
-            subplot=args.subplot, shift=args.shift, plot_total=args.total,
-            legend_on=args.legend, legend_frame_on=args.legend_frame,
+            subplot=args.subplot, shift=args.shift, total_only=args.total_only, 
+            plot_total=args.total, legend_on=args.legend,
+            legend_frame_on=args.legend_frame,
             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
             height=args.height, width=args.width, xmin=args.xmin,
             xmax=args.xmax, num_columns=args.columns, colours=colours,
