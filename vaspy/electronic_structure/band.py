@@ -11,9 +11,9 @@ import vaspy
 import spglib as spg
 import numpy as np
 
-from vaspy.vasp_input import Kpoints
-from vaspy.math_func import addl, minl, mag, floor_int
-from vaspy.math_func import divl, divl_const, multl_const
+from vaspy.io.vasp_input import Kpoints
+from vaspy.misc.math_func import addl, minl, mag, floor_int
+from vaspy.misc.math_func import divl, divl_const, multl_const
 
 class SymException(Exception):
     """Symmetry error"""

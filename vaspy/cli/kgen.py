@@ -1,172 +1,166 @@
 #!/usr/bin/env python
-import sys
-import os
-import shutil
-import argparse
-import logging
-import math
+# coding: utf-8
+# Copyright (c) Scanlon Materials Theory Group
+# Distributed under the terms of the MIT License.
 
-from vaspy.vasp_input import Poscar, Kpoints
-from vaspy.band import Symmetry, PathGen
+from __future__ import unicode_literals
+
+import os
+import sys
+import logging
+import argparse
+import itertools
+import warnings
+
+import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
+
+from vaspy.electronic_structure.dos import sort_orbitals, get_pdos, write_files
+from vaspy.misc.plotting import pretty_plot, pretty_subplot, colour_cycle
+
+from pymatgen.io.vasp.outputs import Vasprun
+from pymatgen.electronic_structure.core import Spin
+
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
+
+"""
+A script to generate KPOINTS files for band structure calculations in VASP
+"""
+
+__author__ = "Alex Ganose"
+__version__ = "1.0"
+__maintainer__ = "Alex Ganose"
+__email__ = "alexganose@googlemail.com"
+__date__ = "July 6, 2017"
+
+# load structure file
+
+def kgen(filename='vasprun.xml', symprec=1e-3, mode='seekpath', hybrid=False,
+        kpts_per_folder=None, make_folders=False, spg=None):
+
+
 
 
 def main():
+    parser = argparse.ArgumentParser(description="""
+    dosplot is a convenient script to help make publication ready density of
+    states diagrams.""",
+                                     epilog="""
+    Author: {}
+    Version: {}
+    Last updated: {}""".format(__author__, __version__, __date__))
 
-    parser = argparse.ArgumentParser(description=(
-        "Generate high symmetry k-point paths for a crystal "
-        "structure. Non-self-consistent (preferred for GGA) and"
-        " self-consistent (preferred for hybrid DFT) modes are"
-        " supported."))
-
-    sym_group = parser.add_mutually_exclusive_group()
-    sym_group.add_argument(
-        "-tolerance",
-        type=int,
-        choices=[1, 2, 3, 4, 5],
-        default=2,
-        help=("Number of decimal places for symmetry "
-              "analysis tolerance - default: 2"))
-    sym_group.add_argument(
-        "-symmetry",
-        help="Override kgen symmetry determination."
-        "This should be in the form of \"centering,type\", "
-        "e.g. \"P,orthorhombic\" ")
-    parser.add_argument(
-        "-density",
-        type=int,
-        default=400,
-        help="k-point line density - default: 400")
-    parser.add_argument(
-        "-breakup",
-        type=int,
-        default=0,
-        help="Number of kpoints per file for hybrid calculations")
-    parser.add_argument(
-        "-ybrid",
-        action="store_true",
-        help="Generate k-points file for self-consistent band structure (zero-"
-        "weighting along paths); this is the preferred approach for DFT "
-        "with hybrid exchange/correlation functionals.")
-    parser.add_argument(
-        "-all",
-        action="store_true",
-        help="Make KPOINTS files for non-self-consistent (typical GGA) and "
-        "self-consistent (needed for hybrid) calculations.")
-    parser.add_argument(
-        "-folders",
-        action="store_true",
-        help=("Generate folders and copy files into them "
-              "(POSCAR, INCAR, POTCAR, job)."))
-    parser.add_argument(
-        "-old",
-        action="store_true",
-        help="Don't use the new path for Orthorhombic p. "
-        "(This exists for compatibility with old projects).")
+    parser.add_argument('-f', '--filename', default='POSCAR'
+                        help='input VASP structure, default is POSCAR',)
+    parser.add_argument('-t', '--tolerance', default=1e-3, type=float,
+                        help='tolerance for finding symmetry')
+    parser.add_argument('-o', '--output', help='output directory for files')
+    parser.add_argument('-f', '--folders', action='store_true',
+                        help="""generate calculation folders and copy relevant 
+                        files""")
+    parser.add_argument('-o', '--orbitals', type=el_orb, help="""Choose the
+                        orbital to split. This should be listed as the element
+                        (using the symbol from the POSCAR) and the orbital
+                        seperated by a period. For example to plot the oxygen
+                        split d orbitals, the command would be "-o O.d". More
+                        than one split orbital and element can be added using
+                        the notation described for adding more elements.""")
+    parser.add_argument('-a', '--atoms', type=atoms, help="""Choose which atoms
+                        to calculate the DOS for. This should be listed as the
+                        element (using the symbol from the POSCAR) and the atoms
+                        seperated by a period. For example to plot the oxygen 1,
+                        2 and 3 atoms, the command would be "-a O.1.2.3". The
+                        atom indicies start at 1 (as in the VASP output). You
+                        can specify a range to avoid typing all the numbers
+                        out, e.g. the previous command can be written "-a
+                        O.1-3". To select all the atoms of an element just
+                        include the element symbol with no numbers after it,
+                         e.g. "-a Ru" will include all the Ru atoms. If
+                        an element is not specified then it will not be
+                        included in the DOS. More than one element can be added
+                        using the notation described above for adding more
+                        elements.""")
+    parser.add_argument('-s', '--subplot', action='store_true', help="""Plot the
+                        DOS as a series of subplots rather than on a single
+                        graph. The height and width arguments for this program
+                        refer to the dimensions of a single subplot rather than
+                        the overall figure.""")
+    parser.add_argument('--no-shift', action='store_false', dest='shift',
+                        help='Don\'t shift the graph so that the VBM is at 0')
+    parser.add_argument('--total-only', action='store_true', dest='total_only',
+                        help='Only plot the total DOS')
+    parser.add_argument('--no-total', action='store_false', dest='total',
+                        help='Don\'t plot the total DOS')
+    parser.add_argument('--no-legend', action='store_false', dest='legend',
+                        help='Don\'t display the plot legend')
+    parser.add_argument('--legend-frame', action='store_true',
+                        dest='legend_frame',
+                        help='Display a frame box around the graph legend.')
+    parser.add_argument('--legend-cutoff', type=float, default=3,
+                        dest='legend_cutoff',
+                        help="""Cut-off in %% of total DOS in visible range that
+                        determines if a line is given a label. Set to 0 to label
+                        all lines. Default is 3 %%""")
+    parser.add_argument('-g', '--gaussian', type=float,
+                        help='Amount of gaussian broadening to apply')
+    parser.add_argument('--height', type=float, default=6,
+                        help='The height of the graph')
+    parser.add_argument('--width', type=float, default=8,
+                        help='The width of the graph')
+    parser.add_argument('--xmin', type=float, default=-6.0,
+                        help='The minimum energy on the x axis')
+    parser.add_argument('--xmax', type=float, default=6.0,
+                        help='The maximum energy on the x axis')
+    parser.add_argument('-c', '--columns', type=int, default=2,
+                        help='The number of columns in the legend')
+    parser.add_argument('--config', type=str, default=None,
+                        help='Colour configuration file')
+    parser.add_argument('--yscale', type=float, default=1,
+                        help='Scaling factor for the y axis')
+    parser.add_argument('--xmgrace', action='store_true',
+                        help='plot using xmgrace instead of matplotlib')
+    parser.add_argument('--image_format', type=str, default='pdf',
+                        help='select image format from pdf, svg, jpg, & png')
+    parser.add_argument('--dpi', type=int,
+                        help='pixel density for generated images')
 
     args = parser.parse_args()
-
-    poscar = Poscar.load("CONTCAR")
-    logging.basicConfig(
-        filename='kgen.log',
-        level=logging.DEBUG,
-        format='%(message)s',
-        filemode='w')
+    logging.basicConfig(filename='vaspy-dosplot.log', level=logging.DEBUG,
+                        filemode='w', format='%(message)s')
     console = logging.StreamHandler()
+    logging.info(" ".join(sys.argv[:]))
     logging.getLogger('').addHandler(console)
 
-    if args.symmetry is None:
-        sym = Symmetry.from_poscar(poscar, tolerance=args.tolerance)
-        tol = 1.0 / (10 ** args.tolerance)
-        logging.info("Tolerance = %g, %s" % (tol, sym))
-        logging.info("Conventional cell %s" % sym.str_conv_cell())
+    if args.config is None:
+        config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                   'default_colours.ini')
     else:
-        split_sym = args.symmetry.split(",")
-        if len(split_sym) != 2:
-            sys.exit("symmetry format invalid. "
-                     "Should be e.g. \"P,orthorhombic\"")
-        centre, system = split_sym
-        logging.info("specified symmetry is {0}-centred"
-                     " {0} lattice".format(centre, system))
-        logging.info("this method probably isn't very good")
+        config_path = args.config
+    colours = configparser.ConfigParser()
+    colours.read(os.path.abspath(config_path))
 
-        # Here we trust people to know what they are doing and
-        # use the poscar as a conventional cell.
-        # What could possibly go wrong?
-        conv_cell = poscar.lattice_abc + poscar.lattice_angles
-        sym = Symmetry({'spacegroup_symbol': centre,
-                        'crystal_system': system}, conv_cell)
-
-    hybrid = 0
-    if args.ybrid:
-        hybrid = 1
-        try:
-            ibzkpt = Kpoints.load_ibzkpt()
-            logging.info("Hybrid calculation specified and found IBZKPT, "
-                         "will add to KPOINTS file")
-        except:
-            logging.info("No IBZKPT file was found; please remember to "
-                         "append the k-points manually.")
-            ibzkpt = None
-
+    if args.xmgrace:
+        plot_format = 'xmgrace'
     else:
-        ibzkpt = None
+        plot_format = 'mpl'
+        warnings.filterwarnings("ignore", category=UserWarning, 
+                                module="matplotlib")
 
-    if args.all:
-        hybrid = 2
-
-    try:
-        path = PathGen(poscar, sym, density=args.density, old=args.old)
-    except Exception as e:
-        print e
-        sys.exit("Exiting")
-
-    logging.info("%s\n" % path.message)
-    logging.info("Determined Brillouin zone path is: " + path.str_labels())
-    logging.info("There are {0} k-points, the coordinates of "
-                 "which are: ".format(path.str_nspecial_kpoints()))
-    logging.info(path.str_special_kpoints())
-    logging.info("\n" + path.str_nkpoints_per_step())
-
-    breakup = 0
-    if not args.breakup and args.ybrid:
-        logging.info("\nThere are a total of {0} kpoints, do you want to "
-                     "break them up? (y/n)".format(path.str_nkpoints()))
-        if raw_input()[0].lower() == 'y':
-            logging.info("How many kpoints per file?")
-            breakup = input()
-            try:
-                int(breakup)
-            except:
-                print "not a valid number"
-                sys.exit()
-    elif args.breakup:
-        breakup = args.breakup
-
-    filenames = path.to_files(hybrid=hybrid, split=breakup, ibzkpt=ibzkpt)
-
-    if args.folders:
-        vasp_files = []
-        for vasp_file in [poscar.filename, "INCAR", "POTCAR", "job", "CHGCAR"]:
-            if os.path.isfile(vasp_file):
-                vasp_files.append(vasp_file)
-
-        logging.info("Checking for VASP files in current directory to copy...")
-        logging.info("Found: " + ", ".join(vasp_files))
-
-        for kpoint_file in filenames:
-            new_folder = kpoint_file.replace("KPOINTS", "band").lower()
-            os.makedirs(new_folder)
-            shutil.move(kpoint_file, new_folder + '/KPOINTS')
-
-            for vasp_file in vasp_files:
-                if "CHGCAR" in vasp_file and "PBE" not in kpoint_file:
-                    continue
-                elif vasp_file == poscar.filename:
-                    filename = "POSCAR"
-                else:
-                    filename = vasp_file
-                shutil.copy(vasp_file, new_folder + '/' + filename)
+    dosplot(filename=args.filename, prefix=args.prefix, directory=args.directory,
+            elements=args.elements, lm_orbitals=args.orbitals, atoms=args.atoms,
+            subplot=args.subplot, shift=args.shift, total_only=args.total_only, 
+            plot_total=args.total, legend_on=args.legend,
+            legend_frame_on=args.legend_frame,
+            legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
+            height=args.height, width=args.width, xmin=args.xmin,
+            xmax=args.xmax, num_columns=args.columns, colours=colours,
+            yscale=args.yscale, image_format=args.image_format, dpi=args.dpi,
+            plot_format=plot_format)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

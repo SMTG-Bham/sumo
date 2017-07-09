@@ -4,7 +4,7 @@ import sys
 import logging
 import itertools
 
-from vaspy.math_func import multl_const, mag, angle
+from vaspy.misc.math_func import multl_const, mag, angle
 
 
 def strip_comments(string_list, keep_empty_lines=False):
