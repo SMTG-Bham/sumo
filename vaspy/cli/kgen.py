@@ -90,7 +90,7 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
             logging.error('ERROR: hybrid specified but no IBZKPT file found!')
             sys.exit()
 
-    if make_folders and ibzkpt and not kpts_per_split:
+    if make_folders and ibzkpt and kpts_per_split is None:
         logging.info("\nfound {} total kpoints in path, do you want to "
                      "split them up? (y/n)".format(len(kpoints)))
         if raw_input()[0].lower() == 'y':
