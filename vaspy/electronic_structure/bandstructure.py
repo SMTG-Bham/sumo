@@ -6,6 +6,7 @@ import numpy as np
 
 from pymatgen.core.structure import Structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
+from pymatgen.symmetry.groups import SpaceGroup
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 
@@ -116,11 +117,16 @@ class BradCrackKpath(Kpath):
         c = self.conv.lattice.abc[2]
 
         if spg:
-            spg_symbol = spg
-            lattice_type = get_lattice_type(spg)
+            if type(spg) is int:
+                spg_info = SpaceGroup.from_int_number(spg)
+            else:
+                spg_info = SpaceGroup(spg)
+
+            spg_symbol = spg_info.symbol
+            lattice_type = get_lattice_type(spg_info.int_number)
         else:
-            lattice_type = self.lattice_type
             spg_symbol = self.spg_symbol
+            lattice_type = self.lattice_type
 
         if lattice_type == 'triclinic':
             self._kpath == self.triclinic()

@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 import os
 import sys
 import math
+import errno
 import shutil
 import string
 import logging
@@ -38,12 +39,14 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
          mode='bradcrack', cart_coords=False, kpt_list=None, labels=None):
     poscar = Poscar.from_file(filename)
 
-    if spg and mode != 'brackcrack':
-        logging.error("""ERROR: specifying symmetry only supported using Bradley
-                      and Cracknell path""")
+    if spg and mode != 'bradcrack':
+        logging.error("ERROR: Specifying symmetry only supported using Bradley "
+                      "and Cracknell path.")
         sys.exit()
 
     if mode == 'bradcrack':
+        # TODO: catch bad space group and warn about forcing spg
+        # also message about new forced symmetry
         kpath = BradCrackKpath(poscar.structure, symprec=symprec, spg=spg)
     elif mode == 'seekpath':
         kpath = SeekpathKpath(poscar.structure, symprec=symprec)
@@ -60,12 +63,11 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
         path_str = kpath.path_string
         kpt_dict = kpath.kpoints
 
-    logging.info('structure information:'.format(poscar.structure.num_sites))
-    logging.info('\tspace group number: {}'.format(kpath._spg_data['number']))
+    logging.info('Structure information:'.format(poscar.structure.num_sites))
+    logging.info('\tSpace group number: {}'.format(kpath._spg_data['number']))
 
-    logging.info('\tinternational symbol: {}'.format(kpath.spg_symbol))
-    logging.info('\tlattice type: {}'.format(kpath.lattice_type))
-    # TODO: above won't work for pymatgen kpaths
+    logging.info('\tInternational symbol: {}'.format(kpath.spg_symbol))
+    logging.info('\tLattice type: {}'.format(kpath.lattice_type))
 
     print_kpath_information(labels, path_str, kpt_dict)
 
@@ -74,27 +76,27 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
         prim_filename = '{}_prim'.format(os.path.basename(filename))
         kpath.prim.to(filename=prim_filename)
 
-        logging.error("\nWARNING: the input structure does not match the "
+        logging.error("\nWARNING: The input structure does not match the "
                       "expected standard\nprimitive symmetry, the path may be "
-                      "incorrect! Use at your own risk\n\nthe correct symmetry "
-                      "primitive structure has been saved as {}".
+                      "incorrect! Use at your own risk.\n\nThe correct symmetry "
+                      "primitive structure has been saved as {}.".
                       format(prim_filename))
 
     if ibzkpt:
         try:
             ibzkpt = Kpoints.from_file('IBZKPT')
             if ibzkpt.tet_number != 0:
-                logging.error('ERROR: IBZKPT contains tetrahedron information')
+                logging.error('ERROR: IBZKPT contains tetrahedron information.')
                 sys.exit()
         except IOError:
-            logging.error('ERROR: hybrid specified but no IBZKPT file found!')
+            logging.error('ERROR: Hybrid specified but no IBZKPT file found.')
             sys.exit()
 
     if make_folders and ibzkpt and kpts_per_split is None:
-        logging.info("\nfound {} total kpoints in path, do you want to "
+        logging.info("\nFound {} total kpoints in path, do you want to "
                      "split them up? (y/n)".format(len(kpoints)))
         if raw_input()[0].lower() == 'y':
-            logging.info("how many kpoints per file?")
+            logging.info("How many kpoints per file?")
             kpts_per_split = input()
 
     write_kpoint_files(filename, kpoints, labels, make_folders=make_folders,
@@ -192,7 +194,15 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             if directory:
                 folder = os.path.join(directory, folder)
 
-            os.makedirs(folder)
+            try:
+                os.makedirs(folder)
+            except OSError as e:
+                if e.errno == errno.EEXIST:
+                    logging.error("\nERROR: Folders already exist, won't "
+                                  "overwrite.")
+                    sys.exit()
+                else:
+                    raise
 
             kpt_file.write_file(os.path.join(folder, 'KPOINTS'))
             vasp_files = [filename, "INCAR", "POTCAR", "job"]
@@ -235,7 +245,7 @@ def main():
                         zero weight (needed for hybrid band structures)""")
     parser.add_argument('--symprec', default=0.01, type=float,
                         help='tolerance for finding symmetry, default is 0.01')
-    parser.add_argument('--spg', type=int, default=None,
+    parser.add_argument('--spg', type=str, default=None,
                         help='space group number to override detected symmetry')
     parser.add_argument('--density', type=int, default=60,
                         help='k-point density along high symmetry lines')
@@ -267,6 +277,11 @@ def main():
 
     ibzkpt = 'IBZKPT' if args.hybrid else None
 
+    try:
+        spg = int(args.spg)
+    except ValueError:
+        spg = args.spg
+
     kpoints = None
     if args.kpoints:
         kpoints = [[map(float, kpt.split()) for kpt in kpts.split(',')] for
@@ -277,7 +292,7 @@ def main():
 
     kgen(args.poscar, directory=args.directory, symprec=args.symprec,
          make_folders=args.folders, kpts_per_split=args.split,
-         ibzkpt=ibzkpt, spg=args.spg, density=args.density, mode=mode,
+         ibzkpt=ibzkpt, spg=spg, density=args.density, mode=mode,
          cart_coords=args.cartesian, kpt_list=kpoints, labels=labels)
 
 if __name__ == "__main__":
