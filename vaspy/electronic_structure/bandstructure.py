@@ -92,6 +92,15 @@ class SeekpathKpath(Kpath):
         kpoints['\Gamma'] = kpoints.pop('GAMMA')
         path = [[label.replace('GAMMA', '\Gamma') for label in subpath]
                 for subpath in path]
+
+        # remove unused k-points
+        # TODO: this but better
+        pts = []
+        for subpath in path:
+            pts += subpath
+        pts = list(set(pts))
+        pts_coords = [kpoints[p] for p in pts]
+        kpoints = dict(zip(pts, pts_coords))
         self._kpath = {'kpoints': kpoints, 'path': path}
 
 

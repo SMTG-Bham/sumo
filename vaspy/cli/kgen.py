@@ -32,15 +32,9 @@ __maintainer__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"
 __date__ = "July 6, 2017"
 
-# TODO:
-#  - sort padding value
-#  - correct segment name
-#  - correct file name if not splitting
-#  - implement custom kpoint path
-
 
 def kgen(filename, directory=None, make_folders=False, symprec=0.01,
-         kpts_per_split=None, ibzkpt=None, spg=None, density=20,
+         kpts_per_split=None, ibzkpt=None, spg=None, density=60,
          mode='bradcrack', cart_coords=False, kpt_list=None, labels=None):
     poscar = Poscar.from_file(filename)
 
@@ -56,10 +50,10 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
     elif mode == 'pymatgen':
         kpath = PymatgenKpath(poscar.structure, symprec=symprec)
 
-    if kpt_list:
+    if kpt_list is not None:
         kpoints, labels, path_str, kpt_dict = get_kpoints_from_list(
-            poscar.structure, kpt_list, labels=labels, line_density=density,
-            cart_coords=cart_coords)
+            poscar.structure, kpt_list, path_labels=labels,
+            line_density=density, cart_coords=cart_coords)
     else:
         kpoints, labels = kpath.get_kpoints(line_density=density,
                                             cart_coords=cart_coords)
@@ -97,8 +91,8 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
             sys.exit()
 
     if make_folders and ibzkpt and not kpts_per_split:
-        logging.info("""\nfound {} total kpoints in path, do you want to
-                     split them up? (y/n)""".format(len(kpoints)))
+        logging.info("\nfound {} total kpoints in path, do you want to "
+                     "split them up? (y/n)".format(len(kpoints)))
         if raw_input()[0].lower() == 'y':
             logging.info("how many kpoints per file?")
             kpts_per_split = input()
@@ -108,16 +102,37 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
                        directory=directory, cart_coords=cart_coords)
 
 
-def get_kpoints_from_list(structure, kpt_list, labels=None, line_density=20,
-                          cart_coords=False):
-    # TODO: do something smart here to get the repeat kpts right
-    if not labels:
-        labels = [s for s, x in zip(string.ascii_uppercase, kpt_list)]
-    kpt_dict = dict(zip(labels, kpt_list))
-    kpoints, labels = get_kpoints(structure, kpt_dict, labels,
+def get_kpoints_from_list(structure, kpt_list, path_labels=None,
+                          line_density=60, cart_coords=False):
+    # TODO: add warnings for no labels and incorrect number of labels
+    flat_kpts = [x for kpts in kpt_list for x in kpts]
+    if path_labels:
+        flat_path_labels = [x for labels in path_labels for x in labels]
+    else:
+        flat_path_labels = [s for s, x in
+                            zip(string.ascii_uppercase, flat_kpts)]
+
+    # need this to make sure the same kpoints have the same labels
+    kpt_dict = {}
+    for label, kpt in zip(flat_path_labels, flat_kpts):
+        if kpt not in kpt_dict.values():
+            kpt_dict[label] = kpt
+
+    if not path_labels:
+        path_labels = []
+        for kpt_sublist in kpt_list:
+            labels = []
+            for kpt in kpt_sublist:
+                for label, kpt2 in kpt_dict.iteritems():
+                    if np.array_equal(kpt, kpt2):
+                        labels.append(label)
+                        break
+            path_labels.append(labels)
+
+    kpoints, labels = get_kpoints(structure, kpt_dict, path_labels,
                                   line_density=line_density,
                                   cart_coords=cart_coords)
-    path_str = ' | '.join([' -> '.join(subpath) for subpath in labels])
+    path_str = ' | '.join([' -> '.join(subpath) for subpath in path_labels])
     return kpoints, labels, path_str, kpt_dict
 
 
@@ -158,7 +173,7 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             # hybrid calculation so set k-point weights to 0
             kpt_weights = ibzkpt.kpts_weights + [0] * len(kpt_split)
             kpt_split = ibzkpt.kpts + kpt_split
-            label_split = ibzkpt.labels + label_split
+            label_split = [''] * len(ibzkpt.labels) + label_split
         else:
             # non-SCF calculation so set k-point weights to 1
             kpt_weights = [1] * len(kpt_split)
@@ -170,13 +185,13 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
                            labels=label_split)
         kpt_files.append(kpt_file)
 
-    # TODO: fix this
-    # pad = math.floor(math.log(len(kpt_files))) + 2  # pad split name with zero
+    pad = int(math.floor(math.log10(len(kpt_files)))) + 2
     if make_folders:
         for i, kpt_file in enumerate(kpt_files):
-            folder = 'split-{:01d}'.format(i + 1)
+            folder = 'split-{}'.format(str(i+1).zfill(pad))
             if directory:
                 folder = os.path.join(directory, folder)
+
             os.makedirs(folder)
 
             kpt_file.write_file(os.path.join(folder, 'KPOINTS'))
@@ -184,20 +199,16 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             vasp_files += [] if ibzkpt else ['CHGCAR']
             for vasp_file in vasp_files:
                 if os.path.isfile(vasp_file):
-                    shutil.copyfile(vasp_file, folder)
-                else:
-                    logging.warning('\nWARNING: could not find {} to copy'.
-                                    format(vasp_file))
+                    shutil.copyfile(vasp_file, os.path.join(folder, vasp_file))
     else:
         for i, kpt_file in enumerate(kpt_files):
-            kpt_filename = 'KPOINTS_split-{:0d}'.format(i + 1)
+            if len(kpt_files) > 1:
+                kpt_filename = 'KPOINTS_band_split_{:0d}'.format(i + 1)
+            else:
+                kpt_filename = 'KPOINTS_band'
             if directory:
                 kpt_filename = os.path.join(directory, kpt_filename)
             kpt_file.write_file(kpt_filename)
-
-
-def parse_kpoint_list(kpt_list_str):
-    return []
 
 
 def main():
@@ -219,14 +230,14 @@ def main():
                         necessary files""")
     parser.add_argument('-s', '--split', type=int, default=None,
                         help="number of k-points to include per split")
-    parser.add_argument('-y', '--hybrid', default=False,
+    parser.add_argument('-y', '--hybrid', default=False, action='store_true',
                         help="""append generated k-points to IBZKPT file with
                         zero weight (needed for hybrid band structures)""")
     parser.add_argument('--symprec', default=0.01, type=float,
                         help='tolerance for finding symmetry, default is 0.01')
     parser.add_argument('--spg', type=int, default=None,
                         help='space group number to override detected symmetry')
-    parser.add_argument('--density', type=int, default=20,
+    parser.add_argument('--density', type=int, default=60,
                         help='k-point density along high symmetry lines')
     parser.add_argument('--seekpath', action='store_true',
                         help='use seekpath to generate the high-symmetry path')
@@ -234,6 +245,12 @@ def main():
                         help='use pymatgen to generate the high-symmetry path')
     parser.add_argument('--cartesian', action='store_true',
                         help='use cartesian rather than fractional coordinates')
+    parser.add_argument('--kpoints', type=str, default=None,
+                        help="""specify a list of kpoints manually, written as
+                        --kpoints '0 0 0, 0.5 0 0'""")
+    parser.add_argument('--labels', type=str, default=None,
+                        help="""specify the labels for manual kpoints, written
+                        as --labels '\Gamma,X'""")
 
     args = parser.parse_args()
     logging.basicConfig(filename='vaspy-kgen.log', level=logging.DEBUG,
@@ -250,10 +267,18 @@ def main():
 
     ibzkpt = 'IBZKPT' if args.hybrid else None
 
+    kpoints = None
+    if args.kpoints:
+        kpoints = [[map(float, kpt.split()) for kpt in kpts.split(',')] for
+                   kpts in args.kpoints.split('|')]
+    labels = None
+    if args.labels:
+        labels = [path.split(',') for path in args.labels.split('|')]
+
     kgen(args.poscar, directory=args.directory, symprec=args.symprec,
          make_folders=args.folders, kpts_per_split=args.split,
          ibzkpt=ibzkpt, spg=args.spg, density=args.density, mode=mode,
-         cart_coords=args.cartesian)
+         cart_coords=args.cartesian, kpt_list=kpoints, labels=labels)
 
 if __name__ == "__main__":
     main()
