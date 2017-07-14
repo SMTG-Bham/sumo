@@ -21,19 +21,29 @@ __date__ = "Jun 23, 2017"
 
 
 def get_pdos(dos, lm_orbitals=None, atoms=None, elements=None):
-    """Gets the entire partial dos.
+    """Gets the projected dos.
 
     Args:
-        dos: A complete Dos object from a Vasprun
-        lm_orbitals: A list of orbitals for which the lm decomposed
+        dos (Dos): A complete Dos object from a Vasprun
+        lm_orbitals (dict): A list of orbitals for which the lm decomposed
             contributions should be calculated, in the form {Element: [orbs]}
-        atoms: A list of atoms of over which to sum the DOS. 0 indexed.
-            If only the atom symbol is specified all the
-            atoms are considered. Provided in the form {Element: [atoms]}
-        elements: A dict of the elements containing which orbitals to plot
+        atoms (dict): A dictionary containing a list of atomic indicies over
+            which to sum the DOS, provided as {Element: [atom_indicies]}.
+            Indicies are zero indexed for each atomic species. If an element
+            symbol is included with an empty list, then all sites for that
+            species are considered. If set to None then all sites for all
+            elements are considered.
+        elements (dict): A dict of element names specifying which orbitals to
+            plot. For example {'Bi': ['s', 'px', 'py', 'd']}. If an element
+            symbol is included with an empty list, then all orbitals for that
+            species are considered. If set to None then all orbitals for all
+            elements are considered.
 
     Returns:
-        The pdos in the form {Element: {Orbital: dos}}
+        A dict mapping the elements and their orbitals to Dos objects. For
+        example:
+            {'Bi': {'s': Dos, 'p': Dos ... },
+             'S': {'s' Dos, ...}{
     """
     if not elements:
         symbols = dos.structure.symbol_set
@@ -62,18 +72,24 @@ def get_element_pdos(dos, element, sites, lm_orbitals=None, orbitals=None):
     """Get the projected DOS for an element.
 
     Args:
-        dos: A complete Dos object from a Vasprun
-        element: The element as a string
-        lm_orbitals: A list of orbitals for which the lm decomposed
-            contributions should be calculated, in the form {Element: [orbs]}
-        orbitals: A list of orbitals to include
+        dos (Dos): A complete Dos object from a Vasprun.
+        element (str): The element symbol.
+        sites (list): A list of atomic indicies over which to sum the DOS,
+            for example [0, 1, 2], will sum the DOSs for the 1st, 2nd and 3rd
+            sites for that element in the structure. Indicies are zero indexed.
+        lm_orbitals (list): A list of orbitals for which the lm decomposed
+            contributions should be calculated. For example: ['p', 'd'].
+        orbitals (list): A list of orbitals to include in the projected Dos.
+            For example: ['s', 'px', 'py', 'dx2'].
 
     Returns:
-        dict of {Orbital: Dos}
+        A dict mapping the elemental orbitals to Dos objects. For example:
+            {'s': Dos,
+             'px': Dos}
     """
     el_dos = {}
     for site in sites:
-        # No we build up a list of exactly which elements we are after
+        # Bbuild up a list of exactly which elements we are after
         # First consider only the spd orbitals
         spd = [orb for orb in dos.get_element_spd_dos(element).keys() if
                ((orbitals and orb.name in orbitals) or not orbitals) and
@@ -94,12 +110,14 @@ def get_element_pdos(dos, element, sites, lm_orbitals=None, orbitals=None):
 
 
 def write_files(dos, pdos, prefix=None, directory=None):
-    """Write the VASP DOS to a series of files containing the formatted data
+    """Write the VASP DOS to a series of files containing the formatted data.
 
     Args:
-        dos: A Dos or complete Dos object
-        prefix: Prefix for file names
-        directory: The directory in which to save files
+        dos (Dos): A Dos or complete Dos object.
+        pdos (dict): The projected Dos as a dictionary mapping the elements and 
+            their orbitals to Dos objects. For example: {'Bi': {'s': Dos}}
+        prefix (str): Prefix for file names.
+        directory (str): The directory in which to save files.
     """
     # defining these cryptic lists makes formatting the data much easier later
     if len(dos.densities) == 1:
@@ -139,13 +157,14 @@ def write_files(dos, pdos, prefix=None, directory=None):
 
 
 def sort_orbitals(element_pdos):
-    """Sort the orbitals of an element's partial DOS
+    """Sort the orbitals of an element's projected DOS.
 
     Sorts the orbitals based on a standard format. E.g. s -> p -> d.
     Will also sort lm decomposed orbitals. This is useful for plotting/saving.
 
     Args:
-        element_pdos: An element pdos in the form {Orbital: Dos}
+        element_pdos: An element pdos in the form {Orbital: Dos}. For example:
+            {'s': Dos, 'px': Dos}
 
     Returns:
         A list of the sorted orbitals
