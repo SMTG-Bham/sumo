@@ -23,7 +23,8 @@ class Kpath(object):
         self._spg_data = spglib.get_symmetry_dataset(sym._cell)
 
         # make primitive and conventional cell from seekpath output
-        std = spglib.standardize_cell(sym._cell, symprec=symprec)
+        std = spglib.standardize_cell(sym._cell, symprec=symprec,
+                                      to_primitive=True)
         self._seek_data = seekpath.get_path(std)
 
         prim_lattice = self._seek_data['primitive_lattice']
@@ -73,6 +74,8 @@ class PymatgenKpath(Kpath):
         Kpath.__init__(self, structure, symprec=symprec)
         pmg_path = HighSymmKpath(structure, symprec=symprec)
         self._kpath = pmg_path._kpath
+        self.prim = pmg_path.prim
+        self.conv = pmg_path.conventional
 
 
 class SeekpathKpath(Kpath):
@@ -117,13 +120,8 @@ class BradCrackKpath(Kpath):
         c = self.conv.lattice.abc[2]
 
         if spg:
-            if type(spg) is int:
-                spg_info = SpaceGroup.from_int_number(spg)
-            else:
-                spg_info = SpaceGroup(spg)
-
-            spg_symbol = spg_info.symbol
-            lattice_type = get_lattice_type(spg_info.int_number)
+            spg_symbol = spg.symbol
+            lattice_type = get_lattice_type(spg.int_number)
         else:
             spg_symbol = self.spg_symbol
             lattice_type = self.lattice_type

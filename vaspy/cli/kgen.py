@@ -22,6 +22,7 @@ from vaspy.electronic_structure.bandstructure import (BradCrackKpath,
                                                       get_kpoints)
 
 from pymatgen.io.vasp.inputs import Poscar, Kpoints
+from pymatgen.symmetry.groups import SpaceGroup
 
 """
 A script to generate KPOINTS files for band structure calculations in VASP
@@ -33,20 +34,17 @@ __maintainer__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"
 __date__ = "July 6, 2017"
 
+# TODO:
+#  - Add support for CDML labels
+#  - Save Brillouin zone diagram
 
 def kgen(filename, directory=None, make_folders=False, symprec=0.01,
          kpts_per_split=None, ibzkpt=None, spg=None, density=60,
          mode='bradcrack', cart_coords=False, kpt_list=None, labels=None):
     poscar = Poscar.from_file(filename)
-
-    if spg and mode != 'bradcrack':
-        logging.error("ERROR: Specifying symmetry only supported using Bradley "
-                      "and Cracknell path.")
-        sys.exit()
+    spg = get_space_group_object(spg, mode)
 
     if mode == 'bradcrack':
-        # TODO: catch bad space group and warn about forcing spg
-        # also message about new forced symmetry
         kpath = BradCrackKpath(poscar.structure, symprec=symprec, spg=spg)
     elif mode == 'seekpath':
         kpath = SeekpathKpath(poscar.structure, symprec=symprec)
@@ -82,17 +80,9 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
                       "primitive structure has been saved as {}.".
                       format(prim_filename))
 
-    if ibzkpt:
-        try:
-            ibzkpt = Kpoints.from_file('IBZKPT')
-            if ibzkpt.tet_number != 0:
-                logging.error('ERROR: IBZKPT contains tetrahedron information.')
-                sys.exit()
-        except IOError:
-            logging.error('ERROR: Hybrid specified but no IBZKPT file found.')
-            sys.exit()
+    ibz = parse_ibzkpt(ibzkpt)
 
-    if make_folders and ibzkpt and kpts_per_split is None:
+    if make_folders and ibz and kpts_per_split is None:
         logging.info("\nFound {} total kpoints in path, do you want to "
                      "split them up? (y/n)".format(len(kpoints)))
         if raw_input()[0].lower() == 'y':
@@ -100,8 +90,39 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
             kpts_per_split = input()
 
     write_kpoint_files(filename, kpoints, labels, make_folders=make_folders,
-                       ibzkpt=ibzkpt, kpts_per_split=kpts_per_split,
+                       ibzkpt=ibz, kpts_per_split=kpts_per_split,
                        directory=directory, cart_coords=cart_coords)
+
+
+def get_space_group_object(spg, mode):
+    if spg and mode != 'bradcrack':
+        logging.error("ERROR: Specifying symmetry only supported using "
+                      "Bradley and Cracknell path.")
+        sys.exit()
+    elif spg:
+        try:
+            if type(spg) is int:
+                spg = SpaceGroup.from_int_number(spg)
+            else:
+                spg = SpaceGroup(spg)
+            logging.error("WARNING: Forcing space group not recommended, the"
+                          " path is likely\nincorrect. Use at your own risk.\n")
+        except ValueError:
+            logging.error("ERROR: Space group not recognised.")
+            sys.exit()
+    return spg
+
+
+def parse_ibzkpt(ibzkpt):
+    if ibzkpt:
+        try:
+            ibz = Kpoints.from_file(ibzkpt)
+            if ibz.tet_number != 0:
+                logging.error('\nERROR: IBZKPT contains tetrahedron information.')
+                sys.exit()
+        except IOError:
+            logging.error('\nERROR: Hybrid specified but no IBZKPT file found.')
+            sys.exit()
 
 
 def get_kpoints_from_list(structure, kpt_list, path_labels=None,
@@ -277,10 +298,12 @@ def main():
 
     ibzkpt = 'IBZKPT' if args.hybrid else None
 
-    try:
-        spg = int(args.spg)
-    except ValueError:
-        spg = args.spg
+    spg = args.spg
+    if args.spg:
+        try:
+            spg = int(spg)
+        except ValueError:
+            pass
 
     kpoints = None
     if args.kpoints:
