@@ -43,7 +43,7 @@ def get_pdos(dos, lm_orbitals=None, atoms=None, elements=None):
         A dict mapping the elements and their orbitals to Dos objects. For
         example:
             {'Bi': {'s': Dos, 'p': Dos ... },
-             'S': {'s' Dos, ...}{
+             'S': {'s' Dos, ...}
     """
     if not elements:
         symbols = dos.structure.symbol_set
