@@ -85,7 +85,7 @@ class Kpath(object):
 
         Args:
             line_density (int): The density of k-points along the path.
-            cart_coords (float): Whether the k-points are returned in cartesian
+            cart_coords (bool): Whether the k-points are returned in cartesian
                 or reciprocal coordinates.
 
         Returns:
@@ -639,7 +639,7 @@ def get_kpoints(structure, kpoints, path, line_density=20, cart_coords=False):
         path (list): The high-symmetry k-point path. Each subpath is provided
             as a list. E.g. [['A', 'B'], ['C', 'D']].
         line_density (int): The density of k-points along the path.
-        cart_coords (float): Whether the k-points are returned in cartesian
+        cart_coords (bool): Whether the k-points are returned in cartesian
             or reciprocal coordinates.
 
     Returns:
