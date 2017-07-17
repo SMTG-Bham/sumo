@@ -123,6 +123,15 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
     if gaussian:
         dos = dos.get_smeared_vaspdos(gaussian)
 
+    if vr.parameters['LSORBIT']:
+        # pymatgen includes the spin down channel for SOC calculations, even
+        # though there is no density here. We remove this channel so the
+        # plotting is easier later on.
+        del dos.densities[Spin.down]
+        for site in dos.pdos:
+            for orbital in dos.pdos[site]:
+                del dos.pdos[site][orbital][Spin.down]
+
     pdos = {}
     if not total_only:
         pdos = get_pdos(dos, lm_orbitals=lm_orbitals, atoms=atoms,
@@ -184,8 +193,8 @@ def plot_figure(dos, pdos, plot_format='mpl', prefix=None, directory=None,
     # mask needed to prevent unwanted data in pdf and for finding y limit
     mask = (dos.energies >= xmin - 0.05) & (dos.energies <= xmax + 0.05)
     plot_data = {'mask': mask, 'xmin': xmin, 'xmax': xmax, 'ncol': num_columns,
-                 'energies': dos.energies, 'width': width, 'height': height, 
-                 'legend_on': legend_on, 'legend_frame_on': legend_frame_on, 
+                 'energies': dos.energies, 'width': width, 'height': height,
+                 'legend_on': legend_on, 'legend_frame_on': legend_frame_on,
                  'subplot': subplot}
     spins = dos.densities.keys()
     ymax = 0
@@ -244,7 +253,8 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
 
     fig = plt.gcf()
     lines = plot_data['lines']
-    spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else [Spin.up, Spin.down]
+    spins = [Spin.up] if (len(lines[0][0]['dens']) == 1
+        or plot_data['soc']) else [Spin.up, Spin.down]
     for i, line_set in enumerate(plot_data['lines']):
         if plot_data['subplot']:
             ax = fig.axes[i]
