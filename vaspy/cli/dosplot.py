@@ -251,6 +251,8 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
         plt = pretty_plot(width=plot_data['width'], height=plot_data['height'],
                           dpi=dpi, plt=plt)
 
+    mask = plot_data['mask']
+    energies = plot_data['energies'][mask]
     fig = plt.gcf()
     lines = plot_data['lines']
     spins = [Spin.up] if (len(lines[0][0]['dens']) == 1
@@ -265,13 +267,13 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
             for spin in spins:
                 if spin == Spin.up:
                     label = line['label']
-                    densities = line['dens'][spin]
+                    densities = line['dens'][spin][mask]
                 elif spin == Spin.down:
                     label = ""
-                    densities = -line['dens'][spin]
-                ax.fill_between(plot_data['energies'], densities, lw=0,
+                    densities = -line['dens'][spin][mask]
+                ax.fill_between(energies, densities, lw=0,
                                 facecolor=line['colour'], alpha=line['alpha'])
-                ax.plot(plot_data['energies'], densities, label=label,
+                ax.plot(energies, densities, label=label,
                         color=line['colour'], lw=line_width)
 
         ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
@@ -459,9 +461,9 @@ def main():
                         help='Scaling factor for the y axis')
     parser.add_argument('--xmgrace', action='store_true',
                         help='plot using xmgrace instead of matplotlib')
-    parser.add_argument('--image_format', type=str, default='pdf',
+    parser.add_argument('--format', type=str, default='pdf',
                         help='select image format from pdf, svg, jpg, & png')
-    parser.add_argument('--dpi', type=int,
+    parser.add_argument('--dpi', type=int, default=400,
                         help='pixel density for generated images')
 
     args = parser.parse_args()
@@ -494,7 +496,7 @@ def main():
             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
             height=args.height, width=args.width, xmin=args.xmin,
             xmax=args.xmax, num_columns=args.columns, colours=colours,
-            yscale=args.yscale, image_format=args.image_format, dpi=args.dpi,
+            yscale=args.yscale, image_format=args.format, dpi=args.dpi,
             plot_format=plot_format)
 
 
