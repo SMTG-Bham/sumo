@@ -1,316 +1,245 @@
 #!/usr/bin/env python
+# coding: utf-8
+# Copyright (c) Scanlon Materials Theory Group
+# Distributed under the terms of the MIT License.
+
+from __future__ import unicode_literals
+
 import os
 import sys
-import glob
 import logging
+import glob
 import argparse
+import itertools
+import warnings
 
-from vaspy.band import Symmetry, SymException, PathGen
-from vaspy.vasp_input import Poscar
-from vaspy.xmgrace import XmgraceDocument, XmgraceGraph
-from vaspy.utils.bandgen import Bandgen, BandgenOptions
+import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
+
+from vaspy.electronic_structure.dos import sort_orbitals, get_pdos, write_files
+from vaspy.electronic_structure.bandstructure import get_reconstructed_band_structure
+from vaspy.misc.plotting import pretty_plot, pretty_subplot, colour_cycle
+from vaspy.cli.dosplot import dosplot, atoms, el_orb
+
+from pymatgen.io.vasp.outputs import BSVasprun
+from pymatgen.electronic_structure.core import Spin
+
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
+
+"""
+A script to plot band structure diagrams
+"""
+
+__author__ = "Alex Ganose"
+__version__ = "1.0"
+__maintainer__ = "Alex Ganose"
+__email__ = "alexganose@googlemail.com"
+__date__ = "July 18, 2017"
 
 
-class BandPlotOptions(object):
+line_width = 1.5
+empty_space = 1.05
+label_size = 22
+col_cycle = colour_cycle()
 
-    def __init__(self, options={}):
-        if options:
-            self.options = options
-        else:
-            parser = argparse.ArgumentParser(
-                description="plot/(and generate) band structure and dos")
-            parser.add_argument("prefix", help="prefix for generated files")
-            parser.add_argument("-contcar", default="CONTCAR",
-                                help="CONTCAR from which to determine "
-                                "band path labels")
 
-            symg = parser.add_mutually_exclusive_group()
-            symg.add_argument("-tolerance", type=int, default=2,
-                              choices=[1, 2, 3, 4, 5],
-                              help="number of decimal places for symmetry "
-                              "analysis tolerance - default: 2")
-            symg.add_argument("-symmetry",
-                              help="override kgen symmetry determination."
-                              "should be in the form of 'centering,type', "
-                              "e.g. 'P,orthorhombic'")
-
-            parser.add_argument("-density", type=int, default=400,
-                                help="kpoint line density - default: 400")
-            parser.add_argument("-graphics", type=int,  default=0,
-                                choices=[1, 2, 3],
-                                help="generate graphics - 1 for pdf, 2 for png,"
-                                " 3 for both")
-            parser.add_argument("-vbm",
-                                help="specify the valence band maximum if data "
-                                "not available. write in the form of band_num,"
-                                "energy - e.g -v 145,-34.62")
-            parser.add_argument("-ignore", action="store_true",
-                                help="ignore .dat files in current directory "
-                                "and look for PROCARS (useful if you make a "
-                                "mistake the first time)")
-            parser.add_argument("-old", action="store_true",
-                                help="Don't use the new path for orthorhombic P")
-            parser.add_argument("-emin", type=float, default=-6,
-                                help="Min energy in plot (relative to E_fermi)")
-            parser.add_argument("-emax", type=float, default=6,
-                                help="Max energy in plot (relative to E_fermi)")
-
-            args = parser.parse_args()
-
-            prefix = args.prefix+"_" if args.prefix else ""
-
-            if args.vbm:
-                band_num, energy = map(float, args.vbm.split(","))
-                vbm = {'band': band_num, 'energy': energy}
+def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
+             project=None, project_rgb=None, dos_file=None, elements=None,
+             lm_orbitals=None, atoms=None, total_only=False,
+             plot_total=True, legend_cutoff=3, gaussian=None, height=6, width=6,
+             ymin=-6, ymax=6, colours=None, yscale=1, image_format='pdf',
+             dpi=400, plot_format='mpl'):
+    if not filenames:
+        folders = glob.glob('split-*')
+        folders = folders if folders else ['.']  # check current dir if no split
+        filenames = []
+        for fol in folders:
+            vr_file = os.path.join(fol, 'vasprun.xml')
+            if os.path.exists(vr_file):
+                filenames.append(vr_file)
             else:
-                vbm = None
+                logging.error('ERROR: No vasprun.xml found in {}!'.format(fol))
+                sys.exit()
 
-            self.options = {'prefix': prefix, 'tolerance': args.tolerance,
-                            'symmetry': args.symmetry, 'density': args.density,
-                            'graphics': args.graphics, 'contcar': args.contcar,
-                            'vbm': vbm, 'ignore': args.ignore, 'old': args.old,
-                            'emin': args.emin, 'emax': args.emax}
+    parse_projected = True if project else False
+    bandstructures = []
+    for vr_file in filenames:
+        vr = BSVasprun(vr_file, parse_projected_eigen=parse_projected)
+        bs = vr.get_band_structure(line_mode=True)
+        bandstructures.append(bs)
+    bs = get_reconstructed_band_structure(bandstructures)
 
+    if (project_rgb or plot_format) and plot_format == 'xmgrace':
+        logging.error('ERROR: Unable to plot projected band structure using '
+                      'xmgrace!')
+        sys.exit()
 
-class BandPlot(object):
+    if project and dos_file:
+        logging.error('ERROR: Plotting projected band structure with DOS not '
+                      'supported.\nPlease use --projected-rgb option.')
+        sys.exit()
 
-    def __init__(self, options):
-        self.options = options.options
-        self.band_data = self._load_bandstructures()
-        self.axis_labels = self._get_band_labels()
+    if project_rgb:
+        plt = plot_rgb_projected_band_structure(bs, project_rgb, ymin=ymin,
+                                                ymax=ymax,
+                                                vbm_cbm_marker=vbm_cbm_marker)
+    elif project:
+        plt = plot_projected_band_structures(bs, project, ymin=ymin, ymax=ymax,
+                                             vbm_cbm_marker=vbm_cbm_marker)
+    else:
+        plt = plt_band_structure(bs, ymin=ymin, ymax=ymax, plt_format=plt_format,
+                                 vbm_cbm_marker=vbm_cbm_marker)
 
-    def _load_bandstructures(self):
-        opts = {'prefix': self.options['prefix'], 'suffix': "PBE|HSE",
-                'combine': False, 'search': False}
-        bg_opts = BandgenOptions(opts)
+    if dos_file:
+        # TODO: change dosplot so if plt set then don't write files
+        plt = dosplot(dos_file, elements=elements, lm_orbital=lm_orbitals,
+                      atoms=atoms, total_only=total_only, plot_total=plot_total,
+                      gaussian=gaussian, width=2, xmin=ymin, xmax=ymax,
+                      colours=colours, yscale=yscale)
+        # TODO: invert x and y axes
 
-        filenames = glob.glob('./*band*.dat')
-        if filenames and not self.options['ignore']:
-            filenames = [filename.strip('./') for filename in filenames]
-            logging.info("found %d bandstructures in the current directory",
-                         len(filenames))
+    plt.tight_layout()
+    basename = 'dos.{}'.format(image_format)
+    filename = '{}_{}'.format(prefix, basename) if prefix else basename
+    if directory:
+        filename = os.path.join(directory, filename)
 
-            if not self.options['vbm']:
-                vbm = {'energy': 0.0, 'band': float("-inf")}
-                cbm = {'energy': 0.0, 'band': float("inf")}
-                logging.info("\nno VBM or CBM data available "
-                             "so will not colour bands")
+    plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches='tight')
+    return plt
 
-        elif os.path.isfile("PROCAR"):
-            bg = Bandgen(bg_opts)
-            filenames = bg.generate_bandstructure()
-            vbm = bg.vbm
-            cbm = bg.cbm
-
-        elif os.path.isfile("PROCAR1") or os.path.isfile("PROCAR01"):
-            bg_opts.options['combine'] = True
-            bg = Bandgen(bg_opts)
-            filenames = bg.generate_bandstructure()
-            vbm = bg.vbm
-            cbm = bg.cbm
-
-        else:
-            bg_opts.options['combine'] = False
-            bg_opts.options['search'] = True
-            bg = Bandgen(bg_opts)
-            filenames = bg.generate_bandstructure()
-            vbm = bg.vbm
-            cbm = bg.cbm
-
-        filenames.sort()
-
-        band_structures = []
-        nkpoints = []
-        for filename in filenames:
-            band_path = []
-            with open(filename) as f:
-                lines = f.readlines()
-
-            bands = []
-            for line in lines:
-                splits = line.split()
-                if splits:
-                    bands.append(map(float, splits))
-                else:
-                    band_path.append(bands)
-                    bands = []
-
-            nkpoints.append(len(band_path[0]))
-            band_structures.append(band_path)
-
-        nbands = len(band_structures[0])
-
-        if self.options['vbm']:
-            vbm = self.options['vbm']
-            cbm = {'energy': 0.0, 'band': vbm['band'] + 1}
-
-        return {'band_structures': band_structures, 'vbm': vbm, 'cbm': cbm,
-                'nbands': nbands, 'nkpoints': nkpoints}
-
-    def _get_band_labels(self):
-        try:
-            poscar = Poscar.load(self.options['contcar'])
-        except:
-            logging.info("unable to find %s, skipping label generation",
-                         self.options['contcar'])
-            return [{'labels': [], 'offsets': []}
-                    for band in self.band_data['band_structures']]
-
-        try:
-            if self.options['symmetry'] is None:
-                sym = Symmetry.from_poscar(poscar,
-                                           tolerance=self.options['tolerance'])
-                logging.info("\ndetermined symmetry to be: %s", sym)
-            else:
-                split_sym = self.options['symmetry'].split(",")
-                if len(split_sym) != 2:
-                    sys.exit("symmetry format invalid."
-                             "Should be e.g. \"P,orthorhombic\"")
-
-                centre, system = split_sym
-                logging.info("specified symmetry is %s centred %s lattice",
-                             centre, system)
-                conv_cell = poscar.lattice_abc + poscar.lattice_angles
-                sym = Symmetry({'spacegroup_symbol': centre,
-                                'crystal_system': system}, conv_cell)
-
-            paths = PathGen(poscar, sym, density=self.options['density'],
-                    old=self.options['old'])
-
-        except SymException as e:
-            print e.message
-            logging.info("skipping label generation")
-            return [{'labels': [], 'offsets': []}
-                    for band in self.band_data['band_structures']]
-
-        try:
-            label_data = []
-            for path, step_size, nkpoints in zip(paths.labels,
-                                                 paths.nkpoints_per_step,
-                                                 self.band_data['nkpoints']):
-                logging.info("for graph %d the labels are: %s",
-                             paths.labels.index(path)+1, " -> ".join(path))
-
-                calc_kpoints = sum(step_size) + 1
-                if nkpoints != calc_kpoints:
-                    raise
-                label_data.append({'labels': path, 'offsets': step_size})
-
-        except Exception as e:
-            logging.info("\ngenerated kpoint path does not have same number of "
-                         "kpoints (%d) as the band structure supplied (%d)"
-                         "therefore can't apply labels",
-                         calc_kpoints, nkpoints)
-            return [{'labels': [], 'offsets': []}
-                    for band in self.band_data['band_structures']]
-
-        return label_data
-
-    def to_agr(self):
-        doc = XmgraceDocument(True)
-
-        for struct, label_data, kpoints in\
-                zip(self.band_data['band_structures'], self.axis_labels,
-                    self.band_data['nkpoints']):
-
-            struct_id = self.band_data["band_structures"].index(struct)
-
-            # Use this to know where to put y-axis labels
-            if struct_id == 0:
-                pos = 0
-            elif struct_id == len(self.band_data["band_structures"]) - 1:
-                pos = 1
-            else:
-                pos = 2
-
-            graph = XmgraceGraph(pos=pos, num_kpoints=kpoints,
-                                 emin=self.options['emin'],
-                                 emax=self.options['emax'])
-
-            for band in struct:
-                normalised = [[kpoint, energy - self.band_data['vbm']['energy']]
-                              for kpoint, energy in band]
-                if struct.index(band) <= (self.band_data['cbm']['band'] - 2):
-                    color = 4
-                else:
-                    color = 11
-                graph.add_xy(normalised, color, 2)
-
-            axis_data = []
-            total = 1
-            if label_data['labels']:
-                # hack to make the lists the same length
-                label_data['offsets'].append(0)
-                for label, offset in zip(label_data['labels'],
-                                         label_data['offsets']):
-                    label = '\\xG' if label == "GP" else label
-                    axis_data.append([label, total])
-                    total += offset
-
-            graph.set_axis_labels(axis_data)
-            doc.add_graph(graph)
-
-        filename = self.options['prefix']+"band.agr"
-        doc.to_file(filename)
-
-        return filename
-
-    @staticmethod
-    def cmd_exists(cmd):
-        return any(
-            os.access(os.path.join(path, cmd), os.X_OK)
-            for path in os.environ["PATH"].split(os.pathsep)
-        )
-
-    def to_graphic(self, agr_file):
-        graphics = self.options['graphics']
-
-        if self.cmd_exists("xmgrace"):
-            xmgrace = "xmgrace"
-        elif self.cmd_exists("/shared/ucl/apps/xmgrace/grace/bin/xmgrace"):
-            xmgrace = "/shared/ucl/apps/xmgrace/grace/bin/xmgrace"  # legion
-
-        if not xmgrace:
-            logging.error("\ncan't find xmgrace therefore can't make graphics")
-            return
-
-        logging.info("\ngenerating eps, xmgrace path is: %s", xmgrace)
-
-        filename = self.options['prefix'] + "band.eps"
-        command = "%s %s -nosafe -hardcopy -hdevice EPS -printfile %s" % \
-            (xmgrace, agr_file, filename)
-
-        os.system(command)
-
-        if graphics == 1 or graphics == 3:
-            pdf_file = self.options['prefix'] + "band.pdf"
-            if self.cmd_exists("epstopdf"):
-                logging.info("writing pdf file")
-                os.system("epstopdf %s" % filename)
-            elif self.cmd_exists("convert"):
-                logging.info("epstopdf not available so pdf won't look great")
-                os.system("convert -density 400 %s %s" % (filename, pdf_file))
-            else:
-                logging.info("no software available to convert eps to pdf")
-
-        if graphics == 2 or graphics == 3:
-            png_file = self.options['prefix'] + "band.png"
-            if not self.cmd_exists("convert"):
-                logging.info("no software available to convert eps to png")
-            else:
-                logging.info("writing png file")
-                os.system("convert -density 400 %s %s" % (filename, png_file))
 
 def main():
-    logging.basicConfig(filename='bandplot.log', level=logging.DEBUG,
-                        format='%(message)s', filemode='w')
-    console = logging.StreamHandler()
-    logging.getLogger('').addHandler(console)
-    options = BandPlotOptions()
-    bdplot = BandPlot(options)
-    agr_file = bdplot.to_agr()
-    bdplot.to_graphic(agr_file)
-    sys.exit(0)
+    parser = argparse.ArgumentParser(description="""
+    dosplot is a convenient script to help make publication ready density of
+    states diagrams.""",
+                                     epilog="""
+    Author: {}
+    Version: {}
+    Last updated: {}""".format(__author__, __version__, __date__))
 
-if __name__ == '__main__':
+    parser.add_argument('-f', '--filenames', default=None,
+                        help="one or more vasprun.xml files to plot")
+    parser.add_argument('-p', '--prefix', help='prefix for the files generated')
+    parser.add_argument('-d', '--directory', help='output directory for files')
+    parser.add_argument('-b' '--band-edges', dest='band_edges',
+                        action='store_true',
+                        help='Highlight the band edges with markers')
+    parser.add_argument('--project', default=None, type=el_orb,
+                        help="""Project DOS onto band structure as red, green,
+                        and blue contributions. Can project a maximum of 3
+                        orbital/elemental contributions. These should be listed
+                        using the symbols from the POSCAR, seperated via commas.
+                        Specific orbitals can be chosen by adding the orbitals
+                        after the element by using a period as the seperator.
+                        For example, to project the zinc s and p orbitals, and
+                        all the oxygen orbitals, the command would be "--project
+                        Zn.s.p,O".""")
+    parser.add_argument('--dos', default=None,
+                        help="""Path to density of states vasprun.xml.
+                        Specifying this option will generate combined DOS/band
+                        structure diagrams. The DOS options are more or less
+                        the same as for the dosplot command.""")
+    parser.add_argument('--elements', type=el_orb, help="""Choose the
+                        elements to plot in the DOS. These should be listed
+                        using the symbols from the POSCAR and seperated via
+                        commas. Specific orbitals can be chosen by adding the
+                        orbitals after the element by using a period as the
+                        seperator. For example, to plot the carbon s and p, and
+                        all the oxygen orbitals, the command would be
+                        "--elements C.s.p,O". Must be combined with the --dos
+                        option.""")
+    parser.add_argument('--orbitals', type=el_orb, help="""Choose the
+                        orbitals to split in the DOS. This should be listed as
+                        the element (using the symbol from the POSCAR) and the
+                        orbitals seperated by a period. For example to plot the
+                        oxygen split d orbitals, the command would be
+                        "--orbitals O.d". More than one split orbital and
+                        element can be added using the notation described for
+                        adding more elements. Must be combined with the --dos
+                        option.""")
+    parser.add_argument('--atoms', type=atoms, help="""Choose which atoms
+                        to calculate the DOS for. This should be listed as the
+                        element (using the symbol from the POSCAR) and the atoms
+                        seperated by a period. For example to plot the oxygen 1,
+                        2 and 3 atoms, the command would be "--atoms O.1.2.3".
+                        The atom indicies start at 1 (as in the VASP output).
+                        You can specify a range to avoid typing all the numbers
+                        out, e.g. the previous command can be written "--atoms
+                        O.1-3". To select all the atoms of an element just
+                        include the element symbol with no numbers after it,
+                         e.g. "--atoms Ru" will include all the Ru atoms. If
+                        an element is not specified then it will not be
+                        included in the DOS. More than one element can be added
+                        using the notation described above for adding more
+                        elements. Must be combined with the --dos option.""")
+    parser.add_argument('--total-only', action='store_true', dest='total_only',
+                        help="""Only plot the total DOS. Must be combined with
+                        the --dos option""")
+    parser.add_argument('--no-total', action='store_false', dest='total',
+                        help='Don\'t plot the total DOS')
+    parser.add_argument('--legend-cutoff', type=float, default=3,
+                        dest='legend_cutoff',
+                        help="""Cut-off in %% of total DOS in visible range that
+                        determines if a line is given a label. Set to 0 to label
+                        all lines. Default is 3 %%. Must be combined with the
+                        --dos option.""")
+    parser.add_argument('-g', '--gaussian', type=float,
+                        help="""Amount of gaussian broadening to apply. Must be
+                        combined with the --dos option.""")
+    parser.add_argument('--xscale', type=float, default=1,
+                        help='Scaling factor for the DOS x axis')
+    parser.add_argument('--height', type=float, default=6,
+                        help='The height of the graph')
+    parser.add_argument('--width', type=float, default=8,
+                        help='The width of the graph')
+    parser.add_argument('--ymin', type=float, default=-6.0,
+                        help='The minimum energy on the x axis')
+    parser.add_argument('--ymax', type=float, default=6.0,
+                        help='The maximum energy on the x axis')
+    parser.add_argument('--config', type=str, default=None,
+                        help='Colour configuration file')
+    parser.add_argument('--xmgrace', action='store_true',
+                        help='plot using xmgrace instead of matplotlib')
+    parser.add_argument('--format', type=str, default='pdf',
+                        help='select image format from pdf, svg, jpg, & png')
+    parser.add_argument('--dpi', type=int,
+                        help='pixel density for generated images')
+
+    args = parser.parse_args()
+    logging.basicConfig(filename='vaspy-bandplot.log', level=logging.DEBUG,
+                        filemode='w', format='%(message)s')
+    console = logging.StreamHandler()
+    logging.info(" ".join(sys.argv[:]))
+    logging.getLogger('').addHandler(console)
+
+    if args.config is None:
+        config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                   'default_colours.ini')
+    else:
+        config_path = args.config
+    colours = configparser.ConfigParser()
+    colours.read(os.path.abspath(config_path))
+
+    if args.xmgrace:
+        plot_format = 'xmgrace'
+    else:
+        plot_format = 'mpl'
+        warnings.filterwarnings("ignore", category=UserWarning,
+                                module="matplotlib")
+
+    bandplot(filenames=args.filenames, prefix=args.prefix, directory=args.directory,
+             vbm_cbm_marker=args.band_edges, project=args.project, dos_file=args.dos, elements=args.elements, lm_orbitals=args.orbitals, atoms=args.atoms,
+             shift=args.shift, total_only=args.total_only,
+             plot_total=args.total, legend_cutoff=args.legend_cutoff,
+             gaussian=args.gaussian, height=args.height, width=args.width, ymin=args.ymin,
+             ymax=args.ymax, num_columns=args.columns, colours=colours,
+             xscale=args.xscale, image_format=args.image_format, dpi=args.dpi,
+             plot_format=plot_format)
+
+
+if __name__ == "__main__":
     main()
