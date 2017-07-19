@@ -28,7 +28,7 @@ except ImportError:
     import ConfigParser as configparser
 
 """
-A script to plot density of states (DOS) diagrams using matplotlib
+A script to plot density of states (DOS) diagrams
 """
 
 __author__ = "Alex Ganose"
@@ -126,8 +126,8 @@ def plot_figure(dos, pdos, plot_format='mpl', prefix=None, directory=None,
     # mask needed to prevent unwanted data in pdf and for finding y limit
     mask = (dos.energies >= xmin - 0.05) & (dos.energies <= xmax + 0.05)
     plot_data = {'mask': mask, 'xmin': xmin, 'xmax': xmax, 'ncol': num_columns,
-                 'energies': dos.energies, 'width': width, 'height': height, 
-                 'legend_on': legend_on, 'legend_frame_on': legend_frame_on, 
+                 'energies': dos.energies, 'width': width, 'height': height,
+                 'legend_on': legend_on, 'legend_frame_on': legend_frame_on,
                  'subplot': subplot}
     spins = dos.densities.keys()
     ymax = 0
@@ -411,12 +411,12 @@ def main():
         plot_format = 'xmgrace'
     else:
         plot_format = 'mpl'
-        warnings.filterwarnings("ignore", category=UserWarning, 
+        warnings.filterwarnings("ignore", category=UserWarning,
                                 module="matplotlib")
 
     dosplot(filename=args.filename, prefix=args.prefix, directory=args.directory,
             elements=args.elements, lm_orbitals=args.orbitals, atoms=args.atoms,
-            subplot=args.subplot, shift=args.shift, total_only=args.total_only, 
+            subplot=args.subplot, shift=args.shift, total_only=args.total_only,
             plot_total=args.total, legend_on=args.legend,
             legend_frame_on=args.legend_frame,
             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
