@@ -53,32 +53,55 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
             legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6,
             width=8, xmin=-6, xmax=6, num_columns=2, colours=None, yscale=1,
             image_format='pdf', dpi=400, plot_format='mpl', plt=None):
-    """Plot the DOS on a single graph.
+    """A script to plot the density of states from a vasprun.xml file.
 
     Args:
-        filename: A vasprun.xml or DOSCAR file to plot. If DOSCAR selected then
-            POSCAR should also be present in same directory.
-        prefix: What to prefix all generated files with
-        plot_total: Whether or not to plot only the total DOS
-        elements: If this is set it gives the specific elements and their
-            orbitals to plot
-        lm_orbitals: If this is set it gives the specific orbitals to split into
-            their components
-        atoms: A list of atoms of over which to sum the DOS. The index
-            starts at 1. If nothing is specified all the atoms are
-            considered. Provided in the form {Element: [atoms]}
-        unshifted: Don't shift the DOS to the VBM
-        subplot: Plot as subplots rather than a standalone graph
-        height: The height of the plot
-        width: The width of the plot
-        emin: The minimum energy on the x axis
-        emax: The maximum energy on the x axis
-        ncol: The number of columns of the legend
-        tol: The tolerance for finding the VBM
-        smear: The amount of Gaussian smearing to apply
-        no_total: Whether or not to plot the total DOS
-        no_total: Config parser
-        colours: A dict of {'Element': colour} where colour is a hex number
+        filename (str): A vasprun.xml file to plot (can be gziped).
+        prefix (str): A prefix for the files generated.
+        directory (str): Specify a directory in which the files are saved.
+        elements (dict): A dict of element names specifying which orbitals to
+            plot. For example {'Bi': ['s', 'px', 'py', 'd']}. If an element
+            symbol is included with an empty list, then all orbitals for that
+            species are considered. If set to None then all orbitals for all
+            elements are considered.
+        lm_orbitals (dict): A list of orbitals for which the lm decomposed
+            contributions should be calculated, in the form {Element: [orbs]}
+        atoms (dict): A dictionary containing a list of atomic indicies over
+            which to sum the DOS, provided as {Element: [atom_indicies]}.
+            Indicies are zero indexed for each atomic species. If an element
+            symbol is included with an empty list, then all sites for that
+            species are considered. If set to None then all sites for all
+            elements are considered.
+        subplot (bool): Split the plot up into separate plots for each element.
+        shift (bool): Shift the energies such that the valence band maximum is
+            at 0 eV.
+        total_only (bool): Only plot the total density of states.
+        plot_total (bool): Whether or not to plot total DOS.
+        legend_on (bool): Whether or not to plot the graph legend.
+        legend_frame_on (bool): Whether or not to plot the graph legend frame.
+        legend_cutoff (int): The cut-off (in % of maximum DOS plotted) for a
+            elemental/orbital DOS label to appear in the legend.
+        gaussian (float): The sigma of the Gaussian broadening to apply (usually
+            controlled by the SIGMA flag in VASP).
+        height (float): The height of the graph (matplotlib only).
+        width (float): The width of the graph (matplotlib only).
+        xmin (float): The minimum energy to plot.
+        xmax (float): The maximum energy to plot.
+        num_columns (int): The number of columns in the legend.
+        colours (dict): Specify custom colours as {'Element': colour} where
+            colour is a hex number.
+        yscale (dict): Scaling factor for the y-axis.
+        image_format (str): The image file format (matplotlib only). Can be
+            any format supported by matplot, including: png, jpg, pdf, and svg.
+        dpi (int): The dots-per-inch (pixel density) for the image
+            (matplotlib only).
+        plot_format (str): The plotting method to use (options limited to
+            'mpl' for matplotlib and 'xmgrace' for xmgrace).
+        plt (pyplot object): Matplotlib pyplot object to use for plotting.
+
+    Returns:
+        matplotlib pyplot object if plot_format is 'mpl' or filename of xmgrace
+        file if plot_format is 'xmgrace'.
     """
     vr = Vasprun(filename)
     band = vr.get_band_structure()
@@ -99,6 +122,15 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
 
     if gaussian:
         dos = dos.get_smeared_vaspdos(gaussian)
+
+    if vr.parameters['LSORBIT']:
+        # pymatgen includes the spin down channel for SOC calculations, even
+        # though there is no density here. We remove this channel so the
+        # plotting is easier later on.
+        del dos.densities[Spin.down]
+        for site in dos.pdos:
+            for orbital in dos.pdos[site]:
+                del dos.pdos[site][orbital][Spin.down]
 
     pdos = {}
     if not total_only:
@@ -122,6 +154,41 @@ def plot_figure(dos, pdos, plot_format='mpl', prefix=None, directory=None,
                 colours=None, plot_total=True, legend_on=True, num_columns=2,
                 legend_frame_on=False, legend_cutoff=3, image_format='pdf',
                 dpi=400, plt=None):
+    """Plot the density of states either using matplotlib or xmgrace.
+
+    Args:
+        dos (Dos): A Dos object containing the total density of states.
+        pdos (dict): A dict mapping the elements and their orbitals to plot
+            to Dos objects. For example:
+            {'Bi': {'s': Dos, 'p': Dos}, 'S': {'s' Dos, ...}
+        plot_format (str): The plotting method to use (options limited to
+            'mpl' for matplotlib and 'xmgrace' for xmgrace).
+        prefix (str): A prefix for the files generated.
+        directory (str): Specify a directory in which the files are saved.
+        subplot (bool): Split the plot up into separate plots for each element.
+        width (float): The width of the graph (matplotlib only).
+        height (float): The height of the graph (matplotlib only).
+        xmin (float): The minimum energy to plot.
+        xmax (float): The maximum energy to plot.
+        yscale (dict): Scaling factor for the y-axis.
+        colours (dict): Specify custom colours as {'Element': colour} where
+            colour is a hex number.
+        plot_total (bool): Whether or not to plot total DOS.
+        legend_on (bool): Whether or not to plot the graph legend.
+        num_columns (int): The number of columns in the legend.
+        legend_frame_on (bool): Whether or not to plot the graph legend frame.
+        legend_cutoff (int): The cut-off (in % of maximum DOS plotted) for a
+            elemental/orbital DOS label to appear in the legend.
+        image_format (str): The image file format (matplotlib only). Can be
+            any format supported by matplot, including: png, jpg, pdf, and svg.
+        dpi (int): The dots-per-inch (pixel density) for the image
+            (matplotlib only).
+        plt (pyplot object): Matplotlib pyplot object to use for plotting.
+
+    Returns:
+        matplotlib pyplot object if plot_format is 'mpl' or filename of xmgrace
+        file if plot_format is 'xmgrace'.
+    """
     # build a big dictionary of our plotting data then pass to relevant method
     # mask needed to prevent unwanted data in pdf and for finding y limit
     mask = (dos.energies >= xmin - 0.05) & (dos.energies <= xmax + 0.05)
@@ -176,7 +243,6 @@ def plot_figure(dos, pdos, plot_format='mpl', prefix=None, directory=None,
 
 def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
               dpi=400, plt=None):
-
     if plot_data['subplot']:
         nplots = len(plot_data['lines']) + 1
         plt = pretty_subplot(nplots, width=plot_data['width'],
@@ -185,9 +251,12 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
         plt = pretty_plot(width=plot_data['width'], height=plot_data['height'],
                           dpi=dpi, plt=plt)
 
+    mask = plot_data['mask']
+    energies = plot_data['energies'][mask]
     fig = plt.gcf()
     lines = plot_data['lines']
-    spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else [Spin.up, Spin.down]
+    spins = [Spin.up] if (len(lines[0][0]['dens']) == 1
+        or plot_data['soc']) else [Spin.up, Spin.down]
     for i, line_set in enumerate(plot_data['lines']):
         if plot_data['subplot']:
             ax = fig.axes[i]
@@ -198,13 +267,13 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
             for spin in spins:
                 if spin == Spin.up:
                     label = line['label']
-                    densities = line['dens'][spin]
+                    densities = line['dens'][spin][mask]
                 elif spin == Spin.down:
                     label = ""
-                    densities = -line['dens'][spin]
-                ax.fill_between(plot_data['energies'], densities, lw=0,
+                    densities = -line['dens'][spin][mask]
+                ax.fill_between(energies, densities, lw=0,
                                 facecolor=line['colour'], alpha=line['alpha'])
-                ax.plot(plot_data['energies'], densities, label=label,
+                ax.plot(energies, densities, label=label,
                         color=line['colour'], lw=line_width)
 
         ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
@@ -243,7 +312,7 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
 
 
 def _plot_xmgrace(plot_data, prefix=None, directory=None, dpi=400):
-    return 0
+    raise NotImplementedError('xmgrace plotting not yet supported')
 
 
 def el_orb(string):
@@ -253,10 +322,12 @@ def el_orb(string):
     all of its orbitals.
 
     Args:
-        string: The supplied argument in the form "C.s.p,O"
+        string (str): The supplied argument in the form "C.s.p,O".
 
-        Returns:
-        The elements and orbitals to plot in the form {Element:[Orbitals]}
+    Returns:
+        A dict of element names specifying which orbitals to plot. For example
+        {'Bi': ['s', 'px', 'py', 'd']}. If an element symbol is included with
+        an empty list, then all orbitals for that species are considered.
     """
     el_orbs = {}
     for split in string.split(','):
@@ -267,19 +338,20 @@ def el_orb(string):
 
 
 def get_colour_for_element_and_orbital(element, orbital, colours=None):
-    """Choose a colour for a particular elemental orbital.
+    """Select a colour for a particular elemental orbital.
 
     If that element is not specified in the colours dictionary, a random colour
-    will be generated.
+    will be generated based on the list of 22 colours of maximum contast:
+    http://www.iscc.org/pdf/PC54_1724_001.pdf
 
     Args:
-        element: The element to choose a colour for.
-        orbital: The orbital.
-        colours: An dict of {'Element': {'orb': colour}} where colour is a hex
-                 number.
+        element (str): The element to select a colour for.
+        orbital (str): The orbital.
+        colours (dict): A dict of {'Element': {'orb': colour}}, where colour
+            is a hex number.
 
     Returns:
-        A colour (either the colour name or hex code).
+        A colour as either the colour name, hex code, or list of 3 floats.
     """
     try:
         return colours.get(element, orbital)
@@ -287,18 +359,20 @@ def get_colour_for_element_and_orbital(element, orbital, colours=None):
         return [a/255. for a in col_cycle.next()]
 
 
-def atoms(string):
+def atoms(atoms_string):
     """Parse the atom string.
 
     Args:
-        string: The supplied argument in the form "C.1.2.3,"
+        atoms_string (str): The supplied argument in the form "C.1.2.3,".
 
     Returns:
-        The elements and orbitals to plot in the form {Element:[Orbitals]}.
-        Atoms are zero indexed.
+        A dictionary containing a list of atomic indicies over which to sum
+        the DOS, provided as {Element: [atom_indicies]}. Indicies are zero
+        indexed for each atomic species. If an element symbol is included with
+        an empty list, then all sites for that species are considered.
     """
     atoms = {}
-    for split in string.split(','):
+    for split in atoms_string.split(','):
         sites = split.split('.')
         el = sites.pop(0)
         sites = map(int, sites)
@@ -387,9 +461,9 @@ def main():
                         help='Scaling factor for the y axis')
     parser.add_argument('--xmgrace', action='store_true',
                         help='plot using xmgrace instead of matplotlib')
-    parser.add_argument('--image_format', type=str, default='pdf',
+    parser.add_argument('--format', type=str, default='pdf',
                         help='select image format from pdf, svg, jpg, & png')
-    parser.add_argument('--dpi', type=int,
+    parser.add_argument('--dpi', type=int, default=400,
                         help='pixel density for generated images')
 
     args = parser.parse_args()
@@ -422,7 +496,7 @@ def main():
             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
             height=args.height, width=args.width, xmin=args.xmin,
             xmax=args.xmax, num_columns=args.columns, colours=colours,
-            yscale=args.yscale, image_format=args.image_format, dpi=args.dpi,
+            yscale=args.yscale, image_format=args.format, dpi=args.dpi,
             plot_format=plot_format)
 
 

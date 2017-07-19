@@ -22,6 +22,8 @@ from vaspy.electronic_structure.bandstructure import (BradCrackKpath,
                                                       get_kpoints)
 
 from pymatgen.io.vasp.inputs import Poscar, Kpoints
+from pymatgen.io.vasp.inputs import Poscar, Kpoints
+from pymatgen.symmetry.groups import SpaceGroup
 
 """
 A script to generate KPOINTS files for band structure calculations in VASP
@@ -33,20 +35,60 @@ __maintainer__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"
 __date__ = "July 6, 2017"
 
+# TODO:
+#  - Add support for CDML labels
+#  - Save Brillouin zone diagram
+#  - Return a list of filenames/folders
 
-def kgen(filename, directory=None, make_folders=False, symprec=0.01,
+def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
          kpts_per_split=None, ibzkpt=None, spg=None, density=60,
          mode='bradcrack', cart_coords=False, kpt_list=None, labels=None):
-    poscar = Poscar.from_file(filename)
+    """Generate KPOINTS files for VASP band structure calculations.
 
-    if spg and mode != 'bradcrack':
-        logging.error("ERROR: Specifying symmetry only supported using Bradley "
-                      "and Cracknell path.")
-        sys.exit()
+    This script provides a wrapper around several frameworks used to generate
+    k-points along a high-symmetry path. The paths found in Bradley and 
+    Cracknell, SeeK-path, and pymatgen are all supported.
+
+    It is important to note that the standard primitive cell symmetry is
+    different between SeeK-path and pymatgen. If the correct the structure
+    is not used, the high-symmetry points (and band path) may be invalid.
+
+    Args:
+        filename (str): The name of the VASP structure file.
+        directory (str): The directory in which to output files.
+        make_folders (bool): Generate folders and copy in relevant files (INCAR,
+            POTCAR, POSCAR, and possibily CHGCAR) from the current directory.
+        symprec (float): The precision used for determining cell symmetry.
+        kpts_per_split (int): If this is set, the k-points are split into
+            seperate k-point files (or folders) each containing the number
+            of k-points specified. This is useful for hybrid band structure
+            calculations where it is often intractable to calculate all k-points
+            in the same calculation.
+        ibzkpt (str): If this is set, the generated k-points will be appended
+            to this file and given a weight of 0. This is necessary for hybrid
+            band structure calculations.
+        spg (str or int): The space group international number or symbol to
+            override the symmetry determined by spglib. This is not recommended
+            and only provided for testing purposes.
+        line_density (int): The density of k-points along the path.
+        mode (str): Sets the method used to calculate the high-symmetry path.
+            Choice of 'bradcrack', 'seekpath', and 'pymatgen'.
+        cart_coords (bool): Whether the k-points are provided in cartesian
+            or reciprocal coordinates.
+        kpt_list (list): Manual list of k-points to use. If kpt_list is set it 
+            will override the mode selection. Should be formatted as a list of
+            subpaths, each containing a list of k-points. For example:
+            [[[0., 0., 0.], [0., 0., 0.5]], [[0.5, 0., 0.], [0.5, 0.5, 0.]]]
+        labels (list): A list of labels to use along with kpt_list. These should
+            be provided as a list of subpaths, each containing a list of labels.
+            For example: [['Gamma', 'Z'], ['X', 'M']], combined with the above
+            kpt_list would indicate the path: Gamma -> Z | X -> M.
+            If no labels are provided, letters from A -> Z will be used instead.
+    """
+    poscar = Poscar.from_file(filename)
+    spg = _get_space_group_object(spg, mode)
 
     if mode == 'bradcrack':
-        # TODO: catch bad space group and warn about forcing spg
-        # also message about new forced symmetry
         kpath = BradCrackKpath(poscar.structure, symprec=symprec, spg=spg)
     elif mode == 'seekpath':
         kpath = SeekpathKpath(poscar.structure, symprec=symprec)
@@ -69,7 +111,7 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
     logging.info('\tInternational symbol: {}'.format(kpath.spg_symbol))
     logging.info('\tLattice type: {}'.format(kpath.lattice_type))
 
-    print_kpath_information(labels, path_str, kpt_dict)
+    _print_kpath_information(labels, path_str, kpt_dict)
 
     if not kpt_list and not np.allclose(poscar.structure.lattice.matrix,
                                         kpath.prim.lattice.matrix):
@@ -82,17 +124,9 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
                       "primitive structure has been saved as {}.".
                       format(prim_filename))
 
-    if ibzkpt:
-        try:
-            ibzkpt = Kpoints.from_file('IBZKPT')
-            if ibzkpt.tet_number != 0:
-                logging.error('ERROR: IBZKPT contains tetrahedron information.')
-                sys.exit()
-        except IOError:
-            logging.error('ERROR: Hybrid specified but no IBZKPT file found.')
-            sys.exit()
+    ibz = _parse_ibzkpt(ibzkpt)
 
-    if make_folders and ibzkpt and kpts_per_split is None:
+    if make_folders and ibz and kpts_per_split is None:
         logging.info("\nFound {} total kpoints in path, do you want to "
                      "split them up? (y/n)".format(len(kpoints)))
         if raw_input()[0].lower() == 'y':
@@ -100,12 +134,37 @@ def kgen(filename, directory=None, make_folders=False, symprec=0.01,
             kpts_per_split = input()
 
     write_kpoint_files(filename, kpoints, labels, make_folders=make_folders,
-                       ibzkpt=ibzkpt, kpts_per_split=kpts_per_split,
+                       ibzkpt=ibz, kpts_per_split=kpts_per_split,
                        directory=directory, cart_coords=cart_coords)
 
 
 def get_kpoints_from_list(structure, kpt_list, path_labels=None,
                           line_density=60, cart_coords=False):
+    """Generate the k-points along a manually specified path.
+
+    If no labels are provided, letters from A -> Z will be used instead.
+
+    Args:
+        structure (Structure): A pymatgen structure object.
+        kpt_list (list): Manual list of k-points to use. If kpt_list is set it
+            will override the mode selection. Should be formatted as a list of
+            subpaths, each containing a list of k-points. For example:
+            [[[0., 0., 0.], [0., 0., 0.5]], [[0.5, 0., 0.], [0.5, 0.5, 0.]]]
+        path_labels (list): A list of labels to use along with kpt_list. These
+            should be provided as a list of subpaths, each containing a list of
+            labels. For example: [['Gamma', 'Z'], ['X', 'M']], combined with
+            the above kpt_list would indicate the path: Gamma -> Z | X -> M.
+        line_density (int): The density of k-points along the path.
+        cart_coords (bool): Whether the k-points are returned in cartesian
+            or reciprocal coordinates.
+
+    Returns:
+        A list k-points along the high-symmetry path, together with the
+        high symmetry labels for each k-point, a printable string of the 
+        high-symmetry path, and a dictionary mapping the path labels to the
+        k-point coordinates (e.g. {label: coords}). Returned as: 
+        (kpoints, labels, path_string, kpt_dict).
+    """
     # TODO: add warnings for no labels and incorrect number of labels
     flat_kpts = [x for kpts in kpt_list for x in kpts]
     if path_labels:
@@ -114,7 +173,7 @@ def get_kpoints_from_list(structure, kpt_list, path_labels=None,
         flat_path_labels = [s for s, x in
                             zip(string.ascii_uppercase, flat_kpts)]
 
-    # need this to make sure the same kpoints have the same labels
+    # need this to make sure repeated kpoints have the same labels
     kpt_dict = {}
     for label, kpt in zip(flat_path_labels, flat_kpts):
         if kpt not in kpt_dict.values():
@@ -138,21 +197,33 @@ def get_kpoints_from_list(structure, kpt_list, path_labels=None,
     return kpoints, labels, path_str, kpt_dict
 
 
-def print_kpath_information(labels, path_str, kpt_dict):
-    logging.info('\nk-point path:\n\t{}'.format(path_str))
-    logging.info('\nk-points:')
-    for label, kpoint in kpt_dict.iteritems():
-        coord_str = ' '.join(['{}'.format(c) for c in kpoint])
-        logging.info('\t{}: {}'.format(label, coord_str))
-    logging.info('\nk-point label indicies:')
-    for i, label in enumerate(labels):
-        if label:
-            logging.info('\t{}: {}'.format(label, i+1))
-
-
 def write_kpoint_files(filename, kpoints, labels, make_folders=False,
                        ibzkpt=None, kpts_per_split=None, directory=None,
                        cart_coords=False):
+    """Writes the k-points to KPOINTS files or folders.
+
+    Folders are named as 'split-01', 'split-02', etc ...
+    KPOINTS files are named KPOINTS_band_split_01 etc ...
+
+    Args:
+        kpoints (list): A list of kpoints.
+        labels (list): A list of labels (should have same length as kpoints).
+            Label should be set to '' for non-high-symmetry points.
+        filename (str): The name of the VASP structure file.
+        make_folders (bool): Generate folders and copy in relevant files (INCAR,
+            POTCAR, POSCAR, and possibily CHGCAR) from the current directory.
+        ibzkpt (Ibzkpt): A pymatgen Ibzkpt object. If this is set, the generated 
+            k-points will be appended to this file and given a weight of 0. 
+            This is necessary for hybrid band structure calculations.
+        kpts_per_split (int): If this is set, the k-points are split into
+            seperate k-point files (or folders) each containing the number
+            of k-points specified. This is useful for hybrid band structure
+            calculations where it is often intractable to calculate all k-points
+            in the same calculation.
+        directory (str): The directory in which to output files.
+        cart_coords (bool): Whether the k-points are provided in cartesian
+            or reciprocal coordinates.
+    """
     if kpts_per_split:
         kpt_splits = [kpoints[i:i+kpts_per_split] for
                       i in xrange(0, len(kpoints), kpts_per_split)]
@@ -221,6 +292,49 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             kpt_file.write_file(kpt_filename)
 
 
+def _print_kpath_information(labels, path_str, kpt_dict):
+    logging.info('\nk-point path:\n\t{}'.format(path_str))
+    logging.info('\nk-points:')
+    for label, kpoint in kpt_dict.iteritems():
+        coord_str = ' '.join(['{}'.format(c) for c in kpoint])
+        logging.info('\t{}: {}'.format(label, coord_str))
+    logging.info('\nk-point label indicies:')
+    for i, label in enumerate(labels):
+        if label:
+            logging.info('\t{}: {}'.format(label, i+1))
+
+
+def _get_space_group_object(spg, mode):
+    if spg and mode != 'bradcrack':
+        logging.error("ERROR: Specifying symmetry only supported using "
+                      "Bradley and Cracknell path.")
+        sys.exit()
+    elif spg:
+        try:
+            if type(spg) is int:
+                spg = SpaceGroup.from_int_number(spg)
+            else:
+                spg = SpaceGroup(spg)
+            logging.error("WARNING: Forcing space group not recommended, the"
+                          " path is likely\nincorrect. Use at your own risk.\n")
+        except ValueError:
+            logging.error("ERROR: Space group not recognised.")
+            sys.exit()
+    return spg
+
+
+def _parse_ibzkpt(ibzkpt):
+    if ibzkpt:
+        try:
+            ibz = Kpoints.from_file(ibzkpt)
+            if ibz.tet_number != 0:
+                logging.error('\nERROR: IBZKPT contains tetrahedron information.')
+                sys.exit()
+        except IOError:
+            logging.error('\nERROR: Hybrid specified but no IBZKPT file found.')
+            sys.exit()
+
+
 def main():
     parser = argparse.ArgumentParser(description="""
     kgen generates KPOINTS files for running band structure calculations in
@@ -277,10 +391,12 @@ def main():
 
     ibzkpt = 'IBZKPT' if args.hybrid else None
 
-    try:
-        spg = int(args.spg)
-    except ValueError:
-        spg = args.spg
+    spg = args.spg
+    if args.spg:
+        try:
+            spg = int(spg)
+        except ValueError:
+            pass
 
     kpoints = None
     if args.kpoints:
@@ -294,6 +410,7 @@ def main():
          make_folders=args.folders, kpts_per_split=args.split,
          ibzkpt=ibzkpt, spg=spg, density=args.density, mode=mode,
          cart_coords=args.cartesian, kpt_list=kpoints, labels=labels)
+
 
 if __name__ == "__main__":
     main()
