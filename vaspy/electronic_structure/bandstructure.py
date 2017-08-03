@@ -178,7 +178,7 @@ class BradCrackKpath(Kpath):
             lattice_type = self.lattice_type
 
         if lattice_type == 'triclinic':
-            self._kpath == self._triclinic()
+            self._kpath = self._triclinic()
 
         elif lattice_type == 'monoclinic':
             if 'P' in spg_symbol:
