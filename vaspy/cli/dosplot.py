@@ -255,8 +255,7 @@ def _plot_mpl(plot_data, prefix=None, directory=None, image_format='pdf',
     energies = plot_data['energies'][mask]
     fig = plt.gcf()
     lines = plot_data['lines']
-    spins = [Spin.up] if (len(lines[0][0]['dens']) == 1
-        or plot_data['soc']) else [Spin.up, Spin.down]
+    spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else [Spin.up, Spin.down]
     for i, line_set in enumerate(plot_data['lines']):
         if plot_data['subplot']:
             ax = fig.axes[i]
@@ -356,7 +355,7 @@ def get_colour_for_element_and_orbital(element, orbital, colours=None):
     try:
         return colours.get(element, orbital)
     except (configparser.NoSectionError, configparser.NoOptionError):
-        return [a/255. for a in col_cycle.next()]
+        return col_cycle.next()
 
 
 def atoms(atoms_string):
