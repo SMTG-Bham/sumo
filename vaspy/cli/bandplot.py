@@ -10,20 +10,17 @@ import sys
 import logging
 import glob
 import argparse
-import itertools
 import warnings
 
-import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 
-from vaspy.electronic_structure.dos import sort_orbitals, get_pdos, write_files
-from vaspy.electronic_structure.bandstructure import get_reconstructed_band_structure
-from vaspy.misc.plotting import pretty_plot, pretty_subplot, colour_cycle
+from vaspy.electronic_structure.plot import plot_band_structure
+from vaspy.electronic_structure.bandstructure import \
+    get_reconstructed_band_structure
 from vaspy.cli.dosplot import dosplot, atoms, el_orb
 
 from pymatgen.io.vasp.outputs import BSVasprun
-from pymatgen.electronic_structure.core import Spin
 
 try:
     import configparser
@@ -44,7 +41,6 @@ __date__ = "July 18, 2017"
 line_width = 1.5
 empty_space = 1.05
 label_size = 22
-col_cycle = colour_cycle()
 
 
 def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
@@ -84,22 +80,29 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         sys.exit()
 
     if project_rgb:
-        plt = plot_rgb_projected_band_structure(bs, project_rgb, ymin=ymin,
-                                                ymax=ymax,
-                                                vbm_cbm_marker=vbm_cbm_marker)
+        raise NotImplementedError('projected band structure plotting not yet '
+                                  'supported')
+        #plt = plot_rgb_projected_band_structure(bs, project_rgb, ymin=ymin,
+        #                                        ymax=ymax,
+        #                                        vbm_cbm_marker=vbm_cbm_marker)
     elif project:
-        plt = plot_projected_band_structures(bs, project, ymin=ymin, ymax=ymax,
-                                             vbm_cbm_marker=vbm_cbm_marker)
+        raise NotImplementedError('projected band structure plotting not yet '
+                                  'supported')
+        #plt = plot_projected_band_structures(bs, project, ymin=ymin, ymax=ymax,
+        #                                     vbm_cbm_marker=vbm_cbm_marker)
     else:
-        plt = plt_band_structure(bs, ymin=ymin, ymax=ymax, plt_format=plt_format,
-                                 vbm_cbm_marker=vbm_cbm_marker)
+        plt = plot_band_structure(bs, ymin=ymin, ymax=ymax, height=height,
+                                  width=width, plt_format=plot_format,
+                                  vbm_cbm_marker=vbm_cbm_marker,)
 
+    # TODO: put the dos plotting in the individual plot functions.
+    # extract out the part of dosplot where it generates the plot data...
     if dos_file:
         # TODO: change dosplot so if plt set then don't write files
         plt = dosplot(dos_file, elements=elements, lm_orbital=lm_orbitals,
                       atoms=atoms, total_only=total_only, plot_total=plot_total,
                       gaussian=gaussian, width=2, xmin=ymin, xmax=ymax,
-                      colours=colours, yscale=yscale)
+                      colours=colours, yscale=yscale, )
         # TODO: invert x and y axes
 
     plt.tight_layout()
