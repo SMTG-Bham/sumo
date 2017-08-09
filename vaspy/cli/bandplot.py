@@ -47,7 +47,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
              lm_orbitals=None, atoms=None, total_only=False,
              plot_total=True, legend_cutoff=3, gaussian=None, height=6.,
              width=6., ymin=-6., ymax=6., colours=None, yscale=1,
-             image_format='pdf', dpi=400):
+             image_format='pdf', dpi=400, plt=None):
     if not filenames:
         folders = glob.glob('split-*')
         folders = folders if folders else ['.']  # check current dir if no split
@@ -73,8 +73,9 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                       'supported.\nPlease use --projected-rgb option.')
         sys.exit()
 
-    plotter = VBSPlotter(bs)
+    save_files = False if plt else True  # don't save if pyplot object provided
 
+    plotter = VBSPlotter(bs)
     if project_rgb:
         raise NotImplementedError('projected band structure plotting not yet '
                                   'supported')
@@ -84,7 +85,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     else:
         plt = plotter.get_plot(zero_to_efermi=True, ymin=ymin, ymax=ymax,
                                height=height, width=width,
-                               vbm_cbm_marker=vbm_cbm_marker)
+                               vbm_cbm_marker=vbm_cbm_marker, plt=plt)
 
     # TODO: put the dos plotting in the individual plot functions.
     # extract out the part of dosplot where it generates the plot data...
@@ -96,14 +97,14 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                       colours=colours, yscale=yscale)
         # TODO: invert x and y axes
 
-    plt.tight_layout()
-    basename = 'dos.{}'.format(image_format)
-    filename = '{}_{}'.format(prefix, basename) if prefix else basename
-    if directory:
-        filename = os.path.join(directory, filename)
-
-    plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches='tight')
-    return plt
+    if save_files:
+        basename = 'dos.{}'.format(image_format)
+        filename = '{}_{}'.format(prefix, basename) if prefix else basename
+        if directory:
+            filename = os.path.join(directory, filename)
+        plt.savefig(filename, format=image_format, dpi=dpi)
+    else:
+        return plt
 
 
 def main():

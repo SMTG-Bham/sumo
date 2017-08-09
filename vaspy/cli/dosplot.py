@@ -45,7 +45,7 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
             total_only=False, plot_total=True, legend_on=True,
             legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6.,
             width=8., xmin=-6., xmax=6., num_columns=2, colours=None, yscale=1,
-            image_format='pdf', dpi=400, plot_format='mpl', plt=None):
+            image_format='pdf', dpi=400, plt=None):
     """A script to plot the density of states from a vasprun.xml file.
 
     Args:
@@ -86,15 +86,12 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
         yscale (dict): Scaling factor for the y-axis.
         image_format (str): The image file format (matplotlib only). Can be
             any format supported by matplot, including: png, jpg, pdf, and svg.
-        dpi (int): The dots-per-inch (pixel density) for the image
-            (matplotlib only).
-        plot_format (str): The plotting method to use (options limited to
-            'mpl' for matplotlib and 'xmgrace' for xmgrace).
+        dpi (int): The dots-per-inch (pixel density) for the image.
         plt (pyplot object): Matplotlib pyplot object to use for plotting.
+            If plt is set then no files will be written.
 
     Returns:
-        matplotlib pyplot object if plot_format is 'mpl' or filename of xmgrace
-        file if plot_format is 'xmgrace'.
+        A matplotlib pyplot object.
     """
     vr = Vasprun(filename)
     band = vr.get_band_structure()
@@ -116,6 +113,8 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
     if gaussian:
         dos = dos.get_smeared_vaspdos(gaussian)
 
+    # TODO: This is fustrating for other users who don't know this. Can we give
+    # this responsibily to plotting functions
     if vr.parameters['LSORBIT']:
         # pymatgen includes the spin down channel for SOC calculations, even
         # though there is no density here. We remove this channel so the
@@ -130,7 +129,7 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
         pdos = get_pdos(dos, lm_orbitals=lm_orbitals, atoms=atoms,
                         elements=elements)
 
-    write_files(dos, pdos, prefix=prefix, directory=directory)
+    save_files = False if plt else True  # don't save if pyplot object provided
 
     plotter = VDOSPlotter(dos, pdos)
     plt = plotter.get_plot(subplot=subplot, width=width, height=height,
@@ -140,11 +139,15 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
                            legend_frame_on=legend_frame_on,
                            legend_cutoff=legend_cutoff, dpi=dpi, plt=plt)
 
-    basename = 'dos.{}'.format(image_format)
-    filename = '{}_{}'.format(prefix, basename) if prefix else basename
-    if directory:
-        filename = os.path.join(directory, filename)
-    plt.savefig(filename, format=image_format, dpi=dpi)
+    if save_files:
+        basename = 'dos.{}'.format(image_format)
+        filename = '{}_{}'.format(prefix, basename) if prefix else basename
+        if directory:
+            filename = os.path.join(directory, filename)
+        plt.savefig(filename, format=image_format, dpi=dpi)
+        write_files(dos, pdos, prefix=prefix, directory=directory)
+    else:
+        return plt
 
 
 def el_orb(string):
@@ -269,9 +272,8 @@ def main():
                         help='Colour configuration file')
     parser.add_argument('--yscale', type=float, default=1,
                         help='Scaling factor for the y axis')
-    parser.add_argument('--xmgrace', action='store_true',
-                        help='plot using xmgrace instead of matplotlib')
     parser.add_argument('--format', type=str, default='pdf',
+                        dest='image_format',
                         help='select image format from pdf, svg, jpg, & png')
     parser.add_argument('--dpi', type=int, default=400,
                         help='pixel density for generated images')
@@ -291,12 +293,8 @@ def main():
     colours = configparser.ConfigParser()
     colours.read(os.path.abspath(config_path))
 
-    if args.xmgrace:
-        plot_format = 'xmgrace'
-    else:
-        plot_format = 'mpl'
-        warnings.filterwarnings("ignore", category=UserWarning,
-                                module="matplotlib")
+    warnings.filterwarnings("ignore", category=UserWarning,
+                            module="matplotlib")
 
     dosplot(filename=args.filename, prefix=args.prefix, directory=args.directory,
             elements=args.elements, lm_orbitals=args.orbitals, atoms=args.atoms,
@@ -306,8 +304,7 @@ def main():
             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
             height=args.height, width=args.width, xmin=args.xmin,
             xmax=args.xmax, num_columns=args.columns, colours=colours,
-            yscale=args.yscale, image_format=args.format, dpi=args.dpi,
-            plot_format=plot_format)
+            yscale=args.yscale, image_format=args.image_format, dpi=args.dpi)
 
 
 if __name__ == "__main__":
