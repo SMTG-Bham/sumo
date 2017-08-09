@@ -151,8 +151,8 @@ class VDOSPlotter(object):
 
         if subplot:
             nplots = len(plot_data['lines']) + 1
-            plt = pretty_subplot(nplots, width=width, height=height, dpi=dpi,
-                                 plt=plt)
+            plt = pretty_subplot(nplots, 1, width=width, height=height,
+                                 dpi=dpi, plt=plt)
         else:
             plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt)
 
@@ -226,10 +226,9 @@ class VBSPlotter(BSPlotter):
     def __init__(self, bs):
         BSPlotter.__init__(self, bs)
 
-    def _maketicks(self, plt):
+    def _maketicks(self, ax):
         """Utility method to add tick marks to a band structure."""
         # set y-ticks
-        ax = plt.gca()
         ax.yaxis.set_major_locator(MaxNLocator(6))
         ax.yaxis.set_minor_locator(MaxNLocator(12))
 
@@ -256,7 +255,7 @@ class VBSPlotter(BSPlotter):
 
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
                  width=6., height=6., vbm_cbm_marker=False, dpi=400, plt=None,
-                 dos_data=None):
+                 dos_plotter=None, dos_options=None, dos_aspect=2.5):
         """
         Get a matplotlib object for the bandstructure plot.
         Blue lines are up spin, red lines are down
@@ -274,8 +273,16 @@ class VBSPlotter(BSPlotter):
             dpi (int): The dots-per-inch (pixel density) for the image.
             plt (pyplot object): Matplotlib pyplot object to use for plotting.
         """
-        if not plt:
+        if dos_plotter:
+            plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
+                                 plt=plt,
+                                 gridspec_kw={'width_ratios': [dos_aspect, 1],
+                                              'wspace': 0})
+            ax = plt.gcf().axes[0]
+            width = height + height/dos_aspect
+        else:
             plt = pretty_plot(width, height, dpi=dpi, plt=plt)
+            ax = plt.gca()
 
         band_linewidth = 2
 
@@ -294,42 +301,79 @@ class VBSPlotter(BSPlotter):
                 c = '#FAA316'
 
             e = [eners[nd][str(Spin.up)][nb][nk] for nk in range(nkpts)]
-            plt.plot(dists[nd], e, ls='-', c=c, linewidth=band_linewidth)
+            ax.plot(dists[nd], e, ls='-', c=c, linewidth=band_linewidth)
             if self._bs.is_spin_polarized:
                 e = [eners[nd][str(Spin.down)][nb][nk] for nk in range(nkpts)]
-                plt.plot(dists[nd], e, 'r--', linewidth=band_linewidth)
+                ax.plot(dists[nd], e, 'r--', linewidth=band_linewidth)
 
-        self._maketicks(plt)
+        self._maketicks(ax)
 
-        plt.ylabel('Energy (eV)')
+        ax.set_ylabel('Energy (eV)')
 
         # draw line at Fermi level if not zeroing to e-Fermi
         if not zero_to_efermi:
             ef = self._bs.efermi
-            plt.axhline(ef, linewidth=2, color='k')
+            ax.axhline(ef, linewidth=2, color='k')
 
         # set x and y limits
-        plt.xlim(0, data['distances'][-1][-1])
+        ax.set_xlim(0, data['distances'][-1][-1])
         if self._bs.is_metal() and not zero_to_efermi:
-            plt.ylim(self._bs.efermi + ymin, self._bs.efermi + ymax)
+            ax.set_ylim(self._bs.efermi + ymin, self._bs.efermi + ymax)
         else:
-            plt.ylim(ymin, ymax)
+            ax.set_ylim(ymin, ymax)
 
         if vbm_cbm_marker:
             for cbm in data['cbm']:
-                plt.scatter(cbm[0], cbm[1], color='#D93B2B', marker='o', s=100)
+                ax.scatter(cbm[0], cbm[1], color='#D93B2B', marker='o', s=100)
             for vbm in data['vbm']:
-                plt.scatter(vbm[0], vbm[1], color='#0DB14B', marker='o', s=100)
+                ax.scatter(vbm[0], vbm[1], color='#0DB14B', marker='o', s=100)
 
-        # keep correct aspect ratio square
-        ax = plt.gca()
-        x0, x1 = ax.get_xlim()
-        y0, y1 = ax.get_ylim()
-        ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
+        if dos_plotter:
+            ax = plt.gcf().axes[1]
+            dos_options.update({'xmin': ymin, 'xmax': ymax})
+            self._plot_dos(ax, dos_plotter, dos_options)
+        else:
+            # keep correct aspect ratio square
+            x0, x1 = ax.get_xlim()
+            y0, y1 = ax.get_ylim()
+            ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
 
         plt.tight_layout()
         return plt
 
+    def _plot_dos(self, ax, dos_plotter, dos_options):
+        """This is basically the same as the VDOSPlotter get_plot function."""
+        plot_data = dos_plotter.dos_plot_data(**dos_options)
+        mask = plot_data['mask']
+        energies = plot_data['energies'][mask]
+        lines = plot_data['lines']
+        spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else \
+            [Spin.up, Spin.down]
+        for i, line_set in enumerate(plot_data['lines']):
+            for line, spin in itertools.product(line_set, spins):
+                if spin == Spin.up:
+                    label = line['label']
+                    densities = line['dens'][spin][mask]
+                elif spin == Spin.down:
+                    label = ""
+                    densities = -line['dens'][spin][mask]
+                ax.fill_betweenx(energies, densities, 0, lw=0,
+                                 facecolor=line['colour'],
+                                 alpha=line['alpha'])
+                ax.plot(densities, energies, label=label,
+                        color=line['colour'], lw=line_width)
+
+            # x and y axis reversed versus normal dos plotting
+            ax.set_ylim(dos_options['xmin'], dos_options['xmax'])
+            ax.set_xlim(plot_data['ymin'], plot_data['ymax'])
+
+            ax.tick_params(axis='y', which='both', top='off')
+            ax.tick_params(axis='x', which='both', labelbottom='off',
+                           labeltop='off', bottom='off', top='off')
+
+            ax.legend(loc=2, frameon=False, ncol=1,
+                      prop={'size': label_size - 3},
+                      bbox_to_anchor=(1., 1.))
 
 def get_colour_for_element_and_orbital(element, orbital, colours=None):
     """Select a colour for a particular elemental orbital.

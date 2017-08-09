@@ -48,24 +48,29 @@ def pretty_plot(width=5, height=5, plt=None, dpi=None, fonts=None):
     rc('text', usetex=False)
     rc('pdf', fonttype=42)
     rc('mathtext', fontset='stixsans')
+    rc('legend', handlelength=2)
     return plt
 
 
-def pretty_subplot(nplots, width=5, height=5, dpi=None, fonts=None, plt=None):
+def pretty_subplot(nrows, ncols, width=5, height=5, sharex=True,
+                   sharey=True, dpi=None, fonts=None, plt=None,
+                   gridspec_kw=None):
     from matplotlib import rc
 
     # TODO: Make this work if plt is already set...
     if plt is None:
         import matplotlib.pyplot as plt
-        f, axes = plt.subplots(nplots, sharex=True, sharey=True, dpi=dpi,
-                               figsize=(width, height), facecolor='w')
+        f, axes = plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey,
+                               dpi=dpi, figsize=(width, height), facecolor='w',
+                               gridspec_kw=gridspec_kw)
 
     for ax in axes:
         ax.set_prop_cycle(colour_cycler())
         ax.tick_params(width=_linewidth, size=_ticksize)
         ax.tick_params(which='major', size=_ticksize, width=_linewidth,
-                       labelsize=_ticklabelsize, pad=10)
-        ax.tick_params(which='minor', size=_ticksize/2, width=_linewidth)
+                       labelsize=_ticklabelsize, pad=10, direction='in')
+        ax.tick_params(which='minor', size=_ticksize/2, width=_linewidth,
+                       direction='in')
 
         ax.set_title(ax.get_title(), size=20)
         for axis in ['top', 'bottom', 'left', 'right']:
@@ -80,6 +85,7 @@ def pretty_subplot(nplots, width=5, height=5, dpi=None, fonts=None, plt=None):
     rc('text', usetex=False)
     rc('pdf', fonttype=42)
     rc('mathtext', fontset='stixsans')
+    rc('legend', handlelength=1)
     return plt
 
 

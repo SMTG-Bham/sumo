@@ -14,10 +14,12 @@ import warnings
 import matplotlib as mpl
 mpl.use('Agg')
 
-from vaspy.electronic_structure.plotter import VBSPlotter
-from vaspy.cli.dosplot import dosplot, atoms, el_orb
+from vaspy.electronic_structure.plotter import VBSPlotter, VDOSPlotter
+from vaspy.electronic_structure.dos import get_pdos
+from vaspy.cli.dosplot import atoms, el_orb
 
-from pymatgen.io.vasp.outputs import BSVasprun
+from pymatgen.io.vasp.outputs import Vasprun, BSVasprun
+from pymatgen.electronic_structure.core import Spin
 from pymatgen.electronic_structure.bandstructure import \
     get_reconstructed_band_structure
 
@@ -75,6 +77,14 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
 
     save_files = False if plt else True  # don't save if pyplot object provided
 
+    dos_plotter = None
+    dos_opts = None
+    if dos_file:
+        dos_plotter = load_dos(dos_file, elements, lm_orbitals, atoms, gaussian,
+                               total_only)
+        dos_opts = {'plot_total': plot_total, 'legend_cutoff': legend_cutoff,
+                    'colours': colours, 'yscale': yscale}
+
     plotter = VBSPlotter(bs)
     if project_rgb:
         raise NotImplementedError('projected band structure plotting not yet '
@@ -85,26 +95,72 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     else:
         plt = plotter.get_plot(zero_to_efermi=True, ymin=ymin, ymax=ymax,
                                height=height, width=width,
-                               vbm_cbm_marker=vbm_cbm_marker, plt=plt)
-
-    # TODO: put the dos plotting in the individual plot functions.
-    # extract out the part of dosplot where it generates the plot data...
-    if dos_file:
-        # TODO: change dosplot so if plt set then don't write files
-        plt = dosplot(dos_file, elements=elements, lm_orbitals=lm_orbitals,
-                      atoms=atoms, total_only=total_only, plot_total=plot_total,
-                      gaussian=gaussian, width=2, xmin=ymin, xmax=ymax,
-                      colours=colours, yscale=yscale)
-        # TODO: invert x and y axes
+                               vbm_cbm_marker=vbm_cbm_marker, plt=plt,
+                               dos_plotter=dos_plotter, dos_options=dos_opts)
 
     if save_files:
         basename = 'dos.{}'.format(image_format)
         filename = '{}_{}'.format(prefix, basename) if prefix else basename
         if directory:
             filename = os.path.join(directory, filename)
-        plt.savefig(filename, format=image_format, dpi=dpi)
+        plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches='tight')
     else:
         return plt
+
+
+def load_dos(dos_file, elements, lm_orbitals, atoms, gaussian, total_only):
+    """Load a DOS vasprun and generate a DOS plotter object.
+
+    This is very similar to the code in dosplot and could possibly be combined.
+
+    Args:
+        dos_file (str): A vasprun.xml file to plot (can be gziped).
+        elements (dict): A dict of element names specifying which orbitals to
+            plot. For example {'Bi': ['s', 'px', 'py', 'd']}. If an element
+            symbol is included with an empty list, then all orbitals for that
+            species are considered. If set to None then all orbitals for all
+            elements are considered.
+        lm_orbitals (dict): A list of orbitals for which the lm decomposed
+            contributions should be calculated, in the form {Element: [orbs]}
+        atoms (dict): A dictionary containing a list of atomic indicies over
+            which to sum the DOS, provided as {Element: [atom_indicies]}.
+            Indicies are zero indexed for each atomic species. If an element
+            symbol is included with an empty list, then all sites for that
+            species are considered. If set to None then all sites for all
+            elements are considered.
+        gaussian (float): The sigma of the Gaussian broadening to apply (usually
+            controlled by the SIGMA flag in VASP).
+    """
+    vr = Vasprun(dos_file)
+    band = vr.get_band_structure()
+    dos = vr.complete_dos
+
+    if band.is_metal():
+        zero_point = vr.efermi
+    else:
+        zero_point = band.get_vbm()['energy']
+
+    dos.energies -= zero_point
+    if vr.parameters['ISMEAR'] == 0 or vr.parameters['ISMEAR'] == -1:
+        dos.energies -= vr.parameters['SIGMA']
+
+    if gaussian:
+        dos = dos.get_smeared_vaspdos(gaussian)
+
+    if vr.parameters['LSORBIT']:
+        # pymatgen includes the spin down channel for SOC calculations, even
+        # though there is no density here. We remove this channel so the
+        # plotting is easier later on.
+        del dos.densities[Spin.down]
+        for site in dos.pdos:
+            for orbital in dos.pdos[site]:
+                del dos.pdos[site][orbital][Spin.down]
+
+    pdos = {}
+    if not total_only:
+        pdos = get_pdos(dos, lm_orbitals=lm_orbitals, atoms=atoms,
+                        elements=elements)
+    return VDOSPlotter(dos, pdos)
 
 
 def main():
