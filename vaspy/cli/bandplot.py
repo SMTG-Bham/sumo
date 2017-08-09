@@ -15,12 +15,12 @@ import warnings
 import matplotlib as mpl
 mpl.use('Agg')
 
-from vaspy.electronic_structure.plot import plot_band_structure
-from vaspy.electronic_structure.bandstructure import \
-    get_reconstructed_band_structure
+from vaspy.electronic_structure.plotter import VBSPlotter
 from vaspy.cli.dosplot import dosplot, atoms, el_orb
 
 from pymatgen.io.vasp.outputs import BSVasprun
+from pymatgen.electronic_structure.bandstructure import \
+    get_reconstructed_band_structure
 
 try:
     import configparser
@@ -79,30 +79,29 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                       'supported.\nPlease use --projected-rgb option.')
         sys.exit()
 
+    plotter = VBSPlotter(bs)
+
+    warnings.filterwarnings("ignore", category=UnicodeWarning,
+                            module="matplotlib")
     if project_rgb:
         raise NotImplementedError('projected band structure plotting not yet '
                                   'supported')
-        #plt = plot_rgb_projected_band_structure(bs, project_rgb, ymin=ymin,
-        #                                        ymax=ymax,
-        #                                        vbm_cbm_marker=vbm_cbm_marker)
     elif project:
         raise NotImplementedError('projected band structure plotting not yet '
                                   'supported')
-        #plt = plot_projected_band_structures(bs, project, ymin=ymin, ymax=ymax,
-        #                                     vbm_cbm_marker=vbm_cbm_marker)
     else:
-        plt = plot_band_structure(bs, ymin=ymin, ymax=ymax, height=height,
-                                  width=width, plt_format=plot_format,
-                                  vbm_cbm_marker=vbm_cbm_marker,)
+        plt = plotter.get_plot(zero_to_efermi=True, ymin=ymin, ymax=ymax,
+                               height=height, width=width,
+                               vbm_cbm_marker=vbm_cbm_marker)
 
     # TODO: put the dos plotting in the individual plot functions.
     # extract out the part of dosplot where it generates the plot data...
     if dos_file:
         # TODO: change dosplot so if plt set then don't write files
-        plt = dosplot(dos_file, elements=elements, lm_orbital=lm_orbitals,
+        plt = dosplot(dos_file, elements=elements, lm_orbitals=lm_orbitals,
                       atoms=atoms, total_only=total_only, plot_total=plot_total,
                       gaussian=gaussian, width=2, xmin=ymin, xmax=ymax,
-                      colours=colours, yscale=yscale, )
+                      colours=colours, yscale=yscale)
         # TODO: invert x and y axes
 
     plt.tight_layout()
@@ -208,6 +207,7 @@ def main():
     parser.add_argument('--xmgrace', action='store_true',
                         help='plot using xmgrace instead of matplotlib')
     parser.add_argument('--format', type=str, default='pdf',
+                        dest='image_format',
                         help='select image format from pdf, svg, jpg, & png')
     parser.add_argument('--dpi', type=int,
                         help='pixel density for generated images')
@@ -236,11 +236,11 @@ def main():
 
     bandplot(filenames=args.filenames, prefix=args.prefix, directory=args.directory,
              vbm_cbm_marker=args.band_edges, project=args.project, dos_file=args.dos, elements=args.elements, lm_orbitals=args.orbitals, atoms=args.atoms,
-             shift=args.shift, total_only=args.total_only,
+             total_only=args.total_only,
              plot_total=args.total, legend_cutoff=args.legend_cutoff,
              gaussian=args.gaussian, height=args.height, width=args.width, ymin=args.ymin,
-             ymax=args.ymax, num_columns=args.columns, colours=colours,
-             xscale=args.xscale, image_format=args.image_format, dpi=args.dpi,
+             ymax=args.ymax, colours=colours,
+             image_format=args.image_format, dpi=args.dpi,
              plot_format=plot_format)
 
 
