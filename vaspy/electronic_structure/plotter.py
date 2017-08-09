@@ -1,8 +1,7 @@
 import logging
 import itertools
-import vaspy.misc.plotting
 
-from matplotlib.ticker import MultipleLocator
+from matplotlib.ticker import MaxNLocator
 
 from vaspy.electronic_structure.dos import sort_orbitals
 from vaspy.misc.plotting import pretty_plot, pretty_subplot, colour_cycle
@@ -120,7 +119,7 @@ class VDOSPlotter(object):
                  yscale=1, colours=None, plot_total=True, legend_on=True,
                  num_columns=2, legend_frame_on=False, legend_cutoff=3, dpi=400,
                  plt=None):
-        """Plot the density of states either using matplotlib or xmgrace.
+        """Get a matplotlib pyplot object of the density of states.
 
         Args:
             subplot (bool): Split the plot up into separate plots for each
@@ -169,19 +168,18 @@ class VDOSPlotter(object):
             else:
                 ax = plt.gca()
 
-            for line in line_set:
-                for spin in spins:
-                    if spin == Spin.up:
-                        label = line['label']
-                        densities = line['dens'][spin][mask]
-                    elif spin == Spin.down:
-                        label = ""
-                        densities = -line['dens'][spin][mask]
-                    ax.fill_between(energies, densities, lw=0,
-                                    facecolor=line['colour'],
-                                    alpha=line['alpha'])
-                    ax.plot(energies, densities, label=label,
-                            color=line['colour'], lw=line_width)
+            for line, spin in itertools.product(line_set, spins):
+                if spin == Spin.up:
+                    label = line['label']
+                    densities = line['dens'][spin][mask]
+                elif spin == Spin.down:
+                    label = ""
+                    densities = -line['dens'][spin][mask]
+                ax.fill_between(energies, densities, lw=0,
+                                facecolor=line['colour'],
+                                alpha=line['alpha'])
+                ax.plot(energies, densities, label=label,
+                        color=line['colour'], lw=line_width)
 
             ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
             ax.set_xlim(xmin, xmax)
@@ -215,7 +213,16 @@ class VDOSPlotter(object):
 
 
 class VBSPlotter(BSPlotter):
+    """Vaspy class for plotting band structures.
 
+    This class is similar to the pymatgen BSPlotter class but overrides some
+    methods to generate prettier plots.
+
+    Further functionality, such as projected band structure plots are available.
+
+    Args:
+        bs (BandStructure): A pymatgen BandStructure object.
+    """
     def __init__(self, bs):
         BSPlotter.__init__(self, bs)
 
@@ -223,12 +230,8 @@ class VBSPlotter(BSPlotter):
         """Utility method to add tick marks to a band structure."""
         # set y-ticks
         ax = plt.gca()
-        majorLocator = MultipleLocator(2)
-        minorLocator = MultipleLocator(1)
-        ax.yaxis.set_major_locator(majorLocator)
-        ax.yaxis.set_minor_locator(minorLocator)
-        plt.tick_params(axis='both', which='major', labelsize=19)
-        plt.tick_params(axis='both', which='minor', labelsize=19)
+        ax.yaxis.set_major_locator(MaxNLocator(6))
+        ax.yaxis.set_minor_locator(MaxNLocator(12))
 
         # set x-ticks; only plot the unique tick labels
         ticks = self.get_ticks()
@@ -249,10 +252,10 @@ class VBSPlotter(BSPlotter):
 
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
-        ax.xaxis.grid(True, c='k', ls='-', lw=vaspy.misc.plotting._linewidth)
+        ax.xaxis.grid(True, c='k', ls='-', lw=line_width)
 
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
-                 width=6., height=6., vbm_cbm_marker=False, plt=None,
+                 width=6., height=6., vbm_cbm_marker=False, dpi=400, plt=None,
                  dos_data=None):
         """
         Get a matplotlib object for the bandstructure plot.
@@ -260,14 +263,19 @@ class VBSPlotter(BSPlotter):
         spin.
 
         Args:
-            zero_to_efermi: Automatically subtract off the Fermi energy from
-                the eigenvalues and plot (E-Ef).
-            ylim: Specify the y-axis (energy) limits; by default None let
-                the code choose. It is vbm-4 and cbm+4 if insulator
-                efermi-10 and efermi+10 if metal
+            zero_to_efermi (bool): Automatically subtract off the Fermi energy
+                from the eigenvalues and plot (E-Ef).
+            ymin (float): The y-axis (energy) minimum limit.
+            ymax (float): The y-axis (energy) maximum limit.
+            width (float): The width of the figure.
+            height (float): The height of the figure.
+            vbm_cbm_marker (bool): Plot markers to indicate the VBM and CBM
+                locations.
+            dpi (int): The dots-per-inch (pixel density) for the image.
+            plt (pyplot object): Matplotlib pyplot object to use for plotting.
         """
         if not plt:
-            plt = vaspy.misc.plotting.pretty_plot(width, height, plt=plt)
+            plt = pretty_plot(width, height, dpi=dpi, plt=plt)
 
         band_linewidth = 2
 

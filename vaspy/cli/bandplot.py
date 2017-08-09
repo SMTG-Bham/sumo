@@ -45,9 +45,9 @@ label_size = 22
 def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
              project=None, project_rgb=None, dos_file=None, elements=None,
              lm_orbitals=None, atoms=None, total_only=False,
-             plot_total=True, legend_cutoff=3, gaussian=None, height=6, width=6,
-             ymin=-6, ymax=6, colours=None, yscale=1, image_format='pdf',
-             dpi=400):
+             plot_total=True, legend_cutoff=3, gaussian=None, height=6.,
+             width=6., ymin=-6., ymax=6., colours=None, yscale=1,
+             image_format='pdf', dpi=400):
     if not filenames:
         folders = glob.glob('split-*')
         folders = folders if folders else ['.']  # check current dir if no split
