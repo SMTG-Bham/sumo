@@ -47,7 +47,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
              lm_orbitals=None, atoms=None, total_only=False,
              plot_total=True, legend_cutoff=3, gaussian=None, height=6, width=6,
              ymin=-6, ymax=6, colours=None, yscale=1, image_format='pdf',
-             dpi=400, plot_format='mpl'):
+             dpi=400):
     if not filenames:
         folders = glob.glob('split-*')
         folders = folders if folders else ['.']  # check current dir if no split
@@ -68,11 +68,6 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         bandstructures.append(bs)
     bs = get_reconstructed_band_structure(bandstructures)
 
-    if (project_rgb or plot_format) and plot_format == 'xmgrace':
-        logging.error('ERROR: Unable to plot projected band structure using '
-                      'xmgrace!')
-        sys.exit()
-
     if project and dos_file:
         logging.error('ERROR: Plotting projected band structure with DOS not '
                       'supported.\nPlease use --projected-rgb option.')
@@ -80,8 +75,6 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
 
     plotter = VBSPlotter(bs)
 
-    warnings.filterwarnings("ignore", category=UnicodeWarning,
-                            module="matplotlib")
     if project_rgb:
         raise NotImplementedError('projected band structure plotting not yet '
                                   'supported')
@@ -193,9 +186,9 @@ def main():
                         combined with the --dos option.""")
     parser.add_argument('--xscale', type=float, default=1,
                         help='Scaling factor for the DOS x axis')
-    parser.add_argument('--height', type=float, default=6,
+    parser.add_argument('--height', type=float, default=6.0,
                         help='The height of the graph')
-    parser.add_argument('--width', type=float, default=8,
+    parser.add_argument('--width', type=float, default=6.0,
                         help='The width of the graph')
     parser.add_argument('--ymin', type=float, default=-6.0,
                         help='The minimum energy on the x axis')
@@ -203,12 +196,10 @@ def main():
                         help='The maximum energy on the x axis')
     parser.add_argument('--config', type=str, default=None,
                         help='Colour configuration file')
-    parser.add_argument('--xmgrace', action='store_true',
-                        help='plot using xmgrace instead of matplotlib')
     parser.add_argument('--format', type=str, default='pdf',
                         dest='image_format',
                         help='select image format from pdf, svg, jpg, & png')
-    parser.add_argument('--dpi', type=int,
+    parser.add_argument('--dpi', type=int, default=400,
                         help='pixel density for generated images')
 
     args = parser.parse_args()
@@ -226,21 +217,20 @@ def main():
     colours = configparser.ConfigParser()
     colours.read(os.path.abspath(config_path))
 
-    if args.xmgrace:
-        plot_format = 'xmgrace'
-    else:
-        plot_format = 'mpl'
-        warnings.filterwarnings("ignore", category=UserWarning,
-                                module="matplotlib")
+    warnings.filterwarnings("ignore", category=UserWarning,
+                            module="matplotlib")
+    warnings.filterwarnings("ignore", category=UnicodeWarning,
+                            module="matplotlib")
 
-    bandplot(filenames=args.filenames, prefix=args.prefix, directory=args.directory,
-             vbm_cbm_marker=args.band_edges, project=args.project, dos_file=args.dos, elements=args.elements, lm_orbitals=args.orbitals, atoms=args.atoms,
-             total_only=args.total_only,
-             plot_total=args.total, legend_cutoff=args.legend_cutoff,
-             gaussian=args.gaussian, height=args.height, width=args.width, ymin=args.ymin,
-             ymax=args.ymax, colours=colours,
-             image_format=args.image_format, dpi=args.dpi,
-             plot_format=plot_format)
+    bandplot(filenames=args.filenames, prefix=args.prefix,
+             directory=args.directory, vbm_cbm_marker=args.band_edges,
+             project=args.project, dos_file=args.dos, elements=args.elements,
+             lm_orbitals=args.orbitals, atoms=args.atoms,
+             total_only=args.total_only, plot_total=args.total,
+             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
+             height=args.height, width=args.width, ymin=args.ymin,
+             ymax=args.ymax, colours=colours, image_format=args.image_format,
+             dpi=args.dpi)
 
 
 if __name__ == "__main__":

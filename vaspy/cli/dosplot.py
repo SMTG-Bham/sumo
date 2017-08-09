@@ -43,8 +43,8 @@ __date__ = "March 13, 2017"
 def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
             lm_orbitals=None, atoms=None, subplot=False, shift=True,
             total_only=False, plot_total=True, legend_on=True,
-            legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6,
-            width=8, xmin=-6, xmax=6, num_columns=2, colours=None, yscale=1,
+            legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6.,
+            width=8., xmin=-6., xmax=6., num_columns=2, colours=None, yscale=1,
             image_format='pdf', dpi=400, plot_format='mpl', plt=None):
     """A script to plot the density of states from a vasprun.xml file.
 
@@ -255,13 +255,13 @@ def main():
                         all lines. Default is 3 %%""")
     parser.add_argument('-g', '--gaussian', type=float,
                         help='Amount of gaussian broadening to apply')
-    parser.add_argument('--height', type=float, default=6,
+    parser.add_argument('--height', type=float, default=6.,
                         help='The height of the graph')
-    parser.add_argument('--width', type=float, default=8,
+    parser.add_argument('--width', type=float, default=8.,
                         help='The width of the graph')
-    parser.add_argument('--xmin', type=float, default=-6.0,
+    parser.add_argument('--xmin', type=float, default=-6.,
                         help='The minimum energy on the x axis')
-    parser.add_argument('--xmax', type=float, default=6.0,
+    parser.add_argument('--xmax', type=float, default=6.,
                         help='The maximum energy on the x axis')
     parser.add_argument('-c', '--columns', type=int, default=2,
                         help='The number of columns in the legend')

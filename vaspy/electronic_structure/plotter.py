@@ -41,7 +41,7 @@ class VDOSPlotter(object):
         self._dos = dos
         self._pdos = pdos
 
-    def dos_plot_data(self, yscale=1, xmin=-6, xmax=6, colours=None,
+    def dos_plot_data(self, yscale=1, xmin=-6., xmax=6., colours=None,
                       plot_total=True, legend_cutoff=3, subplot=False):
         """Plot the density of states either using matplotlib or xmgrace.
 
@@ -116,7 +116,7 @@ class VDOSPlotter(object):
         plot_data.update({'lines': lines, 'ymax': ymax, 'ymin': ymin})
         return plot_data
 
-    def get_plot(self, subplot=False, width=6.6, height=5, xmin=-6, xmax=6,
+    def get_plot(self, subplot=False, width=6., height=8., xmin=-6., xmax=6.,
                  yscale=1, colours=None, plot_total=True, legend_on=True,
                  num_columns=2, legend_frame_on=False, legend_cutoff=3, dpi=400,
                  plt=None):
@@ -251,8 +251,8 @@ class VBSPlotter(BSPlotter):
         ax.set_xticklabels(unique_l)
         ax.xaxis.grid(True, c='k', ls='-', lw=vaspy.misc.plotting._linewidth)
 
-    def get_plot(self, zero_to_efermi=True, ymin=-6, ymax=6,
-                 width=5, height=5, vbm_cbm_marker=False, plt=None,
+    def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
+                 width=6., height=6., vbm_cbm_marker=False, plt=None,
                  dos_data=None):
         """
         Get a matplotlib object for the bandstructure plot.
