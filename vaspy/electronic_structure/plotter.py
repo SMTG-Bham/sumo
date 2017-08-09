@@ -255,7 +255,7 @@ class VBSPlotter(BSPlotter):
 
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
                  width=6., height=6., vbm_cbm_marker=False, dpi=400, plt=None,
-                 dos_plotter=None, dos_options=None, dos_aspect=2.5):
+                 dos_plotter=None, dos_options=None, dos_aspect=3):
         """
         Get a matplotlib object for the bandstructure plot.
         Blue lines are up spin, red lines are down
@@ -274,12 +274,12 @@ class VBSPlotter(BSPlotter):
             plt (pyplot object): Matplotlib pyplot object to use for plotting.
         """
         if dos_plotter:
+            width = width + height/dos_aspect
             plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
                                  plt=plt,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
                                               'wspace': 0})
             ax = plt.gcf().axes[0]
-            width = height + height/dos_aspect
         else:
             plt = pretty_plot(width, height, dpi=dpi, plt=plt)
             ax = plt.gca()
