@@ -70,10 +70,10 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         bandstructures.append(bs)
     bs = get_reconstructed_band_structure(bandstructures)
 
-    if project and dos_file:
-        logging.error('ERROR: Plotting projected band structure with DOS not '
-                      'supported.\nPlease use --projected-rgb option.')
-        sys.exit()
+    #if project and dos_file:
+    #    logging.error('ERROR: Plotting projected band structure with DOS not '
+    #                  'supported.\nPlease use --projected-rgb option.')
+    #    sys.exit()
 
     save_files = False if plt else True  # don't save if pyplot object provided
 
@@ -86,9 +86,13 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                     'colours': colours, 'yscale': yscale}
 
     plotter = VBSPlotter(bs)
-    if project_rgb:
-        raise NotImplementedError('projected band structure plotting not yet '
-                                  'supported')
+    if project:
+        elemental_orbitals = [('Bi', 'p'), ('Bi', 's'), ('I', 'p')]
+        plt = plotter.get_projected_rgb_plot(elemental_orbitals, zero_to_efermi=True,
+                              ymin=ymin, ymax=ymax,
+                               height=height, width=width,
+                               vbm_cbm_marker=vbm_cbm_marker, plt=plt,
+                               dos_plotter=dos_plotter, dos_options=dos_opts)
     elif project:
         raise NotImplementedError('projected band structure plotting not yet '
                                   'supported')
@@ -179,7 +183,7 @@ def main():
     parser.add_argument('-b' '--band-edges', dest='band_edges',
                         action='store_true',
                         help='Highlight the band edges with markers')
-    parser.add_argument('--project', default=None, type=el_orb,
+    parser.add_argument('--project', default=None, #type=el_orb,
                         help="""Project DOS onto band structure as red, green,
                         and blue contributions. Can project a maximum of 3
                         orbital/elemental contributions. These should be listed
