@@ -1,5 +1,6 @@
 import logging
 import itertools
+import copy
 
 import numpy as np
 from collections import defaultdict
@@ -285,37 +286,9 @@ class VBSPlotter(BSPlotter):
                 ax.plot(dists[nd], e, 'r--', linewidth=band_linewidth)
 
         self._maketicks(ax)
-
-        ax.set_ylabel('Energy (eV)')
-
-        # draw line at Fermi level if not zeroing to e-Fermi
-        if not zero_to_efermi:
-            ef = self._bs.efermi
-            ax.axhline(ef, linewidth=2, color='k')
-
-        # set x and y limits
-        ax.set_xlim(0, data['distances'][-1][-1])
-        if self._bs.is_metal() and not zero_to_efermi:
-            ax.set_ylim(self._bs.efermi + ymin, self._bs.efermi + ymax)
-        else:
-            ax.set_ylim(ymin, ymax)
-
-        if vbm_cbm_marker:
-            for cbm in data['cbm']:
-                ax.scatter(cbm[0], cbm[1], color='#D93B2B', marker='o', s=100)
-            for vbm in data['vbm']:
-                ax.scatter(vbm[0], vbm[1], color='#0DB14B', marker='o', s=100)
-
-        if dos_plotter:
-            ax = plt.gcf().axes[1]
-            dos_options.update({'xmin': ymin, 'xmax': ymax})
-            self._makedos(ax, dos_plotter, dos_options)
-        else:
-            # keep correct aspect ratio square
-            x0, x1 = ax.get_xlim()
-            y0, y1 = ax.get_ylim()
-            ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
-
+        self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
+                       vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax, 
+                       dos_plotter=dos_plotter, dos_options=dos_options)
         plt.tight_layout()
         return plt
 
@@ -368,7 +341,84 @@ class VBSPlotter(BSPlotter):
         if len(element_orbitals) > 3:
             raise ValueError('Too many elements/orbitals specified (max 3)')
 
+        data = self.bs_plot_data(zero_to_efermi)
+        dists = data['distances']
+        eners = data['energy']
+        nkpts = len(dists[0])
+        spins = [str(Spin.up), str(Spin.down)] if \
+                self._bs.is_spin_polarized else [str(Spin.up)]
+        colours = self._get_ordered_projections_by_branches(element_orbitals, data,
+                                                            normalise='select')
+
+        # ns is spin, nd is branch index, nb is band index, nk is kpoint index
+        for ns, nd, nb in itertools.product(spins,
+                                            range(len(data['distances'])),
+                                            range(self._nb_bands)):
+            colour = [c[nd][ns][nb] for c in colours]
+            if len(colour) == 2:
+                colour.insert(1, np.zeros((len(dists[nd]))))
+            ls = '-' if ns == str(Spin.up) else '--'
+
+            lc = self._rgbline(dists[nd], eners[nd][ns][nb], colour[0],
+                               colour[1], colour[2], alpha=1,
+                               linestyles=ls)
+            ax.add_collection(lc)
+
+            # alternative is to use scatter plot
+            #ax.scatter(dists[nd], eners[nd][ns][nb], s=10, edgecolors='none',
+            #           c=zip(colour[0], colour[1], colour[2],
+            #                 np.ones(len(dists[nd]))))
+
         self._maketicks(ax)
+        self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
+                       vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax, 
+                       dos_plotter=dos_plotter, dos_options=dos_options)
+        # TODO: Add rgb legend
+        return plt
+
+    def get_projected_plot(self, element_orbitals, zero_to_efermi=True,
+                           ymin=-6., ymax=6., width=6., height=6.,
+                           vbm_cbm_marker=False, dpi=400, plt=None,
+                           dos_plotter=None, dos_options=None,
+                           dos_aspect=3):
+        """
+
+        Spin up and spin down are differientiated by a '-' and a '--' line
+
+        Args:
+            element_orbitals: A list of (element, orbital). For example:
+                [('Bi', 's'), ('Bi', 'p'), ('S', 'p')]. If just the element is
+                specified then all the orbitals of that element are summed. For
+                example: [('Bi', 's'), ('Bi', 'p'), 'S']
+                The order of the element/orbitals determines the colour of that
+                contribution (going red, green, blue).
+            zero_to_efermi (bool): Automatically subtract off the Fermi energy
+                from the eigenvalues and plot (E-Ef).
+            ymin (float): The y-axis (energy) minimum limit.
+            ymax (float): The y-axis (energy) maximum limit.
+            width (float): The width of the figure.
+            height (float): The height of the figure.
+            vbm_cbm_marker (bool): Plot markers to indicate the VBM and CBM
+                locations.
+            dpi (int): The dots-per-inch (pixel density) for the image.
+            plt (pyplot object): Matplotlib pyplot object to use for plotting.
+        """
+        # TODO: Finish docstring
+        if dos_plotter:
+            width = width + height/dos_aspect
+            plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
+                                 plt=plt,
+                                 gridspec_kw={'width_ratios': [dos_aspect, 1],
+                                              'wspace': 0})
+            ax = plt.gcf().axes[0]
+        else:
+            plt = pretty_plot(width, height, dpi=dpi, plt=plt)
+            ax = plt.gca()
+
+        band_linewidth = 3.0
+
+        if len(element_orbitals) > 3:
+            raise ValueError('Too many elements/orbitals specified (max 3)')
 
         data = self.bs_plot_data(zero_to_efermi)
         dists = data['distances']
@@ -376,27 +426,38 @@ class VBSPlotter(BSPlotter):
         nkpts = len(dists[0])
         spins = [str(Spin.up), str(Spin.down)] if \
                 self._bs.is_spin_polarized else [str(Spin.up)]
-        proj = self._get_ordered_projections_by_branches(element_orbitals, data)
-        # TODO: Do this with LineCollections/segments
+        colours = self._get_ordered_projections_by_branches(element_orbitals, data,
+                                                            normalise='select')
+
         # ns is spin, nd is branch index, nb is band index, nk is kpoint index
         for ns, nd, nb in itertools.product(spins,
                                             range(len(data['distances'])),
                                             range(self._nb_bands)):
-            for nk in range(len(dists[nd]) - 1):
-                sum_e = sum([p[nd][ns][nb][nk] for p in proj])
-                if sum_e == 0.0:
-                    colour = [0.0] * len(element_orbitals)
-                else:
-                    colour = [p[nd][ns][nb][nk]/sum_e for p in proj]
+            colour = [c[nd][ns][nb] for c in colours]
+            if len(colour) == 2:
+                colour.insert(1, np.zeros((len(dists[nd]))))
+            ls = '-' if ns == str(Spin.up) else '--'
 
-                if len(colour) == 2:
-                    colour.insert(1, 0.0)
+            lc = self._rgbline(dists[nd], eners[nd][ns][nb], colour[0],
+                               colour[1], colour[2], alpha=1,
+                               linestyles=ls)
+            ax.add_collection(lc)
 
-                ls = '-' if ns == str(Spin.up) else '--'
-                ax.plot([dists[nd][nk], dists[nd][nk + 1]],
-                        [eners[nd][ns][nb][nk], eners[nd][ns][nb][nk + 1]],
-                        ls=ls, c=colour, lw=band_linewidth)
+            # alternative is to use scatter plot
+            #ax.scatter(dists[nd], eners[nd][ns][nb], s=10, edgecolors='none',
+            #           c=zip(colour[0], colour[1], colour[2],
+            #                 np.ones(len(dists[nd]))))
 
+        self._maketicks(ax)
+        self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
+                       vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax, 
+                       dos_plotter=dos_plotter, dos_options=dos_options)
+        # TODO: Add rgb legend
+        return plt
+
+    def _makeplot(self, ax, fig, data, zero_to_efermi=True,
+                  vbm_cbm_marker=False, ymin=-6, ymax=6,
+                  dos_plotter=None, dos_options=None):
         # draw line at Fermi level if not zeroing to e-Fermi
         if not zero_to_efermi:
             ef = self._bs.efermi
@@ -416,7 +477,7 @@ class VBSPlotter(BSPlotter):
                 ax.scatter(vbm[0], vbm[1], color='#0DB14B', marker='o', s=100)
 
         if dos_plotter:
-            ax = plt.gcf().axes[1]
+            ax = fig.axes[1]
             dos_options.update({'xmin': ymin, 'xmax': ymax})
             self._makedos(ax, dos_plotter, dos_options)
         else:
@@ -424,7 +485,6 @@ class VBSPlotter(BSPlotter):
             x0, x1 = ax.get_xlim()
             y0, y1 = ax.get_ylim()
             ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
-        return plt
 
     def _makedos(self, ax, dos_plotter, dos_options):
         """This is basically the same as the VDOSPlotter get_plot function."""
@@ -486,6 +546,7 @@ class VBSPlotter(BSPlotter):
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
         ax.xaxis.grid(True, c='k', ls='-', lw=line_width)
+        ax.set_ylabel('Energy (eV)')
 
     def _get_projections_by_branches(self, dictio):
         proj = self._bs.get_projections_on_elements_and_orbitals(dictio)
@@ -502,43 +563,92 @@ class VBSPlotter(BSPlotter):
                 proj_br.append({str(Spin.down): proj[Spin.down][:, s:e]})
         return proj_br
 
-    def _get_ordered_projections_by_branches(self, element_orbitals, data):
-        # dictio formatted as {'Bi': ['s', 'p'], 'S': ['s', 'p', 'd']}
-        # but elements_orbitals formatted as [('Bi', 's'), ('Bi', 'p'), 'S']
-        dictio = defaultdict(list)
-        for e in element_orbitals:
-            if type(e) is tuple:
-                dictio[e[0]].append(e[1])
-            else:
-                # if no orbitals specified then we want all of them
-                dictio[e].append(['s', 'p', 'd', 'f'])
+    def _get_ordered_projections_by_branches(self, element_orbitals, data,
+                                             normalise=None):
+        # if we are to normalise the data later we need access to all projs
+        elements = self._bs.structure.symbol_set
+        orbitals = ['s', 'p', 'd', 'f']
+        dictio = dict(zip(elements, orbitals*len(elements)))
         proj = self._get_projections_by_branches(dictio)
 
-        # now turn the proj into an list of [proj_elem1, proj_elem2, ...]
-        # where proj_elem1 is array with indicies [nbranch][spin][nband][nkpt]
         spins = [str(Spin.up), str(Spin.down)] if \
                 self._bs.is_spin_polarized else [str(Spin.up)]
         nbands = self._nb_bands
-        proj_by_element = []
-        for e in element_orbitals:
-            proj_by_branch = []
-            for nd in range(len(data['distances'])):
-                nkpts = len(data['distances'][nd])
-                tproj = {str(Spin.up): np.zeros((nbands, nkpts))}
-                if self._bs.is_spin_polarized:
-                    tproj[str(Spin.down)] = np.zeros(nbands, nkpts)
 
-                for nb, nk, ns in itertools.product(range(nbands),
-                                                    range(nkpts), spins):
+        sum_proj = []
+        # now turn the proj into an list of [proj_elem1, proj_elem2, ...]
+        # where proj_elem1 is array with indicies [nbranch][spin][nband][nkpt]
+        proj_by_element = [[] for i in range(len(element_orbitals))]
+        for nd in range(len(data['distances'])):
+            nkpts = len(data['distances'][nd])
+            tproj = {str(Spin.up): np.zeros((nbands, nkpts))}
+            sum_p = {str(Spin.up): np.zeros((nbands, nkpts))}
+            if self._bs.is_spin_polarized:
+                tproj[str(Spin.down)] = np.zeros(nbands, nkpts)
+                sum_p[str(Spin.down)] = np.zeros(nbands, nkpts)
+            tproj = [copy.deepcopy(tproj) for i in range(len(element_orbitals))]
+
+            for nb, nk, ns in itertools.product(range(nbands),
+                                                range(nkpts), spins):
+                for i, e in enumerate(element_orbitals):
                     if type(e) is tuple:
-                        tproj[ns][nb][nk] = proj[nd][ns][nb][nk][e[0]][e[1]]
+                        tproj[i][ns][nb][nk] = proj[nd][ns][nb][nk][e[0]][e[1]]
                     else:
-                        tproj[ns][nb][nk] = np.sum([proj[nd][ns][nb][nk][e][o]
-                                                    for o in ['s', 'p', 'd']],
-                                                   axis=0)
-                proj_by_branch.append(tproj)
-            proj_by_element.append(proj_by_branch)
+                        tproj[i][ns][nb][nk] = np.sum([proj[nd][ns][nb][nk][e][o]
+                                                       for o in ['s', 'p', 'd']],
+                                                      axis=0)
+
+                # if all then normalise against all projections
+                # if select then we just normalise against specified projs
+                if normalise == 'all':
+                    sum_p[ns][nb][nk] = np.sum([proj[nd][ns][nb][nk][e][o]
+                            for e, o in itertools.product(elements, orbital)],
+                            axis=0)
+                elif normalise == 'select':
+                    sum_p[ns][nb][nk] = np.sum([p[ns][nb][nk] for p in tproj])
+
+            for i in range(len(element_orbitals)):
+                if normalise:
+                    # to prevent warnings/errors relating to divide by zero,
+                    # catch warnings and surround divide with np.nan_to_num
+                    with np.errstate(divide='ignore', invalid='ignore'):
+                        for ns in spins:
+                            tproj[i][ns] = np.nan_to_num(tproj[i][ns] / sum_p[ns])
+                proj_by_element[i].append(tproj[i])
+            sum_proj.append(sum_p)
         return proj_by_element
+
+    @staticmethod
+    def _rgbline(x, y, red, green, blue, alpha=1, linestyles="solid"):
+        """An RGB colored line for plotting.
+
+        Creation of segments based on:
+        http://nbviewer.ipython.org/urls/raw.github.com/dpsanders/matplotlib-examples/master/colorline.ipynb
+
+        Args:
+            ax: matplotlib axis
+            x: x-axis data (k-points)
+            y: y-axis data (energies)
+            red: red data
+            green: green data
+            blue: blue data
+            alpha: alpha values data
+            linestyles: linestyle for plot (e.g., "solid" or "dotted")
+        """
+        # TODO: Add interpolation
+        from matplotlib.collections import LineCollection
+
+        pts = np.array([x, y]).T.reshape(-1, 1, 2)
+        seg = np.concatenate([pts[:-1], pts[1:]], axis=1)
+
+        nseg = len(x) - 1
+        r = [0.5 * (red[i] + red[i + 1]) for i in range(nseg)]
+        g = [0.5 * (green[i] + green[i + 1]) for i in range(nseg)]
+        b = [0.5 * (blue[i] + blue[i + 1]) for i in range(nseg)]
+        a = np.ones(nseg, np.float) * alpha
+        lc = LineCollection(seg, colors=list(zip(r, g, b, a)),
+                            linewidth=2, linestyles=linestyles)
+        return lc
 
 
 def get_colour_for_element_and_orbital(element, orbital, colours=None):

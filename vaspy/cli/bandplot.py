@@ -52,7 +52,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
              image_format='pdf', dpi=400, plt=None):
     if not filenames:
         folders = glob.glob('split-*')
-        folders = folders if folders else ['.']  # check current dir if no split
+        folders = sorted(folders) if folders else ['.']
         filenames = []
         for fol in folders:
             vr_file = os.path.join(fol, 'vasprun.xml')
@@ -87,7 +87,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
 
     plotter = VBSPlotter(bs)
     if project:
-        elemental_orbitals = [('Bi', 'p'), ('Bi', 's'), ('I', 'p')]
+        elemental_orbitals = [('O', 'p'), ('Bi', 'p'), ('I', 'p')]
         plt = plotter.get_projected_rgb_plot(elemental_orbitals, zero_to_efermi=True,
                               ymin=ymin, ymax=ymax,
                                height=height, width=width,
@@ -108,6 +108,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         if directory:
             filename = os.path.join(directory, filename)
         plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches='tight')
+        # TODO: save bandstructure dat file
     else:
         return plt
 
