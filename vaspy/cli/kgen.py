@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
@@ -46,7 +45,7 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
     """Generate KPOINTS files for VASP band structure calculations.
 
     This script provides a wrapper around several frameworks used to generate
-    k-points along a high-symmetry path. The paths found in Bradley and 
+    k-points along a high-symmetry path. The paths found in Bradley and
     Cracknell, SeeK-path, and pymatgen are all supported.
 
     It is important to note that the standard primitive cell symmetry is
@@ -75,7 +74,7 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
             Choice of 'bradcrack', 'seekpath', and 'pymatgen'.
         cart_coords (bool): Whether the k-points are provided in cartesian
             or reciprocal coordinates.
-        kpt_list (list): Manual list of k-points to use. If kpt_list is set it 
+        kpt_list (list): Manual list of k-points to use. If kpt_list is set it
             will override the mode selection. Should be formatted as a list of
             subpaths, each containing a list of k-points. For example:
             [[[0., 0., 0.], [0., 0., 0.5]], [[0.5, 0., 0.], [0.5, 0.5, 0.]]]
@@ -160,9 +159,9 @@ def get_kpoints_from_list(structure, kpt_list, path_labels=None,
 
     Returns:
         A list k-points along the high-symmetry path, together with the
-        high symmetry labels for each k-point, a printable string of the 
+        high symmetry labels for each k-point, a printable string of the
         high-symmetry path, and a dictionary mapping the path labels to the
-        k-point coordinates (e.g. {label: coords}). Returned as: 
+        k-point coordinates (e.g. {label: coords}). Returned as:
         (kpoints, labels, path_string, kpt_dict).
     """
     # TODO: add warnings for no labels and incorrect number of labels
@@ -212,8 +211,8 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
         filename (str): The name of the VASP structure file.
         make_folders (bool): Generate folders and copy in relevant files (INCAR,
             POTCAR, POSCAR, and possibily CHGCAR) from the current directory.
-        ibzkpt (Ibzkpt): A pymatgen Ibzkpt object. If this is set, the generated 
-            k-points will be appended to this file and given a weight of 0. 
+        ibzkpt (Ibzkpt): A pymatgen Ibzkpt object. If this is set, the generated
+            k-points will be appended to this file and given a weight of 0.
             This is necessary for hybrid band structure calculations.
         kpts_per_split (int): If this is set, the k-points are split into
             seperate k-point files (or folders) each containing the number
@@ -333,6 +332,7 @@ def _parse_ibzkpt(ibzkpt):
         except IOError:
             logging.error('\nERROR: Hybrid specified but no IBZKPT file found.')
             sys.exit()
+    return ibz
 
 
 def main():

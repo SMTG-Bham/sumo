@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
@@ -10,20 +9,19 @@ import sys
 import logging
 import glob
 import argparse
-import itertools
 import warnings
 
-import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 
-from vaspy.electronic_structure.dos import sort_orbitals, get_pdos, write_files
-from vaspy.electronic_structure.bandstructure import get_reconstructed_band_structure
-from vaspy.misc.plotting import pretty_plot, pretty_subplot, colour_cycle
-from vaspy.cli.dosplot import dosplot, atoms, el_orb
+from vaspy.electronic_structure.plotter import VBSPlotter, VDOSPlotter
+from vaspy.electronic_structure.dos import get_pdos
+from vaspy.cli.dosplot import atoms, el_orb
 
-from pymatgen.io.vasp.outputs import BSVasprun
+from pymatgen.io.vasp.outputs import Vasprun, BSVasprun
 from pymatgen.electronic_structure.core import Spin
+from pymatgen.electronic_structure.bandstructure import \
+    get_reconstructed_band_structure
 
 try:
     import configparser
@@ -44,18 +42,17 @@ __date__ = "July 18, 2017"
 line_width = 1.5
 empty_space = 1.05
 label_size = 22
-col_cycle = colour_cycle()
 
 
 def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
              project=None, project_rgb=None, dos_file=None, elements=None,
              lm_orbitals=None, atoms=None, total_only=False,
-             plot_total=True, legend_cutoff=3, gaussian=None, height=6, width=6,
-             ymin=-6, ymax=6, colours=None, yscale=1, image_format='pdf',
-             dpi=400, plot_format='mpl'):
+             plot_total=True, legend_cutoff=3, gaussian=None, height=6.,
+             width=6., ymin=-6., ymax=6., colours=None, yscale=1,
+             image_format='pdf', dpi=400, plt=None):
     if not filenames:
         folders = glob.glob('split-*')
-        folders = folders if folders else ['.']  # check current dir if no split
+        folders = sorted(folders) if folders else ['.']
         filenames = []
         for fol in folders:
             vr_file = os.path.join(fol, 'vasprun.xml')
@@ -73,43 +70,102 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         bandstructures.append(bs)
     bs = get_reconstructed_band_structure(bandstructures)
 
-    if (project_rgb or plot_format) and plot_format == 'xmgrace':
-        logging.error('ERROR: Unable to plot projected band structure using '
-                      'xmgrace!')
-        sys.exit()
+    #if project and dos_file:
+    #    logging.error('ERROR: Plotting projected band structure with DOS not '
+    #                  'supported.\nPlease use --projected-rgb option.')
+    #    sys.exit()
 
-    if project and dos_file:
-        logging.error('ERROR: Plotting projected band structure with DOS not '
-                      'supported.\nPlease use --projected-rgb option.')
-        sys.exit()
+    save_files = False if plt else True  # don't save if pyplot object provided
 
-    if project_rgb:
-        plt = plot_rgb_projected_band_structure(bs, project_rgb, ymin=ymin,
-                                                ymax=ymax,
-                                                vbm_cbm_marker=vbm_cbm_marker)
-    elif project:
-        plt = plot_projected_band_structures(bs, project, ymin=ymin, ymax=ymax,
-                                             vbm_cbm_marker=vbm_cbm_marker)
-    else:
-        plt = plt_band_structure(bs, ymin=ymin, ymax=ymax, plt_format=plt_format,
-                                 vbm_cbm_marker=vbm_cbm_marker)
-
+    dos_plotter = None
+    dos_opts = None
     if dos_file:
-        # TODO: change dosplot so if plt set then don't write files
-        plt = dosplot(dos_file, elements=elements, lm_orbital=lm_orbitals,
-                      atoms=atoms, total_only=total_only, plot_total=plot_total,
-                      gaussian=gaussian, width=2, xmin=ymin, xmax=ymax,
-                      colours=colours, yscale=yscale)
-        # TODO: invert x and y axes
+        dos_plotter = load_dos(dos_file, elements, lm_orbitals, atoms, gaussian,
+                               total_only)
+        dos_opts = {'plot_total': plot_total, 'legend_cutoff': legend_cutoff,
+                    'colours': colours, 'yscale': yscale}
 
-    plt.tight_layout()
-    basename = 'dos.{}'.format(image_format)
-    filename = '{}_{}'.format(prefix, basename) if prefix else basename
-    if directory:
-        filename = os.path.join(directory, filename)
+    plotter = VBSPlotter(bs)
+    if project:
+        elemental_orbitals = [('O', 'p'), ('Bi', 'p'), ('I', 'p')]
+        plt = plotter.get_projected_rgb_plot(elemental_orbitals, zero_to_efermi=True,
+                              ymin=ymin, ymax=ymax,
+                               height=height, width=width,
+                               vbm_cbm_marker=vbm_cbm_marker, plt=plt,
+                               dos_plotter=dos_plotter, dos_options=dos_opts)
+    elif project:
+        raise NotImplementedError('projected band structure plotting not yet '
+                                  'supported')
+    else:
+        plt = plotter.get_plot(zero_to_efermi=True, ymin=ymin, ymax=ymax,
+                               height=height, width=width,
+                               vbm_cbm_marker=vbm_cbm_marker, plt=plt,
+                               dos_plotter=dos_plotter, dos_options=dos_opts)
 
-    plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches='tight')
-    return plt
+    if save_files:
+        basename = 'dos.{}'.format(image_format)
+        filename = '{}_{}'.format(prefix, basename) if prefix else basename
+        if directory:
+            filename = os.path.join(directory, filename)
+        plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches='tight')
+        # TODO: save bandstructure dat file
+    else:
+        return plt
+
+
+def load_dos(dos_file, elements, lm_orbitals, atoms, gaussian, total_only):
+    """Load a DOS vasprun and generate a DOS plotter object.
+
+    This is very similar to the code in dosplot and could possibly be combined.
+
+    Args:
+        dos_file (str): A vasprun.xml file to plot (can be gziped).
+        elements (dict): A dict of element names specifying which orbitals to
+            plot. For example {'Bi': ['s', 'px', 'py', 'd']}. If an element
+            symbol is included with an empty list, then all orbitals for that
+            species are considered. If set to None then all orbitals for all
+            elements are considered.
+        lm_orbitals (dict): A list of orbitals for which the lm decomposed
+            contributions should be calculated, in the form {Element: [orbs]}
+        atoms (dict): A dictionary containing a list of atomic indicies over
+            which to sum the DOS, provided as {Element: [atom_indicies]}.
+            Indicies are zero indexed for each atomic species. If an element
+            symbol is included with an empty list, then all sites for that
+            species are considered. If set to None then all sites for all
+            elements are considered.
+        gaussian (float): The sigma of the Gaussian broadening to apply (usually
+            controlled by the SIGMA flag in VASP).
+    """
+    vr = Vasprun(dos_file)
+    band = vr.get_band_structure()
+    dos = vr.complete_dos
+
+    if band.is_metal():
+        zero_point = vr.efermi
+    else:
+        zero_point = band.get_vbm()['energy']
+
+    dos.energies -= zero_point
+    if vr.parameters['ISMEAR'] == 0 or vr.parameters['ISMEAR'] == -1:
+        dos.energies -= vr.parameters['SIGMA']
+
+    if gaussian:
+        dos = dos.get_smeared_vaspdos(gaussian)
+
+    if vr.parameters['LSORBIT']:
+        # pymatgen includes the spin down channel for SOC calculations, even
+        # though there is no density here. We remove this channel so the
+        # plotting is easier later on.
+        del dos.densities[Spin.down]
+        for site in dos.pdos:
+            for orbital in dos.pdos[site]:
+                del dos.pdos[site][orbital][Spin.down]
+
+    pdos = {}
+    if not total_only:
+        pdos = get_pdos(dos, lm_orbitals=lm_orbitals, atoms=atoms,
+                        elements=elements)
+    return VDOSPlotter(dos, pdos)
 
 
 def main():
@@ -128,7 +184,7 @@ def main():
     parser.add_argument('-b' '--band-edges', dest='band_edges',
                         action='store_true',
                         help='Highlight the band edges with markers')
-    parser.add_argument('--project', default=None, type=el_orb,
+    parser.add_argument('--project', default=None, #type=el_orb,
                         help="""Project DOS onto band structure as red, green,
                         and blue contributions. Can project a maximum of 3
                         orbital/elemental contributions. These should be listed
@@ -192,9 +248,9 @@ def main():
                         combined with the --dos option.""")
     parser.add_argument('--xscale', type=float, default=1,
                         help='Scaling factor for the DOS x axis')
-    parser.add_argument('--height', type=float, default=6,
+    parser.add_argument('--height', type=float, default=6.0,
                         help='The height of the graph')
-    parser.add_argument('--width', type=float, default=8,
+    parser.add_argument('--width', type=float, default=6.0,
                         help='The width of the graph')
     parser.add_argument('--ymin', type=float, default=-6.0,
                         help='The minimum energy on the x axis')
@@ -202,11 +258,10 @@ def main():
                         help='The maximum energy on the x axis')
     parser.add_argument('--config', type=str, default=None,
                         help='Colour configuration file')
-    parser.add_argument('--xmgrace', action='store_true',
-                        help='plot using xmgrace instead of matplotlib')
     parser.add_argument('--format', type=str, default='pdf',
+                        dest='image_format',
                         help='select image format from pdf, svg, jpg, & png')
-    parser.add_argument('--dpi', type=int,
+    parser.add_argument('--dpi', type=int, default=400,
                         help='pixel density for generated images')
 
     args = parser.parse_args()
@@ -224,21 +279,20 @@ def main():
     colours = configparser.ConfigParser()
     colours.read(os.path.abspath(config_path))
 
-    if args.xmgrace:
-        plot_format = 'xmgrace'
-    else:
-        plot_format = 'mpl'
-        warnings.filterwarnings("ignore", category=UserWarning,
-                                module="matplotlib")
+    warnings.filterwarnings("ignore", category=UserWarning,
+                            module="matplotlib")
+    warnings.filterwarnings("ignore", category=UnicodeWarning,
+                            module="matplotlib")
 
-    bandplot(filenames=args.filenames, prefix=args.prefix, directory=args.directory,
-             vbm_cbm_marker=args.band_edges, project=args.project, dos_file=args.dos, elements=args.elements, lm_orbitals=args.orbitals, atoms=args.atoms,
-             shift=args.shift, total_only=args.total_only,
-             plot_total=args.total, legend_cutoff=args.legend_cutoff,
-             gaussian=args.gaussian, height=args.height, width=args.width, ymin=args.ymin,
-             ymax=args.ymax, num_columns=args.columns, colours=colours,
-             xscale=args.xscale, image_format=args.image_format, dpi=args.dpi,
-             plot_format=plot_format)
+    bandplot(filenames=args.filenames, prefix=args.prefix,
+             directory=args.directory, vbm_cbm_marker=args.band_edges,
+             project=args.project, dos_file=args.dos, elements=args.elements,
+             lm_orbitals=args.orbitals, atoms=args.atoms,
+             total_only=args.total_only, plot_total=args.total,
+             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
+             height=args.height, width=args.width, ymin=args.ymin,
+             ymax=args.ymax, colours=colours, image_format=args.image_format,
+             dpi=args.dpi)
 
 
 if __name__ == "__main__":
