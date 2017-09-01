@@ -139,12 +139,12 @@ def write_files(dos, pdos, prefix=None, directory=None):
 
     spin = len(dos.densities)
     for el, el_pdos in pdos.iteritems():
-        header = ['#energy']
+        header = ['energy']
         pdos_data = [dos.energies]
         for orb in sort_orbitals(el_pdos):
             for spin, sign, label in sdata:
                 header.append('{}{}'.format(orb, label))
-                pdos_data.append(dos.densities[spin] * sign)
+                pdos_data.append(el_pdos[orb].densities[spin] * sign)
         pdos_data = np.stack(pdos_data, axis=1)
 
         if prefix:
