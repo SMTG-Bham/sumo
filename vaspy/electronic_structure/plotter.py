@@ -273,7 +273,7 @@ class VBSPlotter(BSPlotter):
             nkpts = len(dists[nd])
             # colour valence bands blue and conduction bands orange in semiconds
             if (self._bs.is_spin_polarized or self._bs.is_metal() or
-                    nb <= self._bs.get_vbm()['band_index'][Spin.up][0] + 1):
+                    nb <= self._bs.get_vbm()['band_index'][Spin.up][0]):
                 c = '#3953A4'
             else:
                 c = '#FAA316'
@@ -288,6 +288,7 @@ class VBSPlotter(BSPlotter):
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
                        vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax, 
+                       height=height, width=width,
                        dos_plotter=dos_plotter, dos_options=dos_options)
         plt.tight_layout()
         return plt
@@ -372,6 +373,7 @@ class VBSPlotter(BSPlotter):
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
                        vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax, 
+                       height=height, width=width,
                        dos_plotter=dos_plotter, dos_options=dos_options)
         # TODO: Add rgb legend
         return plt
@@ -451,12 +453,13 @@ class VBSPlotter(BSPlotter):
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
                        vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax, 
+                       height=height, width=width,
                        dos_plotter=dos_plotter, dos_options=dos_options)
         # TODO: Add rgb legend
         return plt
 
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,
-                  vbm_cbm_marker=False, ymin=-6, ymax=6,
+                  vbm_cbm_marker=False, ymin=-6, ymax=6, height=6, width=6,
                   dos_plotter=None, dos_options=None):
         # draw line at Fermi level if not zeroing to e-Fermi
         if not zero_to_efermi:

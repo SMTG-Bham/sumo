@@ -332,6 +332,8 @@ def _parse_ibzkpt(ibzkpt):
         except IOError:
             logging.error('\nERROR: Hybrid specified but no IBZKPT file found.')
             sys.exit()
+    else:
+        ibz = None
     return ibz
 
 
