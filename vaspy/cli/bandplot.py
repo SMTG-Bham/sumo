@@ -11,6 +11,7 @@ import glob
 import argparse
 import warnings
 
+import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 
@@ -89,10 +90,9 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     if project:
         elemental_orbitals = [('O', 'p'), ('Bi', 'p'), ('I', 'p')]
         plt = plotter.get_projected_rgb_plot(elemental_orbitals, zero_to_efermi=True,
-                              ymin=ymin, ymax=ymax,
-                               height=height, width=width,
-                               vbm_cbm_marker=vbm_cbm_marker, plt=plt,
-                               dos_plotter=dos_plotter, dos_options=dos_opts)
+                              ymin=ymin, ymax=ymax, height=height, width=width,
+                              vbm_cbm_marker=vbm_cbm_marker, plt=plt,
+                              dos_plotter=dos_plotter, dos_options=dos_opts)
     elif project:
         raise NotImplementedError('projected band structure plotting not yet '
                                   'supported')
@@ -103,14 +103,29 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                                dos_plotter=dos_plotter, dos_options=dos_opts)
 
     if save_files:
-        basename = 'dos.{}'.format(image_format)
+        basename = 'band.{}'.format(image_format)
         filename = '{}_{}'.format(prefix, basename) if prefix else basename
         if directory:
             filename = os.path.join(directory, filename)
         plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches='tight')
-        # TODO: save bandstructure dat file
+
+        # TODO: save bandstructure dat file properly (spin polarized case
+        # and use numpy). This will currently append to the file, even if
+        # it already exists.
+        filename='{}_band.dat'.format(prefix) if prefix else 'band.dat'
+        if bs.is_metal():
+            zero = vr.efermi
+        else:
+            zero = bs.get_vbm()['energy']
+
+        with open(filename, 'a') as f:
+            f.write('#k-distance eigenvalue[eV]\n')
+            for band in bs.bands[Spin.up]:
+                np.savetxt(f, np.c_[bs.distance, band - zero])
+                f.write('\n')
     else:
         return plt
+
 
 
 def load_dos(dos_file, elements, lm_orbitals, atoms, gaussian, total_only):
@@ -177,7 +192,7 @@ def main():
     Version: {}
     Last updated: {}""".format(__author__, __version__, __date__))
 
-    parser.add_argument('-f', '--filenames', default=None,
+    parser.add_argument('-f', '--filenames', default=None, nargs='+',
                         help="one or more vasprun.xml files to plot")
     parser.add_argument('-p', '--prefix', help='prefix for the files generated')
     parser.add_argument('-d', '--directory', help='output directory for files')
