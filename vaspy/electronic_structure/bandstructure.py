@@ -191,11 +191,11 @@ class BradCrackKpath(Kpath):
 
             elif 'C' in spg_symbol:
                 if unique == 0:
-                    return self._mon_c_a()
+                    self._kpath = self._mon_c_a()
                 elif unique == 1:
-                    return self._mon_c_b()
+                    self._kpath = self._mon_c_b()
                 elif unique == 2:
-                    return self._mon_c_c()
+                    self._kpath = self._mon_c_c()
 
         elif lattice_type == 'orthorhombic':
             if 'P' in spg_symbol:
