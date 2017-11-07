@@ -236,7 +236,8 @@ class BradCrackKpath(Kpath):
                 else:
                     self._kpath = self._tet_i_c()
 
-        elif lattice_type == 'trigonal' or lattice_type == 'hexagonal':
+        elif (lattice_type == 'trigonal' or lattice_type == 'hexagonal'
+	      or lattice_type == 'rhombohedral'):
             if 'R' in spg_symbol:
                 if a > math.sqrt(2) * c:
                     self._kpath = self._trig_r_a()
