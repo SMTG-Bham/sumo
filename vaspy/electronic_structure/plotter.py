@@ -26,6 +26,8 @@ col_cycle = colour_cycle()
 
 
 class VDOSPlotter(object):
+
+    def __init__(self, dos, pdos=None):
     """Vaspy class for plotting DOSs.
 
     The class should be initialised with the total DOS and partial density of
@@ -41,7 +43,6 @@ class VDOSPlotter(object):
 
             Usually generated ysing the dos.get_pdos() function.
     """
-    def __init__(self, dos, pdos=None):
         self._dos = dos
         self._pdos = pdos
 
@@ -218,6 +219,8 @@ class VDOSPlotter(object):
 
 
 class VBSPlotter(BSPlotter):
+
+    def __init__(self, bs):
     """Vaspy class for plotting band structures.
 
     This class is similar to the pymatgen BSPlotter class but overrides some
@@ -228,7 +231,6 @@ class VBSPlotter(BSPlotter):
     Args:
         bs (BandStructure): A pymatgen BandStructure object.
     """
-    def __init__(self, bs):
         BSPlotter.__init__(self, bs)
 
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
