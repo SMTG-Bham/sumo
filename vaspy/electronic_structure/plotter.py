@@ -267,17 +267,16 @@ class VBSPlotter(BSPlotter):
         dists = data['distances']
         eners = data['energy']
 
+        is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
         # nd is branch index, nb is band index, nk is kpoint index
         for nd, nb in itertools.product(range(len(data['distances'])),
                                         range(self._nb_bands)):
             nkpts = len(dists[nd])
-            e = np.array([eners[nd][str(Spin.up)][nb][nk] for nk in range(nkpts)])
+            e = eners[nd][str(Spin.up)][nb]
 
             # this check is very slow but works for now
             # colour valence bands blue and conduction bands orange in semiconds
-            if (self._bs.is_spin_polarized or self._bs.is_metal()):
-                    np.all(self._bs.bands[Spin.up][nb][nk] <=
-                    self._bs.get_vbm()['energy'])):
+            if (self._bs.is_spin_polarized or self._bs.is_metal() or np.all(is_vb[nb])):
                 c = '#3953A4'
             else:
                 c = '#FAA316'
@@ -285,7 +284,7 @@ class VBSPlotter(BSPlotter):
             # plot band data
             ax.plot(dists[nd], e, ls='-', c=c, linewidth=band_linewidth)
             if self._bs.is_spin_polarized:
-                e = [eners[nd][str(Spin.down)][nb][nk] for nk in range(nkpts)]
+                e = eners[nd][str(Spin.down)][nb]
                 ax.plot(dists[nd], e, 'r--', linewidth=band_linewidth)
 
         self._maketicks(ax)
