@@ -47,8 +47,7 @@ class Kpath(object):
         self._spg_data = spglib.get_symmetry_dataset(sym._cell)
 
         # make primitive and conventional cell from seekpath output
-        std = spglib.standardize_cell(sym._cell, symprec=symprec,
-                                      to_primitive=True)
+        std = spglib.refine_cell(sym._cell, symprec=args.tol)
         self._seek_data = seekpath.get_path(std)
 
         prim_lattice = self._seek_data['primitive_lattice']
@@ -237,7 +236,7 @@ class BradCrackKpath(Kpath):
                     self._kpath = self._tet_i_c()
 
         elif (lattice_type == 'trigonal' or lattice_type == 'hexagonal'
-	      or lattice_type == 'rhombohedral'):
+                or lattice_type == 'rhombohedral'):
             if 'R' in spg_symbol:
                 if a > math.sqrt(2) * c:
                     self._kpath = self._trig_r_a()
