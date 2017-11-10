@@ -47,7 +47,7 @@ class Kpath(object):
         self._spg_data = spglib.get_symmetry_dataset(sym._cell)
 
         # make primitive and conventional cell from seekpath output
-        std = spglib.refine_cell(sym._cell, symprec=args.tol)
+        std = spglib.refine_cell(sym._cell, symprec=symprec)
         self._seek_data = seekpath.get_path(std)
 
         prim_lattice = self._seek_data['primitive_lattice']
