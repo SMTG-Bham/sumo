@@ -44,7 +44,7 @@ class Kpath(object):
 
         # use sym as a quick way to access the cell data
         sym = SpacegroupAnalyzer(structure, symprec=symprec)
-        self._spg_data = spglib.get_symmetry_dataset(sym._cell)
+        self._spg_data = sym.get_symmetry_dataset()
 
         # make primitive and conventional cell from seekpath output
         std = spglib.refine_cell(sym._cell, symprec=symprec)
