@@ -183,7 +183,7 @@ def get_kpoints_from_list(structure, kpt_list, path_labels=None,
         for kpt_sublist in kpt_list:
             labels = []
             for kpt in kpt_sublist:
-                for label, kpt2 in kpt_dict.iteritems():
+                for label, kpt2 in iter(kpt_dict.items()):
                     if np.array_equal(kpt, kpt2):
                         labels.append(label)
                         break
@@ -294,7 +294,7 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
 def _print_kpath_information(labels, path_str, kpt_dict):
     logging.info('\nk-point path:\n\t{}'.format(path_str))
     logging.info('\nk-points:')
-    for label, kpoint in kpt_dict.iteritems():
+    for label, kpoint in iter(kpt_dict.items()):
         coord_str = ' '.join(['{}'.format(c) for c in kpoint])
         logging.info('\t{}: {}'.format(label, coord_str))
     logging.info('\nk-point label indicies:')
