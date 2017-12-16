@@ -269,7 +269,11 @@ class VBSPlotter(BSPlotter):
         dists = data['distances']
         eners = data['energy']
 
-        is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
+        if self._bs.is_spin_polarized or self._bs.is_metal():
+            is_vb == True
+        else:
+            is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
+
         # nd is branch index, nb is band index, nk is kpoint index
         for nd, nb in itertools.product(range(len(data['distances'])),
                                         range(self._nb_bands)):
