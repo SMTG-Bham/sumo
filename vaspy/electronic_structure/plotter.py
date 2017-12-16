@@ -270,7 +270,7 @@ class VBSPlotter(BSPlotter):
         eners = data['energy']
 
         if self._bs.is_spin_polarized or self._bs.is_metal():
-            is_vb == True
+            is_vb = True
         else:
             is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
 
