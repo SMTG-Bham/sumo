@@ -44,11 +44,10 @@ class Kpath(object):
 
         # use sym as a quick way to access the cell data
         sym = SpacegroupAnalyzer(structure, symprec=symprec)
-        self._spg_data = spglib.get_symmetry_dataset(sym._cell)
+        self._spg_data = sym.get_symmetry_dataset()
 
         # make primitive and conventional cell from seekpath output
-        std = spglib.standardize_cell(sym._cell, symprec=symprec,
-                                      to_primitive=True)
+        std = spglib.refine_cell(sym._cell, symprec=symprec)
         self._seek_data = seekpath.get_path(std)
 
         prim_lattice = self._seek_data['primitive_lattice']
@@ -191,11 +190,11 @@ class BradCrackKpath(Kpath):
 
             elif 'C' in spg_symbol:
                 if unique == 0:
-                    return self._mon_c_a()
+                    self._kpath = self._mon_c_a()
                 elif unique == 1:
-                    return self._mon_c_b()
+                    self._kpath = self._mon_c_b()
                 elif unique == 2:
-                    return self._mon_c_c()
+                    self._kpath = self._mon_c_c()
 
         elif lattice_type == 'orthorhombic':
             if 'P' in spg_symbol:
@@ -236,7 +235,8 @@ class BradCrackKpath(Kpath):
                 else:
                     self._kpath = self._tet_i_c()
 
-        elif lattice_type == 'trigonal' or lattice_type == 'hexagonal':
+        elif (lattice_type == 'trigonal' or lattice_type == 'hexagonal'
+                or lattice_type == 'rhombohedral'):
             if 'R' in spg_symbol:
                 if a > math.sqrt(2) * c:
                     self._kpath = self._trig_r_a()

@@ -26,22 +26,23 @@ col_cycle = colour_cycle()
 
 
 class VDOSPlotter(object):
-    """Vaspy class for plotting DOSs.
 
-    The class should be initialised with the total DOS and partial density of
-    states. The PDOS is usually generated as:
-
-        pdos = vaspy.electronic_structure.dos.get_pdos()
-
-    Args:
-        dos (Dos): A Dos object containing the total density of states.
-        pdos (dict): A dict mapping the elements and their orbitals to plot
-            to Dos objects. For example:
-            {'Bi': {'s': Dos, 'p': Dos}, 'S': {'s' Dos, ...}.
-
-            Usually generated ysing the dos.get_pdos() function.
-    """
     def __init__(self, dos, pdos=None):
+        """Vaspy class for plotting DOSs.
+
+        The class should be initialised with the total DOS and partial density of
+        states. The PDOS is usually generated as:
+
+            pdos = vaspy.electronic_structure.dos.get_pdos()
+
+        Args:
+            dos (Dos): A Dos object containing the total density of states.
+            pdos (dict): A dict mapping the elements and their orbitals to plot
+                to Dos objects. For example:
+                {'Bi': {'s': Dos, 'p': Dos}, 'S': {'s' Dos, ...}.
+
+                Usually generated ysing the dos.get_pdos() function.
+        """
         self._dos = dos
         self._pdos = pdos
 
@@ -218,17 +219,18 @@ class VDOSPlotter(object):
 
 
 class VBSPlotter(BSPlotter):
-    """Vaspy class for plotting band structures.
 
-    This class is similar to the pymatgen BSPlotter class but overrides some
-    methods to generate prettier plots.
-
-    Further functionality, such as projected band structure plots are available.
-
-    Args:
-        bs (BandStructure): A pymatgen BandStructure object.
-    """
     def __init__(self, bs):
+        """Vaspy class for plotting band structures.
+
+        This class is similar to the pymatgen BSPlotter class but overrides some
+        methods to generate prettier plots.
+
+        Further functionality, such as projected band structure plots are available.
+
+        Args:
+            bs (BandStructure): A pymatgen BandStructure object.
+        """
         BSPlotter.__init__(self, bs)
 
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
@@ -267,22 +269,24 @@ class VBSPlotter(BSPlotter):
         dists = data['distances']
         eners = data['energy']
 
+        is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
         # nd is branch index, nb is band index, nk is kpoint index
         for nd, nb in itertools.product(range(len(data['distances'])),
                                         range(self._nb_bands)):
             nkpts = len(dists[nd])
+            e = eners[nd][str(Spin.up)][nb]
+
+            # this check is very slow but works for now
             # colour valence bands blue and conduction bands orange in semiconds
-            if (self._bs.is_spin_polarized or self._bs.is_metal() or
-                    nb <= self._bs.get_vbm()['band_index'][Spin.up][0] + 1):
+            if (self._bs.is_spin_polarized or self._bs.is_metal() or np.all(is_vb[nb])):
                 c = '#3953A4'
             else:
                 c = '#FAA316'
 
             # plot band data
-            e = [eners[nd][str(Spin.up)][nb][nk] for nk in range(nkpts)]
             ax.plot(dists[nd], e, ls='-', c=c, linewidth=band_linewidth)
             if self._bs.is_spin_polarized:
-                e = [eners[nd][str(Spin.down)][nb][nk] for nk in range(nkpts)]
+                e = eners[nd][str(Spin.down)][nb]
                 ax.plot(dists[nd], e, 'r--', linewidth=band_linewidth)
 
         self._maketicks(ax)
@@ -372,8 +376,8 @@ class VBSPlotter(BSPlotter):
 
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
-                       vbm_cbm_marker=vbm_cbm_marker, width=width,
-                       height=height, ymin=ymin, ymax=ymax,
+                       vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax,
+                       height=height, width=width,
                        dos_plotter=dos_plotter, dos_options=dos_options)
         # TODO: Add rgb legend
         return plt
@@ -452,14 +456,14 @@ class VBSPlotter(BSPlotter):
 
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
-                       vbm_cbm_marker=vbm_cbm_marker, width=width,
-                       height=height, ymin=ymin, ymax=ymax,
+                       vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax,
+                       height=height, width=width,
                        dos_plotter=dos_plotter, dos_options=dos_options)
         # TODO: Add rgb legend
         return plt
 
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,
-                  vbm_cbm_marker=False, width=6, height=6, ymin=-6, ymax=6,
+                  vbm_cbm_marker=False, ymin=-6, ymax=6, height=6, width=6,
                   dos_plotter=None, dos_options=None):
         # draw line at Fermi level if not zeroing to e-Fermi
         if not zero_to_efermi:
