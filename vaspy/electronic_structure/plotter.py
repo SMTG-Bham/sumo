@@ -287,7 +287,8 @@ class VBSPlotter(BSPlotter):
 
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
-                       vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax, 
+                       vbm_cbm_marker=vbm_cbm_marker, width=width,
+                       height=height, ymin=ymin, ymax=ymax,
                        dos_plotter=dos_plotter, dos_options=dos_options)
         plt.tight_layout()
         return plt
@@ -295,14 +296,14 @@ class VBSPlotter(BSPlotter):
     def get_projected_rgb_plot(self, element_orbitals, zero_to_efermi=True,
                                ymin=-6., ymax=6., width=6., height=6.,
                                vbm_cbm_marker=False, dpi=400, plt=None,
-                               dos_plotter=None, dos_options=None, 
+                               dos_plotter=None, dos_options=None,
                                dos_aspect=3):
         """Get a matplotlib object for a projected rgb bandstructure plot.
 
         The band structure line color depends on the character of the band
         (either different elemental or orbital contributions). Each element/
-        orbital is associated with red, green or blue and the corresponding rgb 
-        color depending on the character of the band is used. The method can 
+        orbital is associated with red, green or blue and the corresponding rgb
+        color depending on the character of the band is used. The method can
         only deal with up to 3 elements/orbitals.
 
         Spin up and spin down are differientiated by a '-' and a '--' line
@@ -371,7 +372,8 @@ class VBSPlotter(BSPlotter):
 
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
-                       vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax, 
+                       vbm_cbm_marker=vbm_cbm_marker, width=width,
+                       height=height, ymin=ymin, ymax=ymax,
                        dos_plotter=dos_plotter, dos_options=dos_options)
         # TODO: Add rgb legend
         return plt
@@ -450,13 +452,14 @@ class VBSPlotter(BSPlotter):
 
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
-                       vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax, 
+                       vbm_cbm_marker=vbm_cbm_marker, width=width,
+                       height=height, ymin=ymin, ymax=ymax,
                        dos_plotter=dos_plotter, dos_options=dos_options)
         # TODO: Add rgb legend
         return plt
 
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,
-                  vbm_cbm_marker=False, ymin=-6, ymax=6,
+                  vbm_cbm_marker=False, width=6, height=6, ymin=-6, ymax=6,
                   dos_plotter=None, dos_options=None):
         # draw line at Fermi level if not zeroing to e-Fermi
         if not zero_to_efermi:
