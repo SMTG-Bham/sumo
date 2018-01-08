@@ -50,7 +50,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
              lm_orbitals=None, atoms=None, total_only=False,
              plot_total=True, legend_cutoff=3, gaussian=None, height=6.,
              width=6., ymin=-6., ymax=6., colours=None, yscale=1,
-             image_format='pdf', dpi=400, plt=None):
+             image_format='pdf', dpi=400, plt=None, fonts=None):
     if not filenames:
         folders = glob.glob('split-*')
         folders = sorted(folders) if folders else ['.']
@@ -100,7 +100,8 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         plt = plotter.get_plot(zero_to_efermi=True, ymin=ymin, ymax=ymax,
                                height=height, width=width,
                                vbm_cbm_marker=vbm_cbm_marker, plt=plt,
-                               dos_plotter=dos_plotter, dos_options=dos_opts)
+                               dos_plotter=dos_plotter, dos_options=dos_opts,
+                               fonts=fonts)
 
     if save_files:
         basename = 'band.{}'.format(image_format)
@@ -278,6 +279,7 @@ def main():
                         help='select image format from pdf, svg, jpg, & png')
     parser.add_argument('--dpi', type=int, default=400,
                         help='pixel density for generated images')
+    parser.add_argument('--font', default=None, help='Font to use.')
 
     args = parser.parse_args()
     logging.basicConfig(filename='vaspy-bandplot.log', level=logging.DEBUG,
@@ -307,7 +309,7 @@ def main():
              legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
              height=args.height, width=args.width, ymin=args.ymin,
              ymax=args.ymax, colours=colours, image_format=args.image_format,
-             dpi=args.dpi)
+             dpi=args.dpi, fonts=[args.font])
 
 
 if __name__ == "__main__":

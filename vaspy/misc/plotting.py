@@ -44,6 +44,7 @@ def pretty_plot(width=5, height=5, plt=None, dpi=None, fonts=None):
     ax.set_ylabel(ax.get_ylabel(), size=_labelsize)
 
     fonts = default_fonts if fonts is None else fonts + default_fonts
+    print(fonts)
 
     rc('font', **{'family': 'sans-serif', 'sans-serif': fonts})
     rc('text', usetex=False)
