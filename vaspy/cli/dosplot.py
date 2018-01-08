@@ -107,7 +107,7 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
 
     if shift:
         dos.energies -= zero_point
-        if vr.parameters['ISMEAR'] == 0 or vr.parameters['ISMEAR'] == -1:
+        if vr.parameters['ISMEAR'] in [-1, 0, 1]:
             dos.energies -= vr.parameters['SIGMA']
 
     if gaussian:
