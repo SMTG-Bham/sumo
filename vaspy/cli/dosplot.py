@@ -45,7 +45,7 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
             total_only=False, plot_total=True, legend_on=True,
             legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6.,
             width=8., xmin=-6., xmax=6., num_columns=2, colours=None, yscale=1,
-            image_format='pdf', dpi=400, plt=None):
+            image_format='pdf', dpi=400, plt=None, fonts=None):
     """A script to plot the density of states from a vasprun.xml file.
 
     Args:
@@ -89,6 +89,7 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
         dpi (int): The dots-per-inch (pixel density) for the image.
         plt (pyplot object): Matplotlib pyplot object to use for plotting.
             If plt is set then no files will be written.
+        fonts (list): List of fonts to use.
 
     Returns:
         A matplotlib pyplot object.
@@ -137,7 +138,8 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
                            plot_total=plot_total, legend_on=legend_on,
                            num_columns=num_columns,
                            legend_frame_on=legend_frame_on,
-                           legend_cutoff=legend_cutoff, dpi=dpi, plt=plt)
+                           legend_cutoff=legend_cutoff, dpi=dpi, plt=plt,
+                           fonts=fonts)
 
     if save_files:
         basename = 'dos.{}'.format(image_format)
@@ -277,6 +279,7 @@ def main():
                         help='select image format from pdf, svg, jpg, & png')
     parser.add_argument('--dpi', type=int, default=400,
                         help='pixel density for generated images')
+    parser.add_argument('--font', default=None, help='Font to use.')
 
     args = parser.parse_args()
     logging.basicConfig(filename='vaspy-dosplot.log', level=logging.DEBUG,
@@ -304,7 +307,8 @@ def main():
             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
             height=args.height, width=args.width, xmin=args.xmin,
             xmax=args.xmax, num_columns=args.columns, colours=colours,
-            yscale=args.yscale, image_format=args.image_format, dpi=args.dpi)
+            yscale=args.yscale, image_format=args.image_format, dpi=args.dpi,
+            fonts=[args.font])
 
 
 if __name__ == "__main__":

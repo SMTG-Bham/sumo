@@ -124,7 +124,7 @@ class VDOSPlotter(object):
     def get_plot(self, subplot=False, width=6., height=8., xmin=-6., xmax=6.,
                  yscale=1, colours=None, plot_total=True, legend_on=True,
                  num_columns=2, legend_frame_on=False, legend_cutoff=3, dpi=400,
-                 plt=None):
+                 fonts=None, plt=None):
         """Get a matplotlib pyplot object of the density of states.
 
         Args:
@@ -145,6 +145,7 @@ class VDOSPlotter(object):
             legend_cutoff (int): The cut-off (in % of maximum DOS plotted) for a
                 elemental/orbital DOS label to appear in the legend.
             dpi (int): The dots-per-inch (pixel density) for the image.
+            fonts (list): List of fonts to use in the plot.
             plt (pyplot object): Matplotlib pyplot object to use for plotting.
 
         Returns:
@@ -158,9 +159,10 @@ class VDOSPlotter(object):
         if subplot:
             nplots = len(plot_data['lines']) + 1
             plt = pretty_subplot(nplots, 1, width=width, height=height,
-                                 dpi=dpi, plt=plt)
+                                 dpi=dpi, plt=plt, fonts=fonts)
         else:
-            plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt)
+            plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt,
+                              fonts=fonts)
 
         mask = plot_data['mask']
         energies = plot_data['energies'][mask]
@@ -253,6 +255,7 @@ class VBSPlotter(BSPlotter):
                 locations.
             dpi (int): The dots-per-inch (pixel density) for the image.
             plt (pyplot object): Matplotlib pyplot object to use for plotting.
+            fonts (list): List of fonts to use in the plot.
         """
         if dos_plotter:
             width = width + height/dos_aspect
