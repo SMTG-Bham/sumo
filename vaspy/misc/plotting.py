@@ -31,7 +31,7 @@ def pretty_plot(width=5, height=5, plt=None, dpi=None, fonts=None):
 
     ax.tick_params(width=_linewidth, size=_ticksize)
     ax.tick_params(which='major', size=_ticksize, width=_linewidth,
-                   labelsize=_ticklabelsize, pad=10, direction='in',
+                   labelsize=_ticklabelsize, pad=7, direction='in',
                    right='off', top='off')
     ax.tick_params(which='minor', size=_ticksize/2, width=_linewidth,
                    direction='in', right='off', top='off')
@@ -69,7 +69,7 @@ def pretty_subplot(nrows, ncols, width=5, height=5, sharex=True,
         ax.set_prop_cycle(colour_cycler())
         ax.tick_params(width=_linewidth, size=_ticksize)
         ax.tick_params(which='major', size=_ticksize, width=_linewidth,
-                       labelsize=_ticklabelsize, pad=10, direction='in',
+                       labelsize=_ticklabelsize, pad=7, direction='in',
                        right='off', top='off')
         ax.tick_params(which='minor', size=_ticksize/2, width=_linewidth,
                        direction='in', right='off', top='off')
