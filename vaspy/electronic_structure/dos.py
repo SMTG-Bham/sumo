@@ -114,7 +114,7 @@ def write_files(dos, pdos, prefix=None, directory=None):
 
     Args:
         dos (Dos): A Dos or complete Dos object.
-        pdos (dict): The projected Dos as a dictionary mapping the elements and 
+        pdos (dict): The projected Dos as a dictionary mapping the elements and
             their orbitals to Dos objects. For example: {'Bi': {'s': Dos}}
         prefix (str): Prefix for file names.
         directory (str): The directory in which to save files.
@@ -125,7 +125,7 @@ def write_files(dos, pdos, prefix=None, directory=None):
     else:
         sdata = [[Spin.up, 1, '(up)'], [Spin.down, -1, '(down)']]
 
-    header = ['#energy']
+    header = ['energy']
     tdos_data = [dos.energies]
     for spin, sign, label in sdata:
         header.append('dos{}'.format(label))
