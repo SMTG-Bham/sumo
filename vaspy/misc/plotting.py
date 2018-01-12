@@ -102,3 +102,13 @@ def colour_cycler():
     from cycler import cycler
     rgb_colours = array(default_colours)/255.
     return cycler('color', rgb_colours)
+
+
+def power_tick(val, pos):
+    from numpy import log10
+    if val == 0:
+        return '$\mathregular{0}$'
+    exponent = int(log10(val))
+    coeff = val / 10**exponent
+    return '$\mathregular{{{:0.1f} x 10^{:2d}}}$'.format(coeff, exponent)
+
