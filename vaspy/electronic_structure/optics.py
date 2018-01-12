@@ -2,6 +2,7 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+import os
 import numpy as np
 
 from scipy.ndimage.filters import gaussian_filter1d
@@ -65,8 +66,8 @@ def calculate_alpha(dielectric, average=True):
 
     Returns:
         The optical absorption, formatted as a tuple of ([energies], [alpha]).
-        If average is set to false, the data is returned as ([energies], [alphaxx,
-        alphayy, alphazz]).
+        If average is set to false, the data is returned as ([energies],
+        [alphaxx, alphayy, alphazz]).
     """
     real_eps = np.array(dielectric[1])[:, :3]
     imag_eps = np.array(dielectric[2])[:, :3]
@@ -107,7 +108,8 @@ def write_files(abs_data, prefix=None, directory=None):
         header = 'energy(eV)'
         if len(absorption[1].shape) == 2:
             header += ' alpha_xx alpha_yy alpha_zz'
-            data = np.concatenate((absorption[0][:, None], absorption[1]), axis=1)
+            data = np.concatenate((absorption[0][:, None], absorption[1]),
+                                  axis=1)
         else:
             header += ' alpha'
             data = np.stack((absorption[0], absorption[1]), axis=1)

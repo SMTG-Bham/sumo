@@ -2,6 +2,19 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+import os
+import argparse
+
+from pymatgen.io.vasp import Vasprun
+
+from vaspy.electronic_structure.plotter import VOpticsPlotter
+from vaspy.electronic_structure.optics import (broaden_eps, calculate_alpha,
+                                               write_files)
+
+import matplotlib as mpl
+mpl.use('Agg')
+
+
 """
 Script to calculate and plot optical spectra from a VASP calculation.
 """
@@ -11,16 +24,6 @@ __version__ = "0.2"
 __maintainer__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"
 __date__ = "Jan 10, 2018"
-
-import argparse
-
-import matplotlib as mpl
-mpl.use('Agg')
-
-from pymatgen.io.vasp import Vasprun
-
-from vaspy.electronic_structure.plotter import VOpticsPlotter
-from vaspy.electronic_structure.optics import broaden_eps, calculate_alpha, write_files
 
 
 def optplot(filenames='vasprun.xml', prefix=None, directory=None,
@@ -122,17 +125,20 @@ def main():
     parser.add_argument('-g', '--gaussian', type=float,
                         help='Amount of gaussian broadening to apply')
     parser.add_argument('-b', '--bandgaps', nargs='*',
-                        help="""Specify fundamental band gaps, if this option is called with
-                        no arguments, the band gap for each system will be read from the
-                        vasprun.xml file. Alternatively, the path to a vasprun.xml file can
-                        be specified, in which case the band gap will be read from this output.
-                        Furthermore, a number can be provided, in which case this value will be
-                        used. If plotting multiple optical spectra then an equivalent number of
-                        band gaps should be specified for this option also.""")
+                        help="""Specify fundamental band gaps, if this option is
+                        called with no arguments, the band gap for each system
+                        will be read from the vasprun.xml file. Alternatively,
+                        the path to a vasprun.xml file can be specified, in
+                        which case the band gap will be read from this output.
+                        Furthermore, a number can be provided, in which case
+                        this value will be used. If plotting multiple optical
+                        spectra then an equivalent number of band gaps should be
+                        specified for this option also.""")
     parser.add_argument('-l', '--labels', nargs='+',
                         help='Labels for the absorption specta.')
     parser.add_argument('-a', '--anisotropic', action='store_false',
-                        help='Give the absorption separated into to the x, y, and z directions')
+                        help="""Give the absorption separated into to the x, y,
+                        and z directions""")
     parser.add_argument('--height', type=float, default=6.,
                         help='The height of the graph')
     parser.add_argument('--width', type=float, default=6.,
@@ -153,11 +159,13 @@ def main():
     parser.add_argument('--font', default=None, help='Font to use.')
     args = parser.parse_args()
 
-    optplot(filenames=args.filenames, prefix=args.prefix, directory=args.directory,
-            gaussian=args.gaussian, band_gaps=args.bandgaps, labels=args.labels,
+    optplot(filenames=args.filenames, prefix=args.prefix,
+            directory=args.directory, gaussian=args.gaussian,
+            band_gaps=args.bandgaps, labels=args.labels,
             average=args.anisotropic, height=args.height, width=args.width,
             xmin=args.xmin, xmax=args.xmax, ymin=args.ymin, ymax=args.ymax,
-            colours=None, image_format=args.image_format, dpi=args.dpi, fonts=[args.font])
+            colours=None, image_format=args.image_format, dpi=args.dpi,
+            fonts=[args.font])
 
 
 if __name__ == "__main__":

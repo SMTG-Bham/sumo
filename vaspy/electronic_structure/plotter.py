@@ -7,7 +7,6 @@ import itertools
 import copy
 
 import numpy as np
-from collections import defaultdict
 
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 
@@ -39,8 +38,8 @@ class VDOSPlotter(object):
     def __init__(self, dos, pdos=None):
         """Vaspy class for plotting DOSs.
 
-        The class should be initialised with the total DOS and partial density of
-        states. The PDOS is usually generated as:
+        The class should be initialised with the total DOS and partial density
+        of states. The PDOS is usually generated as:
 
             pdos = vaspy.electronic_structure.dos.get_pdos()
 
@@ -237,7 +236,8 @@ class VBSPlotter(BSPlotter):
         This class is similar to the pymatgen BSPlotter class but overrides some
         methods to generate prettier plots.
 
-        Further functionality, such as projected band structure plots are available.
+        Further functionality, such as projected band structure plots are
+        available.
 
         Args:
             bs (BandStructure): A pymatgen BandStructure object.
@@ -289,12 +289,12 @@ class VBSPlotter(BSPlotter):
         # nd is branch index, nb is band index, nk is kpoint index
         for nd, nb in itertools.product(range(len(data['distances'])),
                                         range(self._nb_bands)):
-            nkpts = len(dists[nd])
             e = eners[nd][str(Spin.up)][nb]
 
             # this check is very slow but works for now
             # colour valence bands blue and conduction bands orange in semiconds
-            if (self._bs.is_spin_polarized or self._bs.is_metal() or np.all(is_vb[nb])):
+            if (self._bs.is_spin_polarized or self._bs.is_metal() or
+                    np.all(is_vb[nb])):
                 c = '#3953A4'
             else:
                 c = '#FAA316'
@@ -357,18 +357,16 @@ class VBSPlotter(BSPlotter):
             plt = pretty_plot(width, height, dpi=dpi, plt=plt)
             ax = plt.gca()
 
-        band_linewidth = 3.0
-
         if len(element_orbitals) > 3:
             raise ValueError('Too many elements/orbitals specified (max 3)')
 
         data = self.bs_plot_data(zero_to_efermi)
         dists = data['distances']
         eners = data['energy']
-        nkpts = len(dists[0])
         spins = [str(Spin.up), str(Spin.down)] if \
-                self._bs.is_spin_polarized else [str(Spin.up)]
-        colours = self._get_ordered_projections_by_branches(element_orbitals, data,
+            self._bs.is_spin_polarized else [str(Spin.up)]
+        colours = self._get_ordered_projections_by_branches(element_orbitals,
+                                                            data,
                                                             normalise='select')
 
         # ns is spin, nd is branch index, nb is band index, nk is kpoint index
@@ -437,18 +435,16 @@ class VBSPlotter(BSPlotter):
             plt = pretty_plot(width, height, dpi=dpi, plt=plt)
             ax = plt.gca()
 
-        band_linewidth = 3.0
-
         if len(element_orbitals) > 3:
             raise ValueError('Too many elements/orbitals specified (max 3)')
 
         data = self.bs_plot_data(zero_to_efermi)
         dists = data['distances']
         eners = data['energy']
-        nkpts = len(dists[0])
         spins = [str(Spin.up), str(Spin.down)] if \
-                self._bs.is_spin_polarized else [str(Spin.up)]
-        colours = self._get_ordered_projections_by_branches(element_orbitals, data,
+            self._bs.is_spin_polarized else [str(Spin.up)]
+        colours = self._get_ordered_projections_by_branches(element_orbitals,
+                                                            data,
                                                             normalise='select')
 
         # ns is spin, nd is branch index, nb is band index, nk is kpoint index
@@ -595,7 +591,7 @@ class VBSPlotter(BSPlotter):
         proj = self._get_projections_by_branches(dictio)
 
         spins = [str(Spin.up), str(Spin.down)] if \
-                self._bs.is_spin_polarized else [str(Spin.up)]
+            self._bs.is_spin_polarized else [str(Spin.up)]
         nbands = self._nb_bands
 
         sum_proj = []
@@ -625,7 +621,7 @@ class VBSPlotter(BSPlotter):
                 # if select then we just normalise against specified projs
                 if normalise == 'all':
                     sum_p[ns][nb][nk] = np.sum([proj[nd][ns][nb][nk][e][o]
-                            for e, o in itertools.product(elements, orbital)],
+                            for e, o in itertools.product(elements, orbitals)],
                             axis=0)
                 elif normalise == 'select':
                     sum_p[ns][nb][nk] = np.sum([p[ns][nb][nk] for p in tproj])
@@ -728,8 +724,8 @@ class VOpticsPlotter(object):
         self._label = label
         self._xmax = xmax + 1.
 
-    def get_plot(self, width=6., height=6., xmin=0., xmax=None, ymin=0, ymax=1e5,
-                 colours=None, dpi=400, plt=None, fonts=None):
+    def get_plot(self, width=6., height=6., xmin=0., xmax=None, ymin=0,
+                 ymax=1e5, colours=None, dpi=400, plt=None, fonts=None):
         """Get a matplotlib pyplot object of the density of states.
 
         Args:
@@ -753,15 +749,16 @@ class VOpticsPlotter(object):
         ax = plt.gca()
 
         for (ener, alpha), l, bg, c in zip(self._abs_data, self._label,
-                                            self._band_gap, optics_colours):
+                                           self._band_gap, optics_colours):
             if len(alpha.shape) == 1:
                 # if averaged optics only plot one line
                 ax.plot(ener, alpha, lw=line_width, label=l, c=c)
             else:
-                for i, d, ls in zip(range(3), ['xx', 'yy', 'zz'], ['-', '--', '-.']):
-                    name = d if l == '' else '{}$_\mathregular{{{}}}$'.format(l, d)
+                for i, d, ls in zip(range(3), ['xx', 'yy', 'zz'],
+                                    ['-', '--', '-.']):
+                    n = d if l == '' else '{}$_\mathregular{{{}}}$'.format(l, d)
                     ax.plot(ener, alpha[:, i], lw=line_width, ls=ls,
-                            label=name, c=c)
+                            label=n, c=c)
 
             # plot band gap line
             if bg:
