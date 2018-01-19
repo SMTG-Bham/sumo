@@ -127,8 +127,6 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     else:
         return plt
 
-
-
 def load_dos(dos_file, elements, lm_orbitals, atoms, gaussian, total_only):
     """Load a DOS vasprun and generate a DOS plotter object.
 
