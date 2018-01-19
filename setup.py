@@ -36,5 +36,6 @@ Some handy tools developed by and for the Scanlon Materials Theory Group
                       'vaspy-bandstats = vaspy.cli.bandstats:main',
                       'vaspy-dosplot = vaspy.cli.dosplot:main',
                       'vaspy-kgen = vaspy.cli.kgen:main',
+                      'vaspy-phonon-bandplot = vaspy.cli.phonon_bandplot:main',
                       'vaspy-optplot = vaspy.cli.optplot:main']}
     )
