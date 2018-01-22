@@ -138,7 +138,7 @@ def write_files(dos, pdos, prefix=None, directory=None):
     np.savetxt(filename, tdos_data, header=" ".join(header))
 
     spin = len(dos.densities)
-    for el, el_pdos in pdos.iteritems():
+    for el, el_pdos in pdos.items():
         header = ['energy']
         pdos_data = [dos.energies]
         for orb in sort_orbitals(el_pdos):

@@ -108,7 +108,7 @@ class VDOSPlotter(object):
         # TODO: Fix broken behaviour if plot_total is off
         cutoff = (legend_cutoff / 100.) * (ymax / 1.05)
 
-        for el, el_pdos in pdos.iteritems():
+        for el, el_pdos in pdos.items():
             el_lines = []
             for orb in sort_orbitals(el_pdos):
                 dmax = max([max(d[mask])
@@ -803,5 +803,5 @@ def get_colour_for_element_and_orbital(element, orbital, colours=None):
     """
     try:
         return colours.get(element, orbital)
-    except (configparser.NoSectionError, configparser.NoOptionError):
-        return col_cycle.next()
+    except (configparser.NoSectionError, configparser.NoOptionError, KeyError):
+        return next(col_cycle)
