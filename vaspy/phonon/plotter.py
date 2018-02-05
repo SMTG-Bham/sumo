@@ -9,6 +9,7 @@ import copy
 import numpy as np
 
 from matplotlib.ticker import MaxNLocator, FuncFormatter
+from matplotlib.cbook import flatten
 
 from vaspy.electronic_structure.dos import sort_orbitals
 from vaspy.misc.plotting import (pretty_plot, pretty_subplot,
@@ -100,8 +101,8 @@ class VPhononBSPlotter(PhononBSPlotter):
     def _makeplot(self, ax, fig, data, ymin=None, ymax=None, height=6, width=6,
                   dos_plotter=None, dos_options=None):
         # set x and y limits
-        tymax = ymax if ymax else max(max(max(data['frequency'])))
-        tymin = ymin if ymin else min(min(min(data['frequency'])))
+        tymax = ymax if ymax else max(flatten(data['frequency']))
+        tymin = ymin if ymin else min(flatten(data['frequency']))
         pad = (tymax - tymin) * 0.05
 
         if not ymin:
