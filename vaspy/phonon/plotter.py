@@ -33,7 +33,7 @@ optics_colours = np.array([[23, 71, 158], [217, 59, 43],
 
 class VPhononBSPlotter(PhononBSPlotter):
 
-    def __init__(self, bs):
+    def __init__(self, bs, imag_tol=-5e-2):
         """Vaspy class for plotting phonon band structures.
 
         This class is similar to the pymatgen PhononBSPlotter class but
@@ -43,6 +43,7 @@ class VPhononBSPlotter(PhononBSPlotter):
             bs (BandStructure): A pymatgen PhononBandStructureSymmLine object.
         """
         PhononBSPlotter.__init__(self, bs)
+        self.imag_tol = imag_tol
 
     def get_plot(self, ymin=None, ymax=None, width=6., height=6., dpi=400,
                  plt=None, dos_plotter=None, dos_options=None, dos_aspect=3, 
@@ -98,13 +99,13 @@ class VPhononBSPlotter(PhononBSPlotter):
 
     def _makeplot(self, ax, fig, data, ymin=None, ymax=None, height=6, width=6,
                   dos_plotter=None, dos_options=None):
-
         # set x and y limits
         tymax = ymax if ymax else max(max(max(data['frequency'])))
         tymin = ymin if ymin else min(min(min(data['frequency'])))
         pad = (tymax - tymin) * 0.05
+
         if not ymin:
-            ymin = 0 if tymin > -1e-2 else tymin - pad
+            ymin = 0 if tymin >= self.imag_tol else tymin - pad
         ymax = ymax if ymax else tymax + pad
 
         ax.set_ylim(ymin, ymax)
@@ -124,7 +125,6 @@ class VPhononBSPlotter(PhononBSPlotter):
         """Utility method to add tick marks to a band structure."""
         # set y-ticks
         ax.yaxis.set_major_locator(MaxNLocator(6))
-        ax.yaxis.set_minor_locator(MaxNLocator(12))
 
         # set x-ticks; only plot the unique tick labels
         ticks = self.get_ticks()
