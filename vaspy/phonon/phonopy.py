@@ -10,7 +10,7 @@ from phonopy.units import VaspToTHz, Hartree, Bohr
 
 from pymatgen.io.phonopy import get_phonopy_structure
 
-def load_phonopy(filename, structure, dim, symprec=0.01, primitive_matrix=None, 
+def load_phonopy(filename, structure, dim, symprec=0.01, primitive_matrix=None,
                  factor=VaspToTHz, symmetrise=True, born=None, write_fc=False):
     unitcell = get_phonopy_structure(structure)
     num_atom = unitcell.get_number_of_atoms()
@@ -62,6 +62,6 @@ def load_phonopy(filename, structure, dim, symprec=0.01, primitive_matrix=None,
         logging.info("Force constants written to force_constants.hdf5.")
     elif write_fc:
         file_IO.write_FORCE_CONSTANTS(phonon.get_force_constants())
-        logging.info("Force constants written to force_constants.hdf5.")
+        logging.info("Force constants written to FORCE_CONSTANTS.")
 
     return phonon

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
@@ -9,6 +8,9 @@ import logging
 import argparse
 import numpy as np
 import h5py
+
+import matplotlib as mpl
+mpl.use('Agg')
 
 from phonopy.units import VaspToTHz
 
