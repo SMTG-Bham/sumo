@@ -112,7 +112,11 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
             dos.energies -= vr.parameters['SIGMA']
 
     if gaussian:
-        dos = dos.get_smeared_vaspdos(gaussian)
+        dos.densities = dos.get_smeared_densities(gaussian)
+        for site in dos.pdos:
+            for orbital in dos.pdos[site]:
+                dos.pdos[site][orbital] = dos.get_site_orbital_dos(site,
+                                    orbital).get_smeared_densities(gaussian)
 
     # TODO: This is fustrating for other users who don't know this. Can we give
     # this responsibily to plotting functions
