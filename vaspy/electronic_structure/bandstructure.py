@@ -30,11 +30,11 @@ class Kpath(object):
         prim (Structure): The standardised primitive cell structure needed for
             to obtain the correct band structure.
         conv (Structure): The standardised conventional cell structure.
-        lattice_type (str): The Bravais lattice system. Hexagonal cells are 
+        lattice_type (str): The Bravais lattice system. Hexagonal cells are
             separated into rhombohedral and hexagonal lattices.
         spg_symbol (str): The international space group symbol.
         spg_number (int): The international space group number.
-        path_string (str): The high-symmetry k-point path formatted with arrows 
+        path_string (str): The high-symmetry k-point path formatted with arrows
             and showing disconnections between subpaths. For example:
             "X -> Gamma | Y -> Z".
     """
@@ -92,7 +92,6 @@ class Kpath(object):
             A list k-points along the high-symmetry path, together with the
             high symmetry labels for each k-point. Returned as: kpoints, labels.
         """
-
         return get_kpoints(self.structure, self.kpoints, self.path,
                            line_density=line_density, cart_coords=cart_coords,
                            phonopy=phonopy)
@@ -153,11 +152,11 @@ class BradCrackKpath(Kpath):
         prim (Structure): The standardised primitive cell structure needed for
             to obtain the correct band structure.
         conv (Structure): The standardised conventional cell structure.
-        lattice_type (str): The Bravais lattice system. Hexagonal cells are 
+        lattice_type (str): The Bravais lattice system. Hexagonal cells are
             separated into rhombohedral and hexagonal lattices.
         spg_symbol (str): The international space group symbol.
         spg_number (int): The international space group number.
-        path_string (str): The high-symmetry k-point path formatted with arrows 
+        path_string (str): The high-symmetry k-point path formatted with arrows
             and showing disconnections between subpaths. For example:
             "X -> Gamma | Y -> Z".
     """
@@ -553,7 +552,7 @@ class SeekpathKpath(Kpath):
             separated into rhombohedral and hexagonal lattices.
         spg_symbol (str): The international space group symbol.
         spg_number (int): The international space group number.
-        path_string (str): The high-symmetry k-point path formatted with arrows 
+        path_string (str): The high-symmetry k-point path formatted with arrows
             and showing disconnections between subpaths. For example:
             "X -> Gamma | Y -> Z".
     """
@@ -612,11 +611,11 @@ class PymatgenKpath(Kpath):
         prim (Structure): The standardised primitive cell structure needed for
             to obtain the correct band structure.
         conv (Structure): The standardised conventional cell structure.
-        lattice_type (str): The Bravais lattice system. Hexagonal cells are 
+        lattice_type (str): The Bravais lattice system. Hexagonal cells are
             separated into rhombohedral and hexagonal lattices.
         spg_symbol (str): The international space group symbol.
         spg_number (int): The international space group number.
-        path_string (str): The high-symmetry k-point path formatted with arrows 
+        path_string (str): The high-symmetry k-point path formatted with arrows
             and showing disconnections between subpaths. For example:
             "X -> Gamma | Y -> Z".
     """

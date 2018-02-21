@@ -126,8 +126,7 @@ def get_kpt_path(structure, mode='bradcrack', symprec=0.01, spg=None,
         kpoints, labels, path_str, kpt_dict = get_kpoints_from_list(
             structure, kpt_list, path_labels=labels, line_density=density)
     else:
-        kpoints, labels = kpath.get_kpoints(line_density=line_density, 
-                                            phonopy=True)
+        kpoints, labels = kpath.get_kpoints(line_density=line_density)
         path_str = kpath.path_string
         kpt_dict = kpath.kpoints
 
