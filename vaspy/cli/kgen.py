@@ -103,7 +103,7 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
     if make_folders and ibz and kpts_per_split is None:
         logging.info("\nFound {} total kpoints in path, do you want to "
                      "split them up? (y/n)".format(len(kpoints)))
-        if raw_input()[0].lower() == 'y':
+        if input()[0].lower() == 'y':
             logging.info("How many kpoints per file?")
             kpts_per_split = input()
 
