@@ -168,9 +168,9 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
     """
     if kpts_per_split:
         kpt_splits = [kpoints[i:i+kpts_per_split] for
-                      i in xrange(0, len(kpoints), kpts_per_split)]
+                      i in range(0, len(kpoints), kpts_per_split)]
         label_splits = [labels[i:i+kpts_per_split] for
-                        i in xrange(0, len(labels), kpts_per_split)]
+                        i in range(0, len(labels), kpts_per_split)]
     else:
         kpt_splits = [kpoints]
         label_splits = [labels]
