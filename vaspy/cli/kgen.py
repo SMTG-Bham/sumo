@@ -105,7 +105,7 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
                      "split them up? (y/n)".format(len(kpoints)))
         if input()[0].lower() == 'y':
             logging.info("How many kpoints per file?")
-            kpts_per_split = input()
+            kpts_per_split = int(input())
 
     write_kpoint_files(filename, kpoints, labels, make_folders=make_folders,
                        ibzkpt=ibz, kpts_per_split=kpts_per_split,
