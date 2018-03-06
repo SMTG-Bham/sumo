@@ -8,7 +8,8 @@ import copy
 
 import numpy as np
 
-from matplotlib.ticker import MaxNLocator, FuncFormatter
+from matplotlib.ticker import (MaxNLocator, FuncFormatter,
+                               AutoMinorLocator)
 
 from vaspy.electronic_structure.dos import sort_orbitals
 from vaspy.misc.plotting import (pretty_plot, pretty_subplot,
@@ -542,7 +543,7 @@ class VBSPlotter(BSPlotter):
     def _maketicks(self, ax):
         """Utility method to add tick marks to a band structure."""
         # set y-ticks
-        ax.yaxis.set_major_locator(MaxNLocator(6))
+        ax.yaxis.set_major_locator(AutoMinorLocator(2))
         ax.yaxis.set_minor_locator(MaxNLocator(12))
 
         # set x-ticks; only plot the unique tick labels
