@@ -543,8 +543,8 @@ class VBSPlotter(BSPlotter):
     def _maketicks(self, ax):
         """Utility method to add tick marks to a band structure."""
         # set y-ticks
-        ax.yaxis.set_major_locator(AutoMinorLocator(2))
-        ax.yaxis.set_minor_locator(MaxNLocator(12))
+        ax.yaxis.set_major_locator(MaxNLocator(6))
+        ax.yaxis.set_minor_locator(AutoMinorLocator(2))
 
         # set x-ticks; only plot the unique tick labels
         ticks = self.get_ticks()
