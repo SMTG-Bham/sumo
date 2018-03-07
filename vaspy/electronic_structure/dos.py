@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import os
 import numpy as np
 
+from pymatgen.io.vasp.outputs import Vasprun
 from pymatgen.core.periodic_table import get_el_sp
 from pymatgen.electronic_structure.core import Orbital, Spin
 
@@ -18,6 +19,77 @@ __author__ = "Alex Ganose"
 __copyright__ = "Copyright 2017, Scanlon Materials Theory Group"
 __version__ = "0.1"
 __date__ = "Jun 23, 2017"
+
+
+def load_dos(filename, elements, lm_orbitals, atoms, gaussian, total_only,
+             log=False):
+    """Load a vasprun and extract the total and partial density of states
+
+    Args:
+        filename (str): A vasprun.xml file to extract the DOS from.
+        elements (dict): A dict of element names specifying which orbitals to
+            plot. For example {'Bi': ['s', 'px', 'py', 'd']}. If an element
+            symbol is included with an empty list, then all orbitals for that
+            species are considered. If set to None then all orbitals for all
+            elements are considered.
+        lm_orbitals (dict): A list of orbitals for which the lm decomposed
+            contributions should be calculated, in the form {Element: [orbs]}
+        atoms (dict): A dictionary containing a list of atomic indicies over
+            which to sum the DOS, provided as {Element: [atom_indicies]}.
+            Indicies are zero indexed for each atomic species. If an element
+            symbol is included with an empty list, then all sites for that
+            species are considered. If set to None then all sites for all
+            elements are considered.
+        gaussian (float): The sigma of the Gaussian broadening to apply (usually
+            controlled by the SIGMA flag in VASP).
+        total_only (bool): Only extract the total density of states.
+
+    Returns:
+        A tuple of (dos, pdos), where dos is a pymatgen Dos object containing the
+        total density of states and pdos is a dict mapping the elements and
+        their orbitals to Dos objects. For example:
+            {'Bi': {'s': Dos, 'p': Dos ... },
+             'S': {'s' Dos, ...}
+    """
+    vr = Vasprun(filename)
+    band = vr.get_band_structure()
+    dos = vr.complete_dos
+
+    if band.is_metal():
+        if log:
+            logging.info('System is metallic')
+        zero_point = vr.efermi
+    else:
+        if log:
+            logging.info('Band gap: {:.3f}'.format(band.get_band_gap()['energy']))
+            logging.info('DOS band gap: {:.3f}'.format(dos.get_gap()))
+        zero_point = band.get_vbm()['energy']
+
+    dos.energies -= zero_point
+    if vr.parameters['ISMEAR'] in [-1, 0, 1]:
+        dos.energies -= vr.parameters['SIGMA']
+
+    if gaussian:
+        dos = dos.get_smeared_vaspdos(gaussian)
+        for site in dos.pdos:
+            for orbital in dos.pdos[site]:
+                dos.pdos[site][orbital] = dos.get_site_orbital_dos(site,
+                                    orbital).get_smeared_densities(gaussian)
+
+    if vr.parameters['LSORBIT']:
+        # pymatgen includes the spin down channel for SOC calculations, even
+        # though there is no density here. We remove this channel so the
+        # plotting is easier later on.
+        del dos.densities[Spin.down]
+        for site in dos.pdos:
+            for orbital in dos.pdos[site]:
+                del dos.pdos[site][orbital][Spin.down]
+
+    pdos = {}
+    if not total_only:
+        pdos = get_pdos(dos, lm_orbitals=lm_orbitals, atoms=atoms,
+                        elements=elements)
+    return dos, pdos
 
 
 def get_pdos(dos, lm_orbitals=None, atoms=None, elements=None):

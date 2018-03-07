@@ -14,10 +14,9 @@ import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 
-from vaspy.electronic_structure.dos import get_pdos, write_files
+from vaspy.electronic_structure.dos import load_dos, get_pdos, write_files
 from vaspy.electronic_structure.plotter import VDOSPlotter
 
-from pymatgen.io.vasp.outputs import Vasprun
 from pymatgen.electronic_structure.core import Spin
 
 try:
@@ -94,45 +93,8 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
     Returns:
         A matplotlib pyplot object.
     """
-    vr = Vasprun(filename)
-    band = vr.get_band_structure()
-    dos = vr.complete_dos
-
-    if band.is_metal():
-        logging.info('System is metallic')
-        zero_point = vr.efermi
-    else:
-        logging.info('Band gap: {:.3f}'.format(band.get_band_gap()['energy']))
-        logging.info('DOS band gap: {:.3f}'.format(dos.get_gap()))
-        zero_point = band.get_vbm()['energy']
-
-    if shift:
-        dos.energies -= zero_point
-        if vr.parameters['ISMEAR'] in [-1, 0, 1]:
-            dos.energies -= vr.parameters['SIGMA']
-
-    if gaussian:
-        dos.densities = dos.get_smeared_densities(gaussian)
-        for site in dos.pdos:
-            for orbital in dos.pdos[site]:
-                dos.pdos[site][orbital] = dos.get_site_orbital_dos(site,
-                                    orbital).get_smeared_densities(gaussian)
-
-    # TODO: This is fustrating for other users who don't know this. Can we give
-    # this responsibily to plotting functions
-    if vr.parameters['LSORBIT']:
-        # pymatgen includes the spin down channel for SOC calculations, even
-        # though there is no density here. We remove this channel so the
-        # plotting is easier later on.
-        del dos.densities[Spin.down]
-        for site in dos.pdos:
-            for orbital in dos.pdos[site]:
-                del dos.pdos[site][orbital][Spin.down]
-
-    pdos = {}
-    if not total_only:
-        pdos = get_pdos(dos, lm_orbitals=lm_orbitals, atoms=atoms,
-                        elements=elements)
+    dos, pdos = load_dos(filename, elements, lm_orbitals, atoms, gaussian,
+                         total_only)
 
     save_files = False if plt else True  # don't save if pyplot object provided
 
