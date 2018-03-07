@@ -9,7 +9,9 @@ import glob
 import argparse
 
 import numpy as np
+
 from scipy.optimize import curve_fit
+from scipy.constants import physical_constants
 
 from vaspy.electronic_structure.bandstructure import \
     get_reconstructed_band_structure
@@ -29,6 +31,9 @@ __date__ = "March 4, 2018"
 
 
 kpt_str = '[{k[0]:.2f}, {k[1]:.2f}, {k[2]:.2f}]'
+eV_to_hartree = physical_constants['electron volt-hartree relationship'][0]
+bohr_to_m = physical_constants['Bohr radius'][0]
+angstrom_to_bohr = bohr_to_m / 1e-10
 
 # TODO:
 #  - Would be good to reimplement get_vbm and get_cbm methods, with the ability to
@@ -270,8 +275,8 @@ def fit_effective_mass(distances, energies, parabolic=True):
         c = 2 * popt[1]
 
     # coefficient is currently in eV/Angstrom^2/h_bar^2
-    # want it in units of m_e
-    eff_mass = 7.61996348863/c
+    # want it in atomic units so Hartree/bohr^2/h_bar^2
+    eff_mass = (angstrom_to_bohr**2 / eV_to_hartree) / c
     return eff_mass
 
 
