@@ -155,11 +155,13 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
         plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches='tight')
 
         filename='{}_phonon_band.dat'.format(prefix) if prefix else 'phonon_band.dat'
-        with open(filename, 'ab') as f:
-            f.write(b'# k-distance frequency[THz]\n')
+        with open(filename, 'w') as f:
+            header = '#k-distance frequency[THz]\n'
+            f.write(header)
             for band in bs.bands:
-                np.savetxt(f, np.c_[bs.distance, band])
-                f.write(b'\n')
+                for d, e in zip(bs.distance, band):
+                    f.write('{:.8f} {:.8f}\n'.format(d, e))
+                f.write('\n')
     else:
         return plt
 

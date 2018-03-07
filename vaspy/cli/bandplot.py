@@ -123,11 +123,20 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         else:
             zero = bs.get_vbm()['energy']
 
-        with open(filename, 'a') as f:
-            f.write('#k-distance eigenvalue[eV]\n')
+        with open(filename, 'w') as f:
+            header = '#k-distance eigenvalue[eV]\n'
+            f.write(header)
             for band in bs.bands[Spin.up]:
-                np.savetxt(f, np.c_[bs.distance, band - zero])
+                for d, e in zip(bs.distance, band):
+                    f.write('{:.8f} {:.8f}\n'.format(d, e - zero))
                 f.write('\n')
+
+            if bs.is_spin_polarized:
+                for band in bs.bands[Spin.down]:
+                    for d, e in zip(bs.distance, band):
+                        f.write('{:.8f} {:.8f}\n'.format(d, e - zero))
+                    f.write('\n')
+
     else:
         return plt
 
