@@ -3,17 +3,17 @@
 # Distributed under the terms of the MIT License.
 
 import os
+import warnings
 import argparse
-
-from pymatgen.io.vasp import Vasprun
-
-from vaspy.electronic_structure.plotter import VOpticsPlotter
-from vaspy.electronic_structure.optics import (broaden_eps, calculate_alpha,
-                                               write_files)
 
 import matplotlib as mpl
 mpl.use('Agg')
 
+from pymatgen.io.vasp import Vasprun
+
+from vaspy.plotting.optics_plotter import VOpticsPlotter
+from vaspy.electronic_structure.optics import (broaden_eps, calculate_alpha,
+                                               write_files)
 
 """
 Script to calculate and plot optical spectra from a VASP calculation.
@@ -158,6 +158,11 @@ def main():
                         help='pixel density for generated images')
     parser.add_argument('--font', default=None, help='Font to use.')
     args = parser.parse_args()
+
+    warnings.filterwarnings("ignore", category=UserWarning,
+                            module="matplotlib")
+    warnings.filterwarnings("ignore", category=UnicodeWarning,
+                            module="matplotlib")
 
     optplot(filenames=args.filenames, prefix=args.prefix,
             directory=args.directory, gaussian=args.gaussian,

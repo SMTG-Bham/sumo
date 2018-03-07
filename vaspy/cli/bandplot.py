@@ -6,8 +6,8 @@ from __future__ import unicode_literals
 
 import os
 import sys
-import logging
 import glob
+import logging
 import argparse
 import warnings
 
@@ -15,7 +15,10 @@ import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 
-from vaspy.electronic_structure.plotter import VBSPlotter, VDOSPlotter
+from pkg_resources import Requirement, resource_filename
+
+from vaspy.plotting.bs_plotter import VBSPlotter
+from vaspy.plotting.dos_plotter import VDOSPlotter
 from vaspy.electronic_structure.dos import load_dos, get_pdos
 from vaspy.cli.dosplot import atoms, el_orb
 
@@ -234,8 +237,8 @@ def main():
     logging.getLogger('').addHandler(console)
 
     if args.config is None:
-        config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                   'default_colours.ini')
+        config_path = resource_filename(Requirement.parse('vaspy'),
+                                        'conf/orbital_colours.conf')
     else:
         config_path = args.config
     colours = configparser.ConfigParser()

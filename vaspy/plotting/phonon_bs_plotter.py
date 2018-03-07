@@ -4,33 +4,19 @@
 
 import logging
 import itertools
-import copy
 
 import numpy as np
 
-from matplotlib.ticker import MaxNLocator, FuncFormatter
+from matplotlib.ticker import MaxNLocator
 from matplotlib.cbook import flatten
 
 from vaspy.electronic_structure.dos import sort_orbitals
-from vaspy.misc.plotting import (pretty_plot, pretty_subplot,
-                                 colour_cycle, default_colours,
-                                 power_tick)
+from vaspy.plotting import pretty_plot, pretty_subplot
 
 from pymatgen.phonon.plotter import PhononBSPlotter
 
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
-
 line_width = 1.5
-empty_space = 1.05
-label_size = 22
 band_linewidth = 2
-col_cycle = colour_cycle()
-optics_colours = np.array([[23, 71, 158], [217, 59, 43],
-                           [13, 177, 75], [247, 148, 51],
-                           [13, 177, 75]] + default_colours) / 255.
 
 class VPhononBSPlotter(PhononBSPlotter):
 
@@ -47,7 +33,7 @@ class VPhononBSPlotter(PhononBSPlotter):
         self.imag_tol = imag_tol
 
     def get_plot(self, ymin=None, ymax=None, width=6., height=6., dpi=400,
-                 plt=None, dos_plotter=None, dos_options=None, dos_aspect=3, 
+                 plt=None, dos_plotter=None, dos_options=None, dos_aspect=3,
                  fonts=None):
         """Get a matplotlib object for the bandstructure plot.
 
@@ -140,7 +126,7 @@ class VPhononBSPlotter(PhononBSPlotter):
                     unique_d.append(temp_ticks[i][0])
                     unique_l.append(temp_ticks[i][1])
 
-        logging.info('Label positions:')
+        logging.info('\nLabel positions:')
         for dist, label in list(zip(unique_d, unique_l)):
             logging.info('\t{:.4f}: {}'.format(dist, label))
 

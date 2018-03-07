@@ -15,8 +15,8 @@ import argparse
 
 import numpy as np
 
-from vaspy.electronic_structure.bandstructure import (BradCrackKpath,
-            SeekpathKpath, PymatgenKpath, get_kpoints, get_kpoints_from_list)
+from vaspy.symmetry import BradCrackKpath, SeekpathKpath, PymatgenKpath
+from vaspy.symmetry.kpoints import get_kpoints, get_kpoints_from_list
 
 from pymatgen.io.vasp.inputs import Poscar, Kpoints
 from pymatgen.io.vasp.inputs import Poscar, Kpoints
@@ -112,7 +112,7 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
                        directory=directory, cart_coords=cart_coords)
 
 def get_kpt_path(structure, mode='bradcrack', symprec=0.01, spg=None,
-                 line_density=60, kpt_list=None, labels=None):
+                 line_density=60, kpt_list=None, labels=None, phonopy=False):
     spg = _get_space_group_object(spg, mode)
 
     if mode == 'bradcrack':
@@ -124,9 +124,11 @@ def get_kpt_path(structure, mode='bradcrack', symprec=0.01, spg=None,
 
     if kpt_list is not None:
         kpoints, labels, path_str, kpt_dict = get_kpoints_from_list(
-            structure, kpt_list, path_labels=labels, line_density=density)
+            structure, kpt_list, path_labels=labels, line_density=density,
+            phonopy=phonopy)
     else:
-        kpoints, labels = kpath.get_kpoints(line_density=line_density)
+        kpoints, labels = kpath.get_kpoints(line_density=line_density,
+                                            phonopy=phonopy)
         path_str = kpath.path_string
         kpt_dict = kpath.kpoints
 

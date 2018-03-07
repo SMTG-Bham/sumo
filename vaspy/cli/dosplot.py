@@ -14,8 +14,10 @@ import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 
+from pkg_resources import Requirement, resource_filename
+
 from vaspy.electronic_structure.dos import load_dos, get_pdos, write_files
-from vaspy.electronic_structure.plotter import VDOSPlotter
+from vaspy.plotting.dos_plotter import VDOSPlotter
 
 from pymatgen.electronic_structure.core import Spin
 
@@ -255,8 +257,8 @@ def main():
     logging.getLogger('').addHandler(console)
 
     if args.config is None:
-        config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                   'default_colours.ini')
+        config_path = resource_filename(Requirement.parse('vaspy'),
+                                        'conf/orbital_colours.conf')
     else:
         config_path = args.config
     colours = configparser.ConfigParser()

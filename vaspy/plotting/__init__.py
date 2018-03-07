@@ -1,4 +1,6 @@
-#! /usr/bin/env python
+# coding: utf-8
+# Copyright (c) Scanlon Materials Theory Group
+# Distributed under the terms of the MIT License.
 
 from itertools import cycle
 
@@ -111,4 +113,3 @@ def power_tick(val, pos):
     exponent = int(log10(val))
     coeff = val / 10**exponent
     return '$\mathregular{{{:0.1f} x 10^{:2d}}}$'.format(coeff, exponent)
-

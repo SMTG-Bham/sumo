@@ -7,6 +7,10 @@ import sys
 import logging
 import argparse
 import numpy as np
+
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning,
+                        module="h5py")
 import h5py
 
 import matplotlib as mpl
@@ -15,15 +19,13 @@ mpl.use('Agg')
 from phonopy.units import VaspToTHz
 
 from pymatgen.io.vasp.inputs import Poscar
-from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.phonopy import get_ph_bs_symm_line
 
 from vaspy.phonon.phonopy import load_phonopy
-from vaspy.phonon.plotter import VPhononBSPlotter
-from vaspy.electronic_structure.bandstructure import (BradCrackKpath,
-            SeekpathKpath, PymatgenKpath, get_kpoints, get_kpoints_from_list)
+from vaspy.plotting.phonon_bs_plotter import VPhononBSPlotter
+from vaspy.symmetry import BradCrackKpath, SeekpathKpath, PymatgenKpath
+from vaspy.symmetry.kpoints import get_kpoints, get_kpoints_from_list
 
-from vaspy.misc.plotting import pretty_plot
 from vaspy.cli.kgen import get_kpt_path
 
 """
@@ -124,7 +126,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
         # calculate band structure
         _, kpoints, labels = get_kpt_path(poscar.structure, mode=mode,
                                           symprec=symprec, kpt_list=kpt_list,
-                                          labels=labels)
+                                          labels=labels, phonopy=True)
 
         #phonon.set_mesh(mesh, is_gamma_center=False, is_eigenvectors=True,
         #                is_mesh_symmetry=False)
@@ -132,6 +134,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
         phonon.set_band_structure(kpoints)
         yaml_file = 'vaspy_band.yaml'
         phonon._band_structure.write_yaml(labels=labels, filename=yaml_file)
+
     else:
         msg = "Do not recognise file type of {}".format(filename)
         logging.error("\n {}".format(msg))
@@ -246,6 +249,13 @@ def main():
         labels = [path.split(',') for path in args.labels.split('|')]
 
     dim = list(map(float, args.dim)) if args.dim else None
+
+    warnings.filterwarnings("ignore", category=UserWarning,
+                            module="matplotlib")
+    warnings.filterwarnings("ignore", category=UnicodeWarning,
+                            module="matplotlib")
+    warnings.filterwarnings("ignore", category=UserWarning,
+                            module="pymatgen")
 
     phonon_bandplot(args.filename, poscar=args.poscar, prefix=args.prefix, directory=args.directory, dim=dim,
                     born=args.born, qmesh=args.qmesh, spg=spg, line_density=args.density, mode=mode, kpt_list=kpoints,
