@@ -1,3 +1,6 @@
+Vaspy
+-----
+
 Vaspy is a Python toolkit for plotting and analysing VASP calculation. The main features include:
 
  1. Extensive framework for generating high-symmetry k-point paths.
