@@ -26,7 +26,7 @@ Currently the scripts provided by vaspy are:
  - `vaspy-bandplot`: For plotting publication-ready electronic band structure diagrams.
  - `vaspy-dosplot`: For plotting publication-ready electronic density of state diagrams.
  - `vaspy-optplot`: For plotting publication-ready optical absorption plots.
- - `vaspy-phonon_bandplot`: For plotting publication-ready phonon band structure diagrams.
+ - `vaspy-phonon-bandplot`: For plotting publication-ready phonon band structure diagrams.
  - `vaspy-bandstats`: For calculating electron and hole effective masses from a band structure.
 
 Installation
