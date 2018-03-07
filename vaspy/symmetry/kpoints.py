@@ -25,6 +25,14 @@ def get_kpoints(structure, kpoints, path, line_density=20, cart_coords=False,
     Returns:
         A list k-points along the high-symmetry path, together with the
         high symmetry labels for each k-point. Returned as: (kpoints, labels).
+
+        If phonopy=False, then:
+            `kpoints` is a np.array of the k-point fractional coordinates
+                along the high-symmetry path.
+            `labels`is the high symmetry labels for each k-point,
+                (will be '' if no label set).
+        If phonopy is set to True the format will differ.
+        TODO: detail phonopy=True output.
     """
     list_k_points = []
     sym_point_labels = []
@@ -101,6 +109,14 @@ def get_kpoints_from_list(structure, kpt_list, path_labels=None,
         high-symmetry path, and a dictionary mapping the path labels to the
         k-point coordinates (e.g. {label: coords}). Returned as:
         (kpoints, labels, path_string, kpt_dict).
+
+        If phonopy=False, then:
+            `kpoints` is a np.array of the k-point fractional coordinates
+                along the high-symmetry path.
+            `labels`is the high symmetry labels for each k-point,
+                (will be '' if no label set).
+        If phonopy is set to True the format will differ.
+        TODO: detail phonopy=True output.
     """
     # TODO: add warnings for no labels and incorrect number of labels
     flat_kpts = [x for kpts in kpt_list for x in kpts]
@@ -132,3 +148,104 @@ def get_kpoints_from_list(structure, kpt_list, path_labels=None,
                                   cart_coords=cart_coords, phonopy=phonopy)
     path_str = ' | '.join([' -> '.join(subpath) for subpath in path_labels])
     return kpoints, labels, path_str, kpt_dict
+
+
+def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
+                  line_density=60, kpt_list=None, labels=None, phonopy=False):
+    """Calculate the high-symmetry k-point path for a structure.
+
+    The format of the returned data will be different if phonopy is True or
+    False. This is because phonopy requires the labels and kpoints lists to be
+    provided in a different format than kgen.
+
+    Args:
+        structure (Structure): A pymatgen structure object.
+        mode (str): Sets the method used to calculate the high-symmetry path.
+            Choice of 'bradcrack', 'seekpath', and 'pymatgen'.
+        symprec (float): The precision used for determining cell symmetry.
+        spg (str or int): The space group international number or symbol to
+            override the symmetry determined by spglib. This is not recommended
+            and only provided for testing purposes.
+        line_density (int): The density of k-points along the path.
+        kpt_list (list): Manual list of k-points to use. If kpt_list is set it
+            will override the mode selection. Should be formatted as a list of
+            subpaths, each containing a list of k-points. For example:
+            [[[0., 0., 0.], [0., 0., 0.5]], [[0.5, 0., 0.], [0.5, 0.5, 0.]]]
+        labels (list): A list of labels to use along with kpt_list. These should
+            be provided as a list of subpaths, each containing a list of labels.
+            For example: [['Gamma', 'Z'], ['X', 'M']], combined with the above
+            kpt_list would indicate the path: Gamma -> Z | X -> M.
+            If no labels are provided, letters from A -> Z will be used instead.
+        phonopy (bool): Format the k-points and labels for use with phonopy.
+
+    Returns:
+        A tuple of the (kpoint path, kpoints, labels).
+
+        If phonopy=False, then:
+            `kpoints` is a np.array of the k-point fractional coordinates
+                along the high-symmetry path.
+            `labels`is the high symmetry labels for each k-point,
+                (will be '' if no label set).
+
+        If phonopy is set to True the format will differ:
+            TODO: detail phonopy=True output.
+    """
+    import logging
+    from vaspy.symmetry import BradCrackKpath, SeekpathKpath, PymatgenKpath
+    spg = _get_space_group_object(spg, mode)
+
+    if mode == 'bradcrack':
+        kpath = BradCrackKpath(structure, symprec=symprec, spg=spg)
+    elif mode == 'seekpath':
+        kpath = SeekpathKpath(structure, symprec=symprec)
+    elif mode == 'pymatgen':
+        kpath = PymatgenKpath(structure, symprec=symprec)
+
+    if kpt_list is not None:
+        kpoints, labels, path_str, kpt_dict = get_kpoints_from_list(
+            structure, kpt_list, path_labels=labels, line_density=density,
+            phonopy=phonopy)
+    else:
+        kpoints, labels = kpath.get_kpoints(line_density=line_density,
+                                            phonopy=phonopy)
+        path_str = kpath.path_string
+        kpt_dict = kpath.kpoints
+
+    logging.info('Structure information:'.format(structure.num_sites))
+    logging.info('\tSpace group number: {}'.format(kpath._spg_data['number']))
+
+    logging.info('\tInternational symbol: {}'.format(kpath.spg_symbol))
+    logging.info('\tLattice type: {}'.format(kpath.lattice_type))
+
+    logging.info('\nk-point path:\n\t{}'.format(path_str))
+    logging.info('\nk-points:')
+    for label, kpoint in iter(kpt_dict.items()):
+        coord_str = ' '.join(['{}'.format(c) for c in kpoint])
+        logging.info('\t{}: {}'.format(label, coord_str))
+
+    if not phonopy:
+        logging.info('\nk-point label indicies:')
+        for i, label in enumerate(labels):
+            if label:
+                logging.info('\t{}: {}'.format(label, i+1))
+
+    return kpath, kpoints, labels
+
+def _get_space_group_object(spg, mode):
+    if spg and mode != 'bradcrack':
+        logging.error("ERROR: Specifying symmetry only supported using "
+                      "Bradley and Cracknell path.")
+        sys.exit()
+    elif spg:
+        try:
+            if type(spg) is int:
+                spg = SpaceGroup.from_int_number(spg)
+            else:
+                spg = SpaceGroup(spg)
+            logging.error("WARNING: Forcing space group not recommended, the"
+                          " path is likely\nincorrect. Use at your own risk.\n")
+        except ValueError:
+            logging.error("ERROR: Space group not recognised.")
+            sys.exit()
+    return spg
+

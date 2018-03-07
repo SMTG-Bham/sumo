@@ -24,9 +24,9 @@ from pymatgen.io.phonopy import get_ph_bs_symm_line
 from vaspy.phonon.phonopy import load_phonopy
 from vaspy.plotting.phonon_bs_plotter import VPhononBSPlotter
 from vaspy.symmetry import BradCrackKpath, SeekpathKpath, PymatgenKpath
-from vaspy.symmetry.kpoints import get_kpoints, get_kpoints_from_list
+from vaspy.symmetry.kpoints import (get_kpoints, get_kpoints_from_list,
+                                    get_path_data)
 
-from vaspy.cli.kgen import get_kpt_path
 
 """
 A script to plot phonon band structure diagrams
@@ -124,9 +124,9 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
                               born=born, write_fc=False)
 
         # calculate band structure
-        _, kpoints, labels = get_kpt_path(poscar.structure, mode=mode,
-                                          symprec=symprec, kpt_list=kpt_list,
-                                          labels=labels, phonopy=True)
+        _, kpoints, labels = get_path_data(poscar.structure, mode=mode,
+                                           symprec=symprec, kpt_list=kpt_list,
+                                           labels=labels, phonopy=True)
 
         #phonon.set_mesh(mesh, is_gamma_center=False, is_eigenvectors=True,
         #                is_mesh_symmetry=False)

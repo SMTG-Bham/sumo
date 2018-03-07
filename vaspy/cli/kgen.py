@@ -15,10 +15,9 @@ import argparse
 
 import numpy as np
 
-from vaspy.symmetry import BradCrackKpath, SeekpathKpath, PymatgenKpath
-from vaspy.symmetry.kpoints import get_kpoints, get_kpoints_from_list
+from vaspy.symmetry.kpoints import (get_kpoints, get_kpoints_from_list,
+                                    get_path_data)
 
-from pymatgen.io.vasp.inputs import Poscar, Kpoints
 from pymatgen.io.vasp.inputs import Poscar, Kpoints
 from pymatgen.symmetry.groups import SpaceGroup
 
@@ -83,9 +82,9 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
             If no labels are provided, letters from A -> Z will be used instead.
     """
     poscar = Poscar.from_file(filename)
-    kpath, kpoints, labels = get_kpt_path(poscar.structure, mode=mode,
-                                          symprec=symprec, kpt_list=kpt_list,
-                                          labels=labels)
+    kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
+                                           symprec=symprec, kpt_list=kpt_list,
+                                           labels=labels)
 
     if not kpt_list and not np.allclose(poscar.structure.lattice.matrix,
                                         kpath.prim.lattice.matrix):
@@ -111,35 +110,6 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
                        ibzkpt=ibz, kpts_per_split=kpts_per_split,
                        directory=directory, cart_coords=cart_coords)
 
-def get_kpt_path(structure, mode='bradcrack', symprec=0.01, spg=None,
-                 line_density=60, kpt_list=None, labels=None, phonopy=False):
-    spg = _get_space_group_object(spg, mode)
-
-    if mode == 'bradcrack':
-        kpath = BradCrackKpath(structure, symprec=symprec, spg=spg)
-    elif mode == 'seekpath':
-        kpath = SeekpathKpath(structure, symprec=symprec)
-    elif mode == 'pymatgen':
-        kpath = PymatgenKpath(structure, symprec=symprec)
-
-    if kpt_list is not None:
-        kpoints, labels, path_str, kpt_dict = get_kpoints_from_list(
-            structure, kpt_list, path_labels=labels, line_density=density,
-            phonopy=phonopy)
-    else:
-        kpoints, labels = kpath.get_kpoints(line_density=line_density,
-                                            phonopy=phonopy)
-        path_str = kpath.path_string
-        kpt_dict = kpath.kpoints
-
-    logging.info('Structure information:'.format(structure.num_sites))
-    logging.info('\tSpace group number: {}'.format(kpath._spg_data['number']))
-
-    logging.info('\tInternational symbol: {}'.format(kpath.spg_symbol))
-    logging.info('\tLattice type: {}'.format(kpath.lattice_type))
-
-    _print_kpath_information(labels, path_str, kpt_dict)
-    return kpath, kpoints, labels
 
 def write_kpoint_files(filename, kpoints, labels, make_folders=False,
                        ibzkpt=None, kpts_per_split=None, directory=None,
@@ -150,10 +120,10 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
     KPOINTS files are named KPOINTS_band_split_01 etc ...
 
     Args:
+        filename (str): The name of the VASP structure file.
         kpoints (list): A list of kpoints.
         labels (list): A list of labels (should have same length as kpoints).
             Label should be set to '' for non-high-symmetry points.
-        filename (str): The name of the VASP structure file.
         make_folders (bool): Generate folders and copy in relevant files (INCAR,
             POTCAR, POSCAR, and possibily CHGCAR) from the current directory.
         ibzkpt (Ibzkpt): A pymatgen Ibzkpt object. If this is set, the generated
@@ -234,37 +204,6 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             if directory:
                 kpt_filename = os.path.join(directory, kpt_filename)
             kpt_file.write_file(kpt_filename)
-
-
-def _print_kpath_information(labels, path_str, kpt_dict):
-    logging.info('\nk-point path:\n\t{}'.format(path_str))
-    logging.info('\nk-points:')
-    for label, kpoint in iter(kpt_dict.items()):
-        coord_str = ' '.join(['{}'.format(c) for c in kpoint])
-        logging.info('\t{}: {}'.format(label, coord_str))
-    logging.info('\nk-point label indicies:')
-    for i, label in enumerate(labels):
-        if label:
-            logging.info('\t{}: {}'.format(label, i+1))
-
-
-def _get_space_group_object(spg, mode):
-    if spg and mode != 'bradcrack':
-        logging.error("ERROR: Specifying symmetry only supported using "
-                      "Bradley and Cracknell path.")
-        sys.exit()
-    elif spg:
-        try:
-            if type(spg) is int:
-                spg = SpaceGroup.from_int_number(spg)
-            else:
-                spg = SpaceGroup(spg)
-            logging.error("WARNING: Forcing space group not recommended, the"
-                          " path is likely\nincorrect. Use at your own risk.\n")
-        except ValueError:
-            logging.error("ERROR: Space group not recognised.")
-            sys.exit()
-    return spg
 
 
 def _parse_ibzkpt(ibzkpt):
