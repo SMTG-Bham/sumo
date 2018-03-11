@@ -196,12 +196,23 @@ class VBSPlotter(BSPlotter):
             #            c=zip(colour[0], colour[1], colour[2],
             #                  np.ones(len(dists[nd]))))
 
+        # plot the legend
+        colours = ['r', 'g', 'b'] if len(selection) == 3 else ['r', 'b']
+        for c, spec in zip(colours, selection):
+            if type(spec) == str:
+                label = spec
+            else:
+                label = '{} ({})'.format(spec[0], " + ".join(spec[1]))
+            ax.scatter([-10000], [-10000], c=c, s=50, label=label)
+        ax.legend(bbox_to_anchor=(0.95, 1), loc=2, frameon=False,
+                  prop={'size': label_size-2}, handletextpad=0.1)
+
+        # finish and tidy plot
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
                        vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax,
                        height=height, width=width,
                        dos_plotter=dos_plotter, dos_options=dos_options)
-        # TODO: Add rgb legend
         return plt
 
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,

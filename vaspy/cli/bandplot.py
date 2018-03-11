@@ -116,9 +116,6 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         plt.savefig(filename, format=image_format, dpi=dpi,
                     bbox_inches='tight')
 
-        # TODO: save bandstructure dat file properly (spin polarized case
-        # and use numpy). This will currently append to the file, even if
-        # it already exists.
         filename = '{}_band.dat'.format(prefix) if prefix else 'band.dat'
         if bs.is_metal():
             zero = vr.efermi
@@ -142,6 +139,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     else:
         return plt
 
+
 def el_orb_tuple(string):
     """Parse the element and orbital argument strings.
 
@@ -149,12 +147,12 @@ def el_orb_tuple(string):
     all of its orbitals.
 
     Args:
-        string (str): The supplied argument in the form "C.s.p,O".
+        string (str): The supplied argument in the form "Sn.s.p,O".
 
     Returns:
-        A dict of element names specifying which orbitals to plot. For example
-        {'Bi': ['s', 'px', 'py', 'd']}. If an element symbol is included with
-        an empty list, then all orbitals for that species are considered.
+        A list of tuples specifying which elements/orbitals to plot.
+        The output for the above example would be:
+            [('Sn', ('s', 'p')), ('O', ('s', 'p', 'd', 'f'))]
     """
     el_orbs = []
     for split in string.split(','):
@@ -163,6 +161,7 @@ def el_orb_tuple(string):
         orbs = ('s', 'p', 'd', 'f') if len(splits) == 1 else tuple(splits[1:])
         el_orbs.append((el, orbs))
     return el_orbs
+
 
 def main():
     parser = argparse.ArgumentParser(description="""
@@ -283,7 +282,6 @@ def main():
     warnings.filterwarnings("ignore", category=UnicodeWarning,
                             module="matplotlib")
 
-    print(args.project_rgb)
     bandplot(filenames=args.filenames, prefix=args.prefix,
              directory=args.directory, vbm_cbm_marker=args.band_edges,
              project_rgb=args.project_rgb, dos_file=args.dos,
