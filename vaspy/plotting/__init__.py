@@ -113,3 +113,36 @@ def power_tick(val, pos):
     exponent = int(log10(val))
     coeff = val / 10**exponent
     return '$\mathregular{{{:0.1f} x 10^{:2d}}}$'.format(coeff, exponent)
+
+
+def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid"):
+    """An RGB colored line for plotting.
+
+    Creation of segments based on:
+    http://nbviewer.ipython.org/urls/raw.github.com/dpsanders/matplotlib-examples/master/colorline.ipynb
+
+    Args:
+        ax: matplotlib axis
+        x: x-axis data (k-points)
+        y: y-axis data (energies)
+        red: red data
+        green: green data
+        blue: blue data
+        alpha: alpha values data
+        linestyles: linestyle for plot (e.g., "solid" or "dotted")
+    """
+    # TODO: Add interpolation
+    from matplotlib.collections import LineCollection
+    import numpy as np
+
+    pts = np.array([x, y]).T.reshape(-1, 1, 2)
+    seg = np.concatenate([pts[:-1], pts[1:]], axis=1)
+
+    nseg = len(x) - 1
+    r = [0.5 * (red[i] + red[i + 1]) for i in range(nseg)]
+    g = [0.5 * (green[i] + green[i + 1]) for i in range(nseg)]
+    b = [0.5 * (blue[i] + blue[i + 1]) for i in range(nseg)]
+    a = np.ones(nseg, np.float) * alpha
+    lc = LineCollection(seg, colors=list(zip(r, g, b, a)),
+                        linewidth=2, linestyles=linestyles)
+    return lc

@@ -11,7 +11,6 @@ import logging
 import argparse
 import warnings
 
-import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 
@@ -19,7 +18,7 @@ from pkg_resources import Requirement, resource_filename
 
 from vaspy.plotting.bs_plotter import VBSPlotter
 from vaspy.plotting.dos_plotter import VDOSPlotter
-from vaspy.electronic_structure.dos import load_dos, get_pdos
+from vaspy.electronic_structure.dos import load_dos
 from vaspy.cli.dosplot import atoms, el_orb
 
 from pymatgen.io.vasp.outputs import BSVasprun
@@ -66,7 +65,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                 logging.error('ERROR: No vasprun.xml found in {}!'.format(fol))
                 sys.exit()
 
-    parse_projected = True if project else False
+    parse_projected = True if project or project_rgb else False
     bandstructures = []
     for vr_file in filenames:
         vr = BSVasprun(vr_file, parse_projected_eigen=parse_projected)
@@ -74,10 +73,10 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         bandstructures.append(bs)
     bs = get_reconstructed_band_structure(bandstructures)
 
-    #if project and dos_file:
-    #    logging.error('ERROR: Plotting projected band structure with DOS not '
-    #                  'supported.\nPlease use --projected-rgb option.')
-    #    sys.exit()
+    if project and dos_file:
+        logging.error('ERROR: Plotting projected band structure with DOS not '
+                      'supported.\nPlease use --projected-rgb option.')
+        sys.exit()
 
     save_files = False if plt else True  # don't save if pyplot object provided
 
@@ -91,12 +90,14 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                     'colours': colours, 'yscale': yscale}
 
     plotter = VBSPlotter(bs)
-    if project:
-        elemental_orbitals = [('O', 'p'), ('Bi', 'p'), ('I', 'p')]
-        plt = plotter.get_projected_rgb_plot(elemental_orbitals, zero_to_efermi=True,
-                              ymin=ymin, ymax=ymax, height=height, width=width,
-                              vbm_cbm_marker=vbm_cbm_marker, plt=plt,
-                              dos_plotter=dos_plotter, dos_options=dos_opts)
+    if project_rgb:
+        plt = plotter.get_projected_rgb_plot(project_rgb, zero_to_efermi=True,
+                                             ymin=ymin, ymax=ymax,
+                                             height=height, width=width,
+                                             vbm_cbm_marker=vbm_cbm_marker,
+                                             plt=plt,
+                                             dos_plotter=dos_plotter,
+                                             dos_options=dos_opts)
     elif project:
         raise NotImplementedError('projected band structure plotting not yet '
                                   'supported')
@@ -112,12 +113,13 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         filename = '{}_{}'.format(prefix, basename) if prefix else basename
         if directory:
             filename = os.path.join(directory, filename)
-        plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches='tight')
+        plt.savefig(filename, format=image_format, dpi=dpi,
+                    bbox_inches='tight')
 
         # TODO: save bandstructure dat file properly (spin polarized case
         # and use numpy). This will currently append to the file, even if
         # it already exists.
-        filename='{}_band.dat'.format(prefix) if prefix else 'band.dat'
+        filename = '{}_band.dat'.format(prefix) if prefix else 'band.dat'
         if bs.is_metal():
             zero = vr.efermi
         else:
@@ -140,6 +142,27 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     else:
         return plt
 
+def el_orb_tuple(string):
+    """Parse the element and orbital argument strings.
+
+    The presence of an element without any orbitals means that we want to plot
+    all of its orbitals.
+
+    Args:
+        string (str): The supplied argument in the form "C.s.p,O".
+
+    Returns:
+        A dict of element names specifying which orbitals to plot. For example
+        {'Bi': ['s', 'px', 'py', 'd']}. If an element symbol is included with
+        an empty list, then all orbitals for that species are considered.
+    """
+    el_orbs = []
+    for split in string.split(','):
+        splits = split.split('.')
+        el = splits[0]
+        orbs = ('s', 'p', 'd', 'f') if len(splits) == 1 else tuple(splits[1:])
+        el_orbs.append((el, orbs))
+    return el_orbs
 
 def main():
     parser = argparse.ArgumentParser(description="""
@@ -152,21 +175,22 @@ def main():
 
     parser.add_argument('-f', '--filenames', default=None, nargs='+',
                         help="one or more vasprun.xml files to plot")
-    parser.add_argument('-p', '--prefix', help='prefix for the files generated')
+    parser.add_argument('-p', '--prefix', help='prefix for generated files')
     parser.add_argument('-d', '--directory', help='output directory for files')
     parser.add_argument('-b' '--band-edges', dest='band_edges',
                         action='store_true',
                         help='Highlight the band edges with markers')
-    parser.add_argument('--project', default=None, #type=el_orb,
+    parser.add_argument('--project-rgb', default=None, type=el_orb_tuple,
+                        dest='project_rgb',
                         help="""Project DOS onto band structure as red, green,
                         and blue contributions. Can project a maximum of 3
                         orbital/elemental contributions. These should be listed
-                        using the symbols from the POSCAR, seperated via commas.
-                        Specific orbitals can be chosen by adding the orbitals
-                        after the element by using a period as the seperator.
-                        For example, to project the zinc s and p orbitals, and
-                        all the oxygen orbitals, the command would be "--project
-                        Zn.s.p,O".""")
+                        using the symbols from the POSCAR, seperated via
+                        commas. Specific orbitals can be chosen by adding the
+                        orbitals after the element by using a period as the
+                        seperator. For example, to project the zinc s as red,
+                        zinc p as green, and sum all oxygen atoms as blue,
+                        the command would be "--project-rgb Zn.s,Zn.p,O".""")
     parser.add_argument('--dos', default=None,
                         help="""Path to density of states vasprun.xml.
                         Specifying this option will generate combined DOS/band
@@ -192,13 +216,14 @@ def main():
                         option.""")
     parser.add_argument('--atoms', type=atoms, help="""Choose which atoms
                         to calculate the DOS for. This should be listed as the
-                        element (using the symbol from the POSCAR) and the atoms
-                        seperated by a period. For example to plot the oxygen 1,
-                        2 and 3 atoms, the command would be "--atoms O.1.2.3".
-                        The atom indicies start at 1 (as in the VASP output).
-                        You can specify a range to avoid typing all the numbers
-                        out, e.g. the previous command can be written "--atoms
-                        O.1-3". To select all the atoms of an element just
+                        element (using the symbol from the POSCAR) and the
+                        atoms seperated by a period. For example to plot the
+                        oxygen 1, 2 and 3 atoms, the command would be "--atoms
+                        O.1.2.3". The atom indicies start at 1 (as in the VASP
+                        output). You can specify a range to avoid typing all
+                        the numbers out, e.g. the previous command can be
+                        written "--atoms O.1-3".
+                        To select all the atoms of an element just
                         include the element symbol with no numbers after it,
                          e.g. "--atoms Ru" will include all the Ru atoms. If
                         an element is not specified then it will not be
@@ -213,9 +238,9 @@ def main():
     parser.add_argument('--legend-cutoff', type=float, default=3,
                         dest='legend_cutoff',
                         help="""Cut-off in %% of total DOS in visible range that
-                        determines if a line is given a label. Set to 0 to label
-                        all lines. Default is 3 %%. Must be combined with the
-                        --dos option.""")
+                        determines if a line is given a label. Set to 0 to
+                        label all lines. Default is 3 %%. Must be combined with
+                        the --dos option.""")
     parser.add_argument('-g', '--gaussian', type=float,
                         help="""Amount of gaussian broadening to apply. Must be
                         combined with the --dos option.""")
@@ -258,9 +283,11 @@ def main():
     warnings.filterwarnings("ignore", category=UnicodeWarning,
                             module="matplotlib")
 
+    print(args.project_rgb)
     bandplot(filenames=args.filenames, prefix=args.prefix,
              directory=args.directory, vbm_cbm_marker=args.band_edges,
-             project=args.project, dos_file=args.dos, elements=args.elements,
+             project_rgb=args.project_rgb, dos_file=args.dos,
+             elements=args.elements,
              lm_orbitals=args.orbitals, atoms=args.atoms,
              total_only=args.total_only, plot_total=args.total,
              legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
