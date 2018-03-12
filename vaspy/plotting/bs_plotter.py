@@ -7,9 +7,11 @@ import logging
 import numpy as np
 import itertools as it
 
+from scipy.interpolate import interp1d
 from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 
-from vaspy.plotting import pretty_plot, pretty_subplot, rgbline
+from vaspy.plotting import (pretty_plot, pretty_subplot, rgbline,
+                            default_colours)
 from vaspy.electronic_structure.bandstructure import \
         get_projections_by_branches
 
@@ -107,25 +109,22 @@ class VBSPlotter(BSPlotter):
         plt.tight_layout()
         return plt
 
-    def get_projected_rgb_plot(self, selection, zero_to_efermi=True,
-                               ymin=-6., ymax=6., width=6., height=6.,
-                               vbm_cbm_marker=False, dpi=400, plt=None,
-                               dos_plotter=None, dos_options=None,
-                               dos_aspect=3):
-        """Get a matplotlib object for a projected rgb bandstructure plot.
+    def get_projected_plot(self, selection, mode='rgb', interpolate_factor=4,
+                           circle_size=150, projection_cutoff=0.001,
+                           zero_to_efermi=True, ymin=-6., ymax=6., width=6.,
+                           height=6., vbm_cbm_marker=False, dpi=400, plt=None,
+                           dos_plotter=None, dos_options=None,
+                           dos_aspect=3):
+        """Get a matplotlib object for a projected bandstructure plot.
 
-        The band structure line color depends on the character of the band
-        (either different elemental or orbital contributions). Each element/
-        orbital is associated with red, green or blue and the corresponding rgb
-        color depending on the character of the band is used. The method can
-        only deal with up to 3 elements/orbitals.
-
-        Spin up and spin down are differientiated by a '-' and a '--' line
+        For the mode='rgb', spin up and spin down are differientiated by a '-'
+        and a '--' line, otherwise spin up and spin down are plotted
+        seperately.
 
         Args:
-            selection: A list of tuples/strings identifying which elements
-                and orbitals to project on to the band structure. These can be
-                specified by both element and orbital, for example:
+            selection (list): A list of tuples/strings identifying which
+                elements and orbitals to project on to the band structure.
+                These can be specified by both element and orbital, for example
 
                     [('Bi', 's'), ('Bi', 'p'), ('S', 'p')]
 
@@ -139,9 +138,29 @@ class VBSPlotter(BSPlotter):
 
                     [('Bi', 's'), ('Bi', 'p'), ('S', ('s', 'p', 'd'))]
 
-                A maximum of 3 tuples can be plotted simultaneously (one for
-                red, green and blue). The order of the tuples will affect which
-                colour is used.
+                If the plotting mode is 'rgb', a maximum of 3 orbital/element
+                combinations can be plotted simultaneously (one for red, green
+                and blue), otherwise an unlimited number of elements/orbitals
+                can be selected.
+            mode (str): Type of projected band structure to plot. Options are:
+                "rgb": The band structure line color depends on the character
+                    of the band. Each element/orbital contributes either red,
+                    green or blue with the corresponding line colour a mixture
+                    of all three colours. This mode only supports up to with up
+                    to 3 elements/orbitals. The order of the tuples determines
+                    which colour is used.
+                "stacked": The element/orbital contributions are drawn as a
+                    series of stacked circles, with the colour depending on
+                    the composition of the band. The size of the circles can
+                    be scaled using the stacked_marker_size option.
+            circle_size (float): The size of the circles used in the 'stacked'
+                plotting mode.
+            projection_cutoff (float): Don't plot projections with normalised
+                intensitites below this number. This option is useful for
+                stacked plots, where small projections look nasty.
+            interpolate_factor (int): The factor by which to interpolate the
+                band structure (neccessary to make smooth lines). A larger
+                number indicates greater interpolation.
             zero_to_efermi (bool): Automatically subtract off the Fermi energy
                 from the eigenvalues and plot (E-Ef).
             ymin (float): The y-axis (energy) minimum limit.
@@ -153,6 +172,11 @@ class VBSPlotter(BSPlotter):
             dpi (int): The dots-per-inch (pixel density) for the image.
             plt (pyplot object): Matplotlib pyplot object to use for plotting.
         """
+        if mode == 'rgb' and len(selection) > 3:
+            raise ValueError('Too many elements/orbitals specified (max 3)')
+        elif mode == 'solo' and dos_plotter:
+            raise ValueError('Solo mode plotting with DOS not supported')
+
         if dos_plotter:
             width = width + height/dos_aspect
             plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
@@ -164,40 +188,68 @@ class VBSPlotter(BSPlotter):
             plt = pretty_plot(width, height, dpi=dpi, plt=plt)
             ax = plt.gca()
 
-        if len(selection) > 3:
-            raise ValueError('Too many elements/orbitals specified (max 3)')
-
         data = self.bs_plot_data(zero_to_efermi)
-        dists = data['distances']
-        eners = data['energy']
-        nbands = self._nb_bands
         nbranches = len(data['distances'])
-        spins = self._bs.bands.keys()
+
+        # Ensure we do spin up first, then spin down
+        spins = sorted(self._bs.bands.keys(), key=lambda spin: -spin.value)
 
         proj = get_projections_by_branches(self._bs, selection,
                                            normalise='select')
 
-        # nd is branch index, nb is band index
-        for spin, nd, nb in it.product(spins, range(nbranches), range(nbands)):
-            colour = [proj[nd][i][spin][nb] for i in range(len(selection))]
+        # nd is branch index
+        for spin, nd in it.product(spins, range(nbranches)):
 
-            # if only two orbitals then just use red and blue
-            if len(colour) == 2:
-                colour.insert(1, np.zeros((len(dists[nd]))))
+            # mask data to reduce plotting load
+            bands = np.array(data['energy'][nd][str(spin)])
+            mask = np.where(np.any(bands > ymin - 0.05, axis=1) &
+                            np.any(bands < ymax + 0.05, axis=1))
+            distances = data['distances'][nd]
+            bands = bands[mask]
+            weights = [proj[nd][i][spin][mask] for i in range(len(selection))]
 
-            ls = '-' if spin == Spin.up else '--'
+            # interpolate band structure to improve smoothness
+            dx = (distances[1] - distances[0]) / interpolate_factor
+            temp_dists = np.arange(distances[0], distances[-1], dx)
+            bands = interp1d(distances, bands, axis=1)(temp_dists)
+            weights = interp1d(distances, weights, axis=2)(temp_dists)
+            distances = temp_dists
 
-            lc = rgbline(dists[nd], eners[nd][str(spin)][nb], colour[0],
-                         colour[1], colour[2], alpha=1, linestyles=ls)
-            ax.add_collection(lc)
+            if mode == 'rgb':
 
-            # alternative is to use scatter plot
-            # ax.scatter(dists[nd], eners[nd][ns][nb], s=10, edgecolors='none',
-            #            c=zip(colour[0], colour[1], colour[2],
-            #                  np.ones(len(dists[nd]))))
+                # colours aren't used now but needed later for legend
+                colours = ['r', 'g', 'b']
+
+                # if only two orbitals then just use red and blue
+                if len(weights) == 2:
+                    weights = np.insert(weights, 1, np.zeros(weights[0].shape),
+                                        axis=0)
+                    colours = ['r', 'b']
+
+                ls = '-' if spin == Spin.up else '--'
+                lc = rgbline(distances, bands, weights[0],
+                             weights[1], weights[2], alpha=1, linestyles=ls)
+                ax.add_collection(lc)
+
+            elif mode == 'stacked':
+                # TODO: Handle spin
+
+                # use some nice custom colours first, then default colours
+                colours = ['#3952A3', '#FAA41A', '#67BC47', '#6ECCDD',
+                           '#ED2025']
+                colours.extend(np.array(default_colours)/255)
+
+                # very small cicles look crap
+                weights[weights < projection_cutoff] = 0
+
+                distances = list(distances) * len(bands)
+                bands = bands.flatten()
+                zorders = range(-len(weights), 0)
+                for w, c, z in zip(weights, colours, zorders):
+                    ax.scatter(distances, bands, c=c, s=circle_size*w**2,
+                               zorder=z, rasterized=True)
 
         # plot the legend
-        colours = ['r', 'g', 'b'] if len(selection) == 3 else ['r', 'b']
         for c, spec in zip(colours, selection):
             if type(spec) == str:
                 label = spec

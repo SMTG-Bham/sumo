@@ -48,10 +48,11 @@ label_size = 22
 
 
 def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
-             project=None, project_rgb=None, dos_file=None, elements=None,
-             lm_orbitals=None, atoms=None, total_only=False,
-             plot_total=True, legend_cutoff=3, gaussian=None, height=6.,
-             width=6., ymin=-6., ymax=6., colours=None, yscale=1,
+             project_split=None, project_rgb=None, project_stacked=None,
+             interpolate_factor=4, circle_size=150,
+             dos_file=None, elements=None, lm_orbitals=None, atoms=None,
+             total_only=False, plot_total=True, legend_cutoff=3, gaussian=None,
+             height=6., width=6., ymin=-6., ymax=6., colours=None, yscale=1,
              image_format='pdf', dpi=400, plt=None, fonts=None):
     if not filenames:
         folders = glob.glob('split-*')
@@ -65,7 +66,8 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                 logging.error('ERROR: No vasprun.xml found in {}!'.format(fol))
                 sys.exit()
 
-    parse_projected = True if project or project_rgb else False
+    parse_projected = True if (project_split or project_rgb
+                               or project_stacked) else False
     bandstructures = []
     for vr_file in filenames:
         vr = BSVasprun(vr_file, parse_projected_eigen=parse_projected)
@@ -73,9 +75,14 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         bandstructures.append(bs)
     bs = get_reconstructed_band_structure(bandstructures)
 
-    if project and dos_file:
-        logging.error('ERROR: Plotting projected band structure with DOS not '
-                      'supported.\nPlease use --projected-rgb option.')
+    if project_split and dos_file:
+        logging.error('ERROR: Plotting split projected band structure with DOS'
+                      ' not supported.\nPlease use --projected-rgb or '
+                      '--projected-stacked options.')
+
+    if project_rgb and len(project_rgb) > 3:
+        logging.error('ERROR: Plotting RGB projected band structure only '
+                      'supports up to 3 elements/orbitals.')
         sys.exit()
 
     save_files = False if plt else True  # don't save if pyplot object provided
@@ -90,17 +97,27 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                     'colours': colours, 'yscale': yscale}
 
     plotter = VBSPlotter(bs)
-    if project_rgb:
-        plt = plotter.get_projected_rgb_plot(project_rgb, zero_to_efermi=True,
-                                             ymin=ymin, ymax=ymax,
-                                             height=height, width=width,
-                                             vbm_cbm_marker=vbm_cbm_marker,
-                                             plt=plt,
-                                             dos_plotter=dos_plotter,
-                                             dos_options=dos_opts)
-    elif project:
-        raise NotImplementedError('projected band structure plotting not yet '
-                                  'supported')
+    if project_rgb or project_split or project_stacked:
+        if project_rgb:
+            mode = 'rgb'
+            selection = project_rgb
+        elif project_split:
+            mode = 'split'
+            selection = project_split
+            raise NotImplementedError('projected band structure plotting not '
+                                      'yet supported')
+        elif project_stacked:
+            selection = project_stacked
+            mode = 'stacked'
+
+        plt = plotter.get_projected_plot(selection, mode=mode,
+                                         interpolate_factor=interpolate_factor,
+                                         circle_size=circle_size,
+                                         zero_to_efermi=True, ymin=ymin,
+                                         ymax=ymax, height=height, width=width,
+                                         vbm_cbm_marker=vbm_cbm_marker,
+                                         plt=plt, dos_plotter=dos_plotter,
+                                         dos_options=dos_opts)
     else:
         plt = plotter.get_plot(zero_to_efermi=True, ymin=ymin, ymax=ymax,
                                height=height, width=width,
@@ -152,14 +169,16 @@ def el_orb_tuple(string):
     Returns:
         A list of tuples specifying which elements/orbitals to plot.
         The output for the above example would be:
-            [('Sn', ('s', 'p')), ('O', ('s', 'p', 'd', 'f'))]
+            [('Sn', ('s', 'p')), 'O')]
     """
     el_orbs = []
     for split in string.split(','):
         splits = split.split('.')
         el = splits[0]
-        orbs = ('s', 'p', 'd', 'f') if len(splits) == 1 else tuple(splits[1:])
-        el_orbs.append((el, orbs))
+        if len(splits) == 1:
+            el_orbs.append(el)
+        else:
+            el_orbs.append((el, tuple(splits[1:])))
     return el_orbs
 
 
@@ -181,8 +200,9 @@ def main():
                         help='Highlight the band edges with markers')
     parser.add_argument('--project-rgb', default=None, type=el_orb_tuple,
                         dest='project_rgb',
-                        help="""Project DOS onto band structure as red, green,
-                        and blue contributions. Can project a maximum of 3
+                        help="""Project orbital contributions onto band
+                        structure as red, green, and blue lines. Can project
+                        a maximum of 3
                         orbital/elemental contributions. These should be listed
                         using the symbols from the POSCAR, seperated via
                         commas. Specific orbitals can be chosen by adding the
@@ -190,6 +210,25 @@ def main():
                         seperator. For example, to project the zinc s as red,
                         zinc p as green, and sum all oxygen atoms as blue,
                         the command would be "--project-rgb Zn.s,Zn.p,O".""")
+    parser.add_argument('--project-stacked', default=None, type=el_orb_tuple,
+                        dest='project_stacked',
+                        help="""Project orbtal contributions onto band structure
+                        as a series of coloured circles. These should be listed
+                        using the symbols from the POSCAR, seperated via
+                        commas. Specific orbitals can be chosen by adding the
+                        orbitals after the element by using a period as the
+                        seperator. For example, to project the zinc s as red,
+                        zinc p as green, and sum all oxygen atoms as blue,
+                        the command would be "--project-rgb Zn.s,Zn.p,O".""")
+    parser.add_argument('-i', '--interpolate-factor', type=int, default=4,
+                        dest='interpolate_factor',
+                        help="""For projected band structures only: Interpolate
+                        the band structure and projections. A larger factor
+                        indicates increased interpolate. Default is 4.""")
+    parser.add_argument('--circle-size', type=int, default=150,
+                        dest='circle_size',
+                        help="""For stacked projected band structures only:
+                        Maximum size of circles drawn. Default is 150.""")
     parser.add_argument('--dos', default=None,
                         help="""Path to density of states vasprun.xml.
                         Specifying this option will generate combined DOS/band
@@ -284,8 +323,11 @@ def main():
 
     bandplot(filenames=args.filenames, prefix=args.prefix,
              directory=args.directory, vbm_cbm_marker=args.band_edges,
-             project_rgb=args.project_rgb, dos_file=args.dos,
-             elements=args.elements,
+             project_rgb=args.project_rgb,
+             project_stacked=args.project_stacked,
+             interpolate_factor=args.interpolate_factor,
+             circle_size=args.circle_size,
+             dos_file=args.dos, elements=args.elements,
              lm_orbitals=args.orbitals, atoms=args.atoms,
              total_only=args.total_only, plot_total=args.total,
              legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,

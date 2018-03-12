@@ -2,14 +2,19 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+import numpy as np
+
+from cycler import cycler
 from itertools import cycle
+from matplotlib.collections import LineCollection
 
 default_colours = [[240, 163, 255], [0, 117, 220], [153, 63, 0], [76, 0, 92],
                    [66, 102, 0], [255, 0, 16], [157, 204, 0], [194, 0, 136],
                    [0, 51, 128], [255, 164, 5], [255, 255, 0], [255, 80, 5],
                    [94, 241, 242], [116, 10, 255], [153, 0, 0], [0, 153, 143],
-                   [0, 92, 49], [43, 206, 72], [255, 204, 153], [148, 255, 181],
-                   [143, 124, 0], [255, 168, 187], [128, 128, 128]]
+                   [0, 92, 49], [43, 206, 72], [255, 204, 153],
+                   [148, 255, 181], [143, 124, 0], [255, 168, 187],
+                   [128, 128, 128]]
 
 default_fonts = ['Whitney Book Extended', 'Arial', 'Whitney Book', 'Helvetica',
                  'Liberation Sans', 'Andale Sans']
@@ -94,23 +99,19 @@ def pretty_subplot(nrows, ncols, width=5, height=5, sharex=True,
 
 
 def colour_cycle():
-    from numpy import array
-    rgb_colours = array(default_colours)/255.
+    rgb_colours = np.array(default_colours)/255.
     return cycle(rgb_colours)
 
 
 def colour_cycler():
-    from numpy import array
-    from cycler import cycler
-    rgb_colours = array(default_colours)/255.
+    rgb_colours = np.array(default_colours)/255.
     return cycler('color', rgb_colours)
 
 
 def power_tick(val, pos):
-    from numpy import log10
     if val == 0:
         return '$\mathregular{0}$'
-    exponent = int(log10(val))
+    exponent = int(np.log10(val))
     coeff = val / 10**exponent
     return '$\mathregular{{{:0.1f} x 10^{:2d}}}$'.format(coeff, exponent)
 
@@ -118,31 +119,39 @@ def power_tick(val, pos):
 def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid"):
     """An RGB colored line for plotting.
 
-    Creation of segments based on:
-    http://nbviewer.ipython.org/urls/raw.github.com/dpsanders/matplotlib-examples/master/colorline.ipynb
-
     Args:
         ax: matplotlib axis
-        x: x-axis data (k-points)
-        y: y-axis data (energies)
-        red: red data
-        green: green data
-        blue: blue data
-        alpha: alpha values data
+        x: x-axis data
+        y: y-axis data (can be multidimensional array)
+        red: red data (must have same shape as y)
+        green: green data (must have same shape as y)
+        blue: blue data (must have same shape as y)
+        alpha: alpha values data (must have same shape as y or be int)
         linestyles: linestyle for plot (e.g., "solid" or "dotted")
     """
-    # TODO: Add interpolation
-    from matplotlib.collections import LineCollection
-    import numpy as np
+    y = np.array(y)
+    if len(y.shape) == 1:
+        y = np.array([y])
+        red = np.array([red])
+        green = np.array([green])
+        blue = np.array([blue])
+        alpha = np.array([alpha])
+    elif type(alpha) == int:
+        alpha = [alpha] * len(y)
 
-    pts = np.array([x, y]).T.reshape(-1, 1, 2)
-    seg = np.concatenate([pts[:-1], pts[1:]], axis=1)
+    seg = []
+    colours = []
+    for yy, rr, gg, bb, aa in zip(y, red, green, blue, alpha):
+        pts = np.array([x, yy]).T.reshape(-1, 1, 2)
+        seg.extend(np.concatenate([pts[:-1], pts[1:]], axis=1))
 
-    nseg = len(x) - 1
-    r = [0.5 * (red[i] + red[i + 1]) for i in range(nseg)]
-    g = [0.5 * (green[i] + green[i + 1]) for i in range(nseg)]
-    b = [0.5 * (blue[i] + blue[i + 1]) for i in range(nseg)]
-    a = np.ones(nseg, np.float) * alpha
-    lc = LineCollection(seg, colors=list(zip(r, g, b, a)),
+        nseg = len(x) - 1
+        r = [0.5 * (rr[i] + rr[i + 1]) for i in range(nseg)]
+        g = [0.5 * (gg[i] + gg[i + 1]) for i in range(nseg)]
+        b = [0.5 * (bb[i] + bb[i + 1]) for i in range(nseg)]
+        a = np.ones(nseg, np.float) * aa
+        colours.extend(list(zip(r, g, b, a)))
+
+    lc = LineCollection(seg, colors=colours, rasterized=True,
                         linewidth=2, linestyles=linestyles)
     return lc
