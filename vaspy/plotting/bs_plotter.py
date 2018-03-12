@@ -226,6 +226,9 @@ class VBSPlotter(BSPlotter):
                                         axis=0)
                     colours = ['r', 'b']
 
+                # sometimes get very small negative weights
+                weights[weights < 0] = 0
+
                 ls = '-' if spin == Spin.up else '--'
                 lc = rgbline(distances, bands, weights[0],
                              weights[1], weights[2], alpha=1, linestyles=ls)
