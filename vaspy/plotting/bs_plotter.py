@@ -215,6 +215,9 @@ class VBSPlotter(BSPlotter):
             weights = interp1d(distances, weights, axis=2)(temp_dists)
             distances = temp_dists
 
+            # sometimes VASP produces very small negative weights
+            weights[weights < 0] = 0
+
             if mode == 'rgb':
 
                 # colours aren't used now but needed later for legend
@@ -225,9 +228,6 @@ class VBSPlotter(BSPlotter):
                     weights = np.insert(weights, 1, np.zeros(weights[0].shape),
                                         axis=0)
                     colours = ['r', 'b']
-
-                # sometimes get very small negative weights
-                weights[weights < 0] = 0
 
                 ls = '-' if spin == Spin.up else '--'
                 lc = rgbline(distances, bands, weights[0],
@@ -252,6 +252,7 @@ class VBSPlotter(BSPlotter):
                     ax.scatter(distances, bands, c=c, s=circle_size*w**2,
                                zorder=z, rasterized=True)
 
+        # TODO: Fix legend case with DOS
         # plot the legend
         for c, spec in zip(colours, selection):
             if type(spec) == str:
