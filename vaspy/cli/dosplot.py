@@ -3,6 +3,7 @@
 # Distributed under the terms of the MIT License.
 
 from __future__ import unicode_literals
+from pkg_resources import Requirement, resource_filename
 
 import os
 import sys
@@ -14,12 +15,8 @@ import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 
-from pkg_resources import Requirement, resource_filename
-
-from vaspy.electronic_structure.dos import load_dos, get_pdos, write_files
+from vaspy.electronic_structure.dos import load_dos, write_files
 from vaspy.plotting.dos_plotter import VDOSPlotter
-
-from pymatgen.electronic_structure.core import Spin
 
 try:
     import configparser
@@ -35,7 +32,6 @@ __version__ = "1.0"
 __maintainer__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"
 __date__ = "March 13, 2017"
-
 
 # TODO:
 #   - implement magnify state
@@ -53,47 +49,85 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
         filename (str): A vasprun.xml file to plot (can be gziped).
         prefix (str): A prefix for the files generated.
         directory (str): Specify a directory in which the files are saved.
-        elements (dict): A dict of element names specifying which orbitals to
-            plot. For example {'Bi': ['s', 'px', 'py', 'd']}. If an element
-            symbol is included with an empty list, then all orbitals for that
-            species are considered. If set to None then all orbitals for all
-            elements are considered.
-        lm_orbitals (dict): A list of orbitals for which the lm decomposed
-            contributions should be calculated, in the form {Element: [orbs]}
-        atoms (dict): A dictionary containing a list of atomic indicies over
-            which to sum the DOS, provided as {Element: [atom_indicies]}.
-            Indicies are zero indexed for each atomic species. If an element
-            symbol is included with an empty list, then all sites for that
-            species are considered. If set to None then all sites for all
-            elements are considered.
+        elements (`dict`, optional): The elements and orbitals to plot in the
+            density of states. Should be provided as a `dict` with the keys as
+            the element names and corresponding values as a `tuple` of orbitals
+            to plot. For example, the following would plot the Bi s, px, py and
+            d orbitals:
+
+                `{'Bi': ('s', 'px', 'py', 'd')}`.
+
+            If an element is included with an empty `tuple`, all orbitals for
+            that species will be plotted. If `elements` is not set or set to
+            `None`, all elements for all species will be considered.
+        lm_orbitals (`dict`, optional): The orbitals to decompose into their lm
+            contributions (e.g. p -> px, py, pz). Should be provided as a
+            `dict`, with the elements names as keys and a `tuple` of orbitals
+            as the corresponding values. For example, the following would be
+            used to decompose the oxygen p and d orbitals:
+
+                `{'O': ('p', 'd')}'
+
+        atoms (`dict`, optional): Which atomic sites to plot the density of
+            states for. Should be provided as a `dict`, with the element names
+            as keys and a `tuple` of `int` specifiying the atomic indicies as
+            the corresponding values. The elemental projected density of states
+            will be summed only over the atom inidices specified. If an element
+            is included with an empty `tuple`, then all sites for that element
+            will be included. The indices are 0 based for each element
+            specified in the POSCAR. For example, the following will calculate
+            the denisty of states for the first 4 Sn atoms and all O atoms in
+            the structure:
+
+                `{'Sn': (1, 2, 3, 4), 'O': (, )}`
+
+            If `atoms` is not set or set to `None` then all atomic sites for
+            all elements will be considered.
         subplot (bool): Split the plot up into separate plots for each element.
         shift (bool): Shift the energies such that the valence band maximum is
             at 0 eV.
-        total_only (bool): Only plot the total density of states.
-        plot_total (bool): Whether or not to plot total DOS.
-        legend_on (bool): Whether or not to plot the graph legend.
-        legend_frame_on (bool): Whether or not to plot the graph legend frame.
-        legend_cutoff (int): The cut-off (in % of maximum DOS plotted) for a
-            elemental/orbital DOS label to appear in the legend.
-        gaussian (float): The sigma of the Gaussian broadening to apply (usually
-            controlled by the SIGMA flag in VASP).
-        height (float): The height of the graph (matplotlib only).
-        width (float): The width of the graph (matplotlib only).
-        xmin (float): The minimum energy to plot.
-        xmax (float): The maximum energy to plot.
+        total_only (`bool`, optional): Only plot the total density of states.
+        plot_total (`bool`, optional): If `False`, the total density of states
+            will not be plotted.
+        legend_on (`bool`, optional): Plot the graph legend.
+        legend_frame_on (`bool`, optional): Plot a frame around the legend.
+        legend_cutoff (`float`, optional): The cut-off (in % of the maximum
+            density of states within the plotting range) for an elemental
+            orbital to be labelled in the legendl. This prevents the legend
+            from being full of orbitals that have very little contribution in
+            the plotting range.
+        gaussian (`float`, optional): Broaden the density of states using
+            convolution with a gaussian function. This parameter controls the
+            sigma or smearing width of the gaussian.
+        height (`float`, optional): The height of the plot in inches.
+        width (`float`, optional): The width of the plot in inches.
+        xmin (`float`, optional): The minimum energy to plot.
+        xmax (`float`, optional): The maximum energy to plot.
         num_columns (int): The number of columns in the legend.
-        colours (dict): Specify custom colours as {'Element': colour} where
-            colour is a hex number.
-        yscale (dict): Scaling factor for the y-axis.
-        image_format (str): The image file format (matplotlib only). Can be
-            any format supported by matplot, including: png, jpg, pdf, and svg.
-        dpi (int): The dots-per-inch (pixel density) for the image.
-        plt (pyplot object): Matplotlib pyplot object to use for plotting.
-            If plt is set then no files will be written.
-        fonts (list): List of fonts to use.
+        colours (`dict`, optional): Colours to use when plotting elemental
+            density of states. Should be provided as a `dict`, where the key is
+            the element name and the corresponding value is a `dict` of
+            orbitals and their colour. The colour can be any matplotlib
+            supported colour identifier, e.g. hex, rgb, or name. For example,
+            the following will set the O p orbitals to red and the Sn s
+            orbitals to green.
+
+                `{'Sn': {'s': 'r'}, 'O': {'p': 'g'}}`
+
+            If an orbital colour is not specified, the code will select a
+            colour from a list of 21 visually distinct colours.
+        yscale (`float`, optional): Scaling factor for the y-axis.
+        image_format (`str`, optional): The image file format. Can be any
+            format supported by matplot, including: png, jpg, pdf, and svg.
+        dpi (`int`, optional): The dots-per-inch (pixel density) for the image.
+        plt (`matplotlib.pyplot`, optional): Matplotlib object to use for
+            plotting. If plt is set then no files will be written.
+        fonts (`list`, optional): A `list` of fonts to try and use. Preference
+            will be given to the fonts at he beginning of the list.
 
     Returns:
-        A matplotlib pyplot object.
+        If `plt` set then the `plt object will be returned. Otherwise, the
+        method will return a `list` of filenames written to disk.
     """
     dos, pdos = load_dos(filename, elements, lm_orbitals, atoms, gaussian,
                          total_only)
@@ -102,9 +136,9 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
 
     plotter = VDOSPlotter(dos, pdos)
     plt = plotter.get_plot(subplot=subplot, width=width, height=height,
-                           xmin=xmin, xmax=xmax, yscale=yscale, colours=colours,
-                           plot_total=plot_total, legend_on=legend_on,
-                           num_columns=num_columns,
+                           xmin=xmin, xmax=xmax, yscale=yscale,
+                           colours=colours, plot_total=plot_total,
+                           legend_on=legend_on, num_columns=num_columns,
                            legend_frame_on=legend_frame_on,
                            legend_cutoff=legend_cutoff, dpi=dpi, plt=plt,
                            fonts=fonts)
@@ -174,8 +208,10 @@ def main():
 
     parser.add_argument('-f', '--filename', help='vasprun.xml file to plot',
                         default='vasprun.xml')
-    parser.add_argument('-p', '--prefix', help='prefix for the files generated')
-    parser.add_argument('-d', '--directory', help='output directory for files')
+    parser.add_argument('-p', '--prefix',
+                        help='Prefix for the files generated.')
+    parser.add_argument('-d', '--directory',
+                        help='Output directory for files.')
     parser.add_argument('-e', '--elements', type=el_orb, help="""Choose the
                         elements to plot. These should be listed using the
                         symbols from the POSCAR and seperated via commas.
@@ -192,21 +228,21 @@ def main():
                         the notation described for adding more elements.""")
     parser.add_argument('-a', '--atoms', type=atoms, help="""Choose which atoms
                         to calculate the DOS for. This should be listed as the
-                        element (using the symbol from the POSCAR) and the atoms
-                        seperated by a period. For example to plot the oxygen 1,
-                        2 and 3 atoms, the command would be "-a O.1.2.3". The
-                        atom indicies start at 1 (as in the VASP output). You
-                        can specify a range to avoid typing all the numbers
-                        out, e.g. the previous command can be written "-a
-                        O.1-3". To select all the atoms of an element just
-                        include the element symbol with no numbers after it,
-                         e.g. "-a Ru" will include all the Ru atoms. If
-                        an element is not specified then it will not be
+                        element (using the symbol from the POSCAR) and the
+                        atoms seperated by a period. For example to plot the
+                        oxygen 1, 2 and 3 atoms, the command would be
+                        "-a O.1.2.3". The atom indicies start at 1 (as in the
+                        VASP output). You can specify a range to avoid typing
+                        all the numbers out, e.g. the previous command can be
+                        written "-a O.1-3". To select all the atoms of an
+                        element just include the element symbol with no numbers
+                        after it, e.g. "-a Ru" will include all the Ru atoms.
+                        If an element is not specified then it will not be
                         included in the DOS. More than one element can be added
                         using the notation described above for adding more
                         elements.""")
-    parser.add_argument('-s', '--subplot', action='store_true', help="""Plot the
-                        DOS as a series of subplots rather than on a single
+    parser.add_argument('-s', '--subplot', action='store_true', help="""Plot
+                        the DOS as a series of subplots rather than on a single
                         graph. The height and width arguments for this program
                         refer to the dimensions of a single subplot rather than
                         the overall figure.""")
@@ -223,9 +259,9 @@ def main():
                         help='Display a frame box around the graph legend.')
     parser.add_argument('--legend-cutoff', type=float, default=3,
                         dest='legend_cutoff',
-                        help="""Cut-off in %% of total DOS in visible range that
-                        determines if a line is given a label. Set to 0 to label
-                        all lines. Default is 3 %%""")
+                        help="""Cut-off in %% of total DOS in visible range
+                        that determines if a line is given a label. Set to 0 to
+                        label all lines. Default is 3 %%""")
     parser.add_argument('-g', '--gaussian', type=float,
                         help='Amount of gaussian broadening to apply')
     parser.add_argument('--height', type=float, default=6.,
