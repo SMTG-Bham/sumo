@@ -365,8 +365,8 @@ def el_orb_tuple(string):
 
 def main():
     parser = argparse.ArgumentParser(description="""
-    dosplot is a convenient script to help make publication ready density of
-    states diagrams.""",
+    bandplot is a convenient script to help make publication ready band
+    structure diagrams.""",
                                      epilog="""
     Author: {}
     Version: {}
