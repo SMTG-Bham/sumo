@@ -31,7 +31,7 @@ Some handy tools developed by and for the Scanlon Materials Theory Group
     keywords='chemistry ase dft vasp',
     packages=find_packages(),
     install_requires=['spglib', 'numpy', 'scipy', 'pymatgen', 'h5py',
-                      'phonopy', 'matplotlib'],
+                      'phonopy', 'matplotlib', 'seekpath'],
     package_data={'vaspy': ['conf/orbital_colours.conf']},
     entry_points={'console_scripts': [
                       'vaspy-bandplot = vaspy.cli.bandplot:main',
