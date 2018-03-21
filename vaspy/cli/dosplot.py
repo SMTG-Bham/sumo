@@ -2,6 +2,13 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+A script to plot density of states diagrams
+
+TODO:
+    * Add ability to scale an orbitals density of states
+"""
+
 from __future__ import unicode_literals
 from pkg_resources import Requirement, resource_filename
 
@@ -23,18 +30,11 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-"""
-A script to plot density of states (DOS) diagrams
-"""
-
 __author__ = "Alex Ganose"
 __version__ = "1.0"
 __maintainer__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"
 __date__ = "March 13, 2017"
-
-# TODO:
-#   - implement magnify state
 
 
 def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
