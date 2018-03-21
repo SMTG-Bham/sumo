@@ -2,6 +2,13 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+Module containing helper functions for dealing with band structures.
+
+todo:
+  * Extend get projections to allow specifying lm orbitals and atomic sites.
+"""
+
 import numpy as np
 import itertools as it
 
@@ -13,49 +20,51 @@ from pymatgen.electronic_structure.bandstructure import (BandStructure,
 
 
 def get_projections_by_branches(bs, selection, normalise=None):
-    """Returns a series of (potentially) normalised projections by
-    element and orbital for each branch in the band structure.
+    """Returns orbital projections for each branch in a band structure.
 
     Args:
-        bs (BandStructure): A pymatgen BandStructure or
-            BandStructureSymmLine object.
-        selection: A list of tuples/strings identifying which projections
-            to return. Projections can be specified by both element and
-            orbital, for example:
+        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):
+            The band structure.
+        selection (list): A list of :obj:`tuple` or :obj:`string`
+            identifying which projections to return. Projections can be
+            specified by both element and orbital, for example::
 
-                [('Bi', 's'), ('Bi', 'p'), ('S', 'p')]
+                [('Sn', 's'), ('Bi', 'p'), ('S', 'p')]
 
-            If just the element is specified then all the orbitals of
-            that element are combined. For example:
+            If just the element is specified then all the orbitals of that
+            element are combined. For example, the following will combine
+            all the S orbitals into a single projection::
 
                 [('Bi', 's'), ('Bi', 'p'), 'S']
 
-            You can also choose to sum certain orbitals, by supplying a
-            tuple of orbitals. For example:
+            Particular orbitals can also be combined, for example::
 
                 [('Bi', 's'), ('Bi', 'p'), ('S', ('s', 'p', 'd'))]
 
-            TODO: Extend this specifying lm orbitals and atomic sites.
+        normalise (:obj:`str`, optional): Normalisation the projections.
+            Options are:
 
-        normalise (str, None): How to normalise the data, options are:
-            'all' in which case the selected projections are normalised
-            against all other projections, 'select' in which case the
-            projections are normalised against the sum of the selected
-            projections, and None, in which case no normalisation is
-            performed.
+              * ``'all'``: Projections normalised against the sum of all
+                   other projections.
+              * ``'select'``: Projections normalised against the sum of the
+                   selected projetions.
+              * ``None``: No normalisation performed.
+
+            Defaults to ``None``.
 
     Returns:
-        A list of projections on the elements and orbitals, in the same order
-        as the list of selections, for each branch, with the format:
+        list: A ``list`` of orbital projections for each branch of the band
+        structure, in the same order as specified in ``selection``, with
+        the format::
 
-            [ [{spin: projections}], [{spin: projections}], ... ]
+            [ [ {spin: projections} ], [ {spin: projections} ], ... ]
 
-        Where spin is a pymatgen Spin object and projections is a numpy
-        array of:
+        Where spin is a :obj:`pymatgen.electronic_structure.core.Spin`
+        object and projections is a :obj:`numpy.array` of::
 
             projections[band_index][kpoint_index]
 
-        If there are no projections in the band structure then an array of
+        If there are no projections in the band structure, then an array of
         zeros is returned for each spin.
     """
     spins = bs.bands.keys()
@@ -75,49 +84,50 @@ def get_projections_by_branches(bs, selection, normalise=None):
 
 
 def get_projections(bs, selection, normalise=None):
-    """Returns a series of (potentially) normalised projections by
-    element and orbital.
+    """Returns orbital projections from a band structure.
 
     Args:
-        bs (BandStructure): A pymatgen BandStructure or
-            BandStructureSymmLine object.
-        selection: A list of tuples/strings identifying which projections
-            to return. Projections can be specified by both element and
-            orbital, for example:
+        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):
+            The band structure.
+        selection (list): A list of :obj:`tuple` or :obj:`string`
+            identifying which projections to return. Projections can be
+            specified by both element and orbital, for example::
 
                 [('Bi', 's'), ('Bi', 'p'), ('S', 'p')]
 
             If just the element is specified then all the orbitals of
-            that element are combined. For example:
+            that element are combined. For example, the following will combine
+            all the S orbitals into a single projection::
 
                 [('Bi', 's'), ('Bi', 'p'), 'S']
 
-            You can also choose to sum certain orbitals, by supplying a
-            tuple of orbitals. For example:
+            Particular orbitals can also be combined, for example::
 
                 [('Bi', 's'), ('Bi', 'p'), ('S', ('s', 'p', 'd'))]
 
-            TODO: Extend this specifying lm orbitals and atomic sites.
+        normalise (:obj:`str`, optional): Normalisation the projections.
+            Options are:
 
-        normalise (str, None): How to normalise the data, options are:
-            'all' in which case the selected projections are normalised
-            against all other projections, 'select' in which case the
-            projections are normalised against the sum of the selected
-            projections, and None, in which case no normalisation is
-            performed.
+              * ``'all'``: Projections normalised against the sum of all
+                   other projections.
+              * ``'select'``: Projections normalised against the sum of the
+                   selected projetions.
+              * ``None``: No normalisation performed.
+
+            Defaults to ``None``.
 
     Returns:
-        A list of projections on the elements and orbitals, in the same order
-        as the list of selections, with the format:
+        list: A ``list`` of orbital projections, in the same order as specified
+        in ``selection``, with the format::
 
-            [{spin: projections}]
+            [ {spin: projections}, {spin: projections} ... ]
 
-        Where spin is a pymatgen Spin object and projections is a numpy
-        array of:
+        Where spin is a :obj:`pymatgen.electronic_structure.core.Spin`
+        object and projections is a :obj:`numpy.array` of::
 
             projections[band_index][kpoint_index]
 
-        If there are no projections in the band structure then an array of
+        If there are no projections in the band structure, then an array of
         zeros is returned for each spin.
     """
     spins = bs.bands.keys()
@@ -185,27 +195,30 @@ def get_projections(bs, selection, normalise=None):
 
 
 def get_reconstructed_band_structure(list_bs, efermi=None):
-    """
-    This method takes a list of band structures and reconstructs
-    one band structure object from all of them.
+    """Combine a list of band structures into a single band structure.
 
     This is typically very useful when you split non self consistent
     band structure runs in several independent jobs and want to merge back
     the results.
 
-    This script will also ensure that any BandStructure objects will contain
+    This method will also ensure that any BandStructure objects will contain
     branches.
 
     Args:
-        list_bs: A list of BandStructure or BandStructureSymmLine objects.
-        efermi: The Fermi energy of the reconstructed band structure. If
-            None is assigned an average of all the Fermi energy in each
-            object in the list_bs is used.
-    Returns:
-        A BandStructure or BandStructureSymmLine object (depending on
-        the type of the list_bs objects)
-    """
+        list_bs (:obj:`list` of \
+        :obj:`~pymatgen.electronic_structure.bandstructure.BandStructure` \
+        or :obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):
+            The band structures.
+        efermi (:obj:`float`, optional): The Fermi energy of the reconstructed
+            band structure. If `None`, an average of all the Fermi energies
+            across all band structrues is used.
 
+    Returns:
+        :obj:`pymatgen.electronic_structure.bandstructure.BandStructure` or \
+        :obj:`pymatgen.electronic_structure.bandstructureBandStructureSymmLine`:
+        A band structure object. The type depends on the type of the band
+        structures in ``list_bs``.
+    """
     if efermi is None:
         efermi = sum([b.efermi for b in list_bs]) / len(list_bs)
 
