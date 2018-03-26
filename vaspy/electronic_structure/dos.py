@@ -2,54 +2,84 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+Module containing helper functions for dealing with
+:obj:`~pymatgen.electronic_structure.dos.Dos` and
+:obj:`~pymatgen.electronic_structure.dos.CompleteDos` objects.
+"""
+
 from __future__ import unicode_literals
 
 import os
+import logging
 import numpy as np
 
 from pymatgen.io.vasp.outputs import Vasprun
 from pymatgen.core.periodic_table import get_el_sp
 from pymatgen.electronic_structure.core import Orbital, Spin
 
-"""
-This module contains helper functions for dealing with pymatgen Dos objects
-"""
 
-__author__ = "Alex Ganose"
-__copyright__ = "Copyright 2017, Scanlon Materials Theory Group"
-__version__ = "0.1"
-__date__ = "Jun 23, 2017"
-
-
-def load_dos(filename, elements, lm_orbitals, atoms, gaussian, total_only,
-             log=False):
-    """Load a vasprun and extract the total and partial density of states
+def load_dos(filename, elements=None, lm_orbitals=None, atoms=None,
+             gaussian=None, total_only=False, log=False):
+    """Load a vasprun and extract the total and projected density of states.
 
     Args:
-        filename (str): A vasprun.xml file to extract the DOS from.
-        elements (dict): A dict of element names specifying which orbitals to
-            plot. For example {'Bi': ['s', 'px', 'py', 'd']}. If an element
-            symbol is included with an empty list, then all orbitals for that
-            species are considered. If set to None then all orbitals for all
-            elements are considered.
-        lm_orbitals (dict): A list of orbitals for which the lm decomposed
-            contributions should be calculated, in the form {Element: [orbs]}
-        atoms (dict): A dictionary containing a list of atomic indicies over
-            which to sum the DOS, provided as {Element: [atom_indicies]}.
-            Indicies are zero indexed for each atomic species. If an element
-            symbol is included with an empty list, then all sites for that
-            species are considered. If set to None then all sites for all
-            elements are considered.
-        gaussian (float): The sigma of the Gaussian broadening to apply (usually
-            controlled by the SIGMA flag in VASP).
-        total_only (bool): Only extract the total density of states.
+        filename (str): Path to a vasprun.xml or vasprun.xml.gz file.
+        elements (:obj:`dict`, optional): The elements and orbitals to extract
+            from the projected density of states. Should be provided as a
+            :obj:`dict` with the keys as the element names and corresponding
+            values as a :obj:`tuple` of orbitals. For example, the following
+            would extract the Bi s, px, py and d orbitals::
+
+                {'Bi': ('s', 'px', 'py', 'd')}
+
+            If an element is included with an empty :obj:`tuple`, all orbitals
+            for that species will be extracted. If ``elements`` is not set or
+            set to ``None``, all elements for all species will be extracted.
+        lm_orbitals (:obj:`dict`, optional): The orbitals to decompose into
+            their lm contributions (e.g. p -> px, py, pz). Should be provided
+            as a :obj:`dict`, with the elements names as keys and a
+            :obj:`tuple` of orbitals as the corresponding values. For example,
+            the following would be used to decompose the oxygen p and d
+            orbitals::
+
+                {'O': ('p', 'd')}
+
+        atoms (:obj:`dict`, optional): Which atomic sites to use when
+            calculating the projected density of states. Should be provided as
+            a :obj:`dict`, with the element names as keys and a :obj:`tuple` of
+            :obj:`int` specifiying the atomic indicies as the corresponding
+            values. The elemental projected density of states will be summed
+            only over the atom inidices specified. If an element is included
+            with an empty :obj:`tuple`, then all sites for that element will
+            be included. The indices are 0 based for each element specified in
+            the POSCAR. For example, the following will calculate the density
+            of states for the first 4 Sn atoms and all O atoms in the
+            structure::
+
+                {'Sn': (1, 2, 3, 4), 'O': (, )}
+
+            If ``atoms`` is not set or set to ``None`` then all atomic sites
+            for all elements will be considered.
+        gaussian (`float`, optional): Broaden the density of states using
+            convolution with a gaussian function. This parameter controls the
+            sigma or standard deviation of the gaussian distribution.
+        total_only (:obj:`bool`, optional): Only extract the total density of
+            states. Defaults to ``False``.
+        log (:obj:`bool`): Print logging messages. Defaults to ``False``.
 
     Returns:
-        A tuple of (dos, pdos), where dos is a pymatgen Dos object containing the
-        total density of states and pdos is a dict mapping the elements and
-        their orbitals to Dos objects. For example:
-            {'Bi': {'s': Dos, 'p': Dos ... },
-             'S': {'s' Dos, ...}
+        dict: The total and projected density of states. Formatted as a
+        :obj:`tuple` of ``(dos, pdos)``, where ``dos`` is a
+        :obj:`~pymatgen.electronic_structure.dos.Dos` object containing the
+        total density of states and ``pdos`` is a :obj:`dict` of
+        :obj:`dict` mapping the elements and their orbitals to
+        :obj:`~pymatgen.electronic_structure.dos.Dos` objects. For example::
+
+            {
+                'Bi': {'s': Dos, 'p': Dos ... },
+                'S': {'s': Dos}
+            }
     """
     vr = Vasprun(filename)
     band = vr.get_band_structure()
@@ -61,7 +91,8 @@ def load_dos(filename, elements, lm_orbitals, atoms, gaussian, total_only,
         zero_point = vr.efermi
     else:
         if log:
-            logging.info('Band gap: {:.3f}'.format(band.get_band_gap()['energy']))
+            logging.info('Band gap: {:.3f}'.
+                         format(band.get_band_gap()['energy']))
             logging.info('DOS band gap: {:.3f}'.format(dos.get_gap()))
         zero_point = band.get_vbm()['energy']
 
@@ -93,29 +124,57 @@ def load_dos(filename, elements, lm_orbitals, atoms, gaussian, total_only,
 
 
 def get_pdos(dos, lm_orbitals=None, atoms=None, elements=None):
-    """Gets the projected dos.
+    """Extract the projected density of states from a CompleteDos object.
 
     Args:
-        dos (Dos): A complete Dos object from a Vasprun
-        lm_orbitals (dict): A list of orbitals for which the lm decomposed
-            contributions should be calculated, in the form {Element: [orbs]}
-        atoms (dict): A dictionary containing a list of atomic indicies over
-            which to sum the DOS, provided as {Element: [atom_indicies]}.
-            Indicies are zero indexed for each atomic species. If an element
-            symbol is included with an empty list, then all sites for that
-            species are considered. If set to None then all sites for all
-            elements are considered.
-        elements (dict): A dict of element names specifying which orbitals to
-            plot. For example {'Bi': ['s', 'px', 'py', 'd']}. If an element
-            symbol is included with an empty list, then all orbitals for that
-            species are considered. If set to None then all orbitals for all
-            elements are considered.
+        dos (:obj:`~pymatgen.electronic_structure.dos.CompleteDos`): The
+            density of states.
+        elements (:obj:`dict`, optional): The elements and orbitals to extract
+            from the projected density of states. Should be provided as a
+            :obj:`dict` with the keys as the element names and corresponding
+            values as a :obj:`tuple` of orbitals. For example, the following
+            would extract the Bi s, px, py and d orbitals::
+
+                {'Bi': ('s', 'px', 'py', 'd')}
+
+            If an element is included with an empty :obj:`tuple`, all orbitals
+            for that species will be extracted. If ``elements`` is not set or
+            set to ``None``, all elements for all species will be extracted.
+        lm_orbitals (:obj:`dict`, optional): The orbitals to decompose into
+            their lm contributions (e.g. p -> px, py, pz). Should be provided
+            as a :obj:`dict`, with the elements names as keys and a
+            :obj:`tuple` of orbitals as the corresponding values. For example,
+            the following would be used to decompose the oxygen p and d
+            orbitals::
+
+                {'O': ('p', 'd')}
+
+        atoms (:obj:`dict`, optional): Which atomic sites to use when
+            calculating the projected density of states. Should be provided as
+            a :obj:`dict`, with the element names as keys and a :obj:`tuple` of
+            :obj:`int` specifiying the atomic indicies as the corresponding
+            values. The elemental projected density of states will be summed
+            only over the atom inidices specified. If an element is included
+            with an empty :obj:`tuple`, then all sites for that element will
+            be included. The indices are 0 based for each element specified in
+            the POSCAR. For example, the following will calculate the density
+            of states for the first 4 Sn atoms and all O atoms in the
+            structure::
+
+                {'Sn': (1, 2, 3, 4), 'O': (, )}
+
+            If ``atoms`` is not set or set to ``None`` then all atomic sites
+            for all elements will be considered.
 
     Returns:
-        A dict mapping the elements and their orbitals to Dos objects. For
-        example:
-            {'Bi': {'s': Dos, 'p': Dos ... },
-             'S': {'s' Dos, ...}
+        dict: The projected density of states. Formatted as a :obj:`dict` of
+        :obj:`dict` mapping the elements and their orbitals to
+        :obj:`~pymatgen.electronic_structure.dos.Dos` objects. For example::
+
+            {
+                'Bi': {'s': Dos, 'p': Dos ... },
+                'S': {'s': Dos}
+            }
     """
     if not elements:
         symbols = dos.structure.symbol_set
@@ -141,39 +200,56 @@ def get_pdos(dos, lm_orbitals=None, atoms=None, elements=None):
 
 
 def get_element_pdos(dos, element, sites, lm_orbitals=None, orbitals=None):
-    """Get the projected DOS for an element.
+    """Get the projected density of states for an element.
 
     Args:
-        dos (Dos): A complete Dos object from a Vasprun.
-        element (str): The element symbol.
-        sites (list): A list of atomic indicies over which to sum the DOS,
-            for example [0, 1, 2], will sum the DOSs for the 1st, 2nd and 3rd
-            sites for that element in the structure. Indicies are zero indexed.
-        lm_orbitals (list): A list of orbitals for which the lm decomposed
-            contributions should be calculated. For example: ['p', 'd'].
-        orbitals (list): A list of orbitals to include in the projected Dos.
-            For example: ['s', 'px', 'py', 'dx2'].
+        dos (:obj:`~pymatgen.electronic_structure.dos.CompleteDos`): The
+            density of states.
+        element (str): Element symbol. E.g. 'Zn'.
+        sites (tuple): The atomic indicies over which to sum the density of
+            states, as a :obj:`tuple`. Inidicies are zero based for each
+            element. For example, ``(0, 1, 2)`` will sum the density of states
+            for the 1st, 2nd and 3rd sites of the element specified.
+        lm_orbitals (:obj:`tuple`, optional): The orbitals to decompose into
+            their lm contributions (e.g. p -> px, py, pz). Should be provided
+            as a :obj:`tuple` of :obj:`str`. For example, ``('p')``, will
+            extract the projected density of states for the px, py, and pz
+            orbitals. Defaults to ``None``.
+        orbitals (:obj:`tuple`, optional): The orbitals to extract from the
+            projected density of states. Should be provided as a :obj:`tuple`
+            of :obj:`str`. For example, ``('s', 'px', 'dx2')`` will extract the
+            s, px, and dx2 orbitals, only. If ``None``, all orbitals will be
+            extracted. Defaults to ``None``.
 
     Returns:
-        A dict mapping the elemental orbitals to Dos objects. For example:
-            {'s': Dos,
-             'px': Dos}
+        dict: The projected density of states. Formatted as a :obj:`dict`
+        mapping the orbitals to :obj:`~pymatgen.electronic_structure.dos.Dos`
+        objects. For example::
+
+            {
+                's': Dos,
+                'p': Dos
+            }
     """
     el_dos = {}
     for site in sites:
-        # Bbuild up a list of exactly which elements we are after
-        # First consider only the spd orbitals
+        # build a list of which orbitals we are after
+        # start with s, p, and d orbitals only
         spd = [orb for orb in dos.get_element_spd_dos(element).keys() if
                ((orbitals and orb.name in orbitals) or not orbitals) and
                ((lm_orbitals and orb.name not in lm_orbitals) or
                 not lm_orbitals)]
-        # Now add the lm decomposed orbitals
+
+        # now add any lm decomposed orbitals
         lm = [orb for orb in Orbital
               if lm_orbitals and orb.name[0] in lm_orbitals]
+
+        # extract the data
         for orb in spd:
             pdos = dos.get_site_spd_dos(site)[orb]
             el_dos[orb.name] = el_dos[orb.name] + pdos if orb.name in el_dos \
                                else pdos
+
         for orb in lm:
             pdos = dos.get_site_orbital_dos(site, orb)
             el_dos[orb.name] = el_dos[orb.name] + pdos if orb.name in el_dos \
@@ -182,14 +258,24 @@ def get_element_pdos(dos, element, sites, lm_orbitals=None, orbitals=None):
 
 
 def write_files(dos, pdos, prefix=None, directory=None):
-    """Write the VASP DOS to a series of files containing the formatted data.
+    """Write the density of states data to disk.
 
     Args:
-        dos (Dos): A Dos or complete Dos object.
-        pdos (dict): The projected Dos as a dictionary mapping the elements and
-            their orbitals to Dos objects. For example: {'Bi': {'s': Dos}}
-        prefix (str): Prefix for file names.
-        directory (str): The directory in which to save files.
+        dos (:obj:`~pymatgen.electronic_structure.dos.Dos` or \
+             :obj:`~pymatgen.electronic_structure.dos.CompleteDos`): The total
+            density of states.
+        pdos (dict): The projected density of states. Formatted as a
+            :obj:`dict` of :obj:`dict` mapping the elements and their orbitals
+            to :obj:`~pymatgen.electronic_structure.dos.Dos` objects. For
+            example::
+
+                {
+                    'Bi': {'s': Dos, 'p': Dos},
+                    'S': {'s': Dos}
+                }
+
+        prefix (:obj:`str`, optional): A prefix for file names.
+        directory (:obj:`str`, optional): The directory in which to save files.
     """
     # defining these cryptic lists makes formatting the data much easier later
     if len(dos.densities) == 1:
@@ -229,24 +315,29 @@ def write_files(dos, pdos, prefix=None, directory=None):
 
 
 def sort_orbitals(element_pdos):
-    """Sort the orbitals of an element's projected DOS.
+    """Sort the orbitals of an element's projected density of states.
 
-    Sorts the orbitals based on a standard format. E.g. s -> p -> d.
+    Sorts the orbitals based on a standard format. E.g. s < p < d.
     Will also sort lm decomposed orbitals. This is useful for plotting/saving.
 
     Args:
-        element_pdos: An element pdos in the form {Orbital: Dos}. For example:
-            {'s': Dos, 'px': Dos}
+        element_pdos (dict): An element's pdos. Should be formatted as a
+            :obj:`dict` of ``{orbital: dos}``. Where dos is a
+            :obj:`~pymatgen.electornic_structure.dos.Dos` object. For example::
+
+                {'s': dos, 'px': dos}
 
     Returns:
-        A list of the sorted orbitals
+        list: The sorted orbitals.
     """
     sorted_orbitals = ['s', 'p', 'py', 'pz', 'px',
                        'd', 'dxy', 'dyz', 'dz2', 'dxz', 'dx2',
                        'f', 'f_3', 'f_2', 'f_1', 'f_0', 'f1', 'f2', 'f3']
-    sorted_keys = []
     unsorted_keys = element_pdos.keys()
+
+    sorted_keys = []
     for key in sorted_orbitals:
         if key in unsorted_keys:
             sorted_keys.append(key)
+
     return sorted_keys
