@@ -114,7 +114,7 @@ class VBSPlotter(BSPlotter):
                            zero_to_efermi=True, ymin=-6., ymax=6., width=6.,
                            height=6., vbm_cbm_marker=False, dpi=400, plt=None,
                            dos_plotter=None, dos_options=None,
-                           dos_aspect=3):
+                           dos_aspect=3, fonts=None):
         """Get a matplotlib object for a projected bandstructure plot.
 
         For the mode='rgb', spin up and spin down are differientiated by a '-'
@@ -180,12 +180,12 @@ class VBSPlotter(BSPlotter):
         if dos_plotter:
             width = width + height/dos_aspect
             plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
-                                 plt=plt,
+                                 plt=plt, fonts=fonts,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
                                               'wspace': 0})
             ax = plt.gcf().axes[0]
         else:
-            plt = pretty_plot(width, height, dpi=dpi, plt=plt)
+            plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
             ax = plt.gca()
 
         data = self.bs_plot_data(zero_to_efermi)
@@ -218,20 +218,21 @@ class VBSPlotter(BSPlotter):
             if mode == 'rgb':
 
                 # colours aren't used now but needed later for legend
-                colours = ['r', 'g', 'b']
+                colours = ['#ff0000', '#00ff00', '#0000ff']
 
                 # if only two orbitals then just use red and blue
                 if len(weights) == 2:
                     weights = np.insert(weights, 1, np.zeros(weights[0].shape),
                                         axis=0)
-                    colours = ['r', 'b']
+                    colours = ['#ff0000', '#0000ff']
 
                 # sometimes get very small negative weights
                 weights[weights < 0] = 0
 
                 ls = '-' if spin == Spin.up else '--'
-                lc = rgbline(distances, bands, weights[0],
-                             weights[1], weights[2], alpha=1, linestyles=ls)
+                lc = rgbline(distances, bands, weights[0], weights[1],
+                             weights[2], alpha=1, linestyles=ls,
+                             linewidth=2.5)
                 ax.add_collection(lc)
 
             elif mode == 'stacked':

@@ -116,7 +116,7 @@ def power_tick(val, pos):
     return '$\mathregular{{{:0.1f} x 10^{:2d}}}$'.format(coeff, exponent)
 
 
-def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid"):
+def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid", linewidth=2.5):
     """An RGB colored line for plotting.
 
     Args:
@@ -153,5 +153,5 @@ def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid"):
         colours.extend(list(zip(r, g, b, a)))
 
     lc = LineCollection(seg, colors=colours, rasterized=True,
-                        linewidth=2, linestyles=linestyles)
+                        linewidth=linewidth, linestyles=linestyles)
     return lc
