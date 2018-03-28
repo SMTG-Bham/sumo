@@ -48,6 +48,7 @@ __date__ = "Jan 17, 2018"
 # - Read FORCE_CONSANTS or force_constants.hdf5
 # - change frequency unit
 # - read settings from phonopy config file
+# - prefix file names
 
 def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None,
                     born=None, qmesh=None, spg=None, line_density=60,
@@ -124,9 +125,10 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
                               born=born, write_fc=False)
 
         # calculate band structure
-        _, kpoints, labels = get_path_data(poscar.structure, mode=mode,
-                                           symprec=symprec, kpt_list=kpt_list,
-                                           labels=labels, phonopy=True)
+        kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
+                                               symprec=symprec,
+                                               kpt_list=kpt_list,
+                                               labels=labels, phonopy=True)
 
         #phonon.set_mesh(mesh, is_gamma_center=False, is_eigenvectors=True,
         #                is_mesh_symmetry=False)
@@ -142,7 +144,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
 
     save_files = False if plt else True  # don't save if pyplot object provided
 
-    bs = get_ph_bs_symm_line(yaml_file, has_nac=False, labels_dict=None)
+    bs = get_ph_bs_symm_line(yaml_file, has_nac=False,
+                             labels_dict=kpath.kpoints)
     plotter = VPhononBSPlotter(bs)
     plt = plotter.get_plot(ymin=ymin, ymax=ymax, height=height, width=width,
                            plt=plt, dos_plotter=None, dos_options=None,

@@ -2,6 +2,15 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+A script to generate KPOINTS files for band structure calculations in VASP
+
+TODO:
+  * Add support for CDML labels
+  * Save Brillouin zone diagram
+  * Return a list of filenames/folders
+"""
+
 from __future__ import unicode_literals
 
 import os
@@ -9,21 +18,14 @@ import sys
 import math
 import errno
 import shutil
-import string
 import logging
 import argparse
 
 import numpy as np
 
-from vaspy.symmetry.kpoints import (get_kpoints, get_kpoints_from_list,
-                                    get_path_data)
-
+from vaspy.symmetry.kpoints import get_path_data
 from pymatgen.io.vasp.inputs import Poscar, Kpoints
-from pymatgen.symmetry.groups import SpaceGroup
 
-"""
-A script to generate KPOINTS files for band structure calculations in VASP
-"""
 
 __author__ = "Alex Ganose"
 __version__ = "1.0"
@@ -31,10 +33,6 @@ __maintainer__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"
 __date__ = "July 6, 2017"
 
-# TODO:
-#  - Add support for CDML labels
-#  - Save Brillouin zone diagram
-#  - Return a list of filenames/folders
 
 def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
          kpts_per_split=None, ibzkpt=None, spg=None, density=60,
@@ -85,6 +83,11 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
     kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
                                            symprec=symprec, kpt_list=kpt_list,
                                            labels=labels)
+
+    logging.info('\nk-point label indicies:')
+    for i, label in enumerate(labels):
+        if label:
+            logging.info('\t{}: {}'.format(label, i+1))
 
     if not kpt_list and not np.allclose(poscar.structure.lattice.matrix,
                                         kpath.prim.lattice.matrix):
@@ -259,7 +262,7 @@ def main():
                         help="""specify a list of kpoints manually, written as
                         --kpoints '0 0 0, 0.5 0 0'""")
     parser.add_argument('--labels', type=str, default=None,
-                        help="""specify the labels for manual kpoints, written
+                        help=r"""specify the labels for manual kpoints, written
                         as --labels '\Gamma,X'""")
 
     args = parser.parse_args()

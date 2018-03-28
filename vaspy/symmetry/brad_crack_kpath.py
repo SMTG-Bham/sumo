@@ -2,49 +2,64 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+Module containing class for generating Bradley and Cracknell k-point paths.
+"""
+
 import numpy as np
 
 from vaspy.symmetry import Kpath
 
 
 class BradCrackKpath(Kpath):
-    """Calculate the high-symmetry k-point path from Bradley and Cracknell.
+    r"""Class to generate k-points along paths from Bradley and Cracknell.
 
-    The paths used are based on Brillouin zones depicted in "The Mathematical
-    Theory of Symmetry in Solids", C. J. Bradley and A. P. Cracknell, Clarendon
-    Press, 1972.
+    The paths used are based on Brillouin zones depicted in reference [1]_.
 
-    These paths represent only a one particular route through the Brillouin
+    .. [1] "The Mathematical Theory of Symmetry in Solids", C. J. Bradley and
+           A. P. Cracknell, Clarendon Press, 1972.
+
+    These paths represent only one particular route through the Brillouin
     zone and do not cover every possible path (though they do visit every
     high-symmetry k-point at least once).
 
-    These paths should be used with primitive structures that comply with the
-    definition from the paper. This structure can be accessed using the
-    `prim` attribute and compliance between the provided structure and
-    standardised structure checked using the `correct_structure` method.
+    These paths should be used with the correct primitive structure. This
+    structure can be accessed using the ``prim`` attribute. Compliance
+    between the provided structure and standardised structure checked using the
+    ``correct_structure()`` method.
 
     Args:
-        structure (Structure): A pymatgen structure object.
-        symprec (float): The tolerance for determining the crystal symmetry.
-        spg (SpaceGroup): Pymatgen SpaceGroup object to override the symmetry
-            determined by spglib. This is not recommended and only provided for
-            testing purposes.
+        structure (:obj:`~pymatgen.core.structure.Structure`): The structure.
+        symprec (:obj:`float`, optional): The tolerance for determining the
+            crystal symmetry.
+        spg (:obj:`~pymatgen.symmetry.core.SpaceGroup`, optional): Space group
+            used to override the symmetry determined by spglib. This is not
+            recommended and only provided for testing purposes.
 
     Attributes:
-        kpoints (dict): The high-symmetry k-point labels and their coordinates
-            as {label: coords}.
+        kpoints (dict): The high-symmetry k-point labels and their fractional
+            coordinates. Formatted as ``{label: coords}``. For example::
+
+                {r'\Gamma': [0., 0., 0.], 'X': [0.5, 0. 0.]}
+
         path (list): The high-symmetry k-point path. Each subpath is provided
-            as a list. E.g. [['A', 'B'], ['C', 'D']].
-        prim (Structure): The standardised primitive cell structure needed for
-            to obtain the correct band structure.
-        conv (Structure): The standardised conventional cell structure.
+            as a list. For example, the following covers the path ``\Gamma ->
+            X -> C | \Gamma -> Y``::
+
+                [[r'\Gamma', 'X', 'C'], [r'\Gamma', 'Y']].
+
+        prim (:obj:`~pymatgen.core.structure.Structure`): The standardised
+            primitive cell structure for the generated k-point path.
+        conv (:obj:`~pymatgen.core.structure.Structure`): The standardised
+            conventional cell structure.
         lattice_type (str): The Bravais lattice system. Hexagonal cells are
             separated into rhombohedral and hexagonal lattices.
         spg_symbol (str): The international space group symbol.
         spg_number (int): The international space group number.
         path_string (str): The high-symmetry k-point path formatted with arrows
-            and showing disconnections between subpaths. For example:
-            "X -> Gamma | Y -> Z".
+            and showing disconnections between subpaths. For example::
+
+                "X -> Gamma | Y -> Z"
     """
 
     def __init__(self, structure, symprec=1e-3, spg=None):
@@ -145,8 +160,8 @@ class BradCrackKpath(Kpath):
                 self._kpath = self._cubic_f()
 
     def _triclinic(self):
-        path = [["\Gamma", "Z", "T", "Y", "\Gamma", "X", "V", "R", "U"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r"\Gamma", "Z", "T", "Y", r"\Gamma", "X", "V", "R", "U"]]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Z': np.array([0.0, 0.0, 0.5]),
                    'T': np.array([0.0, 0.5, 0.5]),
                    'Y': np.array([0.0, 0.5, 0.0]),
@@ -157,8 +172,8 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _tet_p(self):
-        path = [["\Gamma", "X", "M", "\Gamma", "Z", "R", "A", "Z"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r"\Gamma", "X", "M", r"\Gamma", "Z", "R", "A", "Z"]]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'X': np.array([0.0, 0.5, 0.0]),
                    'M': np.array([0.5, 0.5, 0.0]),
                    'Z': np.array([0.0, 0.0, 0.5]),
@@ -167,8 +182,8 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _tet_i_a(self):
-        path = [["\Gamma", "X", "P", "N", "\Gamma", "Z"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r"\Gamma", "X", "P", "N", r"\Gamma", "Z"]]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'X': np.array([0.0, 0.0, 0.5]),
                    'P': np.array([0.25, 0.25, 0.25]),
                    'N': np.array([0.0, 0.5, 0.0]),
@@ -176,8 +191,8 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _tet_i_c(self):
-        path = [["\Gamma", "X", "P", "N", "\Gamma", "Z"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r"\Gamma", "X", "P", "N", r"\Gamma", "Z"]]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'X': np.array([0.0, 0.0, 0.5]),
                    'P': np.array([0.25, 0.25, 0.25]),
                    'N': np.array([0.0, 0.5, 0.0]),
@@ -185,48 +200,48 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _cubic_p(self):
-        path = [["\Gamma", "M", "R", "X", "\Gamma", "R"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r"\Gamma", "M", "R", "X", r"\Gamma", "R"]]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'M': np.array([0.5, 0.5, 0.0]),
                    'R': np.array([0.5, 0.5, 0.5]),
                    'X': np.array([0.0, 0.5, 0.0])}
         return {'kpoints': kpoints, 'path': path}
 
     def _cubic_f(self):
-        path = [["\Gamma", "L", "W", "X", "\Gamma"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r"\Gamma", "L", "W", "X", r"\Gamma"]]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'L': np.array([0.5, 0.5, 0.5]),
                    'W': np.array([0.5, 0.25, 0.75]),
                    'X': np.array([0.5, 0.0, 0.5])}
         return {'kpoints': kpoints, 'path': path}
 
     def _cubic_i(self):
-        path = [["\Gamma", "P", "N", "\Gamma", "H", "P"], ["H", "N"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r"\Gamma", "P", "N", r"\Gamma", "H", "P"], ["H", "N"]]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'P': np.array([0.25, 0.25, 0.25]),
                    'N': np.array([0.0, 0.0, 0.5]),
                    'H': np.array([0.5, -0.5, 0.5])}
         return {'kpoints': kpoints, 'path': path}
 
     def _trig_r_a(self):
-        path = [['\Gamma', 'L', 'F', '\Gamma', 'Z']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'L', 'F', r'\Gamma', 'Z']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'L': np.array([0.0, 0.5, 0.0]),
                    'F': np.array([0.5, 0.5, 0.0]),
                    'Z': np.array([0.5, 0.5, -0.5])}
         return {'kpoints': kpoints, 'path': path}
 
     def _trig_r_c(self):
-        path = [['\Gamma', 'L', 'F', '\Gamma', 'Z']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'L', 'F', r'\Gamma', 'Z']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'L': np.array([0.0, 0.5, 0.0]),
                    'F': np.array([0.5, 0.5, 0.0]),
                    'Z': np.array([0.5, 0.5, 0.5])}
         return {'kpoints': kpoints, 'path': path}
 
     def _trig_p_a(self):
-        path = [['\Gamma', 'A', 'L', 'M', '\Gamma', 'K', 'H', 'A']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'A', 'L', 'M', r'\Gamma', 'K', 'H', 'A']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'A': np.array([0.5, 0.0, 0.0]),
                    'L': np.array([0.5, 0.5, 0.0]),
                    'M': np.array([0.0, 0.5, 0.0]),
@@ -235,8 +250,8 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _trig_p_c(self):
-        path = [['\Gamma', 'A', 'L', 'M', '\Gamma', 'K', 'H', 'A']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'A', 'L', 'M', r'\Gamma', 'K', 'H', 'A']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'A': np.array([0.0, 0.0, 0.5]),
                    'L': np.array([0.0, 0.5, 0.5]),
                    'M': np.array([0.0, 0.5, 0.0]),
@@ -245,8 +260,8 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _orth_p(self):
-        path = [['\Gamma', 'Z', 'T', 'Y', 'S', 'R', 'U', 'X', '\Gamma', 'Y']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'Z', 'T', 'Y', 'S', 'R', 'U', 'X', r'\Gamma', 'Y']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Z': np.array([0.0, 0.0, 0.5]),
                    'T': np.array([-0.5, 0.0, 0.5]),
                    'Y': np.array([-0.5, 0.0, 0.0]),
@@ -257,28 +272,28 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _orth_c_a(self):
-        path = [['R', 'S', '\Gamma', 'Z', 'T', 'Y', '\Gamma']]
+        path = [['R', 'S', r'\Gamma', 'Z', 'T', 'Y', r'\Gamma']]
         kpoints = {'R': np.array([0.0, 0.5, 0.5]),
                    'S': np.array([0.0, 0.5, 0.0]),
-                   '\Gamma': np.array([0.0, 0.0, 0.0]),
+                   r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Z': np.array([0.0, 0.0, 0.5]),
                    'T': np.array([0.5, 0.5, 0.5]),
                    'Y': np.array([0.5, 0.5, 0.0])}
         return {'kpoints': kpoints, 'path': path}
 
     def _orth_c_b(self):
-        path = [['R', 'S', '\Gamma', 'Z', 'T', 'Y', '\Gamma']]
+        path = [['R', 'S', r'\Gamma', 'Z', 'T', 'Y', r'\Gamma']]
         kpoints = {'R': np.array([0.0, 0.5, 0.5]),
                    'S': np.array([0.0, 0.5, 0.0]),
-                   '\Gamma': np.array([0.0, 0.0, 0.0]),
+                   r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Z': np.array([0.0, 0.0, 0.5]),
                    'T': np.array([-0.5, 0.5, 0.5]),
                    'Y': np.array([-0.5, 0.5, 0.0])}
         return {'kpoints': kpoints, 'path': path}
 
     def _orth_f_1(self):
-        path = [['\Gamma', 'Y', 'X', 'Z', '\Gamma', 'L']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'Y', 'X', 'Z', r'\Gamma', 'L']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Y': np.array([0.0, -0.5, -0.5]),
                    'X': np.array([0.5, 0.0, 0.5]),
                    'Z': np.array([0.5, 0.5, 0.0]),
@@ -286,8 +301,8 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _orth_f_2(self):
-        path = [['\Gamma', 'Y', 'X', 'Z', '\Gamma', 'L']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'Y', 'X', 'Z', r'\Gamma', 'L']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Y': np.array([0.0, -0.5, -0.5]),
                    'X': np.array([0.5, 0.0, 0.5]),
                    'Z': np.array([0.5, -0.5, 0.0]),
@@ -295,8 +310,8 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _orth_f_3(self):
-        path = [['\Gamma', 'Y', 'X', 'Z', '\Gamma', 'L']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'Y', 'X', 'Z', r'\Gamma', 'L']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Y': np.array([1.0, 0.5, 0.5]),
                    'X': np.array([0.5, 0.0, 0.5]),
                    'Z': np.array([0.5, 0.5, 0.0]),
@@ -304,8 +319,8 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _orth_f_4(self):
-        path = [['\Gamma', 'Y', 'X', 'Z', '\Gamma', 'L']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'Y', 'X', 'Z', r'\Gamma', 'L']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Y': np.array([0.0, -0.5, -0.5]),
                    'X': np.array([0.5, 0.0, -0.5]),
                    'Z': np.array([0.5, 0.5, 0.0]),
@@ -313,9 +328,9 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _orth_i_a(self):
-        path = [['R', '\Gamma', 'X', 'S', 'W', 'T']]
+        path = [['R', r'\Gamma', 'X', 'S', 'W', 'T']]
         kpoints = {'R': np.array([0.5, 0.0, 0.0]),
-                   '\Gamma': np.array([0.0, 0.0, 0.0]),
+                   r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'X': np.array([0.5, -0.5, 0.5]),
                    'S': np.array([0.5, 0.0, -0.5]),
                    'W': np.array([0.75, -0.25, -0.25]),
@@ -323,9 +338,9 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _orth_i_b(self):
-        path = [['R', '\Gamma', 'X', 'S', 'W', 'T']]
+        path = [['R', r'\Gamma', 'X', 'S', 'W', 'T']]
         kpoints = {'R': np.array([0.5, 0.0, 0.0]),
-                   '\Gamma': np.array([0.0, 0.0, 0.0]),
+                   r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'X': np.array([0.5, -0.5, -0.5]),
                    'S': np.array([0.5, 0.0, -0.5]),
                    'W': np.array([0.75, -0.25, -0.25]),
@@ -333,9 +348,9 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _orth_i_c(self):
-        path = [['R', '\Gamma', 'X', 'S', 'W', 'T']]
+        path = [['R', r'\Gamma', 'X', 'S', 'W', 'T']]
         kpoints = {'R': np.array([0.5, 0.0, 0.0]),
-                   '\Gamma': np.array([0.0, 0.0, 0.0]),
+                   r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'X': np.array([0.5, 0.5, -0.5]),
                    'S': np.array([0.5, 0.0, -0.5]),
                    'W': np.array([0.75, -0.25, -0.25]),
@@ -343,8 +358,9 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _mon_p_a(self):
-        path = [['\Gamma', 'Z', 'C', 'Y', '\Gamma', 'B', 'D', 'E0', 'A0', 'Y']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'Z', 'C', 'Y', r'\Gamma', 'B', 'D', 'E0', 'A0',
+                 'Y']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Z': np.array([0.5, 0.0, 0.0]),
                    'C': np.array([0.5, 0.0, 0.5]),
                    'Y': np.array([0.0, 0.0, 0.5]),
@@ -355,8 +371,9 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _mon_p_b(self):
-        path = [['\Gamma', 'Z', 'C', 'Y', '\Gamma', 'B', 'D', 'E0', 'A0', 'Y']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'Z', 'C', 'Y', r'\Gamma', 'B', 'D', 'E0', 'A0',
+                 'Y']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Z': np.array([0.5, 0.0, 0.0]),
                    'C': np.array([0.5, 0.5, 0.0]),
                    'Y': np.array([0.5, 0.0, 0.0]),
@@ -367,8 +384,9 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _mon_p_c(self):
-        path = [['\Gamma', 'Z', 'C', 'Y', '\Gamma', 'B', 'D', 'E0', 'A0', 'Y']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'Z', 'C', 'Y', r'\Gamma', 'B', 'D', 'E0', 'A0',
+                 'Y']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Z': np.array([0.0, 0.0, 0.5]),
                    'C': np.array([0.0, 0.5, 0.5]),
                    'Y': np.array([0.0, 0.5, 0.0]),
@@ -379,8 +397,8 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _mon_c_a(self):
-        path = [['\Gamma', 'Y', 'V', '\Gamma', 'A', 'M', 'L', 'V']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'Y', 'V', r'\Gamma', 'A', 'M', 'L', 'V']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Y': np.array([0.5, 0.0, 0.5]),
                    'V': np.array([0.0, 0.0, 0.5]),
                    'A': np.array([0.0, 0.5, 0.0]),
@@ -389,8 +407,8 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _mon_c_b(self):
-        path = [['\Gamma', 'Y', 'V', '\Gamma', 'A', 'M', 'L', 'V']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'Y', 'V', r'\Gamma', 'A', 'M', 'L', 'V']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Y': np.array([0.5, 0.5, 0.0]),
                    'V': np.array([0.5, 0.0, 0.0]),
                    'A': np.array([0.0, 0.0, 0.5]),
@@ -399,8 +417,8 @@ class BradCrackKpath(Kpath):
         return {'kpoints': kpoints, 'path': path}
 
     def _mon_c_c(self):
-        path = [['\Gamma', 'Y', 'V', '\Gamma', 'A', 'M', 'L', 'V']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
+        path = [[r'\Gamma', 'Y', 'V', r'\Gamma', 'A', 'M', 'L', 'V']]
+        kpoints = {r'\Gamma': np.array([0.0, 0.0, 0.0]),
                    'Y': np.array([0.0, 0.5, 0.5]),
                    'V': np.array([0.0, 0.5, 0.0]),
                    'A': np.array([0.5, 0.0, 0.0]),

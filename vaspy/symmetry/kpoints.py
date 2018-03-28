@@ -2,37 +2,58 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+Module providing helper functions for generating k-points along a path.
+"""
+
+import string
+import logging
 import numpy as np
 
 
 def get_kpoints(structure, kpoints, path, line_density=20, cart_coords=False,
                 phonopy=False):
-    """Calculate a list of k-points along the high-symmetry path.
+    r"""Calculate a list of k-points along the high-symmetry path.
 
-    Adapted from pymatgen.symmetry.bandstructure
+    Adapted from
+    :obj:`pymatgen.symmetry.bandstructure.HighSymmKpath.get_kpoints`.
 
     Args:
-        structure (Structure): Pymatgen structure object.
-        kpoints (dict): The high-symmetry k-point labels and their coordinates
-            as {label: coords}.
+        structure (:obj:`~pymatgen.core.structure.Structure`): The structure.
+        kpoints (dict): The high-symmetry k-point labels and their fractional
+            coordinates. Formatted as ``{label: coords}``. For example::
+
+                {'\Gamma': [0., 0., 0.], 'X': [0.5, 0. 0.]}
+
         path (list): The high-symmetry k-point path. Each subpath is provided
-            as a list. E.g. [['A', 'B'], ['C', 'D']].
-        line_density (int): The density of k-points along the path.
-        cart_coords (bool): Whether the k-points are returned in cartesian
-            or reciprocal coordinates.
-        phonopy (bool): Format the k-points and labels for use with phonopy.
+            as a list. For example, the following covers the path ``\Gamma ->
+            X -> C | \Gamma -> Y``::
+
+                [['\Gamma', 'X', 'C'], ['\Gamma', 'Y']].
+
+        line_density (:obj:`int`, optional): Density of k-points along the
+            path.
+        cart_coords (:obj:`bool`, optional): Whether the k-points are
+            returned in cartesian or reciprocal coordinates. Defaults to
+            ``False`` (fractional coordinates).
+        phonopy (:obj:`bool`, optional): Format the k-points and labels for
+            use with phonopy. Defaults to ``False``.
 
     Returns:
-        A list k-points along the high-symmetry path, together with the
-        high symmetry labels for each k-point. Returned as: (kpoints, labels).
+            list: A list of k-points along the high-symmetry path, together
+            with the high symmetry labels for each k-point. Returned as
+            ``(kpoints, labels)``.
 
-        If phonopy=False, then:
-            `kpoints` is a np.array of the k-point fractional coordinates
-                along the high-symmetry path.
-            `labels`is the high symmetry labels for each k-point,
-                (will be '' if no label set).
-        If phonopy is set to True the format will differ.
-        TODO: detail phonopy=True output.
+            If ``phonopy == False``, then:
+
+                * ``kpoints`` is a :obj:`np.ndarray` of the k-point fractional
+                  coordinates along the high-symmetry path.
+                * ``labels`` is a :obj:`list` of the high symmetry labels for
+                  each k-point (will be ``''`` if no label is set).
+
+            If ``phonopy == True``, then:
+
+                * todo: detail phonopy=True output.
     """
     list_k_points = []
     sym_point_labels = []
@@ -89,37 +110,53 @@ def get_kpoints_from_list(structure, kpt_list, path_labels=None,
     If no labels are provided, letters from A -> Z will be used instead.
 
     Args:
-        structure (Structure): A pymatgen structure object.
-        kpt_list (list): Manual list of k-points to use. If kpt_list is set it
-            will override the mode selection. Should be formatted as a list of
-            subpaths, each containing a list of k-points. For example:
-            [[[0., 0., 0.], [0., 0., 0.5]], [[0.5, 0., 0.], [0.5, 0.5, 0.]]]
-        path_labels (list): A list of labels to use along with kpt_list. These
-            should be provided as a list of subpaths, each containing a list of
-            labels. For example: [['Gamma', 'Z'], ['X', 'M']], combined with
-            the above kpt_list would indicate the path: Gamma -> Z | X -> M.
-        line_density (int): The density of k-points along the path.
-        cart_coords (bool): Whether the k-points are returned in cartesian
-            or reciprocal coordinates.
-        phonopy (bool): Format the k-points and labels for use with phonopy.
+        structure (:obj:`~pymatgen.core.structure.Structure`): The structure.
+        kpt_list (list): List of k-points to use, formatted as a list of
+            subpaths, each containing a list of fractional k-points. For
+            example::
+
+                [ [[0., 0., 0.], [0., 0., 0.5]],
+                  [[0.5, 0., 0.], [0.5, 0.5, 0.]] ]
+
+            Will return points along 0 0 0 -> 0 0 1/2 | 1/2 0 0 -> 1/2 1/2 0
+        path_labels (:obj:`list`): The k-point labels. These should be provided
+            as a :obj:`list` of :obj:`str` for each subpath of the overall
+            path. For example::
+
+                [ ['Gamma', 'Z'], ['X', 'M'] ]
+
+            combined with the above example for ``kpt_list`` would indicate the
+            path: Gamma -> Z | X -> M.
+        line_density (:obj:`int`, optional): Density of k-points along the
+            path.
+        cart_coords (:obj:`bool`, optional): Whether the k-points are
+            returned in cartesian or reciprocal coordinates. Defaults to
+            ``False`` (fractional coordinates).
+        phonopy (:obj:`bool`, optional): Format the k-points and labels for
+            use with phonopy. Defaults to ``False``.
 
     Returns:
-        A list k-points along the high-symmetry path, together with the
+        tuple: The k-points along the high-symmetry path, together with the
         high symmetry labels for each k-point, a printable string of the
         high-symmetry path, and a dictionary mapping the path labels to the
-        k-point coordinates (e.g. {label: coords}). Returned as:
-        (kpoints, labels, path_string, kpt_dict).
+        k-point coordinates (e.g. ``{label: coords}``). Returned as:
+        ``(kpoints, labels, path_string, kpt_dict)``.
 
-        If phonopy=False, then:
-            `kpoints` is a np.array of the k-point fractional coordinates
-                along the high-symmetry path.
-            `labels`is the high symmetry labels for each k-point,
-                (will be '' if no label set).
-        If phonopy is set to True the format will differ.
-        TODO: detail phonopy=True output.
+        If ``phonopy == False``, then:
+
+            * ``kpoints`` is a :obj:`np.ndarray` of the k-point fractional
+                coordinates along the high-symmetry path.
+            * ``labels`` is a :obj:`list` of the high symmetry labels for
+                each k-point (will be ``''`` if no label is set).
+
+        If ``phonopy == True``, then:
+
+            * todo: detail phonopy=True output.
+
     """
     # TODO: add warnings for no labels and incorrect number of labels
     flat_kpts = [x for kpts in kpt_list for x in kpts]
+
     if path_labels:
         flat_path_labels = [x for labels in path_labels for x in labels]
     else:
@@ -190,7 +227,6 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
         If phonopy is set to True the format will differ:
             TODO: detail phonopy=True output.
     """
-    import logging
     from vaspy.symmetry import BradCrackKpath, SeekpathKpath, PymatgenKpath
     spg = _get_space_group_object(spg, mode)
 
@@ -223,15 +259,10 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
         coord_str = ' '.join(['{}'.format(c) for c in kpoint])
         logging.info('\t{}: {}'.format(label, coord_str))
 
-    if not phonopy:
-        logging.info('\nk-point label indicies:')
-        for i, label in enumerate(labels):
-            if label:
-                logging.info('\t{}: {}'.format(label, i+1))
-
     return kpath, kpoints, labels
 
 def _get_space_group_object(spg, mode):
+    import sys
     if spg and mode != 'bradcrack':
         logging.error("ERROR: Specifying symmetry only supported using "
                       "Bradley and Cracknell path.")
@@ -248,4 +279,3 @@ def _get_space_group_object(spg, mode):
             logging.error("ERROR: Space group not recognised.")
             sys.exit()
     return spg
-
