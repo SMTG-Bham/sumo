@@ -24,8 +24,7 @@ from pymatgen.io.phonopy import get_ph_bs_symm_line
 from vaspy.phonon.phonopy import load_phonopy
 from vaspy.plotting.phonon_bs_plotter import VPhononBSPlotter
 from vaspy.symmetry import BradCrackKpath, SeekpathKpath, PymatgenKpath
-from vaspy.symmetry.kpoints import (get_kpoints, get_kpoints_from_list,
-                                    get_path_data)
+from vaspy.symmetry.kpoints import get_kpoints, get_path_data
 
 
 """
@@ -53,6 +52,7 @@ __date__ = "Jan 17, 2018"
 def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None,
                     born=None, qmesh=None, spg=None, line_density=60,
                     symprec=0.01, mode='bradcrack', kpt_list=None,
+                    eigenvectors=False,
                     labels=None, height=6., width=6., ymin=None, ymax=None,
                     image_format='pdf', dpi=400, plt=None, fonts=None):
     """A script to plot phonon band structure diagrams.
@@ -78,6 +78,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
             For example: [['Gamma', 'Z'], ['X', 'M']], combined with the above
             kpt_list would indicate the path: Gamma -> Z | X -> M.
             If no labels are provided, letters from A -> Z will be used instead.
+        eigenvectors (:obj:`bool`, optional): Write the eigenvectors to the
+            yaml file.
         height (float): The height of the graph (matplotlib only).
         width (float): The width of the graph (matplotlib only).
         ymin (float): The minimum energy to plot.
@@ -121,8 +123,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
 
         # print dim to user
         phonon = load_phonopy(filename, poscar.structure, dim, symprec=symprec,
-                              primitive_matrix=None, factor=VaspToTHz, symmetrise=True,
-                              born=born, write_fc=False)
+                              primitive_matrix=None, factor=VaspToTHz,
+                              symmetrise=True, born=born, write_fc=False)
 
         # calculate band structure
         kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
@@ -133,7 +135,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
         #phonon.set_mesh(mesh, is_gamma_center=False, is_eigenvectors=True,
         #                is_mesh_symmetry=False)
         #phonon.set_partial_DOS()
-        phonon.set_band_structure(kpoints)
+        phonon.set_band_structure(kpoints, is_eigenvectors=eigenvectors)
         yaml_file = 'vaspy_band.yaml'
         phonon._band_structure.write_yaml(labels=labels, filename=yaml_file)
 
@@ -209,6 +211,8 @@ def main():
     parser.add_argument('--labels', type=str, default=None,
                         help="""specify the labels for manual kpoints, written
                         as --labels '\Gamma,X'""")
+    parser.add_argument('-e', '--eigenvectors', action='store_true',
+                        help='Write the phonon eigenvectors to the yaml file.')
     parser.add_argument('--height', type=float, default=6.0,
                         help='The height of the graph')
     parser.add_argument('--width', type=float, default=6.0,
@@ -247,7 +251,7 @@ def main():
 
     kpoints = None
     if args.kpoints:
-        kpoints = [[map(float, kpt.split()) for kpt in kpts.split(',')] for
+        kpoints = [[list(map(float, kpt.split())) for kpt in kpts.split(',')] for
                    kpts in args.kpoints.split('|')]
     labels = None
     if args.labels:
@@ -265,7 +269,8 @@ def main():
     phonon_bandplot(args.filename, poscar=args.poscar, prefix=args.prefix, directory=args.directory, dim=dim,
                     born=args.born, qmesh=args.qmesh, spg=spg, line_density=args.density, mode=mode, kpt_list=kpoints,
              labels=labels, height=args.height, width=args.width, ymin=args.ymin, ymax=args.ymax,
-             image_format=args.image_format, dpi=args.dpi, fonts=[args.font])
+             image_format=args.image_format, dpi=args.dpi, fonts=[args.font],
+                    eigenvectors=args.eigenvectors)
 
 if __name__ == "__main__":
     main()

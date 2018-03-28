@@ -243,7 +243,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                                          ymax=ymax, height=height, width=width,
                                          vbm_cbm_marker=vbm_cbm_marker,
                                          plt=plt, dos_plotter=dos_plotter,
-                                         dos_options=dos_opts)
+                                         dos_options=dos_opts, fonts=fonts)
     else:
         plt = plotter.get_plot(zero_to_efermi=True, ymin=ymin, ymax=ymax,
                                height=height, width=width,

@@ -6,7 +6,6 @@
 Module providing helper functions for generating k-points along a path.
 """
 
-import string
 import logging
 import numpy as np
 
@@ -82,12 +81,26 @@ def get_kpoints(structure, kpoints, path, line_density=20, cart_coords=False,
 
         # append last k-point to avoid repition as in pymatgen
         if not phonopy:
+            # for VASP we label every k-point. If a k-point has no
+            # high-symmetry label then just use an empty string.
             sym_point_labels.append(b[-1])
             list_k_points.append(recip_lattice.get_cartesian_coords(end))
 
     if phonopy:
-        # TODO: fix for multiple band paths
-        sym_point_labels = path[0]
+        #sym_point_labels = [y for x in path for y in x]
+        # phonopy needs the labels in a funny format. For example if the
+        # route is  X -> Y | Z -> R, path will be [['X', 'Y'], ['Z', 'R'],
+        # the labels shoudl be ['X', 'Z', 'R']
+        sym_point_labels = []
+        for i, path_branch in enumerate(path):
+            for n, label in enumerate(path_branch):
+                if i != 0 and n == 0:
+                    sym_point_labels[-1] += " | {}".format(label)
+                    #sym_point_labels[-1] = "{}".format(label)
+                    #sym_point_labels.append(label)
+                    pass
+                else:
+                    sym_point_labels.append(label)
 
     if cart_coords:
         return list_k_points, sym_point_labels
@@ -101,90 +114,6 @@ def get_kpoints(structure, kpoints, path, line_density=20, cart_coords=False,
             frac_k_points = [recip_lattice.get_fractional_coords(k)
                              for k in list_k_points]
         return frac_k_points, sym_point_labels
-
-
-def get_kpoints_from_list(structure, kpt_list, path_labels=None,
-                          line_density=60, cart_coords=False, phonopy=False):
-    """Generate the k-points along a manually specified path.
-
-    If no labels are provided, letters from A -> Z will be used instead.
-
-    Args:
-        structure (:obj:`~pymatgen.core.structure.Structure`): The structure.
-        kpt_list (list): List of k-points to use, formatted as a list of
-            subpaths, each containing a list of fractional k-points. For
-            example::
-
-                [ [[0., 0., 0.], [0., 0., 0.5]],
-                  [[0.5, 0., 0.], [0.5, 0.5, 0.]] ]
-
-            Will return points along 0 0 0 -> 0 0 1/2 | 1/2 0 0 -> 1/2 1/2 0
-        path_labels (:obj:`list`): The k-point labels. These should be provided
-            as a :obj:`list` of :obj:`str` for each subpath of the overall
-            path. For example::
-
-                [ ['Gamma', 'Z'], ['X', 'M'] ]
-
-            combined with the above example for ``kpt_list`` would indicate the
-            path: Gamma -> Z | X -> M.
-        line_density (:obj:`int`, optional): Density of k-points along the
-            path.
-        cart_coords (:obj:`bool`, optional): Whether the k-points are
-            returned in cartesian or reciprocal coordinates. Defaults to
-            ``False`` (fractional coordinates).
-        phonopy (:obj:`bool`, optional): Format the k-points and labels for
-            use with phonopy. Defaults to ``False``.
-
-    Returns:
-        tuple: The k-points along the high-symmetry path, together with the
-        high symmetry labels for each k-point, a printable string of the
-        high-symmetry path, and a dictionary mapping the path labels to the
-        k-point coordinates (e.g. ``{label: coords}``). Returned as:
-        ``(kpoints, labels, path_string, kpt_dict)``.
-
-        If ``phonopy == False``, then:
-
-            * ``kpoints`` is a :obj:`np.ndarray` of the k-point fractional
-                coordinates along the high-symmetry path.
-            * ``labels`` is a :obj:`list` of the high symmetry labels for
-                each k-point (will be ``''`` if no label is set).
-
-        If ``phonopy == True``, then:
-
-            * todo: detail phonopy=True output.
-
-    """
-    # TODO: add warnings for no labels and incorrect number of labels
-    flat_kpts = [x for kpts in kpt_list for x in kpts]
-
-    if path_labels:
-        flat_path_labels = [x for labels in path_labels for x in labels]
-    else:
-        flat_path_labels = [s for s, x in
-                            zip(string.ascii_uppercase, flat_kpts)]
-
-    # need this to make sure repeated kpoints have the same labels
-    kpt_dict = {}
-    for label, kpt in zip(flat_path_labels, flat_kpts):
-        if kpt not in kpt_dict.values():
-            kpt_dict[label] = kpt
-
-    if not path_labels:
-        path_labels = []
-        for kpt_sublist in kpt_list:
-            labels = []
-            for kpt in kpt_sublist:
-                for label, kpt2 in iter(kpt_dict.items()):
-                    if np.array_equal(kpt, kpt2):
-                        labels.append(label)
-                        break
-            path_labels.append(labels)
-
-    kpoints, labels = get_kpoints(structure, kpt_dict, path_labels,
-                                  line_density=line_density,
-                                  cart_coords=cart_coords, phonopy=phonopy)
-    path_str = ' | '.join([' -> '.join(subpath) for subpath in path_labels])
-    return kpoints, labels, path_str, kpt_dict
 
 
 def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
@@ -227,25 +156,24 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
         If phonopy is set to True the format will differ:
             TODO: detail phonopy=True output.
     """
-    from vaspy.symmetry import BradCrackKpath, SeekpathKpath, PymatgenKpath
+    import logging
+    from vaspy.symmetry import (BradCrackKpath, SeekpathKpath, PymatgenKpath,
+                                CustomKpath)
     spg = _get_space_group_object(spg, mode)
 
-    if mode == 'bradcrack':
+    if kpt_list:
+        kpath = CustomKpath(structure, kpt_list, labels, symprec=symprec)
+    elif mode == 'bradcrack':
         kpath = BradCrackKpath(structure, symprec=symprec, spg=spg)
     elif mode == 'seekpath':
         kpath = SeekpathKpath(structure, symprec=symprec)
     elif mode == 'pymatgen':
         kpath = PymatgenKpath(structure, symprec=symprec)
 
-    if kpt_list is not None:
-        kpoints, labels, path_str, kpt_dict = get_kpoints_from_list(
-            structure, kpt_list, path_labels=labels, line_density=density,
-            phonopy=phonopy)
-    else:
-        kpoints, labels = kpath.get_kpoints(line_density=line_density,
-                                            phonopy=phonopy)
-        path_str = kpath.path_string
-        kpt_dict = kpath.kpoints
+    kpoints, labels = kpath.get_kpoints(line_density=line_density,
+                                        phonopy=phonopy)
+    path_str = kpath.path_string
+    kpt_dict = kpath.kpoints
 
     logging.info('Structure information:'.format(structure.num_sites))
     logging.info('\tSpace group number: {}'.format(kpath._spg_data['number']))
@@ -255,6 +183,7 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
 
     logging.info('\nk-point path:\n\t{}'.format(path_str))
     logging.info('\nk-points:')
+
     for label, kpoint in iter(kpt_dict.items()):
         coord_str = ' '.join(['{}'.format(c) for c in kpoint])
         logging.info('\t{}: {}'.format(label, coord_str))
