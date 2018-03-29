@@ -2,9 +2,11 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
-import itertools
+"""
+This module provides a class for plotting density of states data.
+"""
 
-import numpy as np
+import itertools
 
 from vaspy.electronic_structure.dos import sort_orbitals
 from vaspy.plotting import (pretty_plot, pretty_subplot,
@@ -23,56 +25,99 @@ label_size = 22
 band_linewidth = 2
 col_cycle = colour_cycle()
 
+
 class VDOSPlotter(object):
+    """Class for plotting density of states data.
+
+    This class should be initialised with the total and partial density
+    of states. The easiest way to generate the partial density of states is
+    using the following method::
+
+        pdos = vaspy.electronic_structure.dos.get_pdos()
+
+    Args:
+        dos (:obj:`~pymatgen.electronic_structure.dos.Dos`): The total density
+            of states.
+        pdos (:obj:`dict`, optional): The partial density of states. Formatted
+            as a :obj:`dict` of :obj:`dict` mapping the elements and their
+            orbitals to :obj:`~pymatgen.electronic_structure.dos.Dos` objects.
+            For example::
+
+                {
+                    'Bi': {'s': Dos, 'p': Dos ... },
+                    'S': {'s': Dos}
+                }
+
+            Usually generated using the
+            :obj:`vaspy.electronric_structure.dos.get_pdos()` function.
+    """
 
     def __init__(self, dos, pdos=None):
-        """Vaspy class for plotting DOSs.
-
-        The class should be initialised with the total DOS and partial density
-        of states. The PDOS is usually generated as:
-
-            pdos = vaspy.electronic_structure.dos.get_pdos()
-
-        Args:
-            dos (Dos): A Dos object containing the total density of states.
-            pdos (dict): A dict mapping the elements and their orbitals to plot
-                to Dos objects. For example:
-                {'Bi': {'s': Dos, 'p': Dos}, 'S': {'s' Dos, ...}.
-
-                Usually generated ysing the dos.get_pdos() function.
-        """
         self._dos = dos
         self._pdos = pdos
 
     def dos_plot_data(self, yscale=1, xmin=-6., xmax=6., colours=None,
                       plot_total=True, legend_cutoff=3, subplot=False):
-        """Plot the density of states either using matplotlib or xmgrace.
+        """Get the plotting data.
 
         Args:
-            yscale (dict): Scaling factor for the y-axis.
-            xmin (float): The minimum energy for determining energy mask.
-            xmax (float): The maximum energy for determining energy mask.
-            colours (dict): Specify custom colours as {'Element': colour} where
-                colour is a hex number.
-            plot_total (bool): Whether or not to plot total DOS.
-            legend_cutoff (int): The cut-off (in % of maximum DOS plotted) for a
-                elemental/orbital DOS label to appear in the legend.
-            subplot (bool): Split the plot up into separate plots for each
-                element.
+            yscale (:obj:`float`, optional): Scaling factor for the y-axis.
+            xmin (:obj:`float`, optional): The minimum energy to mask the
+                energy and density of states data (reduces plotting load).
+            xmax (:obj:`float`, optional): The maximum energy to mask the
+                energy and density of states data (reduces plotting load).
+            colours (:obj:`dict`, optional): Use custom colours for specific
+                element and orbital combinations. Specified as a :obj:`dict` of
+                :obj:`dict` of the colours. For example::
+
+                    {
+                        'Sn': {'s': 'r', 'p': 'b'},
+                        'O': {'s': '#000000'}
+                    }
+
+                The colour can be a hex code, series of rgb value, or any other
+                format supported by matplotlib.
+            plot_total (:obj:`bool`, optional): Plot the total density of
+                states. Defaults to ``True``.
+            legend_cutoff (:obj:`float`, optional): The cut-off (in % of the
+                maximum density of states within the plotting range) for an
+                elemental orbital to be labelled in the legend. This prevents
+                the legend from containing labels for orbitals that have very
+                little contribution in the plotting range.
+            subplot (:obj:`bool`, optional): Plot the density of states for
+                each element on seperate subplots. Defaults to ``False``.
 
         Returns:
-            A dict with the following keys:
-                energies (numpy.Array): The energies.
-                mask: A numpy mask which is used to trim the density arrays and
+            dict: The plotting data. Formatted with the following keys:
+
+                "energies" (:obj:`numpy.ndarray`)
+                    The energies.
+
+                "mask" (:obj:`numpy.ndarray`)
+                    A mask used to trim the density of states data and
                     prevent unwanted data being included in the output file.
-                lines (dict): A list of dictionaries containing information
-                    about the densities to plot. Each line contains the keys:
-                        label (str): The label for the legend.
-                        dens (numpy.Array): The density of states.
-                        colour (str): The colour of the line.
-                        alpha (float): The fill alpha.
-                ymin: The minimum y-axis limit.
-                ymin: The maximum y-axis limit.
+
+                "lines" (:obj:`list`)
+                    A :obj:`list` of :obj:`dict` containing the density data
+                    and some metadata. Each line :obj:`dict` contains the keys:
+
+                        "label" (:obj:`str`)
+                            The label for the legend.
+
+                        "dens" (:obj:`numpy.ndarray`)
+                            The density of states data.
+
+                        "colour" (:obj:`str`)
+                            The colour of the line.
+
+                        "alpha" (:obj:`float`)
+                            The alpha value for line fill.
+
+                "ymin" (:obj:`float`)
+                    The minimum y-axis limit.
+
+                "ymax" (:obj:`float`)
+                    The maximum y-axis limit.
         """
         # mask needed to prevent unwanted data in pdf and for finding y limit
         dos = self._dos
@@ -86,9 +131,10 @@ class VDOSPlotter(object):
             lines = []
             tdos = {'label': 'Total DOS', 'dens': dos.densities,
                     'colour': 'k', 'alpha': 0.15}
-            # subplot data formatted as a list of lists of dicts, with each list
-            # of dicts being plotted on a seperate graph, if only one list then
-            # solo plot
+
+            # subplot data formatted as a list of lists of dicts, with each
+            # list of dicts being plotted on a seperate graph, if only one list
+            # then solo plot
             lines.append([tdos])
             dmax = max([max(d[mask]) for d in dos.densities.values()])
             ymax = dmax if dmax > ymax else ymax
@@ -121,33 +167,52 @@ class VDOSPlotter(object):
 
     def get_plot(self, subplot=False, width=6., height=8., xmin=-6., xmax=6.,
                  yscale=1, colours=None, plot_total=True, legend_on=True,
-                 num_columns=2, legend_frame_on=False, legend_cutoff=3, dpi=400,
-                 fonts=None, plt=None):
-        """Get a matplotlib pyplot object of the density of states.
+                 num_columns=2, legend_frame_on=False, legend_cutoff=3,
+                 dpi=400, fonts=None, plt=None):
+        """Get a :obj:`matplotlib.pyplot` object of the density of states.
 
         Args:
-            subplot (bool): Split the plot up into separate plots for each
-                element.
-            width (float): The width of the graph.
-            height (float): The height of the graph.
-            xmin (float): The minimum energy to plot.
-            xmax (float): The maximum energy to plot.
-            yscale (dict): Scaling factor for the y-axis.
-            colours (dict): Specify custom colours as {'Element': colour} where
-                colour is a hex number.
-            plot_total (bool): Whether or not to plot total DOS.
-            legend_on (bool): Whether or not to plot the graph legend.
-            num_columns (int): The number of columns in the legend.
-            legend_frame_on (bool): Whether or not to plot the graph legend
-                frame.
-            legend_cutoff (int): The cut-off (in % of maximum DOS plotted) for a
-                elemental/orbital DOS label to appear in the legend.
-            dpi (int): The dots-per-inch (pixel density) for the image.
-            fonts (list): List of fonts to use in the plot.
-            plt (pyplot object): Matplotlib pyplot object to use for plotting.
+            subplot (:obj:`bool`, optional): Plot the density of states for
+                each element on seperate subplots. Defaults to ``False``.
+            width (:obj:`float`, optional): The width of the plot.
+            height (:obj:`float`, optional): The height of the plot.
+            xmin (:obj:`float`, optional): The minimum energy on the x-axis.
+            xmax (:obj:`float`, optional): The maximum energy on the x-axis.
+            yscale (:obj:`float`, optional): Scaling factor for the y-axis.
+            colours (:obj:`dict`, optional): Use custom colours for specific
+                element and orbital combinations. Specified as a :obj:`dict` of
+                :obj:`dict` of the colours. For example::
+
+                    {
+                        'Sn': {'s': 'r', 'p': 'b'},
+                        'O': {'s': '#000000'}
+                    }
+
+                The colour can be a hex code, series of rgb value, or any other
+                format supported by matplotlib.
+            plot_total (:obj:`bool`, optional): Plot the total density of
+                states. Defaults to ``True``.
+            legend_on (:obj:`bool`, optional): Plot the graph legend. Defaults
+                to ``True``.
+            num_columns (:obj:`int`, optional): The number of columns in the
+                legend.
+            legend_frame_on (:obj:`bool`, optional): Plot a frame around the
+                graph legend. Defaults to ``False``.
+            legend_cutoff (:obj:`float`, optional): The cut-off (in % of the
+                maximum density of states within the plotting range) for an
+                elemental orbital to be labelled in the legend. This prevents
+                the legend from containing labels for orbitals that have very
+                little contribution in the plotting range.
+            dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+                the image.
+            fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+                a single font, specified as a :obj:`str`, or several fonts,
+                specified as a :obj:`list` of :obj:`str`.
+            plt (:obj:`matplotlib.pyplot`, optional): A
+                :obj:`matplotlib.pyplot` object to use for plotting.
 
         Returns:
-            matplotlib pyplot object.
+            :obj:`matplotlib.pyplot`: The density of states plot.
         """
         plot_data = self.dos_plot_data(yscale=yscale, xmin=xmin, xmax=xmax,
                                        colours=colours, plot_total=plot_total,
@@ -219,20 +284,29 @@ class VDOSPlotter(object):
 
 
 def get_colour_for_element_and_orbital(element, orbital, colours=None):
-    """Select a colour for a particular elemental orbital.
+    """Get a colour for a particular elemental and orbital combination.
 
-    If that element is not specified in the colours dictionary, a random colour
-    will be generated based on the list of 22 colours of maximum contast:
+    If the element is not specified in the colours dictionary, a random colour
+    will be used based on the list of 22 colours of maximum contast:
     http://www.iscc.org/pdf/PC54_1724_001.pdf
 
     Args:
-        element (str): The element to select a colour for.
+        element (str): The element.
         orbital (str): The orbital.
-        colours (dict): A dict of {'Element': {'orb': colour}}, where colour
-            is a hex number.
+        colours (:obj:`dict`, optional): Use custom colours for specific
+            element and orbital combinations. Specified as a :obj:`dict` of
+            :obj:`dict` of the colours. For example::
+
+                {
+                    'Sn': {'s': 'r', 'p': 'b'},
+                    'O': {'s': '#000000'}
+                }
+
+            The colour can be a hex code, series of rgb value, or any other
+            format supported by matplotlib.
 
     Returns:
-        A colour as either the colour name, hex code, or list of 3 floats.
+        str: The colour.
     """
     try:
         return colours.get(element, orbital)

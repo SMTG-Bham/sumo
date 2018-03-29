@@ -36,8 +36,8 @@ bohr_to_m = physical_constants['Bohr radius'][0]
 angstrom_to_bohr = bohr_to_m / 1e-10
 
 # TODO:
-#  - Would be good to reimplement get_vbm and get_cbm methods, with the ability to
-#    give degeneracies + other band edges within a certain tolerance.
+#  - Would be good to reimplement get_vbm and get_cbm methods, with the ability
+#    to give degeneracies + other band edges within a certain tolerance.
 #  - Sample custom k-point, band, spin combinations
 
 

@@ -2,11 +2,14 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+This module provides a class for plotting optical absorption spectra.
+"""
+
 import numpy as np
 
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 
-from vaspy.electronic_structure.dos import sort_orbitals
 from vaspy.plotting import (pretty_plot, default_colours,
                             power_tick)
 
@@ -18,26 +21,33 @@ optics_colours = np.array([[23, 71, 158], [217, 59, 43],
 
 
 class VOpticsPlotter(object):
+    """Class for plotting optical absorption spectra.
+
+    The easiest way to initialise this class is using the output from the
+    :obj:`vaspy.electronic_structure.optics.calculate_alpha()` method.
+
+    Args:
+        abs_data (:obj:`tuple` or :obj:`list`): The optical absorption
+            spectra. Should be formatted as a :obj:`tuple` of :obj:`list`::
+
+                ([energies], [alpha])
+
+            Alternatively, the ansiotropic (directional dependent) absorption
+            can be plotted if the data formatted as::
+
+                ([energies], [alpha_xx, alpha_yy, alpha_zz])
+
+            If a :obj:`list` of :obj:`tuple` is provided, then multiple
+            absorption spectra can be plotted simultaneously.
+        band_gap (:obj:`float` or :obj:`list`, optional): The band gap as a
+            :obj:`float`, plotted as a dashed line. If plotting multiple
+            spectra then a :obj:`list` of band gaps can be provided.
+        label (:obj:`str` or :obj:`list`): A label to identify the spectra.
+            If plotting multiple spectra then a :obj:`list` of labels can
+            be provided.
+    """
 
     def __init__(self, abs_data, band_gap=None, label=None):
-        """Vaspy class for plotting optical absorption spectra.
-
-        The class should be initialised with the absorption data
-        from the optics.calculate_alpha() method.
-
-        Args:
-            abs_data (tuple or list): The optical absorption spectra,
-                formatted as a tuple of ([energies], [alpha]). Alternatively,
-                the ansiotropic absorption can be plotted through data
-                formatted as ([energies], [alphaxx, alphayy, alphazz]).
-                If a list of tuples are provided then multiple absorption
-                spectra can be plotted simultaneously.
-            band_gap (float or list): The fundamental band gap of the
-                material to be plotted as dashed line. If plotting multiple
-                spectra then a list of band gaps can be provided.
-            label (str or list): A label to identify the spectra. If
-                plotting multiple spectra then a list of labels can be provided.
-        """
         if type(abs_data) is tuple:
             abs_data = [abs_data]
 
@@ -73,42 +83,56 @@ class VOpticsPlotter(object):
 
     def get_plot(self, width=6., height=6., xmin=0., xmax=None, ymin=0,
                  ymax=1e5, colours=None, dpi=400, plt=None, fonts=None):
-        """Get a matplotlib pyplot object of the density of states.
+        """Get a :obj:`matplotlib.pyplot` object of the optical spectra.
 
         Args:
-            width (float): The width of the graph.
-            height (float): The height of the graph.
-            xmin (float): The minimum energy to plot.
-            xmax (float): The maximum energy to plot.
-            ymin (float): The minimum absorption intensity to plot.
-            ymax (float): The maximum absorption intensity to plot.
-            colours (dict): Specify custom colours as {'Element': colour} where
-                colour is a hex number.
-            dpi (int): The dots-per-inch (pixel density) for the image.
-            plt (pyplot object): Matplotlib pyplot object to use for plotting.
-            fonts (list): List of fonts to use in the plot.
+            width (:obj:`float`, optional): The width of the plot.
+            height (:obj:`float`, optional): The height of the plot.
+            xmin (:obj:`float`, optional): The minimum energy on the x-axis.
+            xmax (:obj:`float`, optional): The maximum energy on the x-axis.
+            ymin (:obj:`float`, optional): The minimum absorption intensity on
+                the y-axis.
+            ymax (:obj:`float`, optional): The maximum absorption intensity on
+                the y-axis.
+            colours (:obj:`list`, optional): A :obj:`list` of colours to use in
+                the plot. The colours can be specified as a hex code, set of
+                rgb values, or any other format supported by matplotlib.
+            dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+                the image.
+            plt (:obj:`matplotlib.pyplot`, optional): A
+                :obj:`matplotlib.pyplot` object to use for plotting.
+            fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+                a single font, specified as a :obj:`str`, or several fonts,
+                specified as a :obj:`list` of :obj:`str`.
 
         Returns:
-            matplotlib pyplot object.
+            :obj:`matplotlib.pyplot`: The plot of optical spectra.
         """
         plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt,
                           fonts=fonts)
         ax = plt.gca()
 
-        for (ener, alpha), l, bg, c in zip(self._abs_data, self._label,
-                                           self._band_gap, optics_colours):
+        colours = colours + optics_colours if colours else optics_colours
+        for (ener, alpha), label, bg, c in zip(self._abs_data, self._label,
+                                               self._band_gap, colours):
             if len(alpha.shape) == 1:
                 # if averaged optics only plot one line
-                ax.plot(ener, alpha, lw=line_width, label=l, c=c)
-            else:
-                for i, d, ls in zip(range(3), ['xx', 'yy', 'zz'],
-                                    ['-', '--', '-.']):
-                    n = d if l == '' else '{}$_\mathregular{{{}}}$'.format(l, d)
-                    ax.plot(ener, alpha[:, i], lw=line_width, ls=ls,
-                            label=n, c=c)
+                ax.plot(ener, alpha, lw=line_width, label=label, c=c)
 
-            # plot band gap line
+            else:
+                data = zip(range(3), ['xx', 'yy', 'zz'], ['-', '--', '-.'])
+
+                for direc, label, ls in data:
+                    if label == '':
+                        dir_label = label
+                    else:
+                        dir_label = r'{}$_\mathregular{{{}}}$'.format(label,
+                                                                      direc)
+                    ax.plot(ener, alpha[:, direc], lw=line_width, ls=ls,
+                            label=dir_label, c=c)
+
             if bg:
+                # plot band gap line
                 ax.plot([bg, bg], [ymin, ymax], lw=line_width, ls=':', c=c)
 
         xmax = xmax if xmax else self._xmax
@@ -121,7 +145,7 @@ class VOpticsPlotter(object):
         ax.yaxis.set_major_locator(MaxNLocator(4))
 
         ax.set_xlabel('Energy (eV)')
-        ax.set_ylabel('Absorption (cm$^\mathregular{-1}$)')
+        ax.set_ylabel(r'Absorption (cm$^\mathregular{-1}$)')
 
         if not np.all(np.array(self._label) == ''):
             ax.legend(loc='best', frameon=False, ncol=1,
@@ -131,4 +155,5 @@ class VOpticsPlotter(object):
         y0, y1 = ax.get_ylim()
         ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
         plt.tight_layout()
+
         return plt

@@ -2,6 +2,10 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+This module provides helper functions for generating publication ready plots.
+"""
+
 import numpy as np
 
 from cycler import cycler
@@ -26,6 +30,23 @@ _linewidth = 1.3
 
 
 def pretty_plot(width=5, height=5, plt=None, dpi=None, fonts=None):
+    """Get a :obj:`matplotlib.pyplot` object with publication ready defaults.
+
+    Args:
+        width (:obj:`float`, optional): The width of the plot.
+        height (:obj:`float`, optional): The height of the plot.
+        plt (:obj:`matplotlib.pyplot`, optional): A :obj:`matplotlib.pyplot`
+            object to use for plotting.
+        dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+            the plot.
+        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+            a single font, specified as a :obj:`str`, or several fonts,
+            specified as a :obj:`list` of :obj:`str`.
+
+    Returns:
+        :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` object with
+        publication ready defaults set.
+    """
     from matplotlib import rc
 
     if plt is None:
@@ -50,6 +71,8 @@ def pretty_plot(width=5, height=5, plt=None, dpi=None, fonts=None):
     ax.set_xlabel(ax.get_xlabel(), size=_labelsize)
     ax.set_ylabel(ax.get_ylabel(), size=_labelsize)
 
+    if type(fonts) is str:
+        fonts = [fonts]
     fonts = default_fonts if fonts is None else fonts + default_fonts
 
     rc('font', **{'family': 'sans-serif', 'sans-serif': fonts})
@@ -63,6 +86,32 @@ def pretty_plot(width=5, height=5, plt=None, dpi=None, fonts=None):
 def pretty_subplot(nrows, ncols, width=5, height=5, sharex=True,
                    sharey=True, dpi=None, fonts=None, plt=None,
                    gridspec_kw=None):
+    """Get a :obj:`matplotlib.pyplot` subplot object with pretty defaults.
+
+    Args:
+        nrows (int): The number of rows in the subplot.
+        ncols (int): The number of columns in the subplot.
+        width (:obj:`float`, optional): The width of the plot.
+        height (:obj:`float`, optional): The height of the plot.
+        sharex (:obj:`bool`, optional): All subplots share the same x-axis.
+            Defaults to ``True``.
+        sharey (:obj:`bool`, optional): All subplots share the same y-axis.
+            Defaults to ``True``.
+        dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+            the plot.
+        plt (:obj:`matplotlib.pyplot`, optional): A :obj:`matplotlib.pyplot`
+            object to use for plotting.
+        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+            a single font, specified as a :obj:`str`, or several fonts,
+            specified as a :obj:`list` of :obj:`str`.
+        gridspec_kw (:obj:`dict`, optional): Gridspec parameters. Please see:
+            :obj:`matplotlib.pyplot.subplot` for more information. Defaults
+            to ``None``.
+
+    Returns:
+        :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` subplot object
+        with publication ready defaults set.
+    """
     from matplotlib import rc
 
     # TODO: Make this work if plt is already set...
@@ -99,35 +148,40 @@ def pretty_subplot(nrows, ncols, width=5, height=5, sharex=True,
 
 
 def colour_cycle():
+    """Return an :obj:`itertools.cycle` of the default vaspy colours. """
     rgb_colours = np.array(default_colours)/255.
     return cycle(rgb_colours)
 
 
 def colour_cycler():
+    """Return an :obj:`cycler.cycler` of the default vaspy colours. """
     rgb_colours = np.array(default_colours)/255.
     return cycler('color', rgb_colours)
 
 
 def power_tick(val, pos):
+    """Custom power ticker function. """
     if val == 0:
-        return '$\mathregular{0}$'
+        return r'$\mathregular{0}$'
     exponent = int(np.log10(val))
     coeff = val / 10**exponent
-    return '$\mathregular{{{:0.1f} x 10^{:2d}}}$'.format(coeff, exponent)
+    return r'$\mathregular{{{:0.1f} x 10^{:2d}}}$'.format(coeff, exponent)
 
 
-def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid", linewidth=2.5):
-    """An RGB colored line for plotting.
+def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",
+            linewidth=2.5):
+    """Get a RGB coloured line for plotting.
 
     Args:
-        ax: matplotlib axis
-        x: x-axis data
-        y: y-axis data (can be multidimensional array)
-        red: red data (must have same shape as y)
-        green: green data (must have same shape as y)
-        blue: blue data (must have same shape as y)
-        alpha: alpha values data (must have same shape as y or be int)
-        linestyles: linestyle for plot (e.g., "solid" or "dotted")
+        x (list): x-axis data.
+        y (list): y-axis data (can be multidimensional array).
+        red (list): Red data (must have same shape as ``y``).
+        green (list): Green data (must have same shape as ``y``).
+        blue (list): blue data (must have same shape as ``y``).
+        alpha (:obj:`list` or :obj:`int`, optional): Alpha (transparency)
+            data (must have same shape as ``y`` or be an :obj:`int`).
+        linestyles (:obj:`str`, optional): Linestyle for plot. Options are
+            ``"solid"`` or ``"dotted"``.
     """
     y = np.array(y)
     if len(y.shape) == 1:

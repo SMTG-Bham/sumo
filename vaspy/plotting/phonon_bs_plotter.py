@@ -2,68 +2,61 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+This module provides a class for plotting phonon band structure diagrams.
+"""
+
 import logging
 import itertools
-
-import numpy as np
 
 from matplotlib.ticker import MaxNLocator
 from matplotlib.cbook import flatten
 
-from vaspy.electronic_structure.dos import sort_orbitals
-from vaspy.plotting import pretty_plot, pretty_subplot
+from vaspy.plotting import pretty_plot
 
 from pymatgen.phonon.plotter import PhononBSPlotter
 
 line_width = 1.5
 band_linewidth = 2
 
+
 class VPhononBSPlotter(PhononBSPlotter):
+    """Class for plotting phonon band structures.
+
+    This class is similar to the :obj:`pymatgen.phonon.plotter.PhononBSPlotter`
+    class but overrides some methods to generate prettier plots.
+
+    Args:
+        bs (:obj:`~pymatgen.phonon.bandstructure.PhononBandStructureSymmLine`):
+            The phonon band structure.
+    """
 
     def __init__(self, bs, imag_tol=-5e-2):
-        """Vaspy class for plotting phonon band structures.
-
-        This class is similar to the pymatgen PhononBSPlotter class but
-        overrides some methods to generate prettier plots.
-
-        Args:
-            bs (BandStructure): A pymatgen PhononBandStructureSymmLine object.
-        """
         PhononBSPlotter.__init__(self, bs)
         self.imag_tol = imag_tol
 
     def get_plot(self, ymin=None, ymax=None, width=6., height=6., dpi=400,
-                 plt=None, dos_plotter=None, dos_options=None, dos_aspect=3,
-                 fonts=None):
-        """Get a matplotlib object for the bandstructure plot.
-
-        If spin polarised or metallic, blue lines are spin up, red lines are
-        spin down. Otherwise, for semiconductors, blue lines indicate valence
-        bands and orange indicates conduction bands.
+                 plt=None, fonts=None):
+        """Get a :obj:`matplotlib.pyplot` object of the phonon band structure.
 
         Args:
-            zero_to_efermi (bool): Automatically subtract off the Fermi energy
-                from the eigenvalues and plot (E-Ef).
-            ymin (float): The y-axis (energy) minimum limit.
-            ymax (float): The y-axis (energy) maximum limit.
-            width (float): The width of the figure.
-            height (float): The height of the figure.
-            vbm_cbm_marker (bool): Plot markers to indicate the VBM and CBM
-                locations.
-            dpi (int): The dots-per-inch (pixel density) for the image.
-            plt (pyplot object): Matplotlib pyplot object to use for plotting.
-            fonts (list): List of fonts to use in the plot.
+            ymin (:obj:`float`, optional): The minimum energy on the y-axis.
+            ymax (:obj:`float`, optional): The maximum energy on the y-axis.
+            width (:obj:`float`, optional): The width of the plot.
+            height (:obj:`float`, optional): The height of the plot.
+            dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+                the image.
+            fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+                a single font, specified as a :obj:`str`, or several fonts,
+                specified as a :obj:`list` of :obj:`str`.
+            plt (:obj:`matplotlib.pyplot`, optional): A
+                :obj:`matplotlib.pyplot` object to use for plotting.
+
+        Returns:
+            :obj:`matplotlib.pyplot`: The phonon band structure plot.
         """
-        if dos_plotter:
-            width = width + height/dos_aspect
-            plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
-                                 plt=plt, fonts=fonts,
-                                 gridspec_kw={'width_ratios': [dos_aspect, 1],
-                                              'wspace': 0})
-            ax = plt.gcf().axes[0]
-        else:
-            plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
-            ax = plt.gca()
+        plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
+        ax = plt.gca()
 
         data = self.bs_plot_data()
         dists = data['distances']
@@ -75,17 +68,18 @@ class VPhononBSPlotter(PhononBSPlotter):
             f = freqs[nd][nb]
 
             # plot band data
-            ax.plot(dists[nd], f, ls='-', c='#3953A4', linewidth=band_linewidth)
+            ax.plot(dists[nd], f, ls='-', c='#3953A4',
+                    linewidth=band_linewidth)
 
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, width=width, height=height,
-                       ymin=ymin, ymax=ymax, dos_plotter=dos_plotter,
-                       dos_options=dos_options)
+                       ymin=ymin, ymax=ymax)
         plt.tight_layout()
         return plt
 
-    def _makeplot(self, ax, fig, data, ymin=None, ymax=None, height=6, width=6,
-                  dos_plotter=None, dos_options=None):
+    def _makeplot(self, ax, fig, data, ymin=None, ymax=None, height=6,
+                  width=6):
+        """Utility method to tidy phonon band structure diagrams. """
         # set x and y limits
         tymax = ymax if ymax else max(flatten(data['frequency']))
         tymin = ymin if ymin else min(flatten(data['frequency']))
@@ -98,15 +92,10 @@ class VPhononBSPlotter(PhononBSPlotter):
         ax.set_ylim(ymin, ymax)
         ax.set_xlim(0, data['distances'][-1][-1])
 
-        if dos_plotter:
-            ax = fig.axes[1]
-            dos_options.update({'xmin': ymin, 'xmax': ymax})
-            self._makedos(ax, dos_plotter, dos_options)
-        else:
-            # keep correct aspect ratio square
-            x0, x1 = ax.get_xlim()
-            y0, y1 = ax.get_ylim()
-            ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
+        # keep correct aspect ratio square
+        x0, x1 = ax.get_xlim()
+        y0, y1 = ax.get_ylim()
+        ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
 
     def _maketicks(self, ax):
         """Utility method to add tick marks to a band structure."""

@@ -138,13 +138,13 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
             If `atoms` is not set or set to `None` then all atomic sites for
             all elements will be considered.
         total_only (`bool`, optional): Only plot the total density of states.
-        plot_total (`bool`, optional): If `False`, the total density of states
-            will not be plotted.
-        legend_cutoff (`float`, optional): The cut-off (in % of the maximum
-            density of states within the plotting range) for an elemental
-            orbital to be labelled in the legendl. This prevents the legend
-            from being full of orbitals that have very little contribution in
-            the plotting range.
+        plot_total (:obj:`bool`, optional): Plot the total density of states.
+            Defaults to ``True``.
+        legend_cutoff (:obj:`float`, optional): The cut-off (in % of the
+            maximum density of states within the plotting range) for an
+            elemental orbital to be labelled in the legend. This prevents the
+            legend from containing labels for orbitals that have very little
+            contribution in the plotting range.
         gaussian (`float`, optional): Broaden the density of states using
             convolution with a gaussian function. This parameter controls the
             sigma or smearing width of the gaussian.

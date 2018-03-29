@@ -2,6 +2,10 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+This module provides a class for plotting electronic band structure diagrams.
+"""
+
 import logging
 
 import numpy as np
@@ -25,42 +29,97 @@ band_linewidth = 2
 
 
 class VBSPlotter(BSPlotter):
+    """Class for plotting electronic band structures.
+
+    This class is similar to the pymatgen
+    :obj:`pymatgen.electronic_structure.plotter.BSPlotter` class but overrides
+    some methods to generate prettier plots.
+
+    Additional functionality, such as projected band structure plots are
+    available.
+
+    Args:
+        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):
+            The band structure.
+    """
 
     def __init__(self, bs):
-        """Vaspy class for plotting band structures.
-
-        This class is similar to the pymatgen BSPlotter class but overrides
-        some methods to generate prettier plots.
-
-        Further functionality, such as projected band structure plots are
-        available.
-
-        Args:
-            bs (BandStructure): A pymatgen BandStructure object.
-        """
         BSPlotter.__init__(self, bs)
 
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
                  width=6., height=6., vbm_cbm_marker=False, dpi=400, plt=None,
                  dos_plotter=None, dos_options=None, dos_aspect=3, fonts=None):
-        """Get a matplotlib object for the bandstructure plot.
+        """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
-        If spin polarised or metallic, blue lines are spin up, red lines are
-        spin down. Otherwise, for semiconductors, blue lines indicate valence
-        bands and orange indicates conduction bands.
+        If the system is spin polarised, blue lines are spin up, red lines are
+        spin down. For metals, all bands are coloured blue. For semiconductors,
+        blue lines indicate valence bands and orange lines indicates conduction
+        bands.
 
         Args:
-            zero_to_efermi (bool): Automatically subtract off the Fermi energy
-                from the eigenvalues and plot (E-Ef).
-            ymin (float): The y-axis (energy) minimum limit.
-            ymax (float): The y-axis (energy) maximum limit.
-            width (float): The width of the figure.
-            height (float): The height of the figure.
-            vbm_cbm_marker (bool): Plot markers to indicate the VBM and CBM
-                locations.
-            dpi (int): The dots-per-inch (pixel density) for the image.
-            plt (pyplot object): Matplotlib pyplot object to use for plotting.
-            fonts (list): List of fonts to use in the plot.
+            zero_to_efermi (:obj:`bool`): Normalise the plot such that the
+                valence band maximum is set as 0 eV.
+            ymin (:obj:`float`, optional): The minimum energy on the y-axis.
+            ymax (:obj:`float`, optional): The maximum energy on the y-axis.
+            width (:obj:`float`, optional): The width of the plot.
+            height (:obj:`float`, optional): The height of the plot.
+            vbm_cbm_marker (:obj:`bool`, optional): Plot markers to indicate
+                the VBM and CBM locations.
+            dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+                the image.
+            plt (:obj:`matplotlib.pyplot`, optional): A
+                :obj:`matplotlib.pyplot` object to use for plotting.
+            dos_plotter (:obj:`~vaspy.plotting.dos_plotter.VDOSPlotter`, \
+                optional): Plot the density of states alongside the band
+                structure. This should be a
+                :obj:`~vaspy.plotting.dos_plotter.VDOSPlotter` object
+                initialised with the data to plot.
+            dos_options (:obj:`dict`, optional): The options for density of
+                states plotting. This should be formatted as a :obj:`dict`
+                containing any of the following keys:
+
+                    "yscale" (:obj:`float`)
+                        Scaling factor for the y-axis.
+                    "xmin" (:obj:`float`)
+                        The minimum energy to mask the energy and density of
+                        states data (reduces plotting load).
+                    "xmax" (:obj:`float`)
+                        The maximum energy to mask the energy and density of
+                        states data (reduces plotting load).
+                    "colours" (:obj:`dict`)
+                        Use custom colours for specific element and orbital
+                        combinations. Specified as a :obj:`dict` of
+                        :obj:`dict` of the colours. For example::
+
+                            {
+                                'Sn': {'s': 'r', 'p': 'b'},
+                                'O': {'s': '#000000'}
+                            }
+
+                        The colour can be a hex code, series of rgb value, or
+                        any other format supported by matplotlib.
+                    "plot_total" (:obj:`bool`)
+                        Plot the total density of states. Defaults to ``True``.
+                    "legend_cutoff" (:obj:`float`)
+                        The cut-off (in % of the maximum density of states
+                        within the plotting range) for an elemental orbital to
+                        be labelled in the legend. This prevents the legend
+                        from containing labels for orbitals that have very
+                        little contribution in the plotting range.
+                    "subplot" (:obj:`bool`)
+                        Plot the density of states for each element on seperate
+                        subplots. Defaults to ``False``.
+
+            dos_aspect (:obj:`float`, optional): Aspect ratio for the band
+                structure and density of states subplot. For example,
+                ``dos_aspect = 3``, results in a ratio of 3:1, for the band
+                structure:dos plots.
+            fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+                a single font, specified as a :obj:`str`, or several fonts,
+                specified as a :obj:`list` of :obj:`str`.
+
+        Returns:
+            :obj:`matplotlib.pyplot`: The electronic band structure plot.
         """
         if dos_plotter:
             width = width + height/dos_aspect
@@ -115,62 +174,122 @@ class VBSPlotter(BSPlotter):
                            height=6., vbm_cbm_marker=False, dpi=400, plt=None,
                            dos_plotter=None, dos_options=None,
                            dos_aspect=3, fonts=None):
-        """Get a matplotlib object for a projected bandstructure plot.
+        """Get a :obj:`matplotlib.pyplot` of the projected band structure.
 
-        For the mode='rgb', spin up and spin down are differientiated by a '-'
-        and a '--' line, otherwise spin up and spin down are plotted
-        seperately.
+        If the system is spin polarised and ``mode = 'rgb'`` spin up and spin
+        down bands are differientiated by solid and dashed lines, repsecitvely.
+        For the other modes, spin up and spin down are plotted seperately.
 
         Args:
-            selection (list): A list of tuples/strings identifying which
-                elements and orbitals to project on to the band structure.
-                These can be specified by both element and orbital, for example
+            selection (list): A list of :obj:`tuple` or :obj:`string`
+                identifying which elements and orbitals to project on to the
+                band structure. These can be specified by both element and
+                orbital, for example, the following will project the Bi s, p
+                and S p orbitals::
 
                     [('Bi', 's'), ('Bi', 'p'), ('S', 'p')]
 
                 If just the element is specified then all the orbitals of
-                that element are combined. For example:
+                that element are combined. For example, to sum all the S
+                orbitals::
 
                     [('Bi', 's'), ('Bi', 'p'), 'S']
 
-                You can also choose to sum certain orbitals, by supplying a
-                tuple of orbitals. For example:
+                You can also choose to sum particular orbitals by supplying a
+                :obj:`tuple` of orbitals. For example, to sum the S s, p, and
+                d orbitals into a single projection::
 
                     [('Bi', 's'), ('Bi', 'p'), ('S', ('s', 'p', 'd'))]
 
-                If the plotting mode is 'rgb', a maximum of 3 orbital/element
+                If ``mode = 'rgb'``, a maximum of 3 orbital/element
                 combinations can be plotted simultaneously (one for red, green
                 and blue), otherwise an unlimited number of elements/orbitals
                 can be selected.
-            mode (str): Type of projected band structure to plot. Options are:
-                "rgb": The band structure line color depends on the character
-                    of the band. Each element/orbital contributes either red,
-                    green or blue with the corresponding line colour a mixture
-                    of all three colours. This mode only supports up to with up
-                    to 3 elements/orbitals. The order of the tuples determines
-                    which colour is used.
-                "stacked": The element/orbital contributions are drawn as a
-                    series of stacked circles, with the colour depending on
-                    the composition of the band. The size of the circles can
-                    be scaled using the stacked_marker_size option.
-            circle_size (float): The size of the circles used in the 'stacked'
-                plotting mode.
-            projection_cutoff (float): Don't plot projections with normalised
+            mode (:obj:`str`, optional): Type of projected band structure to
+                plot. Options are:
+
+                    "rgb"
+                        The band structure line color depends on the character
+                        of the band. Each element/orbital contributes either
+                        red, green or blue with the corresponding line colour a
+                        mixture of all three colours. This mode only supports
+                        up to 3 elements/orbitals combinations. The order of
+                        the ``selection`` :obj:`tuple` determines which colour
+                        is used for each selection.
+                    "stacked"
+                        The element/orbital contributions are drawn as a
+                        series of stacked circles, with the colour depending on
+                        the composition of the band. The size of the circles
+                        can be scaled using the ``circle_size`` option.
+
+            interpolate_factor (:obj:`int`, optional): The factor by which to
+                interpolate the band structure (neccessary to make smooth
+                lines). A larger number indicates greater interpolation.
+            circle_size (:obj:`float`, optional): The area of the circles used
+                when ``mode = 'stacked'``.
+            projection_cutoff (:obj:`float`): Don't plot projections with
                 intensitites below this number. This option is useful for
-                stacked plots, where small projections look nasty.
-            interpolate_factor (int): The factor by which to interpolate the
-                band structure (neccessary to make smooth lines). A larger
-                number indicates greater interpolation.
-            zero_to_efermi (bool): Automatically subtract off the Fermi energy
-                from the eigenvalues and plot (E-Ef).
-            ymin (float): The y-axis (energy) minimum limit.
-            ymax (float): The y-axis (energy) maximum limit.
-            width (float): The width of the figure.
-            height (float): The height of the figure.
-            vbm_cbm_marker (bool): Plot markers to indicate the VBM and CBM
-                locations.
-            dpi (int): The dots-per-inch (pixel density) for the image.
-            plt (pyplot object): Matplotlib pyplot object to use for plotting.
+                stacked plots, where small projections clutter the plot.
+            zero_to_efermi (:obj:`bool`): Normalise the plot such that the
+                valence band maximum is set as 0 eV.
+            ymin (:obj:`float`, optional): The minimum energy on the y-axis.
+            ymax (:obj:`float`, optional): The maximum energy on the y-axis.
+            width (:obj:`float`, optional): The width of the plot.
+            height (:obj:`float`, optional): The height of the plot.
+            vbm_cbm_marker (:obj:`bool`, optional): Plot markers to indicate
+                the VBM and CBM locations.
+            dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+                the image.
+            plt (:obj:`matplotlib.pyplot`, optional): A
+                :obj:`matplotlib.pyplot` object to use for plotting.
+            dos_plotter (:obj:`~vaspy.plotting.dos_plotter.VDOSPlotter`, \
+                optional): Plot the density of states alongside the band
+                structure. This should be a
+                :obj:`~vaspy.plotting.dos_plotter.VDOSPlotter` object
+                initialised with the data to plot.
+            dos_options (:obj:`dict`, optional): The options for density of
+                states plotting. This should be formatted as a :obj:`dict`
+                containing any of the following keys:
+
+                    "yscale" (:obj:`float`)
+                        Scaling factor for the y-axis.
+                    "xmin" (:obj:`float`)
+                        The minimum energy to mask the energy and density of
+                        states data (reduces plotting load).
+                    "xmax" (:obj:`float`)
+                        The maximum energy to mask the energy and density of
+                        states data (reduces plotting load).
+                    "colours" (:obj:`dict`)
+                        Use custom colours for specific element and orbital
+                        combinations. Specified as a :obj:`dict` of
+                        :obj:`dict` of the colours. For example::
+
+                            {
+                                'Sn': {'s': 'r', 'p': 'b'},
+                                'O': {'s': '#000000'}
+                            }
+
+                        The colour can be a hex code, series of rgb value, or
+                        any other format supported by matplotlib.
+                    "plot_total" (:obj:`bool`)
+                        Plot the total density of states. Defaults to ``True``.
+                    "legend_cutoff" (:obj:`float`)
+                        The cut-off (in % of the maximum density of states
+                        within the plotting range) for an elemental orbital to
+                        be labelled in the legend. This prevents the legend
+                        from containing labels for orbitals that have very
+                        little contribution in the plotting range.
+                    "subplot" (:obj:`bool`)
+                        Plot the density of states for each element on seperate
+                        subplots. Defaults to ``False``.
+
+            fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+                a single font, specified as a :obj:`str`, or several fonts,
+                specified as a :obj:`list` of :obj:`str`.
+
+        Returns:
+            :obj:`matplotlib.pyplot`: The projected electronic band structure
+            plot.
         """
         if mode == 'rgb' and len(selection) > 3:
             raise ValueError('Too many elements/orbitals specified (max 3)')
@@ -275,6 +394,7 @@ class VBSPlotter(BSPlotter):
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,
                   vbm_cbm_marker=False, ymin=-6, ymax=6, height=6, width=6,
                   dos_plotter=None, dos_options=None):
+        """Tidy the band structure & add the density of states if required."""
         # draw line at Fermi level if not zeroing to e-Fermi
         if not zero_to_efermi:
             ef = self._bs.efermi
