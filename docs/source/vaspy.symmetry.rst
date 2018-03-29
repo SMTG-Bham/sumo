@@ -4,14 +4,13 @@ vaspy.symmetry package
 Submodules
 ----------
 
-vaspy.symmetry.brad\_crack\_kpath module
-----------------------------------------
+vaspy.symmetry.kpoints module
+-----------------------------
 
-.. automodule:: vaspy.symmetry.brad_crack_kpath
+.. automodule:: vaspy.symmetry.kpoints
     :members:
     :undoc-members:
     :show-inheritance:
-    :inherited-members:
 
 vaspy.symmetry.kpath module
 ---------------------------
@@ -21,13 +20,14 @@ vaspy.symmetry.kpath module
     :undoc-members:
     :show-inheritance:
 
-vaspy.symmetry.kpoints module
------------------------------
+vaspy.symmetry.brad\_crack\_kpath module
+----------------------------------------
 
-.. automodule:: vaspy.symmetry.kpoints
+.. automodule:: vaspy.symmetry.brad_crack_kpath
     :members:
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 vaspy.symmetry.pymatgen\_kpath module
 -------------------------------------
@@ -47,6 +47,14 @@ vaspy.symmetry.seekpath\_kpath module
     :show-inheritance:
     :inherited-members:
 
+vaspy.symmetry.custom\_kpath module
+-------------------------------------
+
+.. automodule:: vaspy.symmetry.custom_kpath
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :inherited-members:
 
 Module contents
 ---------------

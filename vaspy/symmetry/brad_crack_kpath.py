@@ -14,10 +14,10 @@ from vaspy.symmetry import Kpath
 class BradCrackKpath(Kpath):
     r"""Class to generate k-points along paths from Bradley and Cracknell.
 
-    The paths used are based on Brillouin zones depicted in reference [1]_.
+    The paths used are based on Brillouin zones depicted in reference [brad]_.
 
-    .. [1] "The Mathematical Theory of Symmetry in Solids", C. J. Bradley and
-           A. P. Cracknell, Clarendon Press, 1972.
+    .. [brad] "The Mathematical Theory of Symmetry in Solids", C. J. Bradley
+              and A. P. Cracknell, Clarendon Press, 1972.
 
     These paths represent only one particular route through the Brillouin
     zone and do not cover every possible path (though they do visit every
@@ -32,34 +32,15 @@ class BradCrackKpath(Kpath):
         structure (:obj:`~pymatgen.core.structure.Structure`): The structure.
         symprec (:obj:`float`, optional): The tolerance for determining the
             crystal symmetry.
-        spg (:obj:`~pymatgen.symmetry.core.SpaceGroup`, optional): Space group
-            used to override the symmetry determined by spglib. This is not
-            recommended and only provided for testing purposes.
+        spg (:obj:`~pymatgen.symmetry.groups.SpaceGroup`, optional): Space
+            group used to override the symmetry determined by spglib. This is
+            not recommended and only provided for testing purposes.
 
     Attributes:
-        kpoints (dict): The high-symmetry k-point labels and their fractional
-            coordinates. Formatted as ``{label: coords}``. For example::
-
-                {r'\Gamma': [0., 0., 0.], 'X': [0.5, 0. 0.]}
-
-        path (list): The high-symmetry k-point path. Each subpath is provided
-            as a list. For example, the following covers the path ``\Gamma ->
-            X -> C | \Gamma -> Y``::
-
-                [[r'\Gamma', 'X', 'C'], [r'\Gamma', 'Y']].
-
         prim (:obj:`~pymatgen.core.structure.Structure`): The standardised
             primitive cell structure for the generated k-point path.
         conv (:obj:`~pymatgen.core.structure.Structure`): The standardised
             conventional cell structure.
-        lattice_type (str): The Bravais lattice system. Hexagonal cells are
-            separated into rhombohedral and hexagonal lattices.
-        spg_symbol (str): The international space group symbol.
-        spg_number (int): The international space group number.
-        path_string (str): The high-symmetry k-point path formatted with arrows
-            and showing disconnections between subpaths. For example::
-
-                "X -> Gamma | Y -> Z"
     """
 
     def __init__(self, structure, symprec=1e-3, spg=None):

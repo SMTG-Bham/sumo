@@ -2,6 +2,10 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+Module containing class for generating custom k-point paths.
+"""
+
 import string
 import numpy as np
 
@@ -9,35 +13,35 @@ from vaspy.symmetry import Kpath
 
 
 class CustomKpath(Kpath):
-    """Class to represent custom k-point paths.
+    """Class to generate k-points along custom k-point paths.
 
     Args:
-        structure (Structure): A pymatgen structure object.
-        path_labels (list): A list of labels to use along with kpt_list. These
-            should be provided as a list of subpaths, each containing a list of
-            labels. For example: [['Gamma', 'Z'], ['X', 'M']], combined with
-            the above kpt_list would indicate the path: Gamma -> Z | X -> M.
-        symprec (float): The tolerance for determining the crystal symmetry.
-        kpt_list (list): Manual list of k-points to use. If kpt_list is set it
-            will override the mode selection. Should be formatted as a list of
-            subpaths, each containing a list of k-points. For example:
-            [[[0., 0., 0.], [0., 0., 0.5]], [[0.5, 0., 0.], [0.5, 0.5, 0.]]]
+        structure (:obj:`~pymatgen.core.structure.Structure`): The structure.
+        symprec (:obj:`float`, optional): The tolerance for determining the
+            crystal symmetry.
+        kpt_list (list): List of k-points to use, formatted as a list of
+            subpaths, each containing a list of fractional k-points. For
+            example::
+
+                [ [[0., 0., 0.], [0., 0., 0.5]],
+                  [[0.5, 0., 0.], [0.5, 0.5, 0.]] ]
+
+            Will return points along ``0 0 0 -> 0 0 1/2 | 1/2 0 0
+            -> 1/2 1/2 0``
+        path_labels (:obj:`list`): The k-point labels. These should be provided
+            as a :obj:`list` of :obj:`str` for each subpath of the overall
+            path. For example::
+
+                [ ['Gamma', 'Z'], ['X', 'M'] ]
+
+            combined with the above example for ``kpt_list`` would indicate the
+            path: Gamma -> Z | X -> M.
 
     Attributes:
-        kpoints (dict): The high-symmetry k-point labels and their coordinates
-            as {label: coords}.
-        path (list): The high-symmetry k-point path. Each subpath is provided
-            as a list. E.g. [['A', 'B'], ['C', 'D']].
-        prim (Structure): The standardised primitive cell structure needed for
-            to obtain the correct band structure.
-        conv (Structure): The standardised conventional cell structure.
-        lattice_type (str): The Bravais lattice system. Hexagonal cells are
-            separated into rhombohedral and hexagonal lattices.
-        spg_symbol (str): The international space group symbol.
-        spg_number (int): The international space group number.
-        path_string (str): The high-symmetry k-point path formatted with arrows
-            and showing disconnections between subpaths. For example:
-            "X -> Gamma | Y -> Z".
+        prim (:obj:`~pymatgen.core.structure.Structure`): The standardised
+            primitive cell structure for the generated k-point path.
+        conv (:obj:`~pymatgen.core.structure.Structure`): The standardised
+            conventional cell structure.
     """
 
     def __init__(self, structure, kpt_list, path_labels, symprec=1e-3):

@@ -3,15 +3,13 @@
 # Distributed under the terms of the MIT License.
 
 """
-Module containing base class for high-symmetry k-point path determination.
+Module containing the base class for high-symmetry k-point path determination.
 """
 
 import spglib
 import seekpath
 
 import numpy as np
-
-from vaspy.symmetry.kpoints import get_kpoints
 
 from pymatgen.core.structure import Structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
@@ -20,10 +18,13 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 class Kpath(object):
     r"""Base class providing helper functions for generating k-point paths.
 
-    This class should not be used directly. Instead, one of the PymatgenKpath,
-    SeekpathKpath, or BradCrackKpath subclasses should be used. The main use
-    of this parent object is for standardisation across the differing k-point
-    path generation classes.
+    This class should not be used directly. Instead, one of the
+    :obj:`~vaspy.symmetry.brad_crack_kpath.BradCrackKpath`,
+    :obj:`~vaspy.symmetry.seekpath_kpath.SeekpathKpath`, or
+    :obj:`~vaspy.symmetry.custom_kpath.CustomKpath`, subclasses should be used.
+
+    The main use of this parent object is for standardisation across the
+    differing k-point path generation classes.
 
     Args:
         structure (:obj:`~pymatgen.core.structure.Structure`): The structure.
@@ -80,6 +81,13 @@ class Kpath(object):
     def get_kpoints(self, line_density=20, cart_coords=False, phonopy=False):
         r"""Return a list of k-points and labels along the high-symmetry path.
 
+        The format of the returned data will be different if phonopy is
+        ``True`` or ``False``. This is because phonopy requires the labels and
+        kpoints to be provided in a different format than kgen.
+
+        Adapted from
+        :obj:`pymatgen.symmetry.bandstructure.HighSymmKpath.get_kpoints`.
+
         Args:
             line_density (:obj:`int`, optional): Density of k-points along the
                 path.
@@ -122,9 +130,64 @@ class Kpath(object):
 
                       ['\Gamma', 'X', 'Y']
         """
-        return get_kpoints(self.structure, self.kpoints, self.path,
-                           line_density=line_density, cart_coords=cart_coords,
-                           phonopy=phonopy)
+        list_k_points = []
+        sym_point_labels = []
+        recip_lattice = self.structure.lattice.reciprocal_lattice
+        for b in self.path:
+            for i in range(1, len(b)):
+                start = np.array(self.kpoints[b[i - 1]])
+                end = np.array(self.kpoints[b[i]])
+                distance = np.linalg.norm(
+                    recip_lattice.get_cartesian_coords(start) -
+                    recip_lattice.get_cartesian_coords(end))
+                nb = int(np.ceil(distance * line_density))
+                sym_point_labels.extend([b[i - 1]] + [''] * (nb - 1))
+
+                limit = nb + 1 if phonopy else nb
+                kpts = [recip_lattice.get_cartesian_coords(start)
+                        + float(i) / float(nb) *
+                        (recip_lattice.get_cartesian_coords(end)
+                        - recip_lattice.get_cartesian_coords(start))
+                        for i in range(0, limit)]
+
+                if phonopy:
+                    list_k_points.append(kpts)
+                else:
+                    list_k_points.extend(kpts)
+
+            # append last k-point to avoid repition as in pymatgen
+            if not phonopy:
+                # for VASP we label every k-point. If a k-point has no
+                # high-symmetry label then just use an empty string.
+                sym_point_labels.append(b[-1])
+                list_k_points.append(recip_lattice.get_cartesian_coords(end))
+
+        if phonopy:
+            # For phonopy, the labels for any discontinuities should be
+            # combined. For example if the route is  X -> Y | Z -> R, the path
+            # will be [['X', 'Y'], ['Z', 'R']], and the labels should be
+            # ['X', 'Z', 'R']
+
+            sym_point_labels = []
+            for i, path_branch in enumerate(self.path):
+                for n, label in enumerate(path_branch):
+                    if i != 0 and n == 0:
+                        sym_point_labels[-1] += " | {}".format(label)
+                        pass
+                    else:
+                        sym_point_labels.append(label)
+
+        if cart_coords:
+            return list_k_points, sym_point_labels
+        else:
+            if phonopy:
+                frac_k_points = [[recip_lattice.get_fractional_coords(k)
+                                 for k in p] for p in list_k_points]
+                frac_k_points = frac_k_points
+            else:
+                frac_k_points = [recip_lattice.get_fractional_coords(k)
+                                 for k in list_k_points]
+            return frac_k_points, sym_point_labels
 
     @property
     def kpoints(self):
