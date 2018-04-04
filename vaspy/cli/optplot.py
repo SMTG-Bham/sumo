@@ -2,6 +2,10 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+A script to calculate and plot optical spectra from a VASP calculation.
+"""
+
 import os
 import warnings
 import argparse
@@ -15,9 +19,6 @@ from vaspy.plotting.optics_plotter import VOpticsPlotter
 from vaspy.electronic_structure.optics import (broaden_eps, calculate_alpha,
                                                write_files)
 
-"""
-Script to calculate and plot optical spectra from a VASP calculation.
-"""
 
 __author__ = "Alex Ganose"
 __version__ = "0.2"
@@ -33,31 +34,42 @@ def optplot(filenames='vasprun.xml', prefix=None, directory=None,
     """A script to plot optical absorption spectra from VASP calculations.
 
     Args:
-        filenames (str or list): A vasprun.xml file to plot (can be gziped).
-            Alternatively, a list of vasprun.xml files can be provided, in
-            which case the absorption spectra for each will be plotted.
-        prefix (str): A prefix for the files generated.
-        directory (str): Specify a directory in which the files are saved.
-        gaussian (float): The sigma of the Gaussian broadening to apply.
-        band_gaps (float or list): The fundamental band gap of the
-            material to be plotted as dashed line. If plotting multiple
-            spectra then a list of band gaps can be provided.
-        label (str or list): A label to identify the spectra. If
-            plotting multiple spectra then a list of labels can be provided.
-        average (bool, optional): Average the dielectric response across
-            all lattice directions.
-        height (float): The height of the graph.
-        width (float): The width of the graph.
-        xmin (float): The minimum energy to plot.
-        xmax (float): The maximum energy to plot.
-        ymin (float): The minimum absorption intensity to plot.
-        ymax (float): The maximum absorption intensity to plot.
-        colours (dict): Specify custom colours - currently not implemented.
-        image_format (str): The image file format (matplotlib only). Can be
-            any format supported by matplot, including: png, jpg, pdf, and svg.
-        dpi (int): The dots-per-inch (pixel density) for the image.
-        plt (pyplot object): Matplotlib pyplot object to use for plotting.
-        fonts (list): List of fonts to use in the plot.
+        filenames (:obj:`str` or :obj:`list`, optional): Path to vasprun.xml
+            file (can be gziped). Alternatively, a list of paths can be
+            provided, in which case the absorption spectra for each will be
+            plotted concurrently.
+        prefix (:obj:`str`, optional): Prefix for file names.
+        directory (:obj:`str`, optional): The directory in which to save files.
+        gaussian (:obj:`float`): Standard deviation for gaussian broadening.
+        band_gaps (:obj:`float` or :obj:`list`, optional): The band gap as a
+            :obj:`float`, plotted as a dashed line. If plotting multiple
+            spectra then a :obj:`list` of band gaps can be provided.
+        labels (:obj:`str` or :obj:`list`): A label to identify the spectra.
+            If plotting multiple spectra then a :obj:`list` of labels can
+            be provided.
+        average (:obj:`bool`, optional): Average the dielectric response across
+            all lattice directions. Defaults to ``True``.
+        height (:obj:`float`, optional): The height of the plot.
+        width (:obj:`float`, optional): The width of the plot.
+        xmin (:obj:`float`, optional): The minimum energy on the x-axis.
+        xmax (:obj:`float`, optional): The maximum energy on the x-axis.
+        ymin (:obj:`float`, optional): The minimum absorption intensity on the
+            y-axis.
+        ymax (:obj:`float`, optional): The maximum absorption intensity on the
+            y-axis.
+        colours (:obj:`list`, optional): A :obj:`list` of colours to use in the
+            plot. The colours can be specified as a hex code, set of rgb
+            values, or any other format supported by matplotlib.
+        image_format (:obj:`str`, optional): The image file format. Can be any
+            format supported by matplot, including: png, jpg, pdf, and svg.
+            Defaults to pdf.
+        dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+            the image.
+        plt (:obj:`matplotlib.pyplot`, optional): A
+            :obj:`matplotlib.pyplot` object to use for plotting.
+        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+            a single font, specified as a :obj:`str`, or several fonts,
+            specified as a :obj:`list` of :obj:`str`.
 
     Returns:
         A matplotlib pyplot object.
@@ -109,7 +121,7 @@ def optplot(filenames='vasprun.xml', prefix=None, directory=None,
 
 def main():
     parser = argparse.ArgumentParser(description="""
-    optics is a script to help calculate and plot optical absorption spectra
+    optplot is a script to help calculate and plot optical absorption spectra
     from VASP calculations. Absorption given in units of cm^-1.""",
                                      epilog="""
     Author: {}
@@ -125,15 +137,16 @@ def main():
     parser.add_argument('-g', '--gaussian', type=float,
                         help='Amount of gaussian broadening to apply')
     parser.add_argument('-b', '--bandgaps', nargs='*',
-                        help="""Specify fundamental band gaps, if this option is
-                        called with no arguments, the band gap for each system
-                        will be read from the vasprun.xml file. Alternatively,
-                        the path to a vasprun.xml file can be specified, in
-                        which case the band gap will be read from this output.
-                        Furthermore, a number can be provided, in which case
-                        this value will be used. If plotting multiple optical
-                        spectra then an equivalent number of band gaps should be
-                        specified for this option also.""")
+                        help="""Specify fundamental band gaps, if this option
+                        is called with no arguments, the band gap for each
+                        system will be read from the vasprun.xml file.
+                        Alternatively, the path to a vasprun.xml file can be
+                        specified, in which case the band gap will be read from
+                        this output. Furthermore, a number can be provided, in
+                        which case this value will be used. If plotting
+                        multiple optical spectra then an equivalent number of
+                        band gaps should be specified for this option
+                        also.""")
     parser.add_argument('-l', '--labels', nargs='+',
                         help='Labels for the absorption specta.')
     parser.add_argument('-a', '--anisotropic', action='store_false',
