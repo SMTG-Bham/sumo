@@ -2,6 +2,21 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+A script to plot phonon band structure diagrams
+
+TODO:
+ * automatically plot dos if present in band.yaml
+ * primitive axis determination (try symmetrise->spglib->PA then apply
+ * transform on original cell and see if it works.
+ * make band structure from vasprun displacement/DFPT files
+ * deal with magnetic moments
+ * Read FORCE_CONSANTS or force_constants.hdf5
+ * change frequency unit
+ * read settings from phonopy config file
+ * prefix file names
+"""
+
 import os
 import sys
 import logging
@@ -11,7 +26,6 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning,
                         module="h5py")
-import h5py
 
 import matplotlib as mpl
 mpl.use('Agg')
@@ -23,13 +37,7 @@ from pymatgen.io.phonopy import get_ph_bs_symm_line
 
 from vaspy.phonon.phonopy import load_phonopy
 from vaspy.plotting.phonon_bs_plotter import VPhononBSPlotter
-from vaspy.symmetry import BradCrackKpath, SeekpathKpath, PymatgenKpath
-from vaspy.symmetry.kpoints import get_kpoints, get_path_data
-
-
-"""
-A script to plot phonon band structure diagrams
-"""
+from vaspy.symmetry.kpoints import get_path_data
 
 
 __author__ = "Alex Ganose"
@@ -38,58 +46,83 @@ __maintainer__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"
 __date__ = "Jan 17, 2018"
 
-# TODO:
-# - automatically plot dos if present in band.yaml
-# - primitive axis determination (try symmetrise->spglib->PA then apply
-#   transform on original cell and see if it works.
-# - make band structure from vasprun displacement/DFPT files
-# - deal with magnetic moments
-# - Read FORCE_CONSANTS or force_constants.hdf5
-# - change frequency unit
-# - read settings from phonopy config file
-# - prefix file names
 
-def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None,
-                    born=None, qmesh=None, spg=None, line_density=60,
+def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
+                    dim=None, born=None, qmesh=None, spg=None, line_density=60,
                     symprec=0.01, mode='bradcrack', kpt_list=None,
-                    eigenvectors=False,
-                    labels=None, height=6., width=6., ymin=None, ymax=None,
-                    image_format='pdf', dpi=400, plt=None, fonts=None):
+                    eigenvectors=False, labels=None, height=6., width=6.,
+                    ymin=None, ymax=None, image_format='pdf', dpi=400,
+                    plt=None, fonts=None):
     """A script to plot phonon band structure diagrams.
 
     Args:
-        filename (str): A vasprun.xml file to plot (can be gziped).
-        prefix (str): A prefix for the files generated.
-        directory (str): Specify a directory in which the files are saved.
-        born (str):
-        qmesh (list):
-        spg (str or int): The space group international number or symbol to
-            override the symmetry determined by spglib. This is not recommended
-            and only provided for testing purposes.
-        line_density (int): The density of k-points along the path.
-        mode (str): Sets the method used to calculate the high-symmetry path.
-            Choice of 'bradcrack', 'seekpath', and 'pymatgen'.
-        kpt_list (list): Manual list of k-points to use. If kpt_list is set it
-            will override the mode selection. Should be formatted as a list of
-            subpaths, each containing a list of k-points. For example:
-            [[[0., 0., 0.], [0., 0., 0.5]], [[0.5, 0., 0.], [0.5, 0.5, 0.]]]
-        labels (list): A list of labels to use along with kpt_list. These should
-            be provided as a list of subpaths, each containing a list of labels.
-            For example: [['Gamma', 'Z'], ['X', 'M']], combined with the above
-            kpt_list would indicate the path: Gamma -> Z | X -> M.
-            If no labels are provided, letters from A -> Z will be used instead.
+        filename (str): Path to phonopy output. Can be a band structure yaml
+            file, ``FORCE_SETS``, ``FORCE_CONSTANTS``, or
+            ``force_constants.hdf5``.
+        poscar (:obj:`str`, optional): Path to POSCAR file of unitcell. Not
+            required if plotting the phonon band structure from a yaml file. If
+            not specified, the script will search for a POSCAR file in the
+            current directory.
+        prefIx (:obj:`str`, optional): Prefix for file names.
+        directory (:obj:`str`, optional): The directory in which to save files.
+        born (:obj:`str`, optional): Path to file containing Born effective
+            charges. Should be in the same format as the file produced by the
+            ``phonopy-vasp-born`` script provided by phonopy.
+        qmesh (:obj:`list` of :obj:`int`, optional): Q-point mesh to use for
+            calculating the density of state. Formatted as a 3x1 :obj:`list` of
+            :obj:`int`.
+        spg (:obj:`str` or :obj:`int`, optional): The space group international
+            number or symbol to override the symmetry determined by spglib.
+            This is not recommended and only provided for testing purposes.
+            This option will only take effect when ``mode = 'bradcrack'``.
+        line_density (:obj:`int`, optional): Density of k-points along the
+            path.
+        mode (:obj:`str`, optional): Method used for calculating the
+            high-symmetry path. The options are:
+
+            bradcrack
+                Use the paths from Bradley and Cracknell. See [brad]_.
+
+            pymatgen
+                Use the paths from pymatgen. See [curt]_.
+
+            seekpath
+                Use the paths from SeeK-path. See [seek]_.
+
+        kpt_list (:obj:`list`, optional): List of k-points to use, formatted as
+            a list of subpaths, each containing a list of fractional k-points.
+            For example::
+
+                [ [[0., 0., 0.], [0., 0., 0.5]],
+                  [[0.5, 0., 0.], [0.5, 0.5, 0.]] ]
+
+            Will return points along ``0 0 0 -> 0 0 1/2 | 1/2 0 0
+            -> 1/2 1/2 0``
+        path_labels (:obj:`list`, optional): The k-point labels. These should
+            be provided as a :obj:`list` of :obj:`str` for each subpath of the
+            overall path. For example::
+
+                [ ['Gamma', 'Z'], ['X', 'M'] ]
+
+            combined with the above example for ``kpt_list`` would indicate the
+            path: Gamma -> Z | X -> M. If no labels are provided, letters from
+            A -> Z will be used instead.
         eigenvectors (:obj:`bool`, optional): Write the eigenvectors to the
             yaml file.
-        height (float): The height of the graph (matplotlib only).
-        width (float): The width of the graph (matplotlib only).
-        ymin (float): The minimum energy to plot.
-        ymax (float): The maximum energy to plot.
-        image_format (str): The image file format (matplotlib only). Can be
-            any format supported by matplot, including: png, jpg, pdf, and svg.
-        dpi (int): The dots-per-inch (pixel density) for the image.
-        plt (pyplot object): Matplotlib pyplot object to use for plotting.
-            If plt is set then no files will be written.
-        fonts (list): List of fonts to use.
+        height (:obj:`float`, optional): The height of the plot.
+        width (:obj:`float`, optional): The width of the plot.
+        ymin (:obj:`float`, optional): The minimum energy on the y-axis.
+        ymax (:obj:`float`, optional): The maximum energy on the y-axis.
+        image_format (:obj:`str`, optional): The image file format. Can be any
+            format supported by matplot, including: png, jpg, pdf, and svg.
+            Defaults to pdf.
+        dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+            the image.
+        plt (:obj:`matplotlib.pyplot`, optional): A
+            :obj:`matplotlib.pyplot` object to use for plotting.
+        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+            a single font, specified as a :obj:`str`, or several fonts,
+            specified as a :obj:`list` of :obj:`str`.
 
     Returns:
         A matplotlib pyplot object.
@@ -114,14 +147,17 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
                 logging.error("\n {}".format(msg))
                 sys.exit()
 
-            dim = sposcar.structure.lattice.matrix * poscar.structure.lattice.inv_matrix
+            dim = (sposcar.structure.lattice.matrix *
+                   poscar.structure.lattice.inv_matrix)
+
             # round due to numerical noise error
             dim = np.around(dim, 5)
 
         elif np.array(dim).shape != (3, 3):
             dim = np.diagflat(dim)
 
-        # print dim to user
+        # todo: print dim to user
+
         phonon = load_phonopy(filename, poscar.structure, dim, symprec=symprec,
                               primitive_matrix=None, factor=VaspToTHz,
                               symmetrise=True, born=born, write_fc=False)
@@ -132,9 +168,11 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
                                                kpt_list=kpt_list,
                                                labels=labels, phonopy=True)
 
-        #phonon.set_mesh(mesh, is_gamma_center=False, is_eigenvectors=True,
-        #                is_mesh_symmetry=False)
-        #phonon.set_partial_DOS()
+        # todo: calculate dos and plot also
+        # phonon.set_mesh(mesh, is_gamma_center=False, is_eigenvectors=True,
+        #                 is_mesh_symmetry=False)
+        # phonon.set_partial_DOS()
+
         phonon.set_band_structure(kpoints, is_eigenvectors=eigenvectors)
         yaml_file = 'vaspy_band.yaml'
         phonon._band_structure.write_yaml(labels=labels, filename=yaml_file)
@@ -148,27 +186,53 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None, dim=None
 
     bs = get_ph_bs_symm_line(yaml_file, has_nac=False,
                              labels_dict=kpath.kpoints)
+
     plotter = VPhononBSPlotter(bs)
     plt = plotter.get_plot(ymin=ymin, ymax=ymax, height=height, width=width,
                            plt=plt, dos_plotter=None, dos_options=None,
                            fonts=fonts)
+
     if save_files:
         basename = 'phonon_band.{}'.format(image_format)
         filename = '{}_{}'.format(prefix, basename) if prefix else basename
+
         if directory:
             filename = os.path.join(directory, filename)
-        plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches='tight')
 
-        filename='{}_phonon_band.dat'.format(prefix) if prefix else 'phonon_band.dat'
-        with open(filename, 'w') as f:
-            header = '#k-distance frequency[THz]\n'
-            f.write(header)
-            for band in bs.bands:
-                for d, e in zip(bs.distance, band):
-                    f.write('{:.8f} {:.8f}\n'.format(d, e))
-                f.write('\n')
+        plt.savefig(filename, format=image_format, dpi=dpi,
+                    bbox_inches='tight')
+
+        filename = save_data_files(bs, prefix=prefix, directory=directory)
     else:
         return plt
+
+
+def save_data_files(bs, prefix=None, director=None):
+    """Write the phonon band structure data files to disk.
+
+    Args:
+        bs (:obj:`~pymatgen.phonon.bandstructure.PhononBandStructureSymmLine`):
+            The phonon band structure.
+        prefix (:obj:`str`, optional): Prefix for data file.
+        directory (:obj:`str`, optional): Directory in which to save the data.
+
+    Returns:
+        str: The filename of the written data file.
+    """
+    filename = 'phonon_band.dat'
+    filename = '{}_phonon_band.dat'.format(prefix) if prefix else filename
+
+    with open(filename, 'w') as f:
+        header = '#k-distance frequency[THz]\n'
+        f.write(header)
+
+        for band in bs.bands:
+            for d, e in zip(bs.distance, band):
+                f.write('{:.8f} {:.8f}\n'.format(d, e))
+            f.write('\n')
+
+    return filename
+
 
 def main():
     parser = argparse.ArgumentParser(description="""
@@ -183,7 +247,8 @@ def main():
                         help="phonopy band.conf or FORCE_SETS file")
     parser.add_argument('--poscar', default=None,
                         help="Path to POSCAR file, needed if FORCE_SETS used.")
-    parser.add_argument('-p', '--prefix', help='Prefix for the files generated.')
+    parser.add_argument('-p', '--prefix', help='Prefix for the files ' +
+                        'generated.')
     parser.add_argument('-d', '--directory', help='output directory for files')
     parser.add_argument('--dim', nargs='+',
                         help='Supercell matrix dimensions')
@@ -196,7 +261,8 @@ def main():
     parser.add_argument('--symprec', default=0.01, type=float,
                         help='tolerance for finding symmetry, default is 0.01')
     parser.add_argument('--spg', type=str, default=None,
-                        help='space group number to override detected symmetry')
+                        help='space group number to override detected ' +
+                        'symmetry')
     parser.add_argument('--density', type=int, default=60,
                         help='k-point density along high symmetry lines')
     parser.add_argument('--seekpath', action='store_true',
@@ -204,13 +270,14 @@ def main():
     parser.add_argument('--pymatgen', action='store_true',
                         help='use pymatgen to generate the high-symmetry path')
     parser.add_argument('--cartesian', action='store_true',
-                        help='use cartesian rather than fractional coordinates')
+                        help='use cartesian rather than fractional ' +
+                        'coordinates')
     parser.add_argument('--kpoints', type=str, default=None,
                         help="""specify a list of kpoints manually, written as
                         --kpoints '0 0 0, 0.5 0 0'""")
     parser.add_argument('--labels', type=str, default=None,
-                        help="""specify the labels for manual kpoints, written
-                        as --labels '\Gamma,X'""")
+                        help="specify the labels for manual kpoints, written" +
+                        r" as --labels '\Gamma,X'")
     parser.add_argument('-e', '--eigenvectors', action='store_true',
                         help='Write the phonon eigenvectors to the yaml file.')
     parser.add_argument('--height', type=float, default=6.0,
@@ -251,8 +318,8 @@ def main():
 
     kpoints = None
     if args.kpoints:
-        kpoints = [[list(map(float, kpt.split())) for kpt in kpts.split(',')] for
-                   kpts in args.kpoints.split('|')]
+        kpoints = [[list(map(float, kpt.split())) for kpt in kpts.split(',')]
+                   for kpts in args.kpoints.split('|')]
     labels = None
     if args.labels:
         labels = [path.split(',') for path in args.labels.split('|')]
@@ -266,11 +333,15 @@ def main():
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="pymatgen")
 
-    phonon_bandplot(args.filename, poscar=args.poscar, prefix=args.prefix, directory=args.directory, dim=dim,
-                    born=args.born, qmesh=args.qmesh, spg=spg, line_density=args.density, mode=mode, kpt_list=kpoints,
-             labels=labels, height=args.height, width=args.width, ymin=args.ymin, ymax=args.ymax,
-             image_format=args.image_format, dpi=args.dpi, fonts=[args.font],
+    phonon_bandplot(args.filename, poscar=args.poscar, prefix=args.prefix,
+                    directory=args.directory, dim=dim, born=args.born,
+                    qmesh=args.qmesh, spg=spg, line_density=args.density,
+                    mode=mode, kpt_list=kpoints, labels=labels,
+                    height=args.height, width=args.width, ymin=args.ymin,
+                    ymax=args.ymax, image_format=args.image_format,
+                    dpi=args.dpi, fonts=[args.font],
                     eigenvectors=args.eigenvectors)
+
 
 if __name__ == "__main__":
     main()
