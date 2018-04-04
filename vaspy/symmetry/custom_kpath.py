@@ -35,7 +35,8 @@ class CustomKpath(Kpath):
                 [ ['Gamma', 'Z'], ['X', 'M'] ]
 
             combined with the above example for ``kpt_list`` would indicate the
-            path: Gamma -> Z | X -> M.
+            path: Gamma -> Z | X -> M. If no labels are provided, letters from
+            A -> Z will be used instead.
 
     Attributes:
         prim (:obj:`~pymatgen.core.structure.Structure`): The standardised
