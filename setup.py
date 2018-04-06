@@ -30,7 +30,8 @@ Some handy tools developed by and for the Scanlon Materials Theory Group
         ],
     keywords='chemistry ase dft vasp',
     packages=find_packages(),
-    install_requires=['ase', 'spglib', 'numpy', 'scipy'],
+    install_requires=['numpy', 'scipy',
+                      'ase', 'pymatgen', 'seekpath', 'spglib'],
     entry_points={'console_scripts': [
                       'vaspy-bandgen = vaspy.cli.bandgen:main',
                       'vaspy-bandplot = vaspy.cli.bandplot:main',
