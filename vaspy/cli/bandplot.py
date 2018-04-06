@@ -2,6 +2,13 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+A script to plot electronic band structure diagrams.
+
+TODO:
+ - Replace the elements and project formats with the dream syntax
+"""
+
 from __future__ import unicode_literals
 from pkg_resources import Requirement, resource_filename
 
@@ -12,6 +19,11 @@ import logging
 import argparse
 import warnings
 
+from pymatgen.io.vasp.outputs import BSVasprun
+from pymatgen.electronic_structure.core import Spin
+from pymatgen.electronic_structure.bandstructure import \
+    get_reconstructed_band_structure
+
 import matplotlib as mpl
 mpl.use('Agg')
 
@@ -20,19 +32,10 @@ from vaspy.plotting.dos_plotter import VDOSPlotter
 from vaspy.electronic_structure.dos import load_dos
 from vaspy.cli.dosplot import _atoms, _el_orb
 
-from pymatgen.io.vasp.outputs import BSVasprun
-from pymatgen.electronic_structure.core import Spin
-from pymatgen.electronic_structure.bandstructure import \
-    get_reconstructed_band_structure
-
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
-
-"""
-A script to plot band structure diagrams
-"""
 
 __author__ = "Alex Ganose"
 __version__ = "1.0"
@@ -45,12 +48,9 @@ line_width = 1.5
 empty_space = 1.05
 label_size = 22
 
-# TODO:
-#  - Replace the elements and project formats with the dream syntax
-
 
 def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
-             project_split=None, project_rgb=None, project_stacked=None,
+             projection_selection=None, mode='rgb',
              interpolate_factor=4, circle_size=150, dos_file=None,
              elements=None, lm_orbitals=None, atoms=None,
              total_only=False, plot_total=True, legend_cutoff=3, gaussian=None,
@@ -65,116 +65,133 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
             named 'split-0*'. Failing that, the code will look for a vasprun in
             the current directory. If a :obj:`list` of vasprun files is
             provided, these will be combined into a single band structure.
-        prefix (`str`, optional): Prefix for files generated.
-        directory (`str`, optional): Directory in which to save files.
-        vbm_cbm_marker (`bool`, optional): Mark the valence band maxima and
-            conduction band minima using coloured circles.
-        project_split: WIP
-        project_rgb (`list`, optional): Which orbitals to project onto the band
-            structure using red, green, and blue. Should be specified as a
-            `list` of `tuple` or `str`, with the order of the `tuple`s defining
-            the colour used. For example, to plot the Sn s, p, and d orbitals
-            as red, green, and blue, respectively, `project_rgb` should be:
+        prefix (:obj:`str`, optional): Prefix for file names.
+        directory (:obj:`str`, optional): The directory in which to save files.
+        vbm_cbm_marker (:obj:`bool`, optional): Plot markers to indicate the
+            VBM and CBM locations.
+        projection_selection (list): A list of :obj:`tuple` or :obj:`string`
+            identifying which elements and orbitals to project on to the
+            band structure. These can be specified by both element and
+            orbital, for example, the following will project the Bi s, p
+            and S p orbitals::
 
-                `[('Sn', 's'), ('Sn', 'p'), ('Sn', 'd')]`
+                [('Bi', 's'), ('Bi', 'p'), ('S', 'p')]
 
-            Multiple orbitals can be summed together into a single projection.
-            For example, the following will  plot the Sn s and p orbitals as
-            red, Sn d orbitals as green, and oxygen p orbitals as blue:
+            If just the element is specified then all the orbitals of
+            that element are combined. For example, to sum all the S
+            orbitals::
 
-                `[('Sn', ('s', 'p')), ('Sn', 'd'), ('O', 'p')]`
+                [('Bi', 's'), ('Bi', 'p'), 'S']
 
-            Just suppling the element name is a shorthanden for summing all of
-            its orbital contributions. For example, the following will plot the
-            sum of all Sn orbitals as red, all O orbitals as blue, and all Cs
-            orbitals as green:
+            You can also choose to sum particular orbitals by supplying a
+            :obj:`tuple` of orbitals. For example, to sum the S s, p, and
+            d orbitals into a single projection::
 
-                `['Sn', 'O', 'Cs']`
+                [('Bi', 's'), ('Bi', 'p'), ('S', ('s', 'p', 'd'))]
 
-            A maximum of 3 orbitals can be projected simultaneously.
-        project_stacked (`list`, optional): Write this when projection cli is
-            finished.
-        interpolate_factor (`int`, optional): The factor by which to
-            interpolate the band structure (neccessary to make smooth lines for
-            projected plots). A larger number indicates greater interpolation.
-        circle_size (`float`, optional): The size of the circles used in the
-            project_stacked plotting mode.
-        dos_file ('str', optional): vasprun.xml file from which to read the
-            density of states information. If set, the density of states will
-            be plotted alongside the bandstructure.
-        elements (`dict`, optional): The elements and orbitals to plot in the
-            density of states. Should be provided as a `dict` with the keys as
-            the element names and corresponding values as a `tuple` of orbitals
-            to plot. For example, the following would plot the Bi s, px, py and
-            d orbitals:
+            If ``mode = 'rgb'``, a maximum of 3 orbital/element
+            combinations can be plotted simultaneously (one for red, green
+            and blue), otherwise an unlimited number of elements/orbitals
+            can be selected.
+        mode (:obj:`str`, optional): Type of projected band structure to
+            plot. Options are:
 
-                `{'Bi': ('s', 'px', 'py', 'd')}`.
+                "rgb"
+                    The band structure line color depends on the character
+                    of the band. Each element/orbital contributes either
+                    red, green or blue with the corresponding line colour a
+                    mixture of all three colours. This mode only supports
+                    up to 3 elements/orbitals combinations. The order of
+                    the ``selection`` :obj:`tuple` determines which colour
+                    is used for each selection.
+                "stacked"
+                    The element/orbital contributions are drawn as a
+                    series of stacked circles, with the colour depending on
+                    the composition of the band. The size of the circles
+                    can be scaled using the ``circle_size`` option.
+        circle_size (:obj:`float`, optional): The area of the circles used
+            when ``mode = 'stacked'``.
+        dos_file (:obj:'str', optional): Path to vasprun.xml file from which to
+            read the density of states information. If set, the density of
+            states will be plotted alongside the bandstructure.
+        elements (:obj:`dict`, optional): The elements and orbitals to extract
+            from the projected density of states. Should be provided as a
+            :obj:`dict` with the keys as the element names and corresponding
+            values as a :obj:`tuple` of orbitals. For example, the following
+            would extract the Bi s, px, py and d orbitals::
 
-            If an element is included with an empty `tuple`, all orbitals for
-            that species will be plotted. If `elements` is not set or set to
-            `None`, all elements for all species will be considered.
-        lm_orbitals (`dict`, optional): The orbitals to decompose into their lm
-            contributions (e.g. p -> px, py, pz). Should be provided as a
-            `dict`, with the elements names as keys and a `tuple` of orbitals
-            as the corresponding values. For example, the following would be
-            used to decompose the oxygen p and d orbitals:
+                {'Bi': ('s', 'px', 'py', 'd')}
 
-                `{'O': ('p', 'd')}'
+            If an element is included with an empty :obj:`tuple`, all orbitals
+            for that species will be extracted. If ``elements`` is not set or
+            set to ``None``, all elements for all species will be extracted.
+        lm_orbitals (:obj:`dict`, optional): The orbitals to decompose into
+            their lm contributions (e.g. p -> px, py, pz). Should be provided
+            as a :obj:`dict`, with the elements names as keys and a
+            :obj:`tuple` of orbitals as the corresponding values. For example,
+            the following would be used to decompose the oxygen p and d
+            orbitals::
 
-        atoms (`dict`, optional): Which atomic sites to plot the density of
-            states for. Should be provided as a `dict`, with the element names
-            as keys and a `tuple` of `int` specifiying the atomic indicies as
-            the corresponding values. The elemental projected density of states
-            will be summed only over the atom inidices specified. If an element
-            is included with an empty `tuple`, then all sites for that element
-            will be included. The indices are 0 based for each element
-            specified in the POSCAR. For example, the following will calculate
-            the denisty of states for the first 4 Sn atoms and all O atoms in
-            the structure:
+                {'O': ('p', 'd')}
 
-                `{'Sn': (1, 2, 3, 4), 'O': (, )}`
+        atoms (:obj:`dict`, optional): Which atomic sites to use when
+            calculating the projected density of states. Should be provided as
+            a :obj:`dict`, with the element names as keys and a :obj:`tuple` of
+            :obj:`int` specifiying the atomic indicies as the corresponding
+            values. The elemental projected density of states will be summed
+            only over the atom inidices specified. If an element is included
+            with an empty :obj:`tuple`, then all sites for that element will
+            be included. The indices are 0 based for each element specified in
+            the POSCAR. For example, the following will calculate the density
+            of states for the first 4 Sn atoms and all O atoms in the
+            structure::
 
-            If `atoms` is not set or set to `None` then all atomic sites for
-            all elements will be considered.
-        total_only (`bool`, optional): Only plot the total density of states.
+                {'Sn': (1, 2, 3, 4), 'O': (, )}
+
+            If ``atoms`` is not set or set to ``None`` then all atomic sites
+            for all elements will be considered.
+        total_only (:obj:`bool`, optional): Only extract the total density of
+            states. Defaults to ``False``.
         plot_total (:obj:`bool`, optional): Plot the total density of states.
             Defaults to ``True``.
         legend_cutoff (:obj:`float`, optional): The cut-off (in % of the
             maximum density of states within the plotting range) for an
-            elemental orbital to be labelled in the legend. This prevents the
-            legend from containing labels for orbitals that have very little
-            contribution in the plotting range.
-        gaussian (`float`, optional): Broaden the density of states using
+            elemental orbital to be labelled in the legend. This prevents
+            the legend from containing labels for orbitals that have very
+            little contribution in the plotting range.
+        gaussian (:obj:`float`, optional): Broaden the density of states using
             convolution with a gaussian function. This parameter controls the
-            sigma or smearing width of the gaussian.
-        height (`float`, optional): The height of the plot in inches.
-        width (`float`, optional): The width of the plot in inches.
-        xmin (`float`, optional): The minimum energy to plot.
-        xmax (`float`, optional): The maximum energy to plot.
-        colours (`dict`, optional): Colours to use when plotting elemental
-            density of states. Should be provided as a `dict`, where the key is
-            the element name and the corresponding value is a `dict` of
-            orbitals and their colour. The colour can be any matplotlib
-            supported colour identifier, e.g. hex, rgb, or name. For example,
-            the following will set the O p orbitals to red and the Sn s
-            orbitals to green.
+            sigma or standard deviation of the gaussian distribution.
+        height (:obj:`float`, optional): The height of the plot.
+        width (:obj:`float`, optional): The width of the plot.
+        ymin (:obj:`float`, optional): The minimum energy on the y-axis.
+        ymax (:obj:`float`, optional): The maximum energy on the y-axis.
+        colours (:obj:`dict`, optional): Use custom colours for specific
+            element and orbital combinations. Specified as a :obj:`dict` of
+            :obj:`dict` of the colours. For example::
 
-                `{'Sn': {'s': 'r'}, 'O': {'p': 'g'}}`
+                {
+                    'Sn': {'s': 'r', 'p': 'b'},
+                    'O': {'s': '#000000'}
+                }
 
-            If an orbital colour is not specified, the code will select a
-            colour from a list of 21 visually distinct colours.
-        yscale (`float`, optional): Scaling factor for the y-axis.
-        image_format (`str`, optional): The image file format. Can be any
+            The colour can be a hex code, series of rgb value, or any other
+            format supported by matplotlib.
+        yscale (:obj:`float`, optional): Scaling factor for the y-axis.
+        image_format (:obj:`str`, optional): The image file format. Can be any
             format supported by matplot, including: png, jpg, pdf, and svg.
-        dpi (`int`, optional): The dots-per-inch (pixel density) for the image.
-        plt (`matplotlib.pyplot`, optional): Matplotlib object to use for
-            plotting. If plt is set then no files will be written.
-        fonts (`list`, optional): A `list` of fonts to try and use. Preference
-            will be given to the fonts at he beginning of the list.
+            Defaults to pdf.
+        dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+            the image.
+        plt (:obj:`matplotlib.pyplot`, optional): A
+            :obj:`matplotlib.pyplot` object to use for plotting.
+        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+            a single font, specified as a :obj:`str`, or several fonts,
+            specified as a :obj:`list` of :obj:`str`.
 
     Returns:
-        If `plt` set then the `plt object will be returned. Otherwise, the
-        method will return a `list` of filenames written to disk.
+        If ``plt`` set then the ``plt`` object will be returned. Otherwise, the
+        method will return a :obj:`list` of filenames written to disk.
     """
     if not filenames:
         filenames = find_vasprun_files()
@@ -182,8 +199,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         filenames = [filenames]
 
     # only laod the orbital proejcts if we definitely need them
-    parse_projected = True if (project_split or project_rgb
-                               or project_stacked) else False
+    parse_projected = True if projection_selection else False
 
     # now load all the vaspruns and combine them together using the
     # get_reconstructed_band_structure function from pymatgen
@@ -196,13 +212,13 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
 
     # currently not supported as it is a pain to make subplots within subplots,
     # although need to check this is still the case
-    if project_split and dos_file:
+    if 'split' in mode and dos_file:
         logging.error('ERROR: Plotting split projected band structure with DOS'
                       ' not supported.\nPlease use --projected-rgb or '
                       '--projected-stacked options.')
         sys.exit()
 
-    if project_rgb and len(project_rgb) > 3:
+    if mode == 'rgb' and len(projection_selection) > 3:
         logging.error('ERROR: Plotting RGB projected band structure only '
                       'supports up to 3 elements/orbitals.')
         sys.exit()
@@ -220,22 +236,8 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                     'colours': colours, 'yscale': yscale}
 
     plotter = VBSPlotter(bs)
-    if project_rgb or project_split or project_stacked:
-
-        # projected plotter logic could probably be improved
-        if project_rgb:
-            mode = 'rgb'
-            selection = project_rgb
-        elif project_split:
-            mode = 'split'
-            selection = project_split
-            raise NotImplementedError('projected band structure plotting not '
-                                      'yet supported')
-        elif project_stacked:
-            selection = project_stacked
-            mode = 'stacked'
-
-        plt = plotter.get_projected_plot(selection, mode=mode,
+    if projection_selection:
+        plt = plotter.get_projected_plot(projection_selection, mode=mode,
                                          interpolate_factor=interpolate_factor,
                                          circle_size=circle_size,
                                          zero_to_efermi=True, ymin=ymin,
@@ -378,28 +380,31 @@ def main():
     parser.add_argument('-b' '--band-edges', dest='band_edges',
                         action='store_true',
                         help='Highlight the band edges with markers')
-    parser.add_argument('--project-rgb', default=None, type=_el_orb_tuple,
-                        dest='project_rgb',
-                        help="""Project orbital contributions onto band
-                        structure as red, green, and blue lines. Can project
-                        a maximum of 3
-                        orbital/elemental contributions. These should be listed
-                        using the symbols from the POSCAR, seperated via
+    parser.add_argument('--projection-selection', default=None,
+                        type=_el_orb_tuple, dest='projection_selection',
+                        help="""Project orbital contributions onto the band
+                        structure. Elements/orbitals should be listed
+                        using the symbols from the POSCAR, separated via
                         commas. Specific orbitals can be chosen by adding the
-                        orbitals after the element by using a period as the
-                        seperator. For example, to project the zinc s as red,
-                        zinc p as green, and sum all oxygen atoms as blue,
-                        the command would be "--project-rgb Zn.s,Zn.p,O".""")
-    parser.add_argument('--project-stacked', default=None, type=_el_orb_tuple,
-                        dest='project_stacked',
-                        help="""Project orbtal contributions onto band
-                        structure as a series of coloured circles. These should
-                        be listed using the symbols from the POSCAR, seperated
-                        via commas. Specific orbitals can be chosen by adding
-                        the orbitals after the element by using a period as the
-                        seperator. For example, to project the zinc s as red,
-                        zinc p as green, and sum all oxygen atoms as blue,
-                        the command would be "--project-rgb Zn.s,Zn.p,O".""")
+                        orbitals after the element using a period as the
+                        separator. For example, to project the zinc s and p,
+                        and the sum of all oxygen atoms the command would be
+                        "--project-selection Zn.s,Zn.p,O". The mode argument
+                        can be used to select the projection type.""")
+    parser.add_argument('--mode', default=None, type=str,
+                        help="""Projection mode for orbital projections,
+                        options are: "rgb" - The band structure line color
+                        depends on the character of the band. Each
+                        element/orbital contributes either red, green or blue
+                        with the corresponding line colour a mixture of all
+                        three colours. This mode only supports up to 3 elements
+                        /orbitals combinations. The order of
+                        the ``selection`` :obj:`tuple` determines which colour
+                        is used for each selection; "stacked" - The element/
+                        orbital contributions are drawn as a series of stacked
+                        circles, with the colour depending on the composition
+                        of the band. The size of the circles can be scaled
+                        using the ``circle_size`` option.""")
     parser.add_argument('-i', '--interpolate-factor', type=int, default=4,
                         dest='interpolate_factor',
                         help="""For projected band structures only: Interpolate
@@ -503,8 +508,7 @@ def main():
 
     bandplot(filenames=args.filenames, prefix=args.prefix,
              directory=args.directory, vbm_cbm_marker=args.band_edges,
-             project_rgb=args.project_rgb,
-             project_stacked=args.project_stacked,
+             projection_selection=args.projection_selection,
              interpolate_factor=args.interpolate_factor,
              circle_size=args.circle_size,
              dos_file=args.dos, elements=args.elements,
