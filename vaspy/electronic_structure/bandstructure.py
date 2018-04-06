@@ -1,729 +1,279 @@
-import math
-from itertools import chain
+# coding: utf-8
+# Copyright (c) Scanlon Materials Theory Group
+# Distributed under the terms of the MIT License.
 
-import spglib
-import seekpath
+"""
+Module containing helper functions for dealing with band structures.
+
+todo:
+  * Extend get projections to allow specifying lm orbitals and atomic sites.
+"""
+
 import numpy as np
+import itertools as it
 
-from pymatgen.core.structure import Structure
-from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
-from pymatgen.symmetry.groups import SpaceGroup
-from pymatgen.symmetry.bandstructure import HighSymmKpath
+from collections import defaultdict
+
+from pymatgen.electronic_structure.core import Spin
+from pymatgen.electronic_structure.bandstructure import (BandStructure,
+                                                         BandStructureSymmLine)
 
 
-class Kpath(object):
-    """Dummy class providing helper functions for generating k-point paths.
-
-    This class should not be used directly. Instead, one of the PymatgenKpath,
-    SeekpathKpath, or BradCrackKpath subclasses should be used. The main use
-    of this parent object is for standardisation across the differing k-point
-    path generation tools.
+def get_projections_by_branches(bs, selection, normalise=None):
+    """Returns orbital projections for each branch in a band structure.
 
     Args:
-        structure (Structure): A pymatgen structure object.
-        symprec (float): The tolerance for determining the crystal symmetry.
+        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):
+            The band structure.
+        selection (list): A list of :obj:`tuple` or :obj:`string`
+            identifying which projections to return. Projections can be
+            specified by both element and orbital, for example::
 
-    Attributes:
-        kpoints (dict): The high-symmetry k-point labels and their coordinates
-            as {label: coords}.
-        path (list): The high-symmetry k-point path. Each subpath is provided
-            as a list. E.g. [['A', 'B'], ['C', 'D']].
-        prim (Structure): The standardised primitive cell structure needed for
-            to obtain the correct band structure.
-        conv (Structure): The standardised conventional cell structure.
-        lattice_type (str): The Bravais lattice system. Hexagonal cells are 
-            separated into rhombohedral and hexagonal lattices.7
-        spg_symbol (str): The international space group symbol.
-        spg_number (int): The international space group number.
-        path_string (str): The high-symmetry k-point path formatted with arrows 
-            and showing disconnections between subpaths. For example:
-            "X -> Gamma | Y -> Z".
+                [('Sn', 's'), ('Bi', 'p'), ('S', 'p')]
+
+            If just the element is specified then all the orbitals of that
+            element are combined. For example, the following will combine
+            all the S orbitals into a single projection::
+
+                [('Bi', 's'), ('Bi', 'p'), 'S']
+
+            Particular orbitals can also be combined, for example::
+
+                [('Bi', 's'), ('Bi', 'p'), ('S', ('s', 'p', 'd'))]
+
+        normalise (:obj:`str`, optional): Normalisation the projections.
+            Options are:
+
+              * ``'all'``: Projections normalised against the sum of all
+                   other projections.
+              * ``'select'``: Projections normalised against the sum of the
+                   selected projetions.
+              * ``None``: No normalisation performed.
+
+            Defaults to ``None``.
+
+    Returns:
+        list: A ``list`` of orbital projections for each branch of the band
+        structure, in the same order as specified in ``selection``, with
+        the format::
+
+            [ [ {spin: projections} ], [ {spin: projections} ], ... ]
+
+        Where spin is a :obj:`pymatgen.electronic_structure.core.Spin`
+        object and projections is a :obj:`numpy.array` of::
+
+            projections[band_index][kpoint_index]
+
+        If there are no projections in the band structure, then an array of
+        zeros is returned for each spin.
     """
+    spins = bs.bands.keys()
+    projections = get_projections(bs, selection, normalise=normalise)
 
-    def __init__(self, structure, symprec=1e-3):
-        self.structure = structure
+    branches = []
+    for b in bs.branches:
+        s = b['start_index']
+        e = b['end_index'] + 1
 
-        # use sym as a quick way to access the cell data
-        sym = SpacegroupAnalyzer(structure, symprec=symprec)
-        self._spg_data = spglib.get_symmetry_dataset(sym._cell)
+        branch_proj = projections.copy()
+        for spin, i in it.product(spins, range(len(projections))):
+            branch_proj[i][spin] = projections[i][spin][:, s:e]
 
-        # make primitive and conventional cell from seekpath output
-        std = spglib.standardize_cell(sym._cell, symprec=symprec,
-                                      to_primitive=True)
-        self._seek_data = seekpath.get_path(std)
-
-        prim_lattice = self._seek_data['primitive_lattice']
-        prim_scaled_positions = self._seek_data['primitive_positions']
-        prim_numbers = self._seek_data['primitive_types']
-        prim_atoms = [sym._unique_species[i - 1] for i in prim_numbers]
-        self.prim = Structure(prim_lattice, prim_atoms, prim_scaled_positions)
-
-        conv_lattice = self._seek_data['conv_lattice']
-        conv_scaled_positions = self._seek_data['conv_positions']
-        conv_numbers = self._seek_data['conv_types']
-        conv_atoms = [sym._unique_species[i - 1] for i in conv_numbers]
-        self.conv = Structure(conv_lattice, conv_atoms, conv_scaled_positions)
-
-    def correct_structure(self, atol=1e-8):
-        """Determine if the structure matches the standard primitive.
-
-        The standard primitive will be different between seekpath and pymatgen
-        high-symmetry paths, but this is handled by the specific subclasses.
-
-        Args:
-            atol (float): Absolute tolerance used to compare the input
-                structure with the one expected as primitive standard.
-
-        Returns:
-            True if the structure is the same as the standard primtive, False
-            otherwise.
-        """
-        return np.allclose(self.structure.lattice.matrix,
-                           self.prim.lattice.matrix, atol=atol)
-
-    def get_kpoints(self, line_density=20, cart_coords=False):
-        """Calculate a list of k-points along the high-symmetry path.
-
-        Args:
-            line_density (int): The density of k-points along the path.
-            cart_coords (bool): Whether the k-points are returned in cartesian
-                or reciprocal coordinates.
-
-        Returns:
-            A list k-points along the high-symmetry path, together with the
-            high symmetry labels for each k-point. Returned as: kpoints, labels.
-        """
-
-        return get_kpoints(self.structure, self.kpoints, self.path,
-                           line_density=line_density, cart_coords=cart_coords)
-
-    @property
-    def kpoints(self):
-        return self._kpath['kpoints']
-
-    @property
-    def path(self):
-        return self._kpath['path']
-
-    @property
-    def lattice_type(self):
-        return get_lattice_type(self.spg_number)
-
-    @property
-    def spg_symbol(self):
-        return self._spg_data['international']
-
-    @property
-    def spg_number(self):
-        return self._spg_data['number']
-
-    @property
-    def path_string(self):
-        return ' | '.join([' -> '.join(subpath) for subpath in self.path])
+        branches.append(branch_proj)
+    return branches
 
 
-class BradCrackKpath(Kpath):
-    """Calculate the high-symmetry k-point path from Bradley and Cracknell.
-
-    The paths used are based on Brillouin zones depicted in "The Mathematical
-    Theory of Symmetry in Solids", C. J. Bradley and A. P. Cracknell, Clarendon
-    Press, 1972.
-
-    These paths represent only a one particular route through the Brillouin
-    zone and do not cover every possible path (though they do visit every
-    high-symmetry k-point at least once).
-
-    These paths should be used with primitive structures that comply with the
-    definition from the paper. This structure can be accessed using the
-    `prim` attribute and compliance between the provided structure and
-    standardised structure checked using the `correct_structure` method.
+def get_projections(bs, selection, normalise=None):
+    """Returns orbital projections from a band structure.
 
     Args:
-        structure (Structure): A pymatgen structure object.
-        symprec (float): The tolerance for determining the crystal symmetry.
-        spg (SpaceGroup): Pymatgen SpaceGroup object to override the symmetry
-            determined by spglib. This is not recommended and only provided for
-            testing purposes.
+        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):
+            The band structure.
+        selection (list): A list of :obj:`tuple` or :obj:`string`
+            identifying which projections to return. Projections can be
+            specified by both element and orbital, for example::
 
-    Attributes:
-        kpoints (dict): The high-symmetry k-point labels and their coordinates
-            as {label: coords}.
-        path (list): The high-symmetry k-point path. Each subpath is provided
-            as a list. E.g. [['A', 'B'], ['C', 'D']].
-        prim (Structure): The standardised primitive cell structure needed for
-            to obtain the correct band structure.
-        conv (Structure): The standardised conventional cell structure.
-        lattice_type (str): The Bravais lattice system. Hexagonal cells are 
-            separated into rhombohedral and hexagonal lattices.
-        spg_symbol (str): The international space group symbol.
-        spg_number (int): The international space group number.
-        path_string (str): The high-symmetry k-point path formatted with arrows 
-            and showing disconnections between subpaths. For example:
-            "X -> Gamma | Y -> Z".
+                [('Bi', 's'), ('Bi', 'p'), ('S', 'p')]
+
+            If just the element is specified then all the orbitals of
+            that element are combined. For example, the following will combine
+            all the S orbitals into a single projection::
+
+                [('Bi', 's'), ('Bi', 'p'), 'S']
+
+            Particular orbitals can also be combined, for example::
+
+                [('Bi', 's'), ('Bi', 'p'), ('S', ('s', 'p', 'd'))]
+
+        normalise (:obj:`str`, optional): Normalisation the projections.
+            Options are:
+
+              * ``'all'``: Projections normalised against the sum of all
+                   other projections.
+              * ``'select'``: Projections normalised against the sum of the
+                   selected projetions.
+              * ``None``: No normalisation performed.
+
+            Defaults to ``None``.
+
+    Returns:
+        list: A ``list`` of orbital projections, in the same order as specified
+        in ``selection``, with the format::
+
+            [ {spin: projections}, {spin: projections} ... ]
+
+        Where spin is a :obj:`pymatgen.electronic_structure.core.Spin`
+        object and projections is a :obj:`numpy.array` of::
+
+            projections[band_index][kpoint_index]
+
+        If there are no projections in the band structure, then an array of
+        zeros is returned for each spin.
     """
+    spins = bs.bands.keys()
+    nbands = bs.nb_bands
+    nkpts = len(bs.kpoints)
 
-    def __init__(self, structure, symprec=1e-3, spg=None):
-        Kpath.__init__(self, structure, symprec=symprec)
+    # if we are to normalise the data later we need access to all projections
+    elements = bs.structure.symbol_set
+    all_orbitals = ['s', 'p', 'd', 'f']
 
-        angles = self.conv.lattice.angles
-        unique = angles.index(min(angles, key=angles.count))
-        a = self.conv.lattice.abc[0]
-        b = self.conv.lattice.abc[1]
-        c = self.conv.lattice.abc[2]
+    # dictio has the form: {'el1': [s, p, d, f], 'el2': [s, p, d, f]...}
+    dictio = dict(zip(elements, [all_orbitals]*len(elements)))
 
-        if spg:
-            spg_symbol = spg.symbol
-            lattice_type = get_lattice_type(spg.int_number)
+    # bs.get_projection_on_elements_and_orbitals() returns the data in a
+    # really fustrating format, namely:
+    #     {spin: [band_index][kpoint_index]{element: {orbital: projection}}}
+    all_proj = bs.get_projections_on_elements_and_orbitals(dictio)
+
+    # Make a defaultdict of defaultdicts
+    dict_proj = defaultdict(lambda: defaultdict(dict))
+    sum_proj = dict(zip(spins, [np.zeros((nbands, nkpts))] * len(spins)))
+
+    # store the projections for all elements and orbitals in a useable format
+    for spin, element, orbital in it.product(spins, elements, all_orbitals):
+
+        # convert data to [nb][nk][projection]
+        el_orb_proj = [[all_proj[spin][nb][nk][element][orbital]
+                        for nk in range(nkpts)] for nb in range(nbands)]
+
+        dict_proj[element][orbital][spin] = np.array(el_orb_proj)
+
+        if normalise == 'all':
+            sum_proj[spin] += el_orb_proj
+
+    # now go through the selected orbitals and extract what's needed
+    spec_proj = []
+    for spec in selection:
+
+        if type(spec) == str:
+            # spec is just an element type, therefore sum all orbitals
+            element = spec
+            orbitals = all_orbitals
         else:
-            spg_symbol = self.spg_symbol
-            lattice_type = self.lattice_type
+            element, orbitals = spec
+            # even if there is only one orbital, make sure we can loop over it
+            orbitals = tuple(orbitals)
 
-        if lattice_type == 'triclinic':
-            self._kpath = self._triclinic()
+        proj = dict(zip(spins, [np.zeros((nbands, nkpts))] * len(spins)))
+        for spin, orbital in it.product(spins, orbitals):
+            proj[spin] += dict_proj[element][orbital][spin]
 
-        elif lattice_type == 'monoclinic':
-            if 'P' in spg_symbol:
-                if unique == 0:
-                    self._kpath = self._mon_p_a()
-                elif unique == 1:
-                    self._kpath = self._mon_p_b()
-                elif unique == 2:
-                    self._kpath = self._mon_p_c()
+            if normalise == 'select':
+                sum_proj[spin] += dict_proj[element][orbital][spin]
 
-            elif 'C' in spg_symbol:
-                if unique == 0:
-                    return self._mon_c_a()
-                elif unique == 1:
-                    return self._mon_c_b()
-                elif unique == 2:
-                    return self._mon_c_c()
+        spec_proj.append(proj)
 
-        elif lattice_type == 'orthorhombic':
-            if 'P' in spg_symbol:
-                self._kpath = self._orth_p()
-
-            elif 'C' in spg_symbol:
-                if a > b:
-                    self._kpath = self._orth_c_a()
-                elif b > a:
-                    self._kpath = self._orth_c_b()
-
-            elif 'F' in spg_symbol:
-                if (1/a**2 < 1/b**2 + 1/c**2 and 1/b**2 < 1/c**2 + 1/a**2 and
-                        1/c**2 < 1/a**2 + 1/b**2):
-                    self._kpath = self._orth_f_1()
-                elif 1/c**2 > 1/a**2 + 1/b**2:
-                    self._kpath = self._orth_f_2()
-                elif 1/b**2 > 1/a**2 + 1/c**2:
-                    self._kpath = self._orth_f_3()
-                elif 1/a**2 > 1/c**2 + 1/b**2:
-                    self._kpath = self._orth_f_4()
-
-            elif 'I' in spg_symbol:
-                if a > b and a > c:
-                    self._kpath = self._orth_i_a()
-                elif b > a and b > c:
-                    self._kpath = self._orth_i_b()
-                elif c > a and c > b:
-                    self._kpath = self._orth_i_c()
-
-        elif lattice_type == 'tetragonal':
-            if 'P' in spg_symbol:
-                self._kpath = self._tet_p()
-
-            elif 'I' in spg_symbol:
-                if a > c:
-                    self._kpath = self._tet_i_a()
-                else:
-                    self._kpath = self._tet_i_c()
-
-        elif lattice_type == 'trigonal' or lattice_type == 'hexagonal':
-            if 'R' in spg_symbol:
-                if a > math.sqrt(2) * c:
-                    self._kpath = self._trig_r_a()
-                else:
-                    self._kpath = self._trig_r_c()
-
-            elif 'P' in spg_symbol:
-                if unique == 0:
-                    self._kpath = self._trig_p_a()
-                elif unique == 2:
-                    self._kpath = self._trig_p_c()
-
-        elif lattice_type == "cubic":
-            if 'P' in spg_symbol:
-                self._kpath = self._cubic_p()
-            elif 'I' in spg_symbol:
-                self._kpath = self._cubic_i()
-            elif 'F' in spg_symbol:
-                self._kpath = self._cubic_f()
-
-    def _triclinic(self):
-        path = [["\Gamma", "Z", "T", "Y", "\Gamma", "X", "V", "R", "U"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Z': np.array([0.0, 0.0, 0.5]),
-                   'T': np.array([0.0, 0.5, 0.5]),
-                   'Y': np.array([0.0, 0.5, 0.0]),
-                   'X': np.array([0.5, 0.0, 0.0]),
-                   'V': np.array([0.5, 0.5, 0.0]),
-                   'R': np.array([0.5, 0.5, 0.5]),
-                   'U': np.array([0.5, 0.0, 0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _tet_p(self):
-        path = [["\Gamma", "X", "M", "\Gamma", "Z", "R", "A", "Z"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'X': np.array([0.0, 0.5, 0.0]),
-                   'M': np.array([0.5, 0.5, 0.0]),
-                   'Z': np.array([0.0, 0.0, 0.5]),
-                   'R': np.array([0.0, 0.5, 0.5]),
-                   'A': np.array([0.5, 0.5, 0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _tet_i_a(self):
-        path = [["\Gamma", "X", "P", "N", "\Gamma", "Z"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'X': np.array([0.0, 0.0, 0.5]),
-                   'P': np.array([0.25, 0.25, 0.25]),
-                   'N': np.array([0.0, 0.5, 0.0]),
-                   'Z': np.array([-0.5, 0.5, 0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _tet_i_c(self):
-        path = [["\Gamma", "X", "P", "N", "\Gamma", "Z"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'X': np.array([0.0, 0.0, 0.5]),
-                   'P': np.array([0.25, 0.25, 0.25]),
-                   'N': np.array([0.0, 0.5, 0.0]),
-                   'Z': np.array([0.5, 0.5, -0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _cubic_p(self):
-        path = [["\Gamma", "M", "R", "X", "\Gamma", "R"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'M': np.array([0.5, 0.5, 0.0]),
-                   'R': np.array([0.5, 0.5, 0.5]),
-                   'X': np.array([0.0, 0.5, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _cubic_f(self):
-        path = [["\Gamma", "L", "W", "X", "\Gamma"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'L': np.array([0.5, 0.5, 0.5]),
-                   'W': np.array([0.5, 0.25, 0.75]),
-                   'X': np.array([0.5, 0.0, 0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _cubic_i(self):
-        path = [["\Gamma", "P", "N", "\Gamma", "H", "P"], ["H", "N"]]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'P': np.array([0.25, 0.25, 0.25]),
-                   'N': np.array([0.0, 0.0, 0.5]),
-                   'H': np.array([0.5, -0.5, 0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _trig_r_a(self):
-        path = [['\Gamma', 'L', 'F', '\Gamma', 'Z']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'L': np.array([0.0, 0.5, 0.0]),
-                   'F': np.array([0.5, 0.5, 0.0]),
-                   'Z': np.array([0.5, 0.5, -0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _trig_r_c(self):
-        path = [['\Gamma', 'L', 'F', '\Gamma', 'Z']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'L': np.array([0.0, 0.5, 0.0]),
-                   'F': np.array([0.5, 0.5, 0.0]),
-                   'Z': np.array([0.5, 0.5, 0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _trig_p_a(self):
-        path = [['\Gamma', 'A', 'L', 'M', '\Gamma', 'K', 'H', 'A']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'A': np.array([0.5, 0.0, 0.0]),
-                   'L': np.array([0.5, 0.5, 0.0]),
-                   'M': np.array([0.0, 0.5, 0.0]),
-                   'K': np.array([0.0, 0.333, 0.333]),
-                   'H': np.array([0.5, 0.333, 0.333])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _trig_p_c(self):
-        path = [['\Gamma', 'A', 'L', 'M', '\Gamma', 'K', 'H', 'A']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'A': np.array([0.0, 0.0, 0.5]),
-                   'L': np.array([0.0, 0.5, 0.5]),
-                   'M': np.array([0.0, 0.5, 0.0]),
-                   'K': np.array([-0.333, 0.667, 0.0]),
-                   'H': np.array([-0.333, 0.667, 0.6])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _orth_p(self):
-        path = [['\Gamma', 'Z', 'T', 'Y', 'S', 'R', 'U', 'X', '\Gamma', 'Y']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Z': np.array([0.0, 0.0, 0.5]),
-                   'T': np.array([-0.5, 0.0, 0.5]),
-                   'Y': np.array([-0.5, 0.0, 0.0]),
-                   'S': np.array([-0.5, 0.5, 0.0]),
-                   'R': np.array([-0.5, 0.5, 0.5]),
-                   'U': np.array([0.0, 0.5, 0.5]),
-                   'X': np.array([0.0, 0.5, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _orth_c_a(self):
-        path = [['R', 'S', '\Gamma', 'Z', 'T', 'Y', '\Gamma']]
-        kpoints = {'R': np.array([0.0, 0.5, 0.5]),
-                   'S': np.array([0.0, 0.5, 0.0]),
-                   '\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Z': np.array([0.0, 0.0, 0.5]),
-                   'T': np.array([0.5, 0.5, 0.5]),
-                   'Y': np.array([0.5, 0.5, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _orth_c_b(self):
-        path = [['R', 'S', '\Gamma', 'Z', 'T', 'Y', '\Gamma']]
-        kpoints = {'R': np.array([0.0, 0.5, 0.5]),
-                   'S': np.array([0.0, 0.5, 0.0]),
-                   '\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Z': np.array([0.0, 0.0, 0.5]),
-                   'T': np.array([-0.5, 0.5, 0.5]),
-                   'Y': np.array([-0.5, 0.5, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _orth_f_1(self):
-        path = [['\Gamma', 'Y', 'X', 'Z', '\Gamma', 'L']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Y': np.array([0.0, -0.5, -0.5]),
-                   'X': np.array([0.5, 0.0, 0.5]),
-                   'Z': np.array([0.5, 0.5, 0.0]),
-                   'L': np.array([0.5, 0.0, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _orth_f_2(self):
-        path = [['\Gamma', 'Y', 'X', 'Z', '\Gamma', 'L']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Y': np.array([0.0, -0.5, -0.5]),
-                   'X': np.array([0.5, 0.0, 0.5]),
-                   'Z': np.array([0.5, -0.5, 0.0]),
-                   'L': np.array([0.5, 0.0, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _orth_f_3(self):
-        path = [['\Gamma', 'Y', 'X', 'Z', '\Gamma', 'L']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Y': np.array([1.0, 0.5, 0.5]),
-                   'X': np.array([0.5, 0.0, 0.5]),
-                   'Z': np.array([0.5, 0.5, 0.0]),
-                   'L': np.array([0.5, 0.0, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _orth_f_4(self):
-        path = [['\Gamma', 'Y', 'X', 'Z', '\Gamma', 'L']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Y': np.array([0.0, -0.5, -0.5]),
-                   'X': np.array([0.5, 0.0, -0.5]),
-                   'Z': np.array([0.5, 0.5, 0.0]),
-                   'L': np.array([0.5, 0.0, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _orth_i_a(self):
-        path = [['R', '\Gamma', 'X', 'S', 'W', 'T']]
-        kpoints = {'R': np.array([0.5, 0.0, 0.0]),
-                   '\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'X': np.array([0.5, -0.5, 0.5]),
-                   'S': np.array([0.5, 0.0, -0.5]),
-                   'W': np.array([0.75, -0.25, -0.25]),
-                   'T': np.array([0.5, -0.5, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _orth_i_b(self):
-        path = [['R', '\Gamma', 'X', 'S', 'W', 'T']]
-        kpoints = {'R': np.array([0.5, 0.0, 0.0]),
-                   '\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'X': np.array([0.5, -0.5, -0.5]),
-                   'S': np.array([0.5, 0.0, -0.5]),
-                   'W': np.array([0.75, -0.25, -0.25]),
-                   'T': np.array([0.5, -0.5, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _orth_i_c(self):
-        path = [['R', '\Gamma', 'X', 'S', 'W', 'T']]
-        kpoints = {'R': np.array([0.5, 0.0, 0.0]),
-                   '\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'X': np.array([0.5, 0.5, -0.5]),
-                   'S': np.array([0.5, 0.0, -0.5]),
-                   'W': np.array([0.75, -0.25, -0.25]),
-                   'T': np.array([0.5, -0.5, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _mon_p_a(self):
-        path = [['\Gamma', 'Z', 'C', 'Y', '\Gamma', 'B', 'D', 'E0', 'A0', 'Y']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Z': np.array([0.5, 0.0, 0.0]),
-                   'C': np.array([0.5, 0.0, 0.5]),
-                   'Y': np.array([0.0, 0.0, 0.5]),
-                   'B': np.array([0.0, 0.5, 0.0]),
-                   'D': np.array([0.5, 0.5, 0.0]),
-                   'E0': np.array([0.5, 0.5, 0.5]),
-                   'A0': np.array([0.0, 0.5, 0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _mon_p_b(self):
-        path = [['\Gamma', 'Z', 'C', 'Y', '\Gamma', 'B', 'D', 'E0', 'A0', 'Y']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Z': np.array([0.5, 0.0, 0.0]),
-                   'C': np.array([0.5, 0.5, 0.0]),
-                   'Y': np.array([0.5, 0.0, 0.0]),
-                   'B': np.array([0.0, 0.0, 0.5]),
-                   'D': np.array([0.0, 0.5, 0.5]),
-                   'E0': np.array([0.5, 0.5, 0.5]),
-                   'A0': np.array([0.5, 0.0, 0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _mon_p_c(self):
-        path = [['\Gamma', 'Z', 'C', 'Y', '\Gamma', 'B', 'D', 'E0', 'A0', 'Y']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Z': np.array([0.0, 0.0, 0.5]),
-                   'C': np.array([0.0, 0.5, 0.5]),
-                   'Y': np.array([0.0, 0.5, 0.0]),
-                   'B': np.array([0.5, 0.0, 0.0]),
-                   'D': np.array([0.5, 0.0, 0.5]),
-                   'E0': np.array([0.5, 0.5, 0.5]),
-                   'A0': np.array([0.5, 0.5, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _mon_c_a(self):
-        path = [['\Gamma', 'Y', 'V', '\Gamma', 'A', 'M', 'L', 'V']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Y': np.array([0.5, 0.0, 0.5]),
-                   'V': np.array([0.0, 0.0, 0.5]),
-                   'A': np.array([0.0, 0.5, 0.0]),
-                   'M': np.array([0.5, 0.5, 0.5]),
-                   'L': np.array([0.0, 0.5, 0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _mon_c_b(self):
-        path = [['\Gamma', 'Y', 'V', '\Gamma', 'A', 'M', 'L', 'V']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Y': np.array([0.5, 0.5, 0.0]),
-                   'V': np.array([0.5, 0.0, 0.0]),
-                   'A': np.array([0.0, 0.0, 0.5]),
-                   'M': np.array([0.5, 0.5, 0.5]),
-                   'L': np.array([0.5, 0.0, 0.5])}
-        return {'kpoints': kpoints, 'path': path}
-
-    def _mon_c_c(self):
-        path = [['\Gamma', 'Y', 'V', '\Gamma', 'A', 'M', 'L', 'V']]
-        kpoints = {'\Gamma': np.array([0.0, 0.0, 0.0]),
-                   'Y': np.array([0.0, 0.5, 0.5]),
-                   'V': np.array([0.0, 0.5, 0.0]),
-                   'A': np.array([0.5, 0.0, 0.0]),
-                   'M': np.array([0.5, 0.5, 0.5]),
-                   'L': np.array([0.5, 0.5, 0.0])}
-        return {'kpoints': kpoints, 'path': path}
+    if normalise:
+        # to prevent warnings/errors relating to divide by zero,
+        # catch warnings and surround divide with np.nan_to_num
+        with np.errstate(divide='ignore', invalid='ignore'):
+            for spin, i in it.product(spins, range(len(spec_proj))):
+                spec_proj[i][spin] = np.nan_to_num(spec_proj[i][spin] /
+                                                   sum_proj[spin])
+    return spec_proj
 
 
-class SeekpathKpath(Kpath):
-    """Calculate the high-symmetry k-point path using SeeK-path.
+def get_reconstructed_band_structure(list_bs, efermi=None):
+    """Combine a list of band structures into a single band structure.
 
-    More detail on the paths generated by SeeK-path can be found in the paper:
-    Y. Hinuma, G. Pizzi, Y. Kumagai, F. Oba, I. Tanaka, Band structure diagram
-    paths based on crystallography, Comp. Mat. Sci. 128, 140 (2017).
-    doi: 10.1016/j.commatsci.2016.10.015
+    This is typically very useful when you split non self consistent
+    band structure runs in several independent jobs and want to merge back
+    the results.
 
-    These paths should be used with primitive structures that comply with the
-    definition from the paper. This structure can be accessed using the
-    `prim` attribute and compliance between the provided structure and
-    standardised structure checked using the `correct_structure` method.
+    This method will also ensure that any BandStructure objects will contain
+    branches.
 
     Args:
-        structure (Structure): A pymatgen structure object.
-        symprec (float): The tolerance for determining the crystal symmetry.
-
-    Attributes:
-        kpoints (dict): The high-symmetry k-point labels and their coordinates
-            as {label: coords}.
-        path (list): The high-symmetry k-point path. Each subpath is provided
-            as a list. E.g. [['A', 'B'], ['C', 'D']].
-        prim (Structure): The standardised primitive cell structure needed for
-            to obtain the correct band structure.
-        conv (Structure): The standardised conventional cell structure.
-        lattice_type (str): The Bravais lattice system. Hexagonal cells are
-            separated into rhombohedral and hexagonal lattices.
-        spg_symbol (str): The international space group symbol.
-        spg_number (int): The international space group number.
-        path_string (str): The high-symmetry k-point path formatted with arrows
-            and showing disconnections between subpaths. For example:
-            "X -> Gamma | Y -> Z".
-    """
-
-    def __init__(self, structure, symprec=1e-3):
-        Kpath.__init__(self, structure, symprec=symprec)
-
-
-        self._kpath = self.kpath_from_seekpath(self._seek_data['path'],
-                                               self._seek_data['point_coords'])
-
-    @classmethod
-    def kpath_from_seekpath(cls, path, point_coords):
-        """Convert seekpath-formatted kpoints path to vaspy-preferred format
-
-        If 'GAMMA' is used as a label this will be replaced by '\Gamma'.
-
-        Args:
-            path (list): A list of 2-tuples containing the labels at each side
-                of each segment of the k-point path 
-                [(A, B), (B, C), (C, D), ...] where a break in the sequence is
-                indicated by a non-repeating label e.g.
-                [(A, B), (B, C), (D, E), ...] for a break between C and D.
-            point_coords (dict): Dict of coordinates corresponding to k-point
-                labels. {'GAMMA': [0., 0., 0.], ...}
-        Returns:
-            dict: {'path', [[l1, l2, l3], [l4, l5], ...],
-                   'kpoints', {l1: [a1, b1, c1], l2: [a2, b2, c2], ...}}
-        """
-
-        # convert from seekpath format e.g. [(l1, l2), (l2, l3), (l4, l5)]
-        # to our preferred representation [[l1, l2, l3], [l4, l5]]
-        seekpath = path.copy()
-
-        path = [[seekpath[0][0]]]
-        for (k1, k2) in seekpath:
-            if path[-1] and path[-1][-1] == k1:
-                path[-1].append(k2)
-            else:
-                path.append([k1, k2])        
-
-        # Rebuild kpoints dictionary skipping any positions not on path
-        # (chain(*list) flattens nested list; set() removes duplicates.)
-        kpoints = {p: point_coords[p] for p in set(chain(*path))}
-
-        # Every path should include Gamma-point. Change the label to \Gamma
-        assert 'GAMMA' in kpoints
-        kpoints['\Gamma'] = kpoints.pop('GAMMA')
-        path = [[label.replace('GAMMA', '\Gamma') for label in subpath]
-                for subpath in path]
-        
-        return {'kpoints': kpoints, 'path': path}
-
-class PymatgenKpath(Kpath):
-    """Calculate the high-symmetry k-point path using pymatgen.
-
-    More detail on the paths generated by SeeK-path can be found in the
-    pymatgen documentation. They are based on the paper:
-    Setyawan, W., & Curtarolo, S. (2010) High-throughput electronic band
-    structure calculations: Challenges and tools. Computational Materials
-    Science, 49(2), 299-312. doi:10.1016/j.commatsci.2010.05.010
-
-    These paths should be used with primitive structures that comply with the
-    definition from the paper. This structure can be accessed using the
-    `prim` attribute and compliance between the provided structure and
-    standardised structure checked using the `correct_structure` method.
-
-    Args:
-        structure (Structure): A pymatgen structure object.
-        symprec (float): The tolerance for determining the crystal symmetry.
-
-    Attributes:
-        kpoints (dict): The high-symmetry k-point labels and their coordinates
-            as {label: coords}.
-        path (list): The high-symmetry k-point path. Each subpath is provided
-            as a list. E.g. [['A', 'B'], ['C', 'D']].
-        prim (Structure): The standardised primitive cell structure needed for
-            to obtain the correct band structure.
-        conv (Structure): The standardised conventional cell structure.
-        lattice_type (str): The Bravais lattice system. Hexagonal cells are 
-            separated into rhombohedral and hexagonal lattices.
-        spg_symbol (str): The international space group symbol.
-        spg_number (int): The international space group number.
-        path_string (str): The high-symmetry k-point path formatted with arrows 
-            and showing disconnections between subpaths. For example:
-            "X -> Gamma | Y -> Z".
-    """
-
-    def __init__(self, structure, symprec=1e-3):
-        Kpath.__init__(self, structure, symprec=symprec)
-        pmg_path = HighSymmKpath(structure, symprec=symprec)
-        self._kpath = pmg_path._kpath
-        self.prim = pmg_path.prim
-        self.conv = pmg_path.conventional
-
-
-def get_kpoints(structure, kpoints, path, line_density=20, cart_coords=False):
-    """Calculate a list of k-points along the high-symmetry path.
-
-    Adapted from pymatgen.symmetry.bandstructure
-
-    Args:
-        structure (Structure): Pymatgen structure object.
-        kpoints (dict): The high-symmetry k-point labels and their coordinates
-            as {label: coords}.
-        path (list): The high-symmetry k-point path. Each subpath is provided
-            as a list. E.g. [['A', 'B'], ['C', 'D']].
-        line_density (int): The density of k-points along the path.
-        cart_coords (bool): Whether the k-points are returned in cartesian
-            or reciprocal coordinates.
+        list_bs (:obj:`list` of \
+        :obj:`~pymatgen.electronic_structure.bandstructure.BandStructure` \
+        or :obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):
+            The band structures.
+        efermi (:obj:`float`, optional): The Fermi energy of the reconstructed
+            band structure. If `None`, an average of all the Fermi energies
+            across all band structrues is used.
 
     Returns:
-        A list k-points along the high-symmetry path, together with the
-        high symmetry labels for each k-point. Returned as: (kpoints, labels).
+        :obj:`pymatgen.electronic_structure.bandstructure.BandStructure` or \
+        :obj:`pymatgen.electronic_structure.bandstructureBandStructureSymmLine`:
+        A band structure object. The type depends on the type of the band
+        structures in ``list_bs``.
     """
-    list_k_points = []
-    sym_point_labels = []
-    recip_lattice = structure.lattice.reciprocal_lattice
-    for b in path:
-        for i in range(1, len(b)):
-            start = np.array(kpoints[b[i - 1]])
-            end = np.array(kpoints[b[i]])
-            distance = np.linalg.norm(
-                recip_lattice.get_cartesian_coords(start) -
-                recip_lattice.get_cartesian_coords(end))
-            nb = int(math.ceil(distance * line_density))
-            sym_point_labels.extend([b[i - 1]] + [''] * (nb - 1))
-            list_k_points.extend(
-                [recip_lattice.get_cartesian_coords(start)
-                    + float(i) / float(nb) *
-                    (recip_lattice.get_cartesian_coords(end)
-                     - recip_lattice.get_cartesian_coords(start))
-                    for i in range(0, nb)])
-        # append last k-point to avoid repition as in pymatgen
-        sym_point_labels.append(b[-1])
-        list_k_points.append(recip_lattice.get_cartesian_coords(end))
-    if cart_coords:
-        return list_k_points, sym_point_labels
+    if efermi is None:
+        efermi = sum([b.efermi for b in list_bs]) / len(list_bs)
+
+    kpoints = []
+    labels_dict = {}
+    rec_lattice = list_bs[0].lattice_rec
+    nb_bands = min([list_bs[i].nb_bands for i in range(len(list_bs))])
+
+    kpoints = np.concatenate([[k.frac_coords for k in bs.kpoints]
+                              for bs in list_bs])
+
+    dicts = [bs.labels_dict for bs in list_bs]
+    labels_dict = {k: v.frac_coords for d in dicts for k, v in d.items()}
+
+    # pymatgen band structure objects support branches. These are formed when
+    # two kpoints with the same label are next to each other. This bit of code
+    # will ensure that the band structure will contain branches, if it doesn't
+    # already.
+    dup_ids = []
+    for i, k in enumerate(kpoints):
+        dup_ids.append(i)
+        if (tuple(k) in tuple(map(tuple, labels_dict.values()))
+                and i != 0 and i != len(kpoints) - 1
+                and (not np.array_equal(kpoints[i+1], k)
+                     or not np.array_equal(kpoints[i-1], k))):
+            dup_ids.append(i)
+
+    kpoints = kpoints[dup_ids]
+
+    eigenvals = {}
+    eigenvals[Spin.up] = np.concatenate([bs.bands[Spin.up][:nb_bands]
+                                         for bs in list_bs], axis=1)
+    eigenvals[Spin.up] = eigenvals[Spin.up][:, dup_ids]
+
+    if list_bs[0].is_spin_polarized:
+        eigenvals[Spin.down] = np.concatenate([bs.bands[Spin.down][:nb_bands]
+                                               for bs in list_bs], axis=1)
+        eigenvals[Spin.down] = eigenvals[Spin.up][:, dup_ids]
+
+    projections = {}
+    if len(list_bs[0].projections) != 0:
+        projs = [bs.projections[Spin.up][:nb_bands][dup_ids] for bs in list_bs]
+        projections[Spin.up] = np.concatenate(projs, axis=1)[:, dup_ids]
+
+        if list_bs[0].is_spin_polarized:
+            projs = [bs.projections[Spin.down][:nb_bands][dup_ids]
+                     for bs in list_bs]
+            projections[Spin.down] = np.concatenate(projs, axis=1)[:, dup_ids]
+
+    if isinstance(list_bs[0], BandStructureSymmLine):
+        return BandStructureSymmLine(kpoints, eigenvals, rec_lattice,
+                                     efermi, labels_dict,
+                                     structure=list_bs[0].structure,
+                                     projections=projections)
     else:
-        frac_k_points = [recip_lattice.get_fractional_coords(k)
-                         for k in list_k_points]
-        return frac_k_points, sym_point_labels
-
-
-def get_lattice_type(number):
-    """Obtain the lattice crystal system.
-
-    Hexagonal cells are differentiated into rhombohedral and hexagonal lattices.
-    Adapted from pymatgen.symmetry.analyzer.SpacegroupAnalyzer
-
-    Args:
-        number (int): The international space group number.
-
-    Returns:
-        The lattice crystal system as a string.
-    """
-    f = lambda i, j: i <= number <= j
-    cs = {'triclinic': (1, 2), 'monoclinic': (3, 15),
-          'orthorhombic': (16, 74), 'tetragonal': (75, 142),
-          'trigonal': (143, 167), 'hexagonal': (168, 194),
-          'cubic': (195, 230)}
-
-    crystal_system = None
-    for k, v in cs.items():
-        if f(*v):
-            crystal_system = k
-            break
-
-    if number in [146, 148, 155, 160, 161, 166, 167]:
-        return "rhombohedral"
-    elif crystal_system == "trigonal":
-        return "hexagonal"
-    else:
-        return crystal_system
+        return BandStructure(kpoints, eigenvals, rec_lattice, efermi,
+                             labels_dict, structure=list_bs[0].structure,
+                             projections=projections)

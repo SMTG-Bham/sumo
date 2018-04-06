@@ -4,7 +4,7 @@ import unittest
 
 from pymatgen.core.structure import Structure
 
-from vaspy.electronic_structure.bandstructure import SeekpathKpath
+from vaspy.symmetry.seekpath_kpath import SeekpathKpath
 
 class SeekpathKpathTestCase(unittest.TestCase):
 

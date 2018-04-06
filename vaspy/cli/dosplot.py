@@ -2,7 +2,15 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+A script to plot density of states diagrams.
+
+TODO:
+    * Add ability to scale an orbitals density of states
+"""
+
 from __future__ import unicode_literals
+from pkg_resources import Requirement, resource_filename
 
 import os
 import sys
@@ -14,20 +22,13 @@ import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 
-from vaspy.electronic_structure.dos import get_pdos, write_files
-from vaspy.electronic_structure.plotter import VDOSPlotter
-
-from pymatgen.io.vasp.outputs import Vasprun
-from pymatgen.electronic_structure.core import Spin
+from vaspy.electronic_structure.dos import load_dos, write_files
+from vaspy.plotting.dos_plotter import VDOSPlotter
 
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
-
-"""
-A script to plot density of states (DOS) diagrams
-"""
 
 __author__ = "Alex Ganose"
 __version__ = "1.0"
@@ -36,108 +37,121 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "March 13, 2017"
 
 
-# TODO:
-#   - implement magnify state
-
-
 def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
             lm_orbitals=None, atoms=None, subplot=False, shift=True,
             total_only=False, plot_total=True, legend_on=True,
             legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6.,
             width=8., xmin=-6., xmax=6., num_columns=2, colours=None, yscale=1,
-            image_format='pdf', dpi=400, plt=None):
+            image_format='pdf', dpi=400, plt=None, fonts=None):
     """A script to plot the density of states from a vasprun.xml file.
 
     Args:
-        filename (str): A vasprun.xml file to plot (can be gziped).
-        prefix (str): A prefix for the files generated.
-        directory (str): Specify a directory in which the files are saved.
-        elements (dict): A dict of element names specifying which orbitals to
-            plot. For example {'Bi': ['s', 'px', 'py', 'd']}. If an element
-            symbol is included with an empty list, then all orbitals for that
-            species are considered. If set to None then all orbitals for all
-            elements are considered.
-        lm_orbitals (dict): A list of orbitals for which the lm decomposed
-            contributions should be calculated, in the form {Element: [orbs]}
-        atoms (dict): A dictionary containing a list of atomic indicies over
-            which to sum the DOS, provided as {Element: [atom_indicies]}.
-            Indicies are zero indexed for each atomic species. If an element
-            symbol is included with an empty list, then all sites for that
-            species are considered. If set to None then all sites for all
-            elements are considered.
-        subplot (bool): Split the plot up into separate plots for each element.
-        shift (bool): Shift the energies such that the valence band maximum is
-            at 0 eV.
-        total_only (bool): Only plot the total density of states.
-        plot_total (bool): Whether or not to plot total DOS.
-        legend_on (bool): Whether or not to plot the graph legend.
-        legend_frame_on (bool): Whether or not to plot the graph legend frame.
-        legend_cutoff (int): The cut-off (in % of maximum DOS plotted) for a
-            elemental/orbital DOS label to appear in the legend.
-        gaussian (float): The sigma of the Gaussian broadening to apply (usually
-            controlled by the SIGMA flag in VASP).
-        height (float): The height of the graph (matplotlib only).
-        width (float): The width of the graph (matplotlib only).
-        xmin (float): The minimum energy to plot.
-        xmax (float): The maximum energy to plot.
-        num_columns (int): The number of columns in the legend.
-        colours (dict): Specify custom colours as {'Element': colour} where
-            colour is a hex number.
-        yscale (dict): Scaling factor for the y-axis.
-        image_format (str): The image file format (matplotlib only). Can be
-            any format supported by matplot, including: png, jpg, pdf, and svg.
-        dpi (int): The dots-per-inch (pixel density) for the image.
-        plt (pyplot object): Matplotlib pyplot object to use for plotting.
-            If plt is set then no files will be written.
+        filename (:obj:`str`, optional): Path to a vasprun.xml file (can be
+            gzipped).
+        prefix (:obj:`str`, optional): Prefix for file names.
+        directory (:obj:`str`, optional): The directory in which to save files.
+        elements (:obj:`dict`, optional): The elements and orbitals to extract
+            from the projected density of states. Should be provided as a
+            :obj:`dict` with the keys as the element names and corresponding
+            values as a :obj:`tuple` of orbitals. For example, the following
+            would extract the Bi s, px, py and d orbitals::
+
+                {'Bi': ('s', 'px', 'py', 'd')}
+
+            If an element is included with an empty :obj:`tuple`, all orbitals
+            for that species will be extracted. If ``elements`` is not set or
+            set to ``None``, all elements for all species will be extracted.
+        lm_orbitals (:obj:`dict`, optional): The orbitals to decompose into
+            their lm contributions (e.g. p -> px, py, pz). Should be provided
+            as a :obj:`dict`, with the elements names as keys and a
+            :obj:`tuple` of orbitals as the corresponding values. For example,
+            the following would be used to decompose the oxygen p and d
+            orbitals::
+
+                {'O': ('p', 'd')}
+
+        atoms (:obj:`dict`, optional): Which atomic sites to use when
+            calculating the projected density of states. Should be provided as
+            a :obj:`dict`, with the element names as keys and a :obj:`tuple` of
+            :obj:`int` specifiying the atomic indicies as the corresponding
+            values. The elemental projected density of states will be summed
+            only over the atom inidices specified. If an element is included
+            with an empty :obj:`tuple`, then all sites for that element will
+            be included. The indices are 0 based for each element specified in
+            the POSCAR. For example, the following will calculate the density
+            of states for the first 4 Sn atoms and all O atoms in the
+            structure::
+
+                {'Sn': (1, 2, 3, 4), 'O': (, )}
+
+            If ``atoms`` is not set or set to ``None`` then all atomic sites
+            for all elements will be considered.
+        subplot (:obj:`bool`, optional): Plot the density of states for each
+            element on seperate subplots. Defaults to ``False``.
+        shift (:obj:`bool`, optional): Shift the energies such that the valence
+            band maximum (or Fermi level for metals) is at 0 eV. Defaults to
+            ``True``.
+        total_only (:obj:`bool`, optional): Only extract the total density of
+            states. Defaults to ``False``.
+        plot_total (:obj:`bool`, optional): Plot the total density of states.
+            Defaults to ``True``.
+        legend_on (:obj:`bool`, optional): Plot the graph legend. Defaults
+            to ``True``.
+        legend_frame_on (:obj:`bool`, optional): Plot a frame around the
+            graph legend. Defaults to ``False``.
+        legend_cutoff (:obj:`float`, optional): The cut-off (in % of the
+            maximum density of states within the plotting range) for an
+            elemental orbital to be labelled in the legend. This prevents
+            the legend from containing labels for orbitals that have very
+            little contribution in the plotting range.
+        gaussian (:obj:`float`, optional): Broaden the density of states using
+            convolution with a gaussian function. This parameter controls the
+            sigma or standard deviation of the gaussian distribution.
+        height (:obj:`float`, optional): The height of the plot.
+        width (:obj:`float`, optional): The width of the plot.
+        xmin (:obj:`float`, optional): The minimum energy on the x-axis.
+        xmax (:obj:`float`, optional): The maximum energy on the x-axis.
+        num_columns (:obj:`int`, optional): The number of columns in the
+            legend.
+        colours (:obj:`dict`, optional): Use custom colours for specific
+            element and orbital combinations. Specified as a :obj:`dict` of
+            :obj:`dict` of the colours. For example::
+
+                {
+                    'Sn': {'s': 'r', 'p': 'b'},
+                    'O': {'s': '#000000'}
+                }
+
+            The colour can be a hex code, series of rgb value, or any other
+            format supported by matplotlib.
+        yscale (:obj:`float`, optional): Scaling factor for the y-axis.
+        image_format (:obj:`str`, optional): The image file format. Can be any
+            format supported by matplot, including: png, jpg, pdf, and svg.
+            Defaults to pdf.
+        dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+            the image.
+        plt (:obj:`matplotlib.pyplot`, optional): A
+            :obj:`matplotlib.pyplot` object to use for plotting.
+        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+            a single font, specified as a :obj:`str`, or several fonts,
+            specified as a :obj:`list` of :obj:`str`.
 
     Returns:
         A matplotlib pyplot object.
     """
-    vr = Vasprun(filename)
-    band = vr.get_band_structure()
-    dos = vr.complete_dos
-
-    if band.is_metal():
-        logging.info('System is metallic')
-        zero_point = vr.efermi
-    else:
-        logging.info('Band gap: {:.3f}'.format(band.get_band_gap()['energy']))
-        logging.info('DOS band gap: {:.3f}'.format(dos.get_gap()))
-        zero_point = band.get_vbm()['energy']
-
-    if shift:
-        dos.energies -= zero_point
-        if vr.parameters['ISMEAR'] == 0 or vr.parameters['ISMEAR'] == -1:
-            dos.energies -= vr.parameters['SIGMA']
-
-    if gaussian:
-        dos = dos.get_smeared_vaspdos(gaussian)
-
-    # TODO: This is fustrating for other users who don't know this. Can we give
-    # this responsibily to plotting functions
-    if vr.parameters['LSORBIT']:
-        # pymatgen includes the spin down channel for SOC calculations, even
-        # though there is no density here. We remove this channel so the
-        # plotting is easier later on.
-        del dos.densities[Spin.down]
-        for site in dos.pdos:
-            for orbital in dos.pdos[site]:
-                del dos.pdos[site][orbital][Spin.down]
-
-    pdos = {}
-    if not total_only:
-        pdos = get_pdos(dos, lm_orbitals=lm_orbitals, atoms=atoms,
-                        elements=elements)
+    dos, pdos = load_dos(filename, elements, lm_orbitals, atoms, gaussian,
+                         total_only)
 
     save_files = False if plt else True  # don't save if pyplot object provided
 
     plotter = VDOSPlotter(dos, pdos)
     plt = plotter.get_plot(subplot=subplot, width=width, height=height,
-                           xmin=xmin, xmax=xmax, yscale=yscale, colours=colours,
-                           plot_total=plot_total, legend_on=legend_on,
-                           num_columns=num_columns,
+                           xmin=xmin, xmax=xmax, yscale=yscale,
+                           colours=colours, plot_total=plot_total,
+                           legend_on=legend_on, num_columns=num_columns,
                            legend_frame_on=legend_frame_on,
-                           legend_cutoff=legend_cutoff, dpi=dpi, plt=plt)
+                           legend_cutoff=legend_cutoff, dpi=dpi, plt=plt,
+                           fonts=fonts)
 
     if save_files:
         basename = 'dos.{}'.format(image_format)
@@ -157,12 +171,16 @@ def el_orb(string):
     all of its orbitals.
 
     Args:
-        string (str): The supplied argument in the form "C.s.p,O".
+        string (str): The element and orbitals as a string, in the form
+            ``"C.s.p,O"``.
 
     Returns:
-        A dict of element names specifying which orbitals to plot. For example
-        {'Bi': ['s', 'px', 'py', 'd']}. If an element symbol is included with
-        an empty list, then all orbitals for that species are considered.
+        dict: The elements and orbitals as a :obj:`dict`. For example::
+
+            {'Bi': ['s', 'px', 'py', 'd']}.
+
+        If an element symbol is included with an empty list, then all orbitals
+        for that species are considered.
     """
     el_orbs = {}
     for split in string.split(','):
@@ -176,13 +194,16 @@ def atoms(atoms_string):
     """Parse the atom string.
 
     Args:
-        atoms_string (str): The supplied argument in the form "C.1.2.3,".
+        atoms_string (str): The atoms to plot, in the form ``"C.1.2.3,"``.
 
     Returns:
-        A dictionary containing a list of atomic indicies over which to sum
-        the DOS, provided as {Element: [atom_indicies]}. Indicies are zero
-        indexed for each atomic species. If an element symbol is included with
-        an empty list, then all sites for that species are considered.
+        dict: The atomic indicies over which to sum the DOS. Formatted as::
+
+            {Element: [atom_indicies]}.
+
+        Indicies are zero indexed for each atomic species. If an element symbol
+        is included with an empty list, then all sites for that species are
+        considered.
     """
     atoms = {}
     for split in atoms_string.split(','):
@@ -204,8 +225,10 @@ def main():
 
     parser.add_argument('-f', '--filename', help='vasprun.xml file to plot',
                         default='vasprun.xml')
-    parser.add_argument('-p', '--prefix', help='prefix for the files generated')
-    parser.add_argument('-d', '--directory', help='output directory for files')
+    parser.add_argument('-p', '--prefix',
+                        help='Prefix for the files generated.')
+    parser.add_argument('-d', '--directory',
+                        help='Output directory for files.')
     parser.add_argument('-e', '--elements', type=el_orb, help="""Choose the
                         elements to plot. These should be listed using the
                         symbols from the POSCAR and seperated via commas.
@@ -222,21 +245,21 @@ def main():
                         the notation described for adding more elements.""")
     parser.add_argument('-a', '--atoms', type=atoms, help="""Choose which atoms
                         to calculate the DOS for. This should be listed as the
-                        element (using the symbol from the POSCAR) and the atoms
-                        seperated by a period. For example to plot the oxygen 1,
-                        2 and 3 atoms, the command would be "-a O.1.2.3". The
-                        atom indicies start at 1 (as in the VASP output). You
-                        can specify a range to avoid typing all the numbers
-                        out, e.g. the previous command can be written "-a
-                        O.1-3". To select all the atoms of an element just
-                        include the element symbol with no numbers after it,
-                         e.g. "-a Ru" will include all the Ru atoms. If
-                        an element is not specified then it will not be
+                        element (using the symbol from the POSCAR) and the
+                        atoms seperated by a period. For example to plot the
+                        oxygen 1, 2 and 3 atoms, the command would be
+                        "-a O.1.2.3". The atom indicies start at 1 (as in the
+                        VASP output). You can specify a range to avoid typing
+                        all the numbers out, e.g. the previous command can be
+                        written "-a O.1-3". To select all the atoms of an
+                        element just include the element symbol with no numbers
+                        after it, e.g. "-a Ru" will include all the Ru atoms.
+                        If an element is not specified then it will not be
                         included in the DOS. More than one element can be added
                         using the notation described above for adding more
                         elements.""")
-    parser.add_argument('-s', '--subplot', action='store_true', help="""Plot the
-                        DOS as a series of subplots rather than on a single
+    parser.add_argument('-s', '--subplot', action='store_true', help="""Plot
+                        the DOS as a series of subplots rather than on a single
                         graph. The height and width arguments for this program
                         refer to the dimensions of a single subplot rather than
                         the overall figure.""")
@@ -253,9 +276,9 @@ def main():
                         help='Display a frame box around the graph legend.')
     parser.add_argument('--legend-cutoff', type=float, default=3,
                         dest='legend_cutoff',
-                        help="""Cut-off in %% of total DOS in visible range that
-                        determines if a line is given a label. Set to 0 to label
-                        all lines. Default is 3 %%""")
+                        help="""Cut-off in %% of total DOS in visible range
+                        that determines if a line is given a label. Set to 0 to
+                        label all lines. Default is 3 %%""")
     parser.add_argument('-g', '--gaussian', type=float,
                         help='Amount of gaussian broadening to apply')
     parser.add_argument('--height', type=float, default=6.,
@@ -277,6 +300,7 @@ def main():
                         help='select image format from pdf, svg, jpg, & png')
     parser.add_argument('--dpi', type=int, default=400,
                         help='pixel density for generated images')
+    parser.add_argument('--font', default=None, help='Font to use.')
 
     args = parser.parse_args()
     logging.basicConfig(filename='vaspy-dosplot.log', level=logging.DEBUG,
@@ -286,8 +310,8 @@ def main():
     logging.getLogger('').addHandler(console)
 
     if args.config is None:
-        config_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                   'default_colours.ini')
+        config_path = resource_filename(Requirement.parse('vaspy'),
+                                        'conf/orbital_colours.conf')
     else:
         config_path = args.config
     colours = configparser.ConfigParser()
@@ -296,15 +320,17 @@ def main():
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="matplotlib")
 
-    dosplot(filename=args.filename, prefix=args.prefix, directory=args.directory,
-            elements=args.elements, lm_orbitals=args.orbitals, atoms=args.atoms,
+    dosplot(filename=args.filename, prefix=args.prefix,
+            directory=args.directory, elements=args.elements,
+            lm_orbitals=args.orbitals, atoms=args.atoms,
             subplot=args.subplot, shift=args.shift, total_only=args.total_only,
             plot_total=args.total, legend_on=args.legend,
             legend_frame_on=args.legend_frame,
             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
             height=args.height, width=args.width, xmin=args.xmin,
             xmax=args.xmax, num_columns=args.columns, colours=colours,
-            yscale=args.yscale, image_format=args.image_format, dpi=args.dpi)
+            yscale=args.yscale, image_format=args.image_format, dpi=args.dpi,
+            fonts=[args.font])
 
 
 if __name__ == "__main__":

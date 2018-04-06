@@ -9,15 +9,15 @@ project_dir = abspath(dirname(__file__))
 
 setup(
     name='vaspy',
-    version='1.0.0',
+    version='2.0.0',
     description='Convenience tools for working with VASP',
     long_description="""
 Some handy tools developed by and for the Scanlon Materials Theory Group
 """,
-    url="https://github.com/smtg-ucl/vaspy",
-    author="Alex Ganose, Adam J. Jackson",
-    author_email="d.scanlon@ucl.ac.uk",
-    license='GPL v2',
+    url='https://github.com/smtg-ucl/vaspy',
+    author='Alex Ganose, Adam J. Jackson',
+    author_email='d.scanlon@ucl.ac.uk',
+    license='MIT',
 
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -30,13 +30,14 @@ Some handy tools developed by and for the Scanlon Materials Theory Group
         ],
     keywords='chemistry ase dft vasp',
     packages=find_packages(),
-    install_requires=['numpy', 'scipy',
-                      'ase', 'pymatgen', 'seekpath', 'spglib'],
+    install_requires=['spglib', 'numpy', 'scipy', 'pymatgen', 'h5py',
+                      'phonopy', 'matplotlib', 'seekpath'],
+    package_data={'vaspy': ['conf/orbital_colours.conf']},
     entry_points={'console_scripts': [
-                      'vaspy-bandgen = vaspy.cli.bandgen:main',
                       'vaspy-bandplot = vaspy.cli.bandplot:main',
                       'vaspy-bandstats = vaspy.cli.bandstats:main',
                       'vaspy-dosplot = vaspy.cli.dosplot:main',
                       'vaspy-kgen = vaspy.cli.kgen:main',
-                      'vaspy-optics = vaspy.cli.optics:main']}
+                      'vaspy-phonon-bandplot = vaspy.cli.phonon_bandplot:main',
+                      'vaspy-optplot = vaspy.cli.optplot:main']}
     )
