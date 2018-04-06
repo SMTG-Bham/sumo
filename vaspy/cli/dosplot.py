@@ -3,7 +3,7 @@
 # Distributed under the terms of the MIT License.
 
 """
-A script to plot density of states diagrams
+A script to plot density of states diagrams.
 
 TODO:
     * Add ability to scale an orbitals density of states
@@ -46,88 +46,98 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
     """A script to plot the density of states from a vasprun.xml file.
 
     Args:
-        filename (str): A vasprun.xml file to plot (can be gziped).
-        prefix (str): A prefix for the files generated.
-        directory (str): Specify a directory in which the files are saved.
-        elements (`dict`, optional): The elements and orbitals to plot in the
-            density of states. Should be provided as a `dict` with the keys as
-            the element names and corresponding values as a `tuple` of orbitals
-            to plot. For example, the following would plot the Bi s, px, py and
-            d orbitals:
+        filename (:obj:`str`, optional): Path to a vasprun.xml file (can be
+            gzipped).
+        prefix (:obj:`str`, optional): Prefix for file names.
+        directory (:obj:`str`, optional): The directory in which to save files.
+        elements (:obj:`dict`, optional): The elements and orbitals to extract
+            from the projected density of states. Should be provided as a
+            :obj:`dict` with the keys as the element names and corresponding
+            values as a :obj:`tuple` of orbitals. For example, the following
+            would extract the Bi s, px, py and d orbitals::
 
-                `{'Bi': ('s', 'px', 'py', 'd')}`.
+                {'Bi': ('s', 'px', 'py', 'd')}
 
-            If an element is included with an empty `tuple`, all orbitals for
-            that species will be plotted. If `elements` is not set or set to
-            `None`, all elements for all species will be considered.
-        lm_orbitals (`dict`, optional): The orbitals to decompose into their lm
-            contributions (e.g. p -> px, py, pz). Should be provided as a
-            `dict`, with the elements names as keys and a `tuple` of orbitals
-            as the corresponding values. For example, the following would be
-            used to decompose the oxygen p and d orbitals:
+            If an element is included with an empty :obj:`tuple`, all orbitals
+            for that species will be extracted. If ``elements`` is not set or
+            set to ``None``, all elements for all species will be extracted.
+        lm_orbitals (:obj:`dict`, optional): The orbitals to decompose into
+            their lm contributions (e.g. p -> px, py, pz). Should be provided
+            as a :obj:`dict`, with the elements names as keys and a
+            :obj:`tuple` of orbitals as the corresponding values. For example,
+            the following would be used to decompose the oxygen p and d
+            orbitals::
 
-                `{'O': ('p', 'd')}'
+                {'O': ('p', 'd')}
 
-        atoms (`dict`, optional): Which atomic sites to plot the density of
-            states for. Should be provided as a `dict`, with the element names
-            as keys and a `tuple` of `int` specifiying the atomic indicies as
-            the corresponding values. The elemental projected density of states
-            will be summed only over the atom inidices specified. If an element
-            is included with an empty `tuple`, then all sites for that element
-            will be included. The indices are 0 based for each element
-            specified in the POSCAR. For example, the following will calculate
-            the denisty of states for the first 4 Sn atoms and all O atoms in
-            the structure:
+        atoms (:obj:`dict`, optional): Which atomic sites to use when
+            calculating the projected density of states. Should be provided as
+            a :obj:`dict`, with the element names as keys and a :obj:`tuple` of
+            :obj:`int` specifiying the atomic indicies as the corresponding
+            values. The elemental projected density of states will be summed
+            only over the atom inidices specified. If an element is included
+            with an empty :obj:`tuple`, then all sites for that element will
+            be included. The indices are 0 based for each element specified in
+            the POSCAR. For example, the following will calculate the density
+            of states for the first 4 Sn atoms and all O atoms in the
+            structure::
 
-                `{'Sn': (1, 2, 3, 4), 'O': (, )}`
+                {'Sn': (1, 2, 3, 4), 'O': (, )}
 
-            If `atoms` is not set or set to `None` then all atomic sites for
-            all elements will be considered.
-        subplot (bool): Split the plot up into separate plots for each element.
-        shift (bool): Shift the energies such that the valence band maximum is
-            at 0 eV.
-        total_only (`bool`, optional): Only plot the total density of states.
-        plot_total (`bool`, optional): If `False`, the total density of states
-            will not be plotted.
-        legend_on (`bool`, optional): Plot the graph legend.
-        legend_frame_on (`bool`, optional): Plot a frame around the legend.
-        legend_cutoff (`float`, optional): The cut-off (in % of the maximum
-            density of states within the plotting range) for an elemental
-            orbital to be labelled in the legendl. This prevents the legend
-            from being full of orbitals that have very little contribution in
-            the plotting range.
-        gaussian (`float`, optional): Broaden the density of states using
+            If ``atoms`` is not set or set to ``None`` then all atomic sites
+            for all elements will be considered.
+        subplot (:obj:`bool`, optional): Plot the density of states for each
+            element on seperate subplots. Defaults to ``False``.
+        shift (:obj:`bool`, optional): Shift the energies such that the valence
+            band maximum (or Fermi level for metals) is at 0 eV. Defaults to
+            ``True``.
+        total_only (:obj:`bool`, optional): Only extract the total density of
+            states. Defaults to ``False``.
+        plot_total (:obj:`bool`, optional): Plot the total density of states.
+            Defaults to ``True``.
+        legend_on (:obj:`bool`, optional): Plot the graph legend. Defaults
+            to ``True``.
+        legend_frame_on (:obj:`bool`, optional): Plot a frame around the
+            graph legend. Defaults to ``False``.
+        legend_cutoff (:obj:`float`, optional): The cut-off (in % of the
+            maximum density of states within the plotting range) for an
+            elemental orbital to be labelled in the legend. This prevents
+            the legend from containing labels for orbitals that have very
+            little contribution in the plotting range.
+        gaussian (:obj:`float`, optional): Broaden the density of states using
             convolution with a gaussian function. This parameter controls the
-            sigma or smearing width of the gaussian.
-        height (`float`, optional): The height of the plot in inches.
-        width (`float`, optional): The width of the plot in inches.
-        xmin (`float`, optional): The minimum energy to plot.
-        xmax (`float`, optional): The maximum energy to plot.
-        num_columns (int): The number of columns in the legend.
-        colours (`dict`, optional): Colours to use when plotting elemental
-            density of states. Should be provided as a `dict`, where the key is
-            the element name and the corresponding value is a `dict` of
-            orbitals and their colour. The colour can be any matplotlib
-            supported colour identifier, e.g. hex, rgb, or name. For example,
-            the following will set the O p orbitals to red and the Sn s
-            orbitals to green.
+            sigma or standard deviation of the gaussian distribution.
+        height (:obj:`float`, optional): The height of the plot.
+        width (:obj:`float`, optional): The width of the plot.
+        xmin (:obj:`float`, optional): The minimum energy on the x-axis.
+        xmax (:obj:`float`, optional): The maximum energy on the x-axis.
+        num_columns (:obj:`int`, optional): The number of columns in the
+            legend.
+        colours (:obj:`dict`, optional): Use custom colours for specific
+            element and orbital combinations. Specified as a :obj:`dict` of
+            :obj:`dict` of the colours. For example::
 
-                `{'Sn': {'s': 'r'}, 'O': {'p': 'g'}}`
+                {
+                    'Sn': {'s': 'r', 'p': 'b'},
+                    'O': {'s': '#000000'}
+                }
 
-            If an orbital colour is not specified, the code will select a
-            colour from a list of 21 visually distinct colours.
-        yscale (`float`, optional): Scaling factor for the y-axis.
-        image_format (`str`, optional): The image file format. Can be any
+            The colour can be a hex code, series of rgb value, or any other
+            format supported by matplotlib.
+        yscale (:obj:`float`, optional): Scaling factor for the y-axis.
+        image_format (:obj:`str`, optional): The image file format. Can be any
             format supported by matplot, including: png, jpg, pdf, and svg.
-        dpi (`int`, optional): The dots-per-inch (pixel density) for the image.
-        plt (`matplotlib.pyplot`, optional): Matplotlib object to use for
-            plotting. If plt is set then no files will be written.
-        fonts (`list`, optional): A `list` of fonts to try and use. Preference
-            will be given to the fonts at he beginning of the list.
+            Defaults to pdf.
+        dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
+            the image.
+        plt (:obj:`matplotlib.pyplot`, optional): A
+            :obj:`matplotlib.pyplot` object to use for plotting.
+        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
+            a single font, specified as a :obj:`str`, or several fonts,
+            specified as a :obj:`list` of :obj:`str`.
 
     Returns:
-        If `plt` set then the `plt object will be returned. Otherwise, the
-        method will return a `list` of filenames written to disk.
+        A matplotlib pyplot object.
     """
     dos, pdos = load_dos(filename, elements, lm_orbitals, atoms, gaussian,
                          total_only)
@@ -161,12 +171,16 @@ def el_orb(string):
     all of its orbitals.
 
     Args:
-        string (str): The supplied argument in the form "C.s.p,O".
+        string (str): The element and orbitals as a string, in the form
+            ``"C.s.p,O"``.
 
     Returns:
-        A dict of element names specifying which orbitals to plot. For example
-        {'Bi': ['s', 'px', 'py', 'd']}. If an element symbol is included with
-        an empty list, then all orbitals for that species are considered.
+        dict: The elements and orbitals as a :obj:`dict`. For example::
+
+            {'Bi': ['s', 'px', 'py', 'd']}.
+
+        If an element symbol is included with an empty list, then all orbitals
+        for that species are considered.
     """
     el_orbs = {}
     for split in string.split(','):
@@ -180,13 +194,16 @@ def atoms(atoms_string):
     """Parse the atom string.
 
     Args:
-        atoms_string (str): The supplied argument in the form "C.1.2.3,".
+        atoms_string (str): The atoms to plot, in the form ``"C.1.2.3,"``.
 
     Returns:
-        A dictionary containing a list of atomic indicies over which to sum
-        the DOS, provided as {Element: [atom_indicies]}. Indicies are zero
-        indexed for each atomic species. If an element symbol is included with
-        an empty list, then all sites for that species are considered.
+        dict: The atomic indicies over which to sum the DOS. Formatted as::
+
+            {Element: [atom_indicies]}.
+
+        Indicies are zero indexed for each atomic species. If an element symbol
+        is included with an empty list, then all sites for that species are
+        considered.
     """
     atoms = {}
     for split in atoms_string.split(','):
@@ -303,8 +320,9 @@ def main():
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="matplotlib")
 
-    dosplot(filename=args.filename, prefix=args.prefix, directory=args.directory,
-            elements=args.elements, lm_orbitals=args.orbitals, atoms=args.atoms,
+    dosplot(filename=args.filename, prefix=args.prefix,
+            directory=args.directory, elements=args.elements,
+            lm_orbitals=args.orbitals, atoms=args.atoms,
             subplot=args.subplot, shift=args.shift, total_only=args.total_only,
             plot_total=args.total, legend_on=args.legend,
             legend_frame_on=args.legend_frame,

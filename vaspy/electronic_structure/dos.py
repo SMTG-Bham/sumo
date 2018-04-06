@@ -61,7 +61,7 @@ def load_dos(filename, elements=None, lm_orbitals=None, atoms=None,
 
             If ``atoms`` is not set or set to ``None`` then all atomic sites
             for all elements will be considered.
-        gaussian (`float`, optional): Broaden the density of states using
+        gaussian (:obj:`float`, optional): Broaden the density of states using
             convolution with a gaussian function. This parameter controls the
             sigma or standard deviation of the gaussian distribution.
         total_only (:obj:`bool`, optional): Only extract the total density of
