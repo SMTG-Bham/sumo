@@ -9,6 +9,7 @@ Module containing class for generating k-points along paths from SeeK-path.
 from vaspy.symmetry import Kpath
 from itertools import chain
 
+
 class SeekpathKpath(Kpath):
     r"""Class to generate k-points along paths from SeeK-path.
 
@@ -40,29 +41,39 @@ class SeekpathKpath(Kpath):
     def __init__(self, structure, symprec=1e-3):
         Kpath.__init__(self, structure, symprec=symprec)
 
-
         self._kpath = self.kpath_from_seekpath(self._seek_data['path'],
                                                self._seek_data['point_coords'])
 
     @classmethod
     def kpath_from_seekpath(cls, path, point_coords):
-        """Convert seekpath-formatted kpoints path to vaspy-preferred format
+        r"""Convert seekpath-formatted kpoints path to vaspy-preferred format.
 
         If 'GAMMA' is used as a label this will be replaced by '\Gamma'.
 
         Args:
-            path (list): A list of 2-tuples containing the labels at each side
-                of each segment of the k-point path
-                [(A, B), (B, C), (C, D), ...] where a break in the sequence is
-                indicated by a non-repeating label e.g.
-                [(A, B), (B, C), (D, E), ...] for a break between C and D.
-            point_coords (dict): Dict of coordinates corresponding to k-point
-                labels. {'GAMMA': [0., 0., 0.], ...}
-        Returns:
-            dict: {'path', [[l1, l2, l3], [l4, l5], ...],
-                   'kpoints', {l1: [a1, b1, c1], l2: [a2, b2, c2], ...}}
-        """
+            path (list): A :obj:`list` of 2-tuples containing the labels at
+                each side of each segment of the k-point path::
 
+                    [(A, B), (B, C), (C, D), ...]
+
+                where a break in the sequence is indicated by a non-repeating
+                label. E.g.::
+
+                    [(A, B), (B, C), (D, E), ...]
+
+                for a break between C and D.
+            point_coords (dict): Dict of coordinates corresponding to k-point
+                labels::
+
+                    {'GAMMA': [0., 0., 0.], ...}
+        Returns:
+            dict: The path and k-points as::
+
+                {
+                    'path', [[l1, l2, l3], [l4, l5], ...],
+                    'kpoints', {l1: [a1, b1, c1], l2: [a2, b2, c2], ...}
+                }
+        """
         # convert from seekpath format e.g. [(l1, l2), (l2, l3), (l4, l5)]
         # to our preferred representation [[l1, l2, l3], [l4, l5]]
         seekpath = path.copy()
@@ -80,8 +91,8 @@ class SeekpathKpath(Kpath):
 
         # Every path should include Gamma-point. Change the label to \Gamma
         assert 'GAMMA' in kpoints
-        kpoints['\Gamma'] = kpoints.pop('GAMMA')
-        path = [[label.replace('GAMMA', '\Gamma') for label in subpath]
+        kpoints[r'\Gamma'] = kpoints.pop('GAMMA')
+        path = [[label.replace('GAMMA', r'\Gamma') for label in subpath]
                 for subpath in path]
 
         return {'kpoints': kpoints, 'path': path}
