@@ -1,14 +1,6 @@
 vaspy package
 =============
 
-Subpackages
------------
-
-.. toctree::
-
-    vaspy.plotting
-    vaspy.symmetry
-
 Module contents
 ---------------
 
@@ -16,3 +8,14 @@ Module contents
     :members:
     :undoc-members:
     :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+
+    vaspy.cli
+    vaspy.electronic_structure
+    vaspy.phonon
+    vaspy.plotting
+    vaspy.symmetry

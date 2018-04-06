@@ -1,6 +1,15 @@
 vaspy.electronic\_structure package
 ===================================
 
+Module contents
+---------------
+
+.. automodule:: vaspy.electronic_structure
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 Submodules
 ----------
 
@@ -32,15 +41,6 @@ vaspy.electronic\_structure.optics module
 -----------------------------------------
 
 .. automodule:: vaspy.electronic_structure.optics
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: vaspy.electronic_structure
     :members:
     :undoc-members:
     :show-inheritance:

@@ -1,6 +1,15 @@
 vaspy.plotting package
 ======================
 
+Module contents
+---------------
+
+.. automodule:: vaspy.plotting
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 Submodules
 ----------
 
@@ -32,15 +41,6 @@ vaspy.plotting.phonon\_bs\_plotter module
 -----------------------------------------
 
 .. automodule:: vaspy.plotting.phonon_bs_plotter
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: vaspy.plotting
     :members:
     :undoc-members:
     :show-inheritance:

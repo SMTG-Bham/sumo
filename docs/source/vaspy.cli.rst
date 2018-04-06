@@ -1,6 +1,15 @@
 vaspy.cli package
 =================
 
+Module contents
+---------------
+
+.. automodule:: vaspy.cli
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 Submodules
 ----------
 
@@ -57,12 +66,3 @@ vaspy.cli.phonon\_bandplot module
     :undoc-members:
     :show-inheritance:
     :exclude-members: main
-
-
-Module contents
----------------
-
-.. automodule:: vaspy.cli
-    :members:
-    :undoc-members:
-    :show-inheritance:

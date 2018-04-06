@@ -2,6 +2,10 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
+"""
+Package containing functions for symmetry and k-point paths.
+"""
+
 from vaspy.symmetry.kpath import Kpath
 from vaspy.symmetry.brad_crack_kpath import BradCrackKpath
 from vaspy.symmetry.pymatgen_kpath import PymatgenKpath
