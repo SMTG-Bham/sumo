@@ -1,6 +1,15 @@
 vaspy.cli package
 =================
 
+Module contents
+---------------
+
+.. automodule:: vaspy.cli
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 Submodules
 ----------
 
@@ -11,6 +20,7 @@ vaspy.cli.bandplot module
     :members:
     :undoc-members:
     :show-inheritance:
+    :exclude-members: main
 
 vaspy.cli.bandstats module
 --------------------------
@@ -19,6 +29,7 @@ vaspy.cli.bandstats module
     :members:
     :undoc-members:
     :show-inheritance:
+    :exclude-members: main
 
 vaspy.cli.dosplot module
 ------------------------
@@ -27,6 +38,7 @@ vaspy.cli.dosplot module
     :members:
     :undoc-members:
     :show-inheritance:
+    :exclude-members: main
 
 vaspy.cli.kgen module
 ---------------------
@@ -35,6 +47,7 @@ vaspy.cli.kgen module
     :members:
     :undoc-members:
     :show-inheritance:
+    :exclude-members: main
 
 vaspy.cli.optplot module
 ------------------------
@@ -43,6 +56,7 @@ vaspy.cli.optplot module
     :members:
     :undoc-members:
     :show-inheritance:
+    :exclude-members: main
 
 vaspy.cli.phonon\_bandplot module
 ---------------------------------
@@ -51,12 +65,4 @@ vaspy.cli.phonon\_bandplot module
     :members:
     :undoc-members:
     :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: vaspy.cli
-    :members:
-    :undoc-members:
-    :show-inheritance:
+    :exclude-members: main

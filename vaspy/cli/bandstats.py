@@ -2,26 +2,28 @@
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
-import os
+"""
+A script to calculate effective masses and band degeneracies.
+
+TODO:
+ - Would be good to reimplement get_vbm and get_cbm methods, with the ability
+   to give degeneracies + other band edges within a certain tolerance.
+ - Sample custom k-point, band, spin combinations.
+"""
+
 import sys
 import logging
-import glob
 import argparse
-
-import numpy as np
-
-from scipy.optimize import curve_fit
-from scipy.constants import physical_constants
 
 from vaspy.electronic_structure.bandstructure import \
     get_reconstructed_band_structure
+from vaspy.electronic_structure.effective_mass import (get_fitting_data,
+                                                       fit_effective_mass)
+from vaspy.cli.bandplot import find_vasprun_files
 
 from pymatgen.io.vasp.outputs import BSVasprun
 from pymatgen.electronic_structure.core import Spin
 
-"""
-A script to calculate effective masses and band degeneracies
-"""
 
 __author__ = "Alex Ganose"
 __version__ = "1.0"
@@ -31,14 +33,6 @@ __date__ = "March 4, 2018"
 
 
 kpt_str = '[{k[0]:.2f}, {k[1]:.2f}, {k[2]:.2f}]'
-eV_to_hartree = physical_constants['electron volt-hartree relationship'][0]
-bohr_to_m = physical_constants['Bohr radius'][0]
-angstrom_to_bohr = bohr_to_m / 1e-10
-
-# TODO:
-#  - Would be good to reimplement get_vbm and get_cbm methods, with the ability
-#    to give degeneracies + other band edges within a certain tolerance.
-#  - Sample custom k-point, band, spin combinations
 
 
 def bandstats(filenames=None, num_sample_points=3, temperature=None,
@@ -46,43 +40,52 @@ def bandstats(filenames=None, num_sample_points=3, temperature=None,
     """Calculate the effective masses of the bands of a semiconductor.
 
     Args:
-        filenames (list, None): List of vasprun.xml files from which to extract
-            the band structure. If None, the script will look for folders named
-            split-*/ and the current directory for vaspruns.
-        num_sample_points (int): Number of points to sample when fitting the
-            effective masses.
-        temperature (int, None): If not None, the script will attempt to find
-            band edges within kB * T of VBM and CBM.
-        degeneracy_tol (float): Tolerance for determining the degeneracy of the
-            VBM/CBM.
-        parabolic (bool): Use a parabolic fit of the band edges. If False then
-            nonparabolic fitting will be attempted.
+        filenames (:obj:`str` or :obj:`list`, optional): Path to vasprun.xml
+            or vasprun.xml.gz file. If no filenames are provided, the code
+            will search for vasprun.xml or vasprun.xml.gz files in folders
+            named 'split-0*'. Failing that, the code will look for a vasprun in
+            the current directory. If a :obj:`list` of vasprun files is
+            provided, these will be combined into a single band structure.
+        num_sample_points (:obj:`int`, optional): Number of k-points to sample
+            when fitting the effective masses.
+        temperature (:obj:`int`, optional): Find band edges within kB * T of
+            the valence band maximum and conduction band minimum. Not currently
+            implemented.
+        degeneracy_tol (:obj:`float`, optional): Tolerance for determining the
+            degeneracy of the valence band maximum and conduction band minimum.
+        parabolic (:obj:`bool`, optional): Use a parabolic fit of the band
+            edges. If ``False`` then nonparabolic fitting will be attempted.
+            Defaults to ``True``.
 
     Returns:
-        A dictionary of the hole and electron effective masses, with keys:
-        'hole_data' and 'electron_data'. The data is a list of dictionaries
-        with the format:
-            {'effective_mass': The effective mass in m_0.
-             'energies': np.array of band eigenvalues in eV used for fitting,
-             'distances': np.array of distances in reciprocal space used for
-                 fitting,
-             'band_id': The index of the sampled band,
-             'spin': The spin direction of the sampled band,
-             'start_kpoint': The k-point of the band extrema
-             'end_kpoint': The k-point towards which the data has been
-                 sampled.}
+        dict: The hole and electron effective masses. Formatted as a
+        :obj:`dict` with keys: ``'hole_data'`` and ``'electron_data'``. The
+        data is a :obj:`list` of :obj:`dict` with the keys:
+
+        'effective_mass' (:obj:`float`)
+            The effective mass in units of electron rest mass, :math:`m_0`.
+
+        'energies' (:obj:`numpy.ndarray`)
+            Band eigenvalues in eV.
+
+        'distances' (:obj:`numpy.ndarray`)
+            Distances of the k-points in reciprocal space.
+
+        'band_id' (:obj:`int`)
+            The index of the band,
+
+        'spin' (:obj:`~pymatgen.electronic_structure.core.Spin`)
+            The spin channel
+
+        'start_kpoint' (:obj:`int`)
+            The index of the k-point at which the band extrema occurs
+
+        'end_kpoint' (:obj:`int`)
     """
     if not filenames:
-        folders = glob.glob('split-*')
-        folders = sorted(folders) if folders else ['.']
-        filenames = []
-        for fol in folders:
-            vr_file = os.path.join(fol, 'vasprun.xml')
-            if os.path.exists(vr_file):
-                filenames.append(vr_file)
-            else:
-                logging.error('ERROR: No vasprun.xml found in {}!'.format(fol))
-                sys.exit()
+        filenames = find_vasprun_files()
+    elif type(filenames) == str:
+        filenames = [filenames]
 
     bandstructures = []
     for vr_file in filenames:
@@ -95,16 +98,16 @@ def bandstats(filenames=None, num_sample_points=3, temperature=None,
         logging.error('ERROR: System is metallic!')
         sys.exit()
 
-    log_band_gap_information(bs)
+    _log_band_gap_information(bs)
 
     vbm_data = bs.get_vbm()
     cbm_data = bs.get_cbm()
 
     logging.info('\nValence band maximum:')
-    log_band_edge_information(bs, vbm_data)
+    _log_band_edge_information(bs, vbm_data)
 
     logging.info('\nConduction band minimum:')
-    log_band_edge_information(bs, cbm_data)
+    _log_band_edge_information(bs, cbm_data)
 
     if parabolic:
         logging.info('\nUsing parabolic fitting of the band edges')
@@ -146,145 +149,23 @@ def bandstats(filenames=None, num_sample_points=3, temperature=None,
         eff_mass = fit_effective_mass(data['distances'], data['energies'],
                                       parabolic=parabolic)
         data['effective_mass'] = eff_mass
-        log_effective_mass_data(data, bs.is_spin_polarized)
+        _log_effective_mass_data(data, bs.is_spin_polarized)
 
     logging.info('\nElectron effective masses:')
     for data in elec_data:
         eff_mass = fit_effective_mass(data['distances'], data['energies'],
-                                     parabolic=parabolic)
+                                      parabolic=parabolic)
         data['effective_mass'] = eff_mass
-        log_effective_mass_data(data, bs.is_spin_polarized)
+        _log_effective_mass_data(data, bs.is_spin_polarized)
 
     return {'hole_data': hole_data, 'electron_data': elec_data}
 
 
-def get_fitting_data(bs, spin, band_id, kpoint_id, num_sample_points=3):
-    """Extract fitting data for band extrema based on spin, kpoint and band.
-
-    Searches forward and backward from the extrema point, to check there is
-    enough data to sample.
-
-    Args:
-        bs (BandStructureSymmLine): Band structure object from which to extract
-            fitting data.
-        spin (Spin): Spin of the band to sample.
-        band_id (int): Index of the band to sample.
-        kpoint_id (int): Index of the kpoint to sample.
-
-    Returns:
-        A list of dicts containing the data necessary to calculate the
-        effective mass, along with some metadata. Formatted as:
-            {'energies': np.array of band eigenvalues in eV,
-             'distances': np.array of distances in reciprocal space,
-             'band_id': The index of the sampled band,
-             'spin': The spin direction of the sampled band,
-             'start_kpoint': The k-point of the band extrema
-             'end_kpoint': The k-point towards which the data has been
-             sampled.}
-    """
-    # branch data provides data about the start and end points
-    # of specific band paths
-    branch_data = [b for b in bs.get_branch(kpoint_id)
-                   if b['index'] == kpoint_id][0]
-    start_kpoint = bs.kpoints[kpoint_id]
-
-    fitting_data = []
-
-    # check to see if there are enough points to sample from first
-    # check in the forward direction
-    if kpoint_id + num_sample_points <= branch_data['end_index']:
-
-        # calculate sampling limits
-        start_id = kpoint_id
-        end_id = kpoint_id + num_sample_points + 1
-
-        energies = np.array(bs.bands[spin][band_id][start_id:end_id].copy())
-        dists = np.array(bs.distance[start_id:end_id].copy())
-
-        # normalise eigenvalues and distances to starting point
-        energies -= bs.bands[spin][band_id][kpoint_id]
-        dists -= bs.distance[kpoint_id]
-
-        # symmetrise the data to make fitting more reliable
-        energies = np.concatenate([energies[::-1], energies[1:]])
-        dists = np.concatenate([-dists[::-1], dists[1:]])
-
-        end_kpoint = bs.kpoints[branch_data['end_index']]
-        data = {'energies': energies, 'distances': dists, 'band_id': band_id,
-                'spin': spin, 'start_kpoint': start_kpoint,
-                'end_kpoint': end_kpoint}
-        fitting_data.append(data)
-
-    # check in the backward direction
-    if kpoint_id - num_sample_points >= branch_data['start_index']:
-
-        # calculate sampling limits
-        start_id = kpoint_id - num_sample_points
-        end_id = kpoint_id + 1
-
-        energies = bs.bands[spin][band_id][start_id:end_id].copy()
-        dists = bs.distance[start_id:end_id].copy()
-
-        # normalise eigenvalues and distances to starting point
-        energies -= bs.bands[spin][band_id][kpoint_id]
-        dists -= bs.distance[kpoint_id]
-
-        # symmetrise the data to make fitting more reliable
-        energies = np.concatenate([energies[:-1], energies[::-1]])
-        dists = np.concatenate([dists[:-1], -dists[::-1]])
-
-        end_kpoint = bs.kpoints[branch_data['start_index']]
-        data = {'energies': energies, 'distances': dists, 'band_id': band_id,
-                'spin': spin, 'start_kpoint': start_kpoint,
-                'end_kpoint': end_kpoint}
-        fitting_data.append(data)
-
-    return fitting_data
-
-
-def fit_effective_mass(distances, energies, parabolic=True):
-    """Fit the effective masses using either a parabolic or nonparabolic fit.
-
-    Args:
-        distances (np.array): The x-distances between k-points in reciprocal
-            Angstroms, normalised to the band extrema.
-        energies (np.array): The band eigenvalues normalised to the eigenvalue
-            of the band extrema.
-        parabolic (bool): Use a parabolic fit. If False then nonparabolic
-            fitting will be attempted.
-
-    Returns:
-        The effective mass in units of electron rest mass m_0.
-    """
-    if parabolic:
-        fit = np.polyfit(distances, energies, 2)
-        c = 2 * fit[0]  # curvature therefore 2 * the exponent on the ^2 term
-
-    else:
-        # Use non parabolic description of the bands
-        def f(x, alpha, d):
-            top = np.sqrt(4 * alpha * d * x**2 + 1) - 1
-            bot = 2 * alpha
-            return top / bot
-
-        # set boundaries for curve fitting: alpha > 1e-8
-        # as alpha = 0 causes an error
-        bounds = ((1e-8, -np.inf), (np.inf, np.inf))
-        popt, pconv = curve_fit(f, distances, energies, p0=[1., 1.],
-                                bounds=bounds)
-        c = 2 * popt[1]
-
-    # coefficient is currently in eV/Angstrom^2/h_bar^2
-    # want it in atomic units so Hartree/bohr^2/h_bar^2
-    eff_mass = (angstrom_to_bohr**2 / eV_to_hartree) / c
-    return eff_mass
-
-
-def log_band_gap_information(bs):
+def _log_band_gap_information(bs):
     """Log data about the direct and indirect band gaps.
 
     Args:
-        bs (BandStructureSymmLine): The band structure object.
+        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):
     """
     bg_data = bs.get_band_gap()
     if not bg_data['direct']:
@@ -316,7 +197,8 @@ def log_band_gap_information(bs):
 
         direct_kindex = direct_data[Spin.up]['kpoint_index']
         direct_kpoint = kpt_str.format(k=bs.kpoints[direct_kindex].frac_coords)
-        k_indexes = ', '.join(map(str, bs.get_equivalent_kpoints(direct_kindex)))
+        k_indexes = ', '.join(map(str,
+                                  bs.get_equivalent_kpoints(direct_kindex)))
         b_indexes = ', '.join(map(str, direct_data[Spin.up]['band_indices']))
 
         logging.info('  k-point: {}'.format(direct_kpoint))
@@ -324,12 +206,14 @@ def log_band_gap_information(bs):
         logging.info('  Band indexes: {}'.format(b_indexes))
 
 
-def log_band_edge_information(bs, edge_data):
+def _log_band_edge_information(bs, edge_data):
     """Log data about the valence band maximum or conduction band minimum.
 
     Args:
-        bs (BandStructureSymmLine): The band structure object.
-        edge_data (dict): The dict from bs.get_vbm() or bs.get_cbm()
+        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):
+            The band structure.
+        edge_data (dict): The :obj:`dict` from ``bs.get_vbm()`` or
+            ``bs.get_cbm()``
     """
     if bs.is_spin_polarized:
         spins = edge_data['band_index'].keys()
@@ -356,19 +240,31 @@ def log_band_edge_information(bs, edge_data):
     logging.info('  Band indexes: {}'.format(b_indexes))
 
 
-def log_effective_mass_data(data, is_spin_polarized):
+def _log_effective_mass_data(data, is_spin_polarized):
     """Log data about the effective masses and their directions.
 
     Args:
-        data (dict): A dictionary containing the data about the effective
-            masses. This is mainly the data from get_fitting_data() but
-            with the addition of the 'effective_mass' key. Formatted as:
-                {'effective_mass': The effective mass in m_0.
-                 'band_id': The index of the sampled band,
-                 'spin': The spin direction of the sampled band,
-                 'start_kpoint': The k-point of the band extrema
-                 'end_kpoint': The k-point towards which the data has
-                    been sampled.}
+        data (dict): The effective mass data. Formatted as a :obj:`dict` with
+            the keys:
+
+            'effective_mass' (:obj:`float`)
+                The effective mass in units of electron rest mass, :math:`m_0`.
+
+            'energies' (:obj:`numpy.ndarray`)
+                Band eigenvalues in eV.
+
+            'band_id' (:obj:`int`)
+                The index of the band,
+
+            'spin' (:obj:`~pymatgen.electronic_structure.core.Spin`)
+                The spin channel
+
+            'start_kpoint' (:obj:`int`)
+                The index of the k-point at which the band extrema occurs
+
+            'end_kpoint' (:obj:`int`)
+                The k-point towards which the data has been sampled.
+
         is_spin_polarized (bool): Whether the system is spin polarized.
     """
     s = ' ({})'.format(data['spin'].name) if is_spin_polarized else ''
@@ -389,9 +285,10 @@ def log_effective_mass_data(data, is_spin_polarized):
     logging.info('  m_e: {:.3f} | {} | {}'.format(eff_mass, band_str,
                                                   kpoint_str))
 
+
 def main():
     parser = argparse.ArgumentParser(description="""
-    bandstats is provides information on the band gap and effective
+    bandstats provides information on the band gap and effective
     masses of semiconductors.""",
                                      epilog="""
     Author: {}
@@ -419,6 +316,7 @@ def main():
 
     bandstats(filenames=args.filenames, num_sample_points=args.sample_points,
               temperature=args.temperature, parabolic=args.nonparabolic)
+
 
 if __name__ == "__main__":
     main()

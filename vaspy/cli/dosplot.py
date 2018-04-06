@@ -164,7 +164,7 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
         return plt
 
 
-def el_orb(string):
+def _el_orb(string):
     """Parse the element and orbital argument strings.
 
     The presence of an element without any orbitals means that we want to plot
@@ -190,7 +190,7 @@ def el_orb(string):
     return el_orbs
 
 
-def atoms(atoms_string):
+def _atoms(atoms_string):
     """Parse the atom string.
 
     Args:
@@ -229,25 +229,25 @@ def main():
                         help='Prefix for the files generated.')
     parser.add_argument('-d', '--directory',
                         help='Output directory for files.')
-    parser.add_argument('-e', '--elements', type=el_orb, help="""Choose the
+    parser.add_argument('-e', '--elements', type=_el_orb, help="""Choose the
                         elements to plot. These should be listed using the
                         symbols from the POSCAR and seperated via commas.
                         Specific orbitals can be chosen by adding the orbitals
                         after the element by using a period as the seperator.
                         For example, to plot the carbon s and p, and all the
                         oxygen orbitals, the command would be "-e C.s.p,O".""")
-    parser.add_argument('-o', '--orbitals', type=el_orb, help="""Choose the
+    parser.add_argument('-o', '--orbitals', type=_el_orb, help="""Choose the
                         orbital to split. This should be listed as the element
                         (using the symbol from the POSCAR) and the orbital
                         seperated by a period. For example to plot the oxygen
                         split d orbitals, the command would be "-o O.d". More
                         than one split orbital and element can be added using
                         the notation described for adding more elements.""")
-    parser.add_argument('-a', '--atoms', type=atoms, help="""Choose which atoms
-                        to calculate the DOS for. This should be listed as the
-                        element (using the symbol from the POSCAR) and the
-                        atoms seperated by a period. For example to plot the
-                        oxygen 1, 2 and 3 atoms, the command would be
+    parser.add_argument('-a', '--atoms', type=_atoms, help="""Choose which
+                        atoms to calculate the DOS for. This should be listed
+                        as the element (using the symbol from the POSCAR) and
+                        the atoms seperated by a period. For example to plot
+                        the oxygen 1, 2 and 3 atoms, the command would be
                         "-a O.1.2.3". The atom indicies start at 1 (as in the
                         VASP output). You can specify a range to avoid typing
                         all the numbers out, e.g. the previous command can be

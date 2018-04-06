@@ -12,6 +12,7 @@ Welcome to vaspy's documentation!
 
 
 
+
 Indices and tables
 ==================
 

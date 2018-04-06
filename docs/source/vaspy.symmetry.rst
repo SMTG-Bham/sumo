@@ -1,6 +1,15 @@
 vaspy.symmetry package
 ======================
 
+Module contents
+---------------
+
+.. automodule:: vaspy.symmetry
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 Submodules
 ----------
 
@@ -55,11 +64,3 @@ vaspy.symmetry.custom\_kpath module
     :undoc-members:
     :show-inheritance:
     :inherited-members:
-
-Module contents
----------------
-
-.. automodule:: vaspy.symmetry
-    :members:
-    :undoc-members:
-    :show-inheritance:
