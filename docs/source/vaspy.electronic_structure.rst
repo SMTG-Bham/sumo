@@ -21,7 +21,7 @@ vaspy.electronic\_structure.dos module
     :show-inheritance:
 
 vaspy.electronic\_structure.effective\_mass module
---------------------------------------
+--------------------------------------------------
 
 .. automodule:: vaspy.electronic_structure.effective_mass
     :members:

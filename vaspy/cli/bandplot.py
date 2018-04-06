@@ -18,7 +18,7 @@ mpl.use('Agg')
 from vaspy.plotting.bs_plotter import VBSPlotter
 from vaspy.plotting.dos_plotter import VDOSPlotter
 from vaspy.electronic_structure.dos import load_dos
-from vaspy.cli.dosplot import atoms, el_orb
+from vaspy.cli.dosplot import _atoms, _el_orb
 
 from pymatgen.io.vasp.outputs import BSVasprun
 from pymatgen.electronic_structure.core import Spin
@@ -59,13 +59,12 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     """Plot electronic band structure diagrams from vasprun.xml files.
 
     Args:
-        filenames (`str`, `list`, optional): Names of vasprun.xml files to use
-            in the band structure (files can be gziped). If no filenames are
-            provided, the code will search for vasprun.xml or vasprun.xml.gz
-            files in folders named 'split-0*'. Failing that, the code will look
-            for a vasprun in the current directory. If a `list` of vasprun
-            files is provided, these will be combined into a single band
-            structure.
+        filenames (:obj:`str` or :obj:`list`, optional): Path to vasprun.xml
+            or vasprun.xml.gz file. If no filenames are provided, the code
+            will search for vasprun.xml or vasprun.xml.gz files in folders
+            named 'split-0*'. Failing that, the code will look for a vasprun in
+            the current directory. If a :obj:`list` of vasprun files is
+            provided, these will be combined into a single band structure.
         prefix (`str`, optional): Prefix for files generated.
         directory (`str`, optional): Directory in which to save files.
         vbm_cbm_marker (`bool`, optional): Mark the valence band maxima and
@@ -336,7 +335,7 @@ def save_data_files(vr, bs, prefix=None, directory=None):
     return filename
 
 
-def el_orb_tuple(string):
+def _el_orb_tuple(string):
     """Parse the element and orbital argument strings.
 
     The presence of an element without any orbitals means that we want to plot
@@ -379,7 +378,7 @@ def main():
     parser.add_argument('-b' '--band-edges', dest='band_edges',
                         action='store_true',
                         help='Highlight the band edges with markers')
-    parser.add_argument('--project-rgb', default=None, type=el_orb_tuple,
+    parser.add_argument('--project-rgb', default=None, type=_el_orb_tuple,
                         dest='project_rgb',
                         help="""Project orbital contributions onto band
                         structure as red, green, and blue lines. Can project
@@ -391,7 +390,7 @@ def main():
                         seperator. For example, to project the zinc s as red,
                         zinc p as green, and sum all oxygen atoms as blue,
                         the command would be "--project-rgb Zn.s,Zn.p,O".""")
-    parser.add_argument('--project-stacked', default=None, type=el_orb_tuple,
+    parser.add_argument('--project-stacked', default=None, type=_el_orb_tuple,
                         dest='project_stacked',
                         help="""Project orbtal contributions onto band
                         structure as a series of coloured circles. These should
@@ -415,7 +414,7 @@ def main():
                         Specifying this option will generate combined DOS/band
                         structure diagrams. The DOS options are more or less
                         the same as for the dosplot command.""")
-    parser.add_argument('--elements', type=el_orb, help="""Choose the
+    parser.add_argument('--elements', type=_el_orb, help="""Choose the
                         elements to plot in the DOS. These should be listed
                         using the symbols from the POSCAR and seperated via
                         commas. Specific orbitals can be chosen by adding the
@@ -424,7 +423,7 @@ def main():
                         all the oxygen orbitals, the command would be
                         "--elements C.s.p,O". Must be combined with the --dos
                         option.""")
-    parser.add_argument('--orbitals', type=el_orb, help="""Choose the
+    parser.add_argument('--orbitals', type=_el_orb, help="""Choose the
                         orbitals to split in the DOS. This should be listed as
                         the element (using the symbol from the POSCAR) and the
                         orbitals seperated by a period. For example to plot the
@@ -433,7 +432,7 @@ def main():
                         element can be added using the notation described for
                         adding more elements. Must be combined with the --dos
                         option.""")
-    parser.add_argument('--atoms', type=atoms, help="""Choose which atoms
+    parser.add_argument('--atoms', type=_atoms, help="""Choose which atoms
                         to calculate the DOS for. This should be listed as the
                         element (using the symbol from the POSCAR) and the
                         atoms seperated by a period. For example to plot the
