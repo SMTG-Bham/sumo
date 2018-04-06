@@ -20,6 +20,14 @@ vaspy.electronic\_structure.dos module
     :undoc-members:
     :show-inheritance:
 
+vaspy.electronic\_structure.effective\_mass module
+--------------------------------------
+
+.. automodule:: vaspy.electronic_structure.effective_mass
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 vaspy.electronic\_structure.optics module
 -----------------------------------------
 
