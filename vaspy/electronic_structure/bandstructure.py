@@ -1,7 +1,8 @@
 import math
+from itertools import chain
+
 import spglib
 import seekpath
-
 import numpy as np
 
 from pymatgen.core.structure import Structure
@@ -31,7 +32,7 @@ class Kpath(object):
             to obtain the correct band structure.
         conv (Structure): The standardised conventional cell structure.
         lattice_type (str): The Bravais lattice system. Hexagonal cells are 
-            separated into rhombohedral and hexagonal lattices.
+            separated into rhombohedral and hexagonal lattices.7
         spg_symbol (str): The international space group symbol.
         spg_number (int): The international space group number.
         path_string (str): The high-symmetry k-point path formatted with arrows 
@@ -551,7 +552,7 @@ class SeekpathKpath(Kpath):
             separated into rhombohedral and hexagonal lattices.
         spg_symbol (str): The international space group symbol.
         spg_number (int): The international space group number.
-        path_string (str): The high-symmetry k-point path formatted with arrows 
+        path_string (str): The high-symmetry k-point path formatted with arrows
             and showing disconnections between subpaths. For example:
             "X -> Gamma | Y -> Z".
     """
@@ -559,30 +560,51 @@ class SeekpathKpath(Kpath):
     def __init__(self, structure, symprec=1e-3):
         Kpath.__init__(self, structure, symprec=symprec)
 
-        # need to convert from seekpath format to something useable
-        path = [[self._seek_data['path'][0][0]]]
-        for (k1, k2) in self._seek_data['path']:
+
+        self._kpath = self.kpath_from_seekpath(self._seek_data['path'],
+                                               self._seek_data['point_coords'])
+
+    @classmethod
+    def kpath_from_seekpath(cls, path, point_coords):
+        """Convert seekpath-formatted kpoints path to vaspy-preferred format
+
+        If 'GAMMA' is used as a label this will be replaced by '\Gamma'.
+
+        Args:
+            path (list): A list of 2-tuples containing the labels at each side
+                of each segment of the k-point path 
+                [(A, B), (B, C), (C, D), ...] where a break in the sequence is
+                indicated by a non-repeating label e.g.
+                [(A, B), (B, C), (D, E), ...] for a break between C and D.
+            point_coords (dict): Dict of coordinates corresponding to k-point
+                labels. {'GAMMA': [0., 0., 0.], ...}
+        Returns:
+            dict: {'path', [[l1, l2, l3], [l4, l5], ...],
+                   'kpoints', {l1: [a1, b1, c1], l2: [a2, b2, c2], ...}}
+        """
+
+        # convert from seekpath format e.g. [(l1, l2), (l2, l3), (l4, l5)]
+        # to our preferred representation [[l1, l2, l3], [l4, l5]]
+        seekpath = path.copy()
+
+        path = [[seekpath[0][0]]]
+        for (k1, k2) in seekpath:
             if path[-1] and path[-1][-1] == k1:
                 path[-1].append(k2)
             else:
-                path.append([k1, k2])
+                path.append([k1, k2])        
 
-        # change gamma label to \Gamma
-        kpoints = self._seek_data['point_coords']
+        # Rebuild kpoints dictionary skipping any positions not on path
+        # (chain(*list) flattens nested list; set() removes duplicates.)
+        kpoints = {p: point_coords[p] for p in set(chain(*path))}
+
+        # Every path should include Gamma-point. Change the label to \Gamma
+        assert 'GAMMA' in kpoints
         kpoints['\Gamma'] = kpoints.pop('GAMMA')
         path = [[label.replace('GAMMA', '\Gamma') for label in subpath]
                 for subpath in path]
-
-        # remove unused k-points
-        # TODO: this but better
-        pts = []
-        for subpath in path:
-            pts += subpath
-        pts = list(set(pts))
-        pts_coords = [kpoints[p] for p in pts]
-        kpoints = dict(zip(pts, pts_coords))
-        self._kpath = {'kpoints': kpoints, 'path': path}
-
+        
+        return {'kpoints': kpoints, 'path': path}
 
 class PymatgenKpath(Kpath):
     """Calculate the high-symmetry k-point path using pymatgen.
