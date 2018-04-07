@@ -189,8 +189,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
 
     plotter = VPhononBSPlotter(bs)
     plt = plotter.get_plot(ymin=ymin, ymax=ymax, height=height, width=width,
-                           plt=plt, dos_plotter=None, dos_options=None,
-                           fonts=fonts)
+                           plt=plt, fonts=fonts)
 
     if save_files:
         basename = 'phonon_band.{}'.format(image_format)
