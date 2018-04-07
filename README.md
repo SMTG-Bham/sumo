@@ -1,7 +1,7 @@
 Vaspy
 -----
 
-Vaspy is a Python toolkit for plotting and analysing VASP calculation. The main features include:
+Vaspy is a Python toolkit for plotting and analysing VASP calculations. The main features include:
 
  1. Extensive framework for generating high-symmetry k-point paths.
  2. Plotting scripts for electronic and phonon band structures, density of states, and optical absorption.
@@ -44,6 +44,14 @@ Developers may prefer to install using `pip3 install --user -e .` which
 creates an "editable" local installation. Instead of copying files,
 this creates links to the source folder so that that tweaks to the
 code in your source folder will be immediately reflected on the PATH.
+
+### Tests
+
+To ensure the code has been installed correctly, the unittests can be run using:
+
+```bash
+python -m unittest discover tests
+```
 
 Requirements
 ------------
