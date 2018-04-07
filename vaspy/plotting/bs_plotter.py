@@ -23,7 +23,6 @@ from pymatgen.electronic_structure.plotter import BSPlotter
 from pymatgen.electronic_structure.core import Spin
 
 line_width = 1.5
-empty_space = 1.05
 label_size = 22
 band_linewidth = 2
 
@@ -47,8 +46,8 @@ class VBSPlotter(BSPlotter):
         BSPlotter.__init__(self, bs)
 
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
-                 width=6., height=6., vbm_cbm_marker=False, dpi=400, plt=None,
-                 dos_plotter=None, dos_options=None, dos_aspect=3, fonts=None):
+                     width=6., height=6., vbm_cbm_marker=False, dpi=400, plt=None,
+                     dos_plotter=None, dos_options=None, dos_aspect=3, fonts=None):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
         If the system is spin polarised, blue lines are spin up, red lines are
@@ -122,7 +121,6 @@ class VBSPlotter(BSPlotter):
             :obj:`matplotlib.pyplot`: The electronic band structure plot.
         """
         if dos_plotter:
-            width = width + height/dos_aspect
             plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
                                  plt=plt, fonts=fonts,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
@@ -165,7 +163,7 @@ class VBSPlotter(BSPlotter):
                        vbm_cbm_marker=vbm_cbm_marker, width=width,
                        height=height, ymin=ymin, ymax=ymax,
                        dos_plotter=dos_plotter, dos_options=dos_options)
-        plt.tight_layout()
+        #plt.tight_layout()
         return plt
 
     def get_projected_plot(self, selection, mode='rgb', interpolate_factor=4,
@@ -199,7 +197,7 @@ class VBSPlotter(BSPlotter):
                 :obj:`tuple` of orbitals. For example, to sum the S s, p, and
                 d orbitals into a single projection::
 
-                    [('Bi', 's'), ('Bi', 'p'), ('S', ('s', 'p', 'd'))]
+                  [('Bi', 's'), ('Bi', 'p'), ('S', ('s', 'p', 'd'))]
 
                 If ``mode = 'rgb'``, a maximum of 3 orbital/element
                 combinations can be plotted simultaneously (one for red, green
@@ -264,7 +262,7 @@ class VBSPlotter(BSPlotter):
                         combinations. Specified as a :obj:`dict` of
                         :obj:`dict` of the colours. For example::
 
-                            {
+                           {
                                 'Sn': {'s': 'r', 'p': 'b'},
                                 'O': {'s': '#000000'}
                             }
@@ -297,7 +295,6 @@ class VBSPlotter(BSPlotter):
             raise ValueError('Solo mode plotting with DOS not supported')
 
         if dos_plotter:
-            width = width + height/dos_aspect
             plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
                                  plt=plt, fonts=fonts,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
@@ -350,7 +347,7 @@ class VBSPlotter(BSPlotter):
 
                 ls = '-' if spin == Spin.up else '--'
                 lc = rgbline(distances, bands, weights[0], weights[1],
-                             weights[2], alpha=1, linestyles=ls,
+                     weights[2], alpha=1, linestyles=ls,
                              linewidth=2.5)
                 ax.add_collection(lc)
 
@@ -380,19 +377,27 @@ class VBSPlotter(BSPlotter):
             else:
                 label = '{} ({})'.format(spec[0], " + ".join(spec[1]))
             ax.scatter([-10000], [-10000], c=c, s=50, label=label)
-        ax.legend(bbox_to_anchor=(0.95, 1), loc=2, frameon=False,
+
+        if dos_plotter:
+            loc = 1
+            anchor_point = (-0.2, 1)
+        else:
+            loc = 2
+            anchor_point = (0.95, 1)
+
+        ax.legend(bbox_to_anchor=anchor_point, loc=loc, frameon=False,
                   prop={'size': label_size-2}, handletextpad=0.1)
 
         # finish and tidy plot
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
-                       vbm_cbm_marker=vbm_cbm_marker, ymin=ymin, ymax=ymax,
-                       height=height, width=width,
+                       vbm_cbm_marker=vbm_cbm_marker, width=width,
+                       height=height, ymin=ymin, ymax=ymax,
                        dos_plotter=dos_plotter, dos_options=dos_options)
         return plt
 
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,
-                  vbm_cbm_marker=False, ymin=-6, ymax=6, height=6, width=6,
+                  vbm_cbm_marker=False, ymin=-6., ymax=6., height=6., width=6.,
                   dos_plotter=None, dos_options=None):
         """Tidy the band structure & add the density of states if required."""
         # draw line at Fermi level if not zeroing to e-Fermi
