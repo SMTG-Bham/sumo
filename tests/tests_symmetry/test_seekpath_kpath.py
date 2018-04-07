@@ -1,6 +1,7 @@
-from os.path import join as path_join
 import pkg_resources
 import unittest
+
+from os.path import join as path_join
 
 from pymatgen.core.structure import Structure
 
