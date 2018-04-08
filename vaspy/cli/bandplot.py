@@ -44,11 +44,6 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "July 18, 2017"
 
 
-line_width = 1.5
-empty_space = 1.05
-label_size = 22
-
-
 def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
              projection_selection=None, mode='rgb',
              interpolate_factor=4, circle_size=150, dos_file=None,
@@ -218,9 +213,11 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                       '--projected-stacked options.')
         sys.exit()
 
-    if mode == 'rgb' and len(projection_selection) > 3:
-        logging.error('ERROR: Plotting RGB projected band structure only '
-                      'supports up to 3 elements/orbitals.')
+    if (projection_selection and mode == 'rgb'
+            and len(projection_selection) > 3):
+        logging.error('ERROR: RGB projected band structure only '
+                      'supports up to 3 elements/orbitals.'
+                      '\nUse alternative --mode setting.')
         sys.exit()
 
     # don't save if pyplot object provided
@@ -261,7 +258,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                     bbox_inches='tight')
 
         written = [filename]
-        written += save_data_files(bs, prefix=prefix, directory=directory)
+        written += save_data_files(vr, bs, prefix=prefix, directory=directory)
         return written
 
     else:
@@ -311,6 +308,7 @@ def save_data_files(vr, bs, prefix=None, directory=None):
         The filename of the written data file.
     """
     filename = '{}_band.dat'.format(prefix) if prefix else 'band.dat'
+    directory = directory if directory else '.'
     filename = os.path.join(directory, filename)
 
     if bs.is_metal():
@@ -391,7 +389,7 @@ def main():
                         and the sum of all oxygen atoms the command would be
                         "--project-selection Zn.s,Zn.p,O". The mode argument
                         can be used to select the projection type.""")
-    parser.add_argument('--mode', default=None, type=str,
+    parser.add_argument('--mode', default='rgb', type=str,
                         help="""Projection mode for orbital projections,
                         options are: "rgb" - The band structure line color
                         depends on the character of the band. Each
@@ -487,7 +485,7 @@ def main():
     parser.add_argument('--font', default=None, help='Font to use.')
 
     args = parser.parse_args()
-    logging.basicConfig(filename='vaspy-bandplot.log', level=logging.DEBUG,
+    logging.basicConfig(filename='vaspy-bandplot.log', level=logging.INFO,
                         filemode='w', format='%(message)s')
     console = logging.StreamHandler()
     logging.info(" ".join(sys.argv[:]))
@@ -505,10 +503,12 @@ def main():
                             module="matplotlib")
     warnings.filterwarnings("ignore", category=UnicodeWarning,
                             module="matplotlib")
+    warnings.filterwarnings("ignore", category=UserWarning,
+                            module="pymatgen")
 
     bandplot(filenames=args.filenames, prefix=args.prefix,
              directory=args.directory, vbm_cbm_marker=args.band_edges,
-             projection_selection=args.projection_selection,
+             projection_selection=args.projection_selection, mode=args.mode,
              interpolate_factor=args.interpolate_factor,
              circle_size=args.circle_size,
              dos_file=args.dos, elements=args.elements,

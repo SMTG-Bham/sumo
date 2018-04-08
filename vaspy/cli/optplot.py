@@ -7,6 +7,8 @@ A script to calculate and plot optical spectra from a VASP calculation.
 """
 
 import os
+import sys
+import logging
 import warnings
 import argparse
 
@@ -14,11 +16,11 @@ import matplotlib as mpl
 mpl.use('Agg')
 
 from pymatgen.io.vasp import Vasprun
+from pymatgen.util.string import latexify
 
 from vaspy.plotting.optics_plotter import VOpticsPlotter
 from vaspy.electronic_structure.optics import (broaden_eps, calculate_alpha,
                                                write_files)
-
 
 __author__ = "Alex Ganose"
 __version__ = "0.2"
@@ -27,7 +29,7 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "Jan 10, 2018"
 
 
-def optplot(filenames='vasprun.xml', prefix=None, directory=None,
+def optplot(filenames=None, prefix=None, directory=None,
             gaussian=None, band_gaps=None, labels=None, average=True, height=6,
             width=6, xmin=0, xmax=None, ymin=0, ymax=1e5, colours=None,
             image_format='pdf', dpi=400, plt=None, fonts=None):
@@ -74,8 +76,17 @@ def optplot(filenames='vasprun.xml', prefix=None, directory=None,
     Returns:
         A matplotlib pyplot object.
     """
+    if not filenames:
 
-    if type(filenames) is str:
+        if os.path.exists('vasprun.xml'):
+            filenames = ['vasprun.xml']
+        elif os.path.exists('vasprun.xml.gz'):
+            filenames = ['vasprun.xml.gz']
+        else:
+            logging.error('ERROR: No vasprun.xml found!')
+            sys.exit()
+
+    elif type(filenames) is str:
         filenames = [filenames]
 
     vrs = [Vasprun(f) for f in filenames]
@@ -102,6 +113,10 @@ def optplot(filenames='vasprun.xml', prefix=None, directory=None,
         band_gaps = [float(i) for i in band_gaps]
 
     save_files = False if plt else True
+
+    if len(abs_data) > 1 and not labels:
+        labels = [latexify(vr.final_structure.composition.reduced_formula).
+                  replace('$_', '$_\mathregular') for vr in vrs]
 
     plotter = VOpticsPlotter(abs_data, band_gap=band_gaps, label=labels)
     plt = plotter.get_plot(width=width, height=height, xmin=xmin,
@@ -131,7 +146,7 @@ def main():
     parser.add_argument('-f', '--filenames', help="""vasprun.xml file to plot.
                         Can supply more than one vasprun file to process and
                         plot multiple spectra simultaneously.""",
-                        default='vasprun.xml', nargs='+')
+                        default=None, nargs='+')
     parser.add_argument('-p', '--prefix', help='prefix for the files generated')
     parser.add_argument('-d', '--directory', help='output directory for files')
     parser.add_argument('-g', '--gaussian', type=float,
@@ -172,10 +187,18 @@ def main():
     parser.add_argument('--font', default=None, help='Font to use.')
     args = parser.parse_args()
 
+    logging.basicConfig(filename='vaspy-optplot.log', level=logging.INFO,
+                        filemode='w', format='%(message)s')
+    console = logging.StreamHandler()
+    logging.info(" ".join(sys.argv[:]))
+    logging.getLogger('').addHandler(console)
+
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="matplotlib")
     warnings.filterwarnings("ignore", category=UnicodeWarning,
                             module="matplotlib")
+    warnings.filterwarnings("ignore", category=UserWarning,
+                            module="pymatgen")
 
     optplot(filenames=args.filenames, prefix=args.prefix,
             directory=args.directory, gaussian=args.gaussian,
