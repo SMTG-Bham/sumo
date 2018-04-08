@@ -37,7 +37,7 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "March 13, 2017"
 
 
-def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
+def dosplot(filename=None, prefix=None, directory=None, elements=None,
             lm_orbitals=None, atoms=None, subplot=False, shift=True,
             total_only=False, plot_total=True, legend_on=True,
             legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6.,
@@ -139,6 +139,15 @@ def dosplot(filename='vasprun.xml', prefix=None, directory=None, elements=None,
     Returns:
         A matplotlib pyplot object.
     """
+    if not filename:
+        if os.path.exists('vasprun.xml'):
+            filename = 'vasprun.xml'
+        elif os.path.exists('vasprun.xml.gz'):
+            filename = 'vasprun.xml.gz'
+        else:
+            logging.error('ERROR: No vasprun.xml found!')
+            sys.exit()
+
     dos, pdos = load_dos(filename, elements, lm_orbitals, atoms, gaussian,
                          total_only)
 
@@ -209,7 +218,7 @@ def _atoms(atoms_string):
     for split in atoms_string.split(','):
         sites = split.split('.')
         el = sites.pop(0)
-        sites = map(int, sites)
+        sites = list(map(int, sites))
         atoms[el] = np.array(sites) - 1
     return atoms
 
@@ -224,7 +233,7 @@ def main():
     Last updated: {}""".format(__author__, __version__, __date__))
 
     parser.add_argument('-f', '--filename', help='vasprun.xml file to plot',
-                        default='vasprun.xml')
+                        default=None)
     parser.add_argument('-p', '--prefix',
                         help='Prefix for the files generated.')
     parser.add_argument('-d', '--directory',
@@ -303,7 +312,7 @@ def main():
     parser.add_argument('--font', default=None, help='Font to use.')
 
     args = parser.parse_args()
-    logging.basicConfig(filename='vaspy-dosplot.log', level=logging.DEBUG,
+    logging.basicConfig(filename='vaspy-dosplot.log', level=logging.INFO,
                         filemode='w', format='%(message)s')
     console = logging.StreamHandler()
     logging.info(" ".join(sys.argv[:]))
@@ -319,6 +328,10 @@ def main():
 
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="matplotlib")
+    warnings.filterwarnings("ignore", category=UnicodeWarning,
+                            module="matplotlib")
+    warnings.filterwarnings("ignore", category=UserWarning,
+                            module="pymatgen")
 
     dosplot(filename=args.filename, prefix=args.prefix,
             directory=args.directory, elements=args.elements,

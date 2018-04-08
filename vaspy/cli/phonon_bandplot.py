@@ -48,7 +48,8 @@ __date__ = "Jan 17, 2018"
 
 
 def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
-                    dim=None, born=None, qmesh=None, spg=None, line_density=60,
+                    dim=None, born=None, qmesh=None, spg=None,
+                    primitive_axis=None, line_density=60,
                     symprec=0.01, mode='bradcrack', kpt_list=None,
                     eigenvectors=False, labels=None, height=6., width=6.,
                     ymin=None, ymax=None, image_format='pdf', dpi=400,
@@ -75,6 +76,10 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             number or symbol to override the symmetry determined by spglib.
             This is not recommended and only provided for testing purposes.
             This option will only take effect when ``mode = 'bradcrack'``.
+        primitive_matrix (:obj:`list`, optional): The transformation matrix
+            from the conventional to primitive cell. Only required when the
+            conventional cell was used as the starting structure. Should be
+            provided as a 3x3 :obj:`list` of :obj:`float`.
         line_density (:obj:`int`, optional): Density of k-points along the
             path.
         mode (:obj:`str`, optional): Method used for calculating the
@@ -140,6 +145,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             sys.exit()
 
         if not dim:
+            logging.info("Supercell size (--dim option) not provided.\n"
+                         "Attempting to guess supercell dimensions.\n")
             try:
                 sposcar = Poscar.from_file("SPOSCAR")
             except IOError:
@@ -156,11 +163,13 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
         elif np.array(dim).shape != (3, 3):
             dim = np.diagflat(dim)
 
-        # todo: print dim to user
+        logging.info("Using supercell with dimensions:")
+        logging.info('\t' + str(dim).replace('\n', '\n\t')+'\n')
 
         phonon = load_phonopy(filename, poscar.structure, dim, symprec=symprec,
-                              primitive_matrix=None, factor=VaspToTHz,
-                              symmetrise=True, born=born, write_fc=False)
+                              primitive_matrix=primitive_axis,
+                              factor=VaspToTHz, symmetrise=True, born=born,
+                              write_fc=False)
 
         # calculate band structure
         kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
@@ -206,7 +215,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
         return plt
 
 
-def save_data_files(bs, prefix=None, director=None):
+def save_data_files(bs, prefix=None, directory=None):
     """Write the phonon band structure data files to disk.
 
     Args:
@@ -220,6 +229,8 @@ def save_data_files(bs, prefix=None, director=None):
     """
     filename = 'phonon_band.dat'
     filename = '{}_phonon_band.dat'.format(prefix) if prefix else filename
+    directory = directory if directory else '.'
+    filename = os.path.join(directory, filename)
 
     with open(filename, 'w') as f:
         header = '#k-distance frequency[THz]\n'
@@ -257,6 +268,10 @@ def main():
                         help="""File containing born effective charges. Can
                         be the output from phonopy-vasp-born, or a vasprun.xml
                         file""")
+    parser.add_argument('--primitive-axis', type=float, nargs=9,
+                        dest='primitive_axis', default=None,
+                        help="""Primitive axis for conversion from conventional
+                        to primitive cell.""")
     parser.add_argument('--symprec', default=0.01, type=float,
                         help='tolerance for finding symmetry, default is 0.01')
     parser.add_argument('--spg', type=str, default=None,
@@ -296,7 +311,7 @@ def main():
 
     args = parser.parse_args()
     logging.basicConfig(filename='vaspy-phonon-bandplot.log',
-                        level=logging.DEBUG,
+                        level=logging.INFO,
                         filemode='w', format='%(message)s')
     console = logging.StreamHandler()
     logging.info(" ".join(sys.argv[:]))
@@ -332,9 +347,15 @@ def main():
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="pymatgen")
 
+    if args.primitive_axis:
+        pa = np.reshape(args.primitive_axis, (3, 3))
+    else:
+        pa = None
+
     phonon_bandplot(args.filename, poscar=args.poscar, prefix=args.prefix,
                     directory=args.directory, dim=dim, born=args.born,
-                    qmesh=args.qmesh, spg=spg, line_density=args.density,
+                    qmesh=args.qmesh, primitive_axis=pa,
+                    spg=spg, line_density=args.density,
                     mode=mode, kpt_list=kpoints, labels=labels,
                     height=args.height, width=args.width, ymin=args.ymin,
                     ymax=args.ymax, image_format=args.image_format,

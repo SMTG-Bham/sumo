@@ -506,7 +506,6 @@ def main():
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="pymatgen")
 
-
     bandplot(filenames=args.filenames, prefix=args.prefix,
              directory=args.directory, vbm_cbm_marker=args.band_edges,
              projection_selection=args.projection_selection, mode=args.mode,
