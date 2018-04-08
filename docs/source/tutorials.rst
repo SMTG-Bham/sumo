@@ -7,3 +7,4 @@ for each command for more details:
 
 .. toctree::
    vaspy-kgen
+   vaspy-dosplot
