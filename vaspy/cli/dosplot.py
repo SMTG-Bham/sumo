@@ -167,7 +167,8 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
         filename = '{}_{}'.format(prefix, basename) if prefix else basename
         if directory:
             filename = os.path.join(directory, filename)
-        plt.savefig(filename, format=image_format, dpi=dpi)
+        plt.savefig(filename, format=image_format, dpi=dpi,
+                    bbox_inches='tight')
         write_files(dos, pdos, prefix=prefix, directory=directory)
     else:
         return plt

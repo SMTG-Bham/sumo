@@ -220,7 +220,7 @@ class VDOSPlotter(object):
                                        subplot=subplot)
 
         if subplot:
-            nplots = len(plot_data['lines']) + 1
+            nplots = len(plot_data['lines'])
             plt = pretty_subplot(nplots, 1, width=width, height=height,
                                  dpi=dpi, plt=plt, fonts=fonts)
         else:
@@ -233,6 +233,7 @@ class VDOSPlotter(object):
         lines = plot_data['lines']
         spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else \
             [Spin.up, Spin.down]
+
         for i, line_set in enumerate(plot_data['lines']):
             if subplot:
                 ax = fig.axes[i]
@@ -261,25 +262,23 @@ class VDOSPlotter(object):
 
             loc = 'upper right' if subplot else 'best'
             ncol = 1 if subplot else num_columns
-            # TODO: set size of line in legend (as current mpl overwrite old
-            # default)
             if legend_on:
                 ax.legend(loc=loc, frameon=legend_frame_on, ncol=ncol,
+                          handlelength=1,
                           prop={'size': label_size - 3})
 
         # no add axis labels and sort out ticks
         if subplot:
-            fig.text(0.08, 0.5, 'Arb.units', fontsize=label_size, ha='center',
-                     va='center', rotation='vertical')
             ax.set_xlabel('Energy (eV)', fontsize=label_size)
             fig.subplots_adjust(hspace=0)
             plt.setp([a.get_xticklabels() for a in fig.axes[:-1]],
                      visible=False)
+            fig.text(0.08, 0.5, 'Arb.units', fontsize=label_size, ha='left',
+                     va='center', rotation='vertical', transform=ax.transAxes)
         else:
             ax.set_xlabel('Energy (eV)')
             ax.set_ylabel('Arb.units')
 
-        plt.tight_layout()
         return plt
 
 
