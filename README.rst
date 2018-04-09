@@ -19,9 +19,10 @@ Usage
 
 Primarily, vaspy is intended to be used via the command-line, however, a fully-documented
 python API is also provided. The package documentation is still a WIP, however the built-in
-help (`` -h``) option for each command provides a summary of the available options.
+help (``-h``) option for each command provides a summary of the available options.
 
 Currently the scripts provided by vaspy are:
+
  - ``vaspy-kgen``: For generating VASP KPOINTS files along high-symmetry k-point paths.
  - ``vaspy-bandplot``: For plotting publication-ready electronic band structure diagrams.
  - ``vaspy-dosplot``: For plotting publication-ready electronic density of state diagrams.
