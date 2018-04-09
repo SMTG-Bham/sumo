@@ -10,3 +10,4 @@ for each command for more details:
 
    vaspy-kgen
    vaspy-dosplot
+   vaspy-bandplot

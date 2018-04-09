@@ -378,7 +378,7 @@ def _get_parser():
                         help='prefix for the files generated')
     parser.add_argument('-d', '--directory', metavar='D',
                         help='output directory for files')
-    parser.add_argument('-b' '--band-edges', dest='band_edges',
+    parser.add_argument('-b', '--band-edges', dest='band_edges',
                         action='store_true',
                         help='highlight the band edges with markers')
     parser.add_argument('--project', default=None, metavar='S',
@@ -419,12 +419,12 @@ def _get_parser():
                         help='scaling factor for the density of states')
     parser.add_argument('--height', type=float, default=6.,
                         help='height of the graph')
-    parser.add_argument('--width', type=float, default=8.,
+    parser.add_argument('--width', type=float, default=6.,
                         help='width of the graph')
-    parser.add_argument('--xmin', type=float, default=-6.,
-                        help='minimum energy on the x-axis')
-    parser.add_argument('--xmax', type=float, default=6.,
-                        help='maximum energy on the x-axis')
+    parser.add_argument('--ymin', type=float, default=-6.,
+                        help='minimum energy on the y-axis')
+    parser.add_argument('--ymax', type=float, default=6.,
+                        help='maximum energy on the y-axis')
     parser.add_argument('--config', type=str, default=None,
                         help='colour configuration file')
     parser.add_argument('--format', type=str, default='pdf',

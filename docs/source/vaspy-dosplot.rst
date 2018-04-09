@@ -1,3 +1,5 @@
+.. _vaspy-dosplot:
+
 vaspy-dosplot
 =============
 
@@ -71,6 +73,8 @@ using the ``--subplot`` option. For example, if we run the following command in 
    :align: center
 
 
+.. _Legend Labels:
+
 Legend Labels
 ~~~~~~~~~~~~~
 
@@ -91,6 +95,8 @@ Will give a density of states that looks like:
    :height: 400px
    :align: center
 
+
+.. _Selective Plotting of Specific Orbitals and Atoms:
 
 Selective Plotting of Specific Orbitals and Atoms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -160,6 +166,8 @@ The resulting plot looks like:
    :height: 400px
    :align: center
 
+
+.. _Custom Line Colours:
 
 Custom Line Colours
 ~~~~~~~~~~~~~~~~~~~
