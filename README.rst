@@ -32,9 +32,19 @@ Currently the scripts provided by vaspy are:
 Installation
 ------------
 
-We recommend installation from source with Pip, this will automatically install any dependencies::
+We recommend installation from source with Pip, this will automatically install any dependencies:
 
-  pip3 install --user .
+.. code-block:: bash
+
+    pip3 install --user .
+
+To build the documentation, install the package with extra dependecies
+
+.. code-block:: bash
+
+    pip3 install --user .[docs]
+    cd docs
+    make html
 
 Developer installation
 ~~~~~~~~~~~~~~~~~~~~~~

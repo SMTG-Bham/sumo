@@ -32,6 +32,7 @@ Some handy tools developed by and for the Scanlon Materials Theory Group
     packages=find_packages(),
     install_requires=['spglib', 'numpy', 'scipy', 'pymatgen', 'h5py',
                       'phonopy', 'matplotlib', 'seekpath'],
+    extras_require={'docs': ['sphinx', 'sphinx-argparse']},
     package_data={'vaspy': ['conf/orbital_colours.conf']},
     entry_points={'console_scripts': [
                       'vaspy-bandplot = vaspy.cli.bandplot:main',
