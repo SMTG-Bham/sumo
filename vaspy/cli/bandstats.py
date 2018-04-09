@@ -317,7 +317,7 @@ def main():
     logging.getLogger('').addHandler(console)
 
     bandstats(filenames=args.filenames, num_sample_points=args.sample_points,
-              temperature=args.temperature, parabolic=args.nonparabolic)
+              parabolic=args.nonparabolic)
 
 
 if __name__ == "__main__":
