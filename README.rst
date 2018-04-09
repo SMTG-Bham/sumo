@@ -3,9 +3,9 @@ Vaspy
 
 Vaspy is a Python toolkit for plotting and analysing VASP calculations. The main features include:
 
- 1. Extensive framework for generating high-symmetry k-point paths.
- 2. Plotting scripts for electronic and phonon band structures, density of states, and optical absorption.
- 3. Analysis scripts to calculate band edge effective masses.
+1. Extensive framework for generating high-symmetry k-point paths.
+2. Plotting scripts for electronic and phonon band structures, density of states, and optical absorption.
+3. Analysis scripts to calculate band edge effective masses.
 
 Vaspy is built on pymatgen, meaning there is no effort required to read and write typical VASP files.
 Vaspy is free to use, however, we welcome your help in improving and extending the
@@ -23,12 +23,12 @@ help (``-h``) option for each command provides a summary of the available option
 
 Currently the scripts provided by vaspy are:
 
- - ``vaspy-kgen``: For generating VASP KPOINTS files along high-symmetry k-point paths.
- - ``vaspy-bandplot``: For plotting publication-ready electronic band structure diagrams.
- - ``vaspy-dosplot``: For plotting publication-ready electronic density of state diagrams.
- - ``vaspy-optplot``: For plotting publication-ready optical absorption plots.
- - ``vaspy-phonon-bandplot``: For plotting publication-ready phonon band structure diagrams.
- - ``vaspy-bandstats``: For calculating electron and hole effective masses from a band structure.
+- ``vaspy-kgen``: For generating VASP KPOINTS files along high-symmetry k-point paths.
+- ``vaspy-bandplot``: For plotting publication-ready electronic band structure diagrams.
+- ``vaspy-dosplot``: For plotting publication-ready electronic density of state diagrams.
+- ``vaspy-optplot``: For plotting publication-ready optical absorption plots.
+- ``vaspy-phonon-bandplot``: For plotting publication-ready phonon band structure diagrams.
+- ``vaspy-bandstats``: For calculating electron and hole effective masses from a band structure.
 
 Installation
 ------------
