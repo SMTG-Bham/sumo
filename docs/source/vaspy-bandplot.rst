@@ -120,7 +120,7 @@ The syntax for specifying which orbitals to project is as follows:
 For example, to project the Sn s orbitals, the Sn p orbitals and a combined contribution from all the I orbitals,
 the command would be::
 
-    vaspy-dosplot --project Sn.s,Sn.p,I
+    vaspy-bandplot --project Sn.s,Sn.p,I
 
 For projected plots, the band structure and the projections are interpolated to ensure the bands are
 smooth. The degree of interpolation can be controlled by the ``--interpolate-factor`` option.
@@ -138,7 +138,7 @@ The order of the elemenets/orbitals determines which colour is used for each sel
 For example, if the following command is run in the ``vaspy/tests/data/Cs2SnI6/bandstructure`` directory,
 the output should look like::
 
-    vaspy-dosplot --project Sn.s,Sn.p,I --ymin -4 --width 4
+    vaspy-bandplot --project Sn.s,Sn.p,I --ymin -4 --width 4
 
 .. image:: figures/band_projected_rgb.png
    :height: 400px
@@ -153,7 +153,7 @@ an unlimited number of element/orbital contributions.
 For example, if the following command is run in the ``vaspy/tests/data/OsO2/bandstructure`` directory,
 the output should look like::
 
-    vaspy-dosplot --project Os.d,O.p,Os.s
+    vaspy-bandplot --project Os.d,O.p,Os.s --mode stacked --circle-size 90
 
 .. image:: figures/band_projected_stacked.png
    :height: 400px
