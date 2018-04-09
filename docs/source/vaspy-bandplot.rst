@@ -82,7 +82,7 @@ using the ``--dos`` option. A ``vasprun.xml`` to use for the density of states i
 is required as input. For example, if we run the following command in the
 ``vaspy/tests/data/Cs2SnI6/bandstructure`` folder, the output will look like::
 
-    vaspy-bandplot --dos ../dos/vasprun.xml
+    vaspy-bandplot --dos ../dos/vasprun.xml.gz --ymin -4
 
 .. image:: figures/band_with_dos.png
    :height: 400px
