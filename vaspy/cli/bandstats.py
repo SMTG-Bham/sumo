@@ -286,7 +286,7 @@ def _log_effective_mass_data(data, is_spin_polarized):
                                                   kpoint_str))
 
 
-def main():
+def _get_parser():
     parser = argparse.ArgumentParser(description="""
     bandstats provides information on the band gap and effective
     masses of semiconductors.""",
@@ -296,19 +296,21 @@ def main():
     Last updated: {}""".format(__author__, __version__, __date__))
 
     parser.add_argument('-f', '--filenames', default=None, nargs='+',
+                        metavar='F',
                         help="one or more vasprun.xml files to plot")
     parser.add_argument('-n', '--nonparabolic', default=True,
                         action='store_false',
-                        help="""Use a nonparabolic model to fit the
-                                effective masses""")
+                        help=('use a nonparabolic model to fit the '
+                              'effective masses'))
     parser.add_argument('-s', '--sample-points', default=3, type=int,
-                        dest='sample_points',
+                        dest='sample_points', metavar='N',
                         help="number of k-points to sample in fitting")
-    parser.add_argument('-t', '--temperature', default=None, type=float,
-                        help="Find band edges within kB * T of VBM and CBM.")
+    return parser
 
-    args = parser.parse_args()
-    logging.basicConfig(filename='vaspy-bandstats.log', level=logging.DEBUG,
+
+def main():
+    args = _get_parser().parse_args()
+    logging.basicConfig(filename='vaspy-bandstats.log', level=logging.INFO,
                         filemode='w', format='%(message)s')
     console = logging.StreamHandler()
     logging.info(" ".join(sys.argv[:]))
