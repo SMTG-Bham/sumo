@@ -1,29 +1,29 @@
 vaspy-kgen
 ==========
 
-
-Background
-----------
-
 ``vaspy-kgen`` is a program for generating VASP ``KPOINTS`` files containing k-points along high-symmetry
 k-point paths, for electronic band structure calculations.
 The path is unique for each of the 14 Bravais lattice types and, as such, will depend
 on the symmetry of the unitcell. As there are several definitions and nomenclatures used in the
 literature, ``vaspy-kgen`` simplifies this process, allowing for multiple high-symmetry k-point schemes.
 
+.. contents:: Table of Contents
+   :local:
+   :backlinks: None
 
 Usage
 -----
 
-The full range of options supported by ``vaspy-kgen`` can be accessed using the command::
+The full range of options supported by ``vaspy-kgen`` are detailed in the `Command-Line Interface`_ section,
+and be can be accessed using the command::
 
     vaspy-kgen -h
 
-To generate a ``KPOINTS`` file, simply run the following in a folder containing a VASP ``POSCAR`` file::
+To generate a set of k-points, simply run the following in a folder containing a VASP ``POSCAR`` file::
 
     vaspy-kgen
 
-For example, if we run this command in the ``vaspy/data/ZnO`` directory, the k-points will be written to
+For example, if we run this command in the ``vaspy/tests/data/ZnO`` directory, the k-points will be written to
 a file called ``KPOINTS_band``, with the terminal showing the following information::
 
    Structure information:
@@ -58,7 +58,7 @@ Basic Options
 
 As the path depends on the symmetry of the lattice, it is important that the symmetry is determined
 correctly. The tolerance used for symmetry detection can be controlled using the ``--symprec`` option.
-The default is 0.001 Angstrom.
+The default is 0.01 Angstrom.
 
 By default, the paths used are those from Bradley and Cracknell [brad]_. To use the k-point paths provided
 SeeK-path [seek]_ or pymatgen [curt]_. The options ``--seekpath`` or ``--pymatgen`` can be used.
@@ -66,14 +66,15 @@ SeeK-path [seek]_ or pymatgen [curt]_. The options ``--seekpath`` or ``--pymatge
 ``vaspy-kgen`` automatically looks for a ``POSCAR`` file in the current directory. A different structure
 file can be specified using the ``--poscar`` option.
 
-The denisty of the k-points along the path can be controlled using the ``--density`` option. The default is
+The density of the k-points along the path can be controlled using the ``--density`` option. The default is
 60.
 
 
 Hybrid Band Structures
 ~~~~~~~~~~~~~~~~~~~~~~
 
-By default, ``vaspy-kgen`` generates ``KPOINTS`` files for use in non-selfconsistent band structure calculations (e.g. for use with generalised-gradient approximation functionals). To perform hybrid band structures, the
+By default, ``vaspy-kgen`` generates ``KPOINTS`` files for use in non-selfconsistent band structure calculations
+(e.g. for use with generalised-gradient approximation functionals). To perform hybrid band structures, the
 zero-weighted k-point scheme should be used. To generate ``KPOINTS`` files for use in hybrid band structures, an
 ``IBZKPT`` file must be located in the current directory (the generated k-points will be appended to those in
 this file). Then simply run the following::
@@ -123,3 +124,12 @@ Custom labels can also be provided using the ``--labels`` option. The syntax is 
     vaspy-kgen --kpoints "0 0 0, 0.5 0.5 0.5 | 0 0 0, 0.5 0 0" --labels "\Gamma, M | \Gamma, X"
 
 Note: in all cases the arguments are surrounded in parentheses.
+
+
+Command-Line Interface
+----------------------
+
+.. argparse::
+   :module: vaspy.cli.kgen
+   :func: _get_parser
+   :prog: vaspy-kgen

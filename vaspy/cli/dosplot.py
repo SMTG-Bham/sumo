@@ -31,10 +31,10 @@ except ImportError:
     import ConfigParser as configparser
 
 __author__ = "Alex Ganose"
-__version__ = "1.0"
+__version__ = "2.0"
 __maintainer__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"
-__date__ = "March 13, 2017"
+__date__ = "April 9, 2018"
 
 
 def dosplot(filename=None, prefix=None, directory=None, elements=None,
@@ -224,95 +224,72 @@ def _atoms(atoms_string):
     return atoms
 
 
-def main():
+def _get_parser():
     parser = argparse.ArgumentParser(description="""
-    dosplot is a convenient script to help make publication ready density of
-    states diagrams.""",
+    dosplot is a script to produce publication-ready density of
+    states diagrams""",
                                      epilog="""
     Author: {}
     Version: {}
     Last updated: {}""".format(__author__, __version__, __date__))
 
     parser.add_argument('-f', '--filename', help='vasprun.xml file to plot',
-                        default=None)
-    parser.add_argument('-p', '--prefix',
-                        help='Prefix for the files generated.')
-    parser.add_argument('-d', '--directory',
-                        help='Output directory for files.')
-    parser.add_argument('-e', '--elements', type=_el_orb, help="""Choose the
-                        elements to plot. These should be listed using the
-                        symbols from the POSCAR and seperated via commas.
-                        Specific orbitals can be chosen by adding the orbitals
-                        after the element by using a period as the seperator.
-                        For example, to plot the carbon s and p, and all the
-                        oxygen orbitals, the command would be "-e C.s.p,O".""")
-    parser.add_argument('-o', '--orbitals', type=_el_orb, help="""Choose the
-                        orbital to split. This should be listed as the element
-                        (using the symbol from the POSCAR) and the orbital
-                        seperated by a period. For example to plot the oxygen
-                        split d orbitals, the command would be "-o O.d". More
-                        than one split orbital and element can be added using
-                        the notation described for adding more elements.""")
-    parser.add_argument('-a', '--atoms', type=_atoms, help="""Choose which
-                        atoms to calculate the DOS for. This should be listed
-                        as the element (using the symbol from the POSCAR) and
-                        the atoms seperated by a period. For example to plot
-                        the oxygen 1, 2 and 3 atoms, the command would be
-                        "-a O.1.2.3". The atom indicies start at 1 (as in the
-                        VASP output). You can specify a range to avoid typing
-                        all the numbers out, e.g. the previous command can be
-                        written "-a O.1-3". To select all the atoms of an
-                        element just include the element symbol with no numbers
-                        after it, e.g. "-a Ru" will include all the Ru atoms.
-                        If an element is not specified then it will not be
-                        included in the DOS. More than one element can be added
-                        using the notation described above for adding more
-                        elements.""")
-    parser.add_argument('-s', '--subplot', action='store_true', help="""Plot
-                        the DOS as a series of subplots rather than on a single
-                        graph. The height and width arguments for this program
-                        refer to the dimensions of a single subplot rather than
-                        the overall figure.""")
-    parser.add_argument('--no-shift', action='store_false', dest='shift',
-                        help='Don\'t shift the graph so that the VBM is at 0')
-    parser.add_argument('--total-only', action='store_true', dest='total_only',
-                        help='Only plot the total DOS')
-    parser.add_argument('--no-total', action='store_false', dest='total',
-                        help='Don\'t plot the total DOS')
+                        default=None, metavar='F')
+    parser.add_argument('-p', '--prefix', metavar='P',
+                        help='prefix for the files generated')
+    parser.add_argument('-d', '--directory', metavar='D',
+                        help='output directory for files')
+    parser.add_argument('-e', '--elements', type=_el_orb, metavar='E',
+                        help='elemental orbitals to plot (e.g. "C.s.p,O")')
+    parser.add_argument('-o', '--orbitals', type=_el_orb, metavar='O',
+                        help=('orbitals to split into lm-decomposed '
+                              'contributions (e.g. "Ru.d")'))
+    parser.add_argument('-a', '--atoms', type=_atoms, metavar='A',
+                        help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'))
+    parser.add_argument('-s', '--subplot', action='store_true',
+                        help='plot each element on separate subplots')
+    parser.add_argument('-g', '--gaussian', type=float, metavar='G',
+                        help='standard deviation of gaussian broadening')
+    parser.add_argument('-c', '--columns', type=int, default=2, metavar='N',
+                        help='number of columns in the legend')
+    parser.add_argument('--legend-cutoff', type=float, default=3,
+                        dest='legend_cutoff', metavar='C',
+                        help=('cut-off in %% of total DOS that determines if'
+                              ' a line is given a label (default: 3)'))
     parser.add_argument('--no-legend', action='store_false', dest='legend',
-                        help='Don\'t display the plot legend')
+                        help='hide the plot legend')
     parser.add_argument('--legend-frame', action='store_true',
                         dest='legend_frame',
-                        help='Display a frame box around the graph legend.')
-    parser.add_argument('--legend-cutoff', type=float, default=3,
-                        dest='legend_cutoff',
-                        help="""Cut-off in %% of total DOS in visible range
-                        that determines if a line is given a label. Set to 0 to
-                        label all lines. Default is 3 %%""")
-    parser.add_argument('-g', '--gaussian', type=float,
-                        help='Amount of gaussian broadening to apply')
+                        help='display a box around the legend')
+    parser.add_argument('--no-shift', action='store_false', dest='shift',
+                        help='don\'t shift the VBM/Fermi level to 0 eV')
+    parser.add_argument('--total-only', action='store_true', dest='total_only',
+                        help='only plot the total density of states')
+    parser.add_argument('--no-total', action='store_false', dest='total',
+                        help='don\'t plot the total density of states')
     parser.add_argument('--height', type=float, default=6.,
-                        help='The height of the graph')
+                        help='height of the graph')
     parser.add_argument('--width', type=float, default=8.,
-                        help='The width of the graph')
+                        help='width of the graph')
     parser.add_argument('--xmin', type=float, default=-6.,
-                        help='The minimum energy on the x axis')
+                        help='minimum energy on the x-axis')
     parser.add_argument('--xmax', type=float, default=6.,
-                        help='The maximum energy on the x axis')
-    parser.add_argument('-c', '--columns', type=int, default=2,
-                        help='The number of columns in the legend')
+                        help='maximum energy on the x-axis')
     parser.add_argument('--config', type=str, default=None,
-                        help='Colour configuration file')
+                        help='colour configuration file')
     parser.add_argument('--yscale', type=float, default=1,
-                        help='Scaling factor for the y axis')
+                        help='scaling factor for the y-axis')
     parser.add_argument('--format', type=str, default='pdf',
-                        dest='image_format',
-                        help='select image format from pdf, svg, jpg, & png')
+                        dest='image_format', metavar='FORMAT',
+                        help='image file format (options: pdf, svg, jpg, png)')
     parser.add_argument('--dpi', type=int, default=400,
-                        help='pixel density for generated images')
-    parser.add_argument('--font', default=None, help='Font to use.')
+                        help='pixel density for image file')
+    parser.add_argument('--font', default=None, help='font to use')
+    return parser
 
-    args = parser.parse_args()
+
+def main():
+    args = _get_parser().parse_args()
     logging.basicConfig(filename='vaspy-dosplot.log', level=logging.INFO,
                         filemode='w', format='%(message)s')
     console = logging.StreamHandler()

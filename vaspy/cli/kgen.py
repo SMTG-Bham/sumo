@@ -154,50 +154,49 @@ def _parse_ibzkpt(ibzkpt):
     return ibz
 
 
-def main():
+def _get_parser():
     parser = argparse.ArgumentParser(description="""
     kgen generates KPOINTS files for running band structure calculations in
-    VASP. The high symmetry k-point paths defined in Bradley and Cracknell are
-    used by default""",
+    VASP""",
                                      epilog="""
     Author: {}
     Version: {}
     Last updated: {}""".format(__author__, __version__, __date__))
 
-    parser.add_argument('-p', '--poscar', default='POSCAR',
-                        help='input VASP structure, default is POSCAR',)
+    parser.add_argument('-p', '--poscar', default='POSCAR', metavar='P',
+                        help='input VASP structure (default: POSCAR)',)
     parser.add_argument('-d', '--directory', type=str, default=None,
-                        help='output directory for files')
+                        metavar='D', help='output directory for files')
+    parser.add_argument('-s', '--split', type=int, default=None, metavar='N',
+                        help='number of k-points to include per file')
     parser.add_argument('-f', '--folders', action='store_true',
-                        help="""generate calculation folders and copy in
-                        necessary files""")
-    parser.add_argument('-s', '--split', type=int, default=None,
-                        help="number of k-points to include per split")
+                        help='creater folders and copy in necessary files')
     parser.add_argument('-y', '--hybrid', default=False, action='store_true',
-                        help="""append generated k-points to IBZKPT file with
-                        zero weight (needed for hybrid band structures)""")
+                        help='append k-points to IBZKPT file with zero weight')
     parser.add_argument('--symprec', default=0.01, type=float,
-                        help='tolerance for finding symmetry, default is 0.01')
+                        help='tolerance for finding symmetry (default: 0.01)')
     parser.add_argument('--spg', type=str, default=None,
-                        help='space group number to override detected ' +
-                        'symmetry')
+                        help='space group number or symbol')
     parser.add_argument('--density', type=int, default=60,
-                        help='k-point density along high symmetry lines')
+                        help='k-point density along high-symmetry path')
     parser.add_argument('--seekpath', action='store_true',
                         help='use seekpath to generate the high-symmetry path')
     parser.add_argument('--pymatgen', action='store_true',
                         help='use pymatgen to generate the high-symmetry path')
     parser.add_argument('--cartesian', action='store_true',
-                        help='use cartesian rather than fractional ' +
-                        'coordinates')
+                        help='use cartesian k-point coordinates')
     parser.add_argument('--kpoints', type=str, default=None,
-                        help="""specify a list of kpoints manually, written as
-                        --kpoints '0 0 0, 0.5 0 0'""")
+                        help=('specify a list of kpoints '
+                              '(e.g. "0 0 0, 0.5 0 0")'))
     parser.add_argument('--labels', type=str, default=None,
-                        help=r"""specify the labels for manual kpoints, written
-                        as --labels '\Gamma,X'""")
+                        help=('specify the labels for kpoints '
+                              r'(e.g. "\Gamma,X")'))
+    return parser
 
-    args = parser.parse_args()
+
+def main():
+    args = _get_parser().parse_args()
+
     logging.basicConfig(filename='vaspy-kgen.log', level=logging.DEBUG,
                         filemode='w', format='%(message)s')
     console = logging.StreamHandler()

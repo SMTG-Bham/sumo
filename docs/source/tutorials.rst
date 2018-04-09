@@ -6,5 +6,7 @@ A broad range of functionality is available. See the individual pages
 for each command for more details:
 
 .. toctree::
+   :maxdepth: 2
+
    vaspy-kgen
    vaspy-dosplot
