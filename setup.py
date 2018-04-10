@@ -3,9 +3,14 @@ Vaspy: SMTG utils for working with Vasp
 """
 
 from os.path import abspath, dirname
+from os.path import join as path_join
 from setuptools import setup, find_packages
+import unittest
 
-project_dir = abspath(dirname(__file__))
+def load_test_suite():
+    test_loader = unittest.TestLoader()
+    test_suite = test_loader.discover('tests/tests_symmetry')
+    return test_suite
 
 setup(
     name='vaspy',
@@ -29,6 +34,7 @@ Some handy tools developed by and for the Scanlon Materials Theory Group
         'Topic :: Scientific/Engineering :: Physics'
         ],
     keywords='chemistry ase dft vasp',
+    test_suite='setup.load_test_suite',
     packages=find_packages(),
     install_requires=['spglib', 'numpy', 'scipy', 'pymatgen', 'h5py',
                       'phonopy', 'matplotlib', 'seekpath'],

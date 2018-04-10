@@ -45,13 +45,13 @@ class SeekpathKpath(Kpath):
                                                self._seek_data['point_coords'])
 
     @classmethod
-    def kpath_from_seekpath(cls, path, point_coords):
+    def kpath_from_seekpath(cls, seekpath, point_coords):
         r"""Convert seekpath-formatted kpoints path to vaspy-preferred format.
 
         If 'GAMMA' is used as a label this will be replaced by '\Gamma'.
 
         Args:
-            path (list): A :obj:`list` of 2-tuples containing the labels at
+            seekpath (list): A :obj:`list` of 2-tuples containing the labels at
                 each side of each segment of the k-point path::
 
                     [(A, B), (B, C), (C, D), ...]
@@ -76,8 +76,6 @@ class SeekpathKpath(Kpath):
         """
         # convert from seekpath format e.g. [(l1, l2), (l2, l3), (l4, l5)]
         # to our preferred representation [[l1, l2, l3], [l4, l5]]
-        seekpath = path.copy()
-
         path = [[seekpath[0][0]]]
         for (k1, k2) in seekpath:
             if path[-1] and path[-1][-1] == k1:
