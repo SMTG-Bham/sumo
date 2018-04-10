@@ -244,72 +244,74 @@ def save_data_files(bs, prefix=None, directory=None):
     return filename
 
 
-def main():
+def _get_parser():
     parser = argparse.ArgumentParser(description="""
-    dosplot is a convenient script to help make publication ready density of
-    states diagrams.""",
+    phonon-bandplot is a script to produce publication ready phonon band
+    structure diagrams""",
                                      epilog="""
     Author: {}
     Version: {}
     Last updated: {}""".format(__author__, __version__, __date__))
 
-    parser.add_argument('-f', '--filename', default='FORCE_SETS',
-                        help="phonopy band.conf or FORCE_SETS file")
-    parser.add_argument('--poscar', default=None,
-                        help="Path to POSCAR file, needed if FORCE_SETS used.")
-    parser.add_argument('-p', '--prefix', help='Prefix for the files ' +
-                        'generated.')
-    parser.add_argument('-d', '--directory', help='output directory for files')
-    parser.add_argument('--dim', nargs='+',
-                        help='Supercell matrix dimensions')
-    parser.add_argument('-q', '--qmesh', nargs=3,
+    parser.add_argument('-f', '--filename', default='FORCE_SETS', metavar='F',
+                        help="FORCE_SETS, FORCE_CONSTANTS or band.yaml file")
+    parser.add_argument('-p', '--prefix', metavar='P',
+                        help='prefix for the files generated.')
+    parser.add_argument('-d', '--directory', metavar='D',
+                        help='output directory for files')
+    parser.add_argument('-q', '--qmesh', nargs=3, metavar='N',
                         help='q-mesh to use for phonon DOS')
-    parser.add_argument('-b', '--born', nargs='*',
-                        help="""File containing born effective charges. Can
-                        be the output from phonopy-vasp-born, or a vasprun.xml
-                        file""")
+    parser.add_argument('-b', '--born', metavar='B',
+                        help='born effective charge file')
+    parser.add_argument('-e', '--eigenvectors', action='store_true',
+                        help='write the phonon eigenvectors to yaml file')
+    parser.add_argument('--dim', nargs='+', metavar='N',
+                        help='supercell matrix dimensions')
+    parser.add_argument('--poscar', default=None, metavar='POS',
+                        help="path to POSCAR file (if FORCE_SETS used)")
     parser.add_argument('--primitive-axis', type=float, nargs=9,
+                        metavar='M',
                         dest='primitive_axis', default=None,
-                        help="""Primitive axis for conversion from conventional
-                        to primitive cell.""")
+                        help='conventional to primitive cell transformation')
     parser.add_argument('--symprec', default=0.01, type=float,
-                        help='tolerance for finding symmetry, default is 0.01')
+                        help='tolerance for finding symmetry (default: 0.01)')
     parser.add_argument('--spg', type=str, default=None,
-                        help='space group number to override detected ' +
-                        'symmetry')
+                        help='space group number or symbol')
     parser.add_argument('--density', type=int, default=60,
-                        help='k-point density along high symmetry lines')
+                        help='k-point density along high-symmetry path')
     parser.add_argument('--seekpath', action='store_true',
                         help='use seekpath to generate the high-symmetry path')
     parser.add_argument('--pymatgen', action='store_true',
                         help='use pymatgen to generate the high-symmetry path')
     parser.add_argument('--cartesian', action='store_true',
-                        help='use cartesian rather than fractional ' +
-                        'coordinates')
+                        help='use cartesian k-point coordinates')
     parser.add_argument('--kpoints', type=str, default=None,
-                        help="""specify a list of kpoints manually, written as
-                        --kpoints '0 0 0, 0.5 0 0'""")
+                        help=('specify a list of kpoints '
+                              '(e.g. "0 0 0, 0.5 0 0")'))
     parser.add_argument('--labels', type=str, default=None,
-                        help="specify the labels for manual kpoints, written" +
-                        r" as --labels '\Gamma,X'")
-    parser.add_argument('-e', '--eigenvectors', action='store_true',
-                        help='Write the phonon eigenvectors to the yaml file.')
-    parser.add_argument('--height', type=float, default=6.0,
-                        help='The height of the graph')
-    parser.add_argument('--width', type=float, default=6.0,
-                        help='The width of the graph')
-    parser.add_argument('--ymin', type=float, default=None,
-                        help='The minimum energy on the y axis')
-    parser.add_argument('--ymax', type=float, default=None,
-                        help='The maximum energy on the y axis')
+                        help=('specify the labels for kpoints '
+                              r'(e.g. "\Gamma,X")'))
+    parser.add_argument('--height', type=float, default=6.,
+                        help='height of the graph')
+    parser.add_argument('--width', type=float, default=6.,
+                        help='width of the graph')
+    parser.add_argument('--ymin', type=float, default=-6.,
+                        help='minimum energy on the y-axis')
+    parser.add_argument('--ymax', type=float, default=6.,
+                        help='maximum energy on the y-axis')
+    parser.add_argument('--config', type=str, default=None,
+                        help='colour configuration file')
     parser.add_argument('--format', type=str, default='pdf',
-                        dest='image_format',
-                        help='select image format from pdf, svg, jpg, & png')
+                        dest='image_format', metavar='FORMAT',
+                        help='image file format (options: pdf, svg, jpg, png)')
     parser.add_argument('--dpi', type=int, default=400,
-                        help='pixel density for generated images')
-    parser.add_argument('--font', default=None, help='Font to use.')
+                        help='pixel density for image file')
+    parser.add_argument('--font', default=None, help='font to use')
+    return parser
 
-    args = parser.parse_args()
+
+def main():
+    args = _get_parser().parse_args()
     logging.basicConfig(filename='vaspy-phonon-bandplot.log',
                         level=logging.INFO,
                         filemode='w', format='%(message)s')
