@@ -113,23 +113,24 @@ class VOpticsPlotter(object):
         ax = plt.gca()
 
         colours = colours + optics_colours if colours else optics_colours
-        for (ener, alpha), label, bg, c in zip(self._abs_data, self._label,
-                                               self._band_gap, colours):
+        for (ener, alpha), abs_label, bg, c in zip(self._abs_data, self._label,
+                                                   self._band_gap, colours):
             if len(alpha.shape) == 1:
                 # if averaged optics only plot one line
-                ax.plot(ener, alpha, lw=line_width, label=label, c=c)
+                ax.plot(ener, alpha, lw=line_width, label=abs_label, c=c)
 
             else:
                 data = zip(range(3), ['xx', 'yy', 'zz'], ['-', '--', '-.'])
 
-                for direc, label, ls in data:
-                    if label == '':
-                        dir_label = label
+                for direction_id, direction_label, ls in data:
+                    if not abs_label:
+                        label = direction_label
                     else:
-                        dir_label = r'{}$_\mathregular{{{}}}$'.format(label,
-                                                                      direc)
-                    ax.plot(ener, alpha[:, direc], lw=line_width, ls=ls,
-                            label=dir_label, c=c)
+                        label = r'{}$_\mathregular{{{}}}$'
+                        label.format(direction_label, direction_id)
+
+                    ax.plot(ener, alpha[:, direction_id], lw=line_width, ls=ls,
+                            label=label, c=c)
 
             if bg:
                 # plot band gap line
@@ -147,7 +148,8 @@ class VOpticsPlotter(object):
         ax.set_xlabel('Energy (eV)')
         ax.set_ylabel(r'Absorption (cm$^\mathregular{-1}$)')
 
-        if not np.all(np.array(self._label) == ''):
+        if (not np.all(np.array(self._label) == '')
+                or len(self._abs_data[0]) > 1):
             ax.legend(loc='best', frameon=False, ncol=1,
                       prop={'size': label_size - 3})
 

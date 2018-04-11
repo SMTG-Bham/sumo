@@ -134,58 +134,53 @@ def optplot(filenames=None, prefix=None, directory=None,
         return plt
 
 
-def main():
+def _get_parser():
     parser = argparse.ArgumentParser(description="""
-    optplot is a script to help calculate and plot optical absorption spectra
-    from VASP calculations. Absorption given in units of cm^-1.""",
+    optplot is a script to produce optical absorption spectra diagrams""",
                                      epilog="""
     Author: {}
     Version: {}
     Last updated: {}""".format(__author__, __version__, __date__))
 
-    parser.add_argument('-f', '--filenames', help="""vasprun.xml file to plot.
-                        Can supply more than one vasprun file to process and
-                        plot multiple spectra simultaneously.""",
+    parser.add_argument('-f', '--filenames', metavar='F',
+                        help='path to one or more vasprun.xml files',
                         default=None, nargs='+')
-    parser.add_argument('-p', '--prefix', help='prefix for the files generated')
-    parser.add_argument('-d', '--directory', help='output directory for files')
-    parser.add_argument('-g', '--gaussian', type=float,
-                        help='Amount of gaussian broadening to apply')
-    parser.add_argument('-b', '--bandgaps', nargs='*',
-                        help="""Specify fundamental band gaps, if this option
-                        is called with no arguments, the band gap for each
-                        system will be read from the vasprun.xml file.
-                        Alternatively, the path to a vasprun.xml file can be
-                        specified, in which case the band gap will be read from
-                        this output. Furthermore, a number can be provided, in
-                        which case this value will be used. If plotting
-                        multiple optical spectra then an equivalent number of
-                        band gaps should be specified for this option
-                        also.""")
-    parser.add_argument('-l', '--labels', nargs='+',
-                        help='Labels for the absorption specta.')
+    parser.add_argument('-p', '--prefix', metavar='P',
+                        help='prefix for the files generated')
+    parser.add_argument('-d', '--directory', metavar='D',
+                        help='output directory for files')
+    parser.add_argument('-g', '--gaussian', type=float, metavar='G',
+                        help='standard deviation of gaussian broadening')
+    parser.add_argument('-b', '--bandgaps', nargs='*', metavar='E',
+                        help=('indicate the fundamental band gap (options: '
+                              'nothing, vasprun.xml file, or float)'))
+    parser.add_argument('-l', '--labels', nargs='+', metavar='L',
+                        help='labels for the absorption specta')
     parser.add_argument('-a', '--anisotropic', action='store_false',
-                        help="""Give the absorption separated into to the x, y,
-                        and z directions""")
+                        help='separate spectra into to x, y, and z directions')
     parser.add_argument('--height', type=float, default=6.,
-                        help='The height of the graph')
+                        help='height of the graph')
     parser.add_argument('--width', type=float, default=6.,
-                        help='The width of the graph')
+                        help='width of the graph')
     parser.add_argument('--xmin', type=float, default=0.,
-                        help='The minimum energy on the x axis')
+                        help='minimum energy on the x-axis')
     parser.add_argument('--xmax', type=float, default=None,
-                        help='The maximum energy on the x axis')
+                        help='maximum energy on the x-axis')
     parser.add_argument('--ymin', type=float, default=0.,
-                        help='The minimum energy on the y axis')
+                        help='minimum intensity on the y-axis')
     parser.add_argument('--ymax', type=float, default=1e5,
-                        help='The maximum energy on the y axis')
+                        help='maximum intensity on the y-axis')
     parser.add_argument('--format', type=str, default='pdf',
-                        dest='image_format',
-                        help='select image format from pdf, svg, jpg, & png')
+                        dest='image_format', metavar='FORMAT',
+                        help='image file format (options: pdf, svg, jpg, png)')
     parser.add_argument('--dpi', type=int, default=400,
-                        help='pixel density for generated images')
-    parser.add_argument('--font', default=None, help='Font to use.')
-    args = parser.parse_args()
+                        help='pixel density for image file')
+    parser.add_argument('--font', default=None, help='font to use')
+    return parser
+
+
+def main():
+    args = _get_parser().parse_args()
 
     logging.basicConfig(filename='vaspy-optplot.log', level=logging.INFO,
                         filemode='w', format='%(message)s')

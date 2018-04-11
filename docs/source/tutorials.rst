@@ -12,4 +12,5 @@ for each command for more details:
    vaspy-dosplot
    vaspy-bandplot
    vaspy-bandstats
+   vaspy-optplot
    vaspy-phonon-bandplot
