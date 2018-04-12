@@ -50,6 +50,7 @@ extensions = [
     'sphinxarg.ext'
 ]
 
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -89,7 +90,12 @@ html_theme = 'alabaster'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+
+html_theme_options = {'description': "Heavy weight plotting tools",
+                      'github_user': 'SMTG-UCL',
+                      'github_repo': 'sumo',
+                      'travis_button': False,
+                      'codecov_button': False}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -105,6 +111,9 @@ html_static_path = ['_static']
 # 'searchbox.html']``.
 #
 # html_sidebars = {}
+
+html_sidebars = {'**': ['about.html', 'navigation.html', 'searchbox.html',
+                        'donate.html']}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------

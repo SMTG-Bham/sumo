@@ -1,5 +1,5 @@
-vaspy-bandplot
-==============
+vaspy-phonon-bandplot
+=====================
 
 ``vaspy-phonon-bandplot`` is a program for generating publication-ready phonon band
 structure diagrams based on ``phonopy`` calculations.

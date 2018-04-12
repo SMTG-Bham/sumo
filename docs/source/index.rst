@@ -1,20 +1,11 @@
-Welcome to vaspy's documentation!
-=================================
+.. include:: ../../README.rst
+
 
 .. toctree::
+   :hidden:
    :maxdepth: 2
-   :caption: Contents:
 
-   README <readme>
    tutorials
-   Python API <modules>
+   gallery
    changelog
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   Python API <modules>

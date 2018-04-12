@@ -3,7 +3,7 @@ Vaspy
 
 Vaspy is a Python toolkit for plotting and analysing VASP calculations. The main features include:
 
-1. Extensive framework for generating high-symmetry k-point paths.
+1. An extensive framework for generating high-symmetry k-point paths.
 2. Plotting scripts for electronic and phonon band structures, density of states, and optical absorption.
 3. Analysis scripts to calculate band edge effective masses.
 
