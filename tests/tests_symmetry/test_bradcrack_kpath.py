@@ -41,12 +41,12 @@ class BradCrackKpathTestCase(unittest.TestCase):
 
     def test_bradcrack_seekpath_consistent(self):
         """Check BradCrack k-point locations are consistent with Seekpath"""
-        bckp = BradCrackKpath(self.cs_sn_i_structure)
-        spkp = SeekpathKpath(self.cs_sn_i_structure)
+        kpath_bradcrack = BradCrackKpath(self.cs_sn_i_structure)
+        kpath_seekpath = SeekpathKpath(self.cs_sn_i_structure)
 
-        for label, position in bckp.kpoints.items():
-            self.assertIn(label, spkp.kpoints)
-            self.assertEqual(position, spkp.kpoints[label])
+        for label, position in kpath_bradcrack.kpoints.items():
+            self.assertIn(label, kpath_seekpath.kpoints)
+            self.assertEqual(position, kpath_seekpath.kpoints[label])
 
 if __name__ == '__main__':
     unittest.main()
