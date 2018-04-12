@@ -62,16 +62,48 @@ the anisotropic absorption spectra should look like::
    :align: center
 
 
+Displaying Band Gaps
+~~~~~~~~~~~~~~~~~~~~
+
+The band gap of the system can be indicated using the ``--bandgap`` option.
+There are several ways to use this option:
+
+- If the option is given with no arguments, then the band gap will be
+  extracted from the ``vasprun.xml`` file.
+- A path to a separate ``vasprun.xml`` file can be supplied,
+  in which case the band gap will be read from this calculation.
+- A number can be supplied.
+
+For example, if we run the following command in the ``vaspy/tests/data/Cs2SnI6/optics`` directory,
+the plot should look like::
+
+    vaspy-optplot --bandgap ../bandstructure/split-01/vasprun.xml
+
+.. image:: figures/absorption_bandgap.png
+   :height: 400px
+   :align: center
+
+
 Plotting Multiple Spectra
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Multiple absorption spectra can be plotted simultaneously by specifying mutliple
+``vasprun.xml`` files using the ``--filenames`` option.
+A label will be generated for each system, based on the composition. Alternatively,
+the ``--labels`` option can be used to provide a name for each system. The number
+of ``vasprun.xml`` files must be equivalent for the number of labels.
 
+For example, if we run the following command in the ``vaspy/tests/data/Cs2SnI6/optics`` directory,
+the plot should look like::
 
-Things to cover:
-- plotting multiple spectra
-- band gaps
-- gaussian broadening
-- ansiotropic plotting
+    vaspy-optplot --filenames vasprun.xml ../../Cs2SnBr6/optics/vasprun.xml
+
+.. image:: figures/absorption_multi.png
+   :height: 400px
+   :align: center
+
+This mode also supports plotting the band gap of each compound using the ``--bandgap`` option.
+
 
 Command-Line Interface
 ----------------------
