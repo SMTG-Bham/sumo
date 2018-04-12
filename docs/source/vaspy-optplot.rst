@@ -77,7 +77,7 @@ There are several ways to use this option:
 For example, if we run the following command in the ``vaspy/tests/data/Cs2SnI6/optics`` directory,
 the plot should look like::
 
-    vaspy-optplot --bandgap ../bandstructure/split-01/vasprun.xml
+    vaspy-optplot --bandgap ../bandstructure/split-01/vasprun.xml.gz
 
 .. image:: figures/absorption_bandgap.png
    :height: 400px
@@ -96,7 +96,7 @@ of ``vasprun.xml`` files must be equivalent for the number of labels.
 For example, if we run the following command in the ``vaspy/tests/data/Cs2SnI6/optics`` directory,
 the plot should look like::
 
-    vaspy-optplot --filenames vasprun.xml ../../Cs2SnBr6/optics/vasprun.xml
+    vaspy-optplot --filenames vasprun.xml.gz ../../Cs2SnBr6/vasprun.xml.gz
 
 .. image:: figures/absorption_multi.png
    :height: 400px
