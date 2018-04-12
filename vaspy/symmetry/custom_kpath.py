@@ -45,16 +45,22 @@ class CustomKpath(Kpath):
             conventional cell structure.
     """
 
-    def __init__(self, structure, kpt_list, path_labels, symprec=1e-3):
+    def __init__(self, structure, kpt_list, path_labels=None, symprec=1e-3):
         Kpath.__init__(self, structure, symprec=symprec)
 
-        # TODO: add warnings for no labels and incorrect number of labels
         flat_kpts = [x for kpts in kpt_list for x in kpts]
-        if path_labels:
-            flat_path_labels = [x for labels in path_labels for x in labels]
-        else:
+        if path_labels is None:
             flat_path_labels = [s for s, x in
                                 zip(string.ascii_uppercase, flat_kpts)]
+        else:
+            try:
+                assert len(kpt_list) == len(path_labels)
+                for kpt_segment, path_segment in zip(kpt_list, path_labels):
+                    assert len(kpt_segment) == len(path_segment)
+            except AssertionError:
+                raise ValueError("kpt_list and path_labels are not consistent")
+
+            flat_path_labels = [x for labels in path_labels for x in labels]
 
         # need this to make sure repeated kpoints have the same labels
         kpt_dict = {}
