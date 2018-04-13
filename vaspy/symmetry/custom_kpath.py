@@ -7,6 +7,7 @@ Module containing class for generating custom k-point paths.
 """
 
 import string
+from itertools import chain
 import numpy as np
 
 from vaspy.symmetry import Kpath
@@ -48,35 +49,55 @@ class CustomKpath(Kpath):
     def __init__(self, structure, kpt_list, path_labels=None, symprec=1e-3):
         Kpath.__init__(self, structure, symprec=symprec)
 
-        flat_kpts = [x for kpts in kpt_list for x in kpts]
         if path_labels is None:
-            flat_path_labels = [s for s, x in
-                                zip(string.ascii_uppercase, flat_kpts)]
-        else:
-            try:
-                assert len(kpt_list) == len(path_labels)
-                for kpt_segment, path_segment in zip(kpt_list, path_labels):
-                    assert len(kpt_segment) == len(path_segment)
-            except AssertionError:
-                raise ValueError("kpt_list and path_labels are not consistent")
+            path_labels = _auto_kpath_labels(kpt_list)
 
-            flat_path_labels = [x for labels in path_labels for x in labels]
+        try:
+            assert len(kpt_list) == len(path_labels)
+            for kpt_segment, path_segment in zip(kpt_list, path_labels):
+                assert len(kpt_segment) == len(path_segment)
+        except AssertionError:
+            raise ValueError("kpt_list and path_labels are not consistent")
 
-        # need this to make sure repeated kpoints have the same labels
-        kpt_dict = {}
-        for label, kpt in zip(flat_path_labels, flat_kpts):
-            if kpt not in kpt_dict.values():
-                kpt_dict[label] = kpt
-
-        if not path_labels:
-            path_labels = []
-            for kpt_sublist in kpt_list:
-                labels = []
-                for kpt in kpt_sublist:
-                    for label, kpt2 in iter(kpt_dict.items()):
-                        if np.array_equal(kpt, kpt2):
-                            labels.append(label)
-                            break
-                path_labels.append(labels)
+        flat_kpts = chain(*kpt_list)
+        flat_path_labels = chain(*path_labels)
+        kpt_dict = {label: kpt for label, kpt in zip(flat_path_labels,
+                                                     flat_kpts)}
 
         self._kpath = {'kpoints': kpt_dict, 'path': path_labels}
+
+    @staticmethod
+    def _auto_kpath_labels(kpt_list):
+        """Get a default set of labels (1), (2), (3)... for a k-point path
+
+        Repeated points will be identified and the labels re-used.
+
+        Args:
+            kpt_list (list): Nested list representing k-point path segments,
+                e.g.::
+
+                  [[[0., 0., 0.], [0., 0., 0.5], [0., 0.5, 0.5]],
+                   [[0.5, 0.5, 0.], [0., 0., 0.]]]
+
+        Returns:
+            list: Corresponding nested list of labels, e.g.::
+
+              [['(1)', '(2)', '(3)'], ['(4)', '(1)']]
+
+        """
+
+        # Build dict of labels
+        label_i = 1
+        kpt_labels = {}
+        for kpt in chain(*kpt_list):
+            if tuple(kpt) in kpt_labels:
+                continue
+            else:
+                kpt_labels.update({tuple(kpt): '({})'.format(label_i)})
+                label_i += 1
+
+        # Read out into nested lists
+        kpath_labels = [[kpt_labels[tuple(kpt)] for kpt in segment]
+                            for segment in kpt_list]
+
+        return kpath_labels
