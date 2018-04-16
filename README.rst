@@ -1,6 +1,13 @@
 Sumo
 ====
 
+.. image:: https://travis-ci.org/SMTG-UCL/sumo.svg?branch=master
+    :target: https://travis-ci.org/SMTG-UCL/sumo
+
+.. image:: https://readthedocs.org/projects/sumo/badge/?version=latest
+    :target: http://sumo.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 Sumo is a Python toolkit for plotting and analysing VASP calculations. The main features include:
 
 1. An extensive framework for generating high-symmetry k-point paths.
@@ -20,7 +27,7 @@ Usage
 Primarily, sumo is intended to be used via the command-line, however, a fully-documented
 python API is also provided.
 A full manual, including tutorials and API documentation,
-is available online at `readthedocs.io <http://sumo.readthedocs.io/en/latest/>`__.
+is `available online <http://sumo.readthedocs.io/en/latest/>`__.
 Additionally, the built-in help (``-h``) option for each command provides a
 summary of the available options.
 
@@ -33,6 +40,12 @@ Currently the scripts provided by sumo are:
 - ``sumo-phonon-bandplot``: For plotting publication-ready phonon band structure diagrams.
 - ``sumo-bandstats``: For calculating electron and hole effective masses from a band structure.
 
+A guide to using each command can be found on the
+`Tutorial page <http://sumo.readthedocs.io/en/latest/tutorials.html>`_.
+
+For a preview of the functionality of sumo, see the
+`Gallery <http://sumo.readthedocs.io/en/latest/gallery.html>`_.
+
 Installation
 ------------
 
@@ -40,9 +53,9 @@ We recommend installation from source with Pip, this will automatically install 
 
 .. code-block:: bash
 
-    pip3 install --user .
+    pip3 install --user sumo
 
-To build the documentation, install the package with extra dependecies
+To build the documentation, download the package source and install with extra dependecies:
 
 .. code-block:: bash
 
@@ -68,7 +81,7 @@ To ensure the code has been installed correctly, the unittests can be run using:
 Requirements
 ------------
 
-Sumo is currently compatible with Python 3.4+ and relies on a number of
+Sumo is currently compatible with Python 3.5+ and relies on a number of
 open-source python packages, specifically:
 
 - Pymatgen
@@ -77,6 +90,7 @@ open-source python packages, specifically:
 - Matplotlib
 - Spglib
 - Phonopy
+- SeeK-path
 - H5py (optional dependency for phonon plotting features)
 
 Sumo uses Pip and setuptools for installation. You *probably* already
