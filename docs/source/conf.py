@@ -20,14 +20,14 @@ print(sys.path[0])
 
 # -- Project information -----------------------------------------------------
 
-project = 'vaspy'
+project = 'sumo'
 copyright = '2018, Scanlon Materials Theory Group'
 author = 'Alex Ganose, Adam Jackson'
 
 # The short X.Y version
-version = '2.0'
+version = '1.0'
 # The full version, including alpha/beta/rc tags
-release = '2.0'
+release = '1.0.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -119,7 +119,7 @@ html_sidebars = {'**': ['about.html', 'navigation.html', 'searchbox.html',
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'vaspydoc'
+htmlhelp_basename = 'sumodoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -146,7 +146,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'vaspy.tex', 'vaspy Documentation',
+    (master_doc, 'sumo.tex', 'sumo Documentation',
      'Alex Ganose, Adam Jackson', 'manual'),
 ]
 
@@ -156,7 +156,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'vaspy', 'vaspy Documentation',
+    (master_doc, 'sumo', 'sumo Documentation',
      [author], 1)
 ]
 
@@ -167,8 +167,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'vaspy', 'vaspy Documentation',
-     author, 'vaspy', 'One line description of project.',
+    (master_doc, 'sumo', 'sumo Documentation',
+     author, 'sumo', 'Heavy weight plotting tools',
      'Miscellaneous'),
 ]
 

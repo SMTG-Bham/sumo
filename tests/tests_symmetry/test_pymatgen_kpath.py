@@ -6,8 +6,8 @@ from os.path import join as path_join
 
 from pymatgen.core.structure import Structure
 
-from vaspy.symmetry.pymatgen_kpath import PymatgenKpath
-from vaspy.symmetry.brad_crack_kpath import BradCrackKpath
+from sumo.symmetry.pymatgen_kpath import PymatgenKpath
+from sumo.symmetry.brad_crack_kpath import BradCrackKpath
 
 
 class SeekpathKpathTestCase(unittest.TestCase):

@@ -1,67 +1,67 @@
 Gallery
 =======
 
-The gallery is a preview of the different plot types available in ``vaspy``. Click on any
+The gallery is a preview of the different plot types available in ``sumo``. Click on any
 image to see the command to produce a similar plot.
 
-vaspy-dosplot
+sumo-dosplot
 ~~~~~~~~~~~~~
 
 .. image:: figures/dos_square.png
    :height: 250px
-   :target: vaspy-dosplot.html#basic-options
+   :target: sumo-dosplot.html#basic-options
 
 .. image:: figures/dos_subplot.png
    :height: 250px
-   :target: vaspy-dosplot.html#subplots
+   :target: sumo-dosplot.html#subplots
 
 
-vaspy-bandplot
+sumo-bandplot
 ~~~~~~~~~~~~~~
 
 .. image:: figures/band_basic.png
    :height: 250px
-   :target: vaspy-bandplot.html#usage
+   :target: sumo-bandplot.html#usage
 
 .. image:: figures/band_with_dos.png
    :height: 250px
-   :target: vaspy-bandplot.html#combined-band-structure-and-density-of-states-plots
+   :target: sumo-bandplot.html#combined-band-structure-and-density-of-states-plots
 
 .. image:: figures/band_projected_rgb.png
    :height: 250px
-   :target: vaspy-bandplot.html#projected-band-structures
+   :target: sumo-bandplot.html#projected-band-structures
 
 .. image:: figures/band_projected_stacked.png
    :height: 250px
-   :target: vaspy-bandplot.html#projected-band-structures
+   :target: sumo-bandplot.html#projected-band-structures
 
 .. image:: figures/band_projected_advanced.png
    :height: 250px
-   :target: vaspy-bandplot.html#advanced-example
+   :target: sumo-bandplot.html#advanced-example
 
-vaspy-optplot
+sumo-optplot
 ~~~~~~~~~~~~~
 
 .. image:: figures/absorption_basic.png
    :height: 250px
-   :target: vaspy-optplot.html#usage
+   :target: sumo-optplot.html#usage
 
 .. image:: figures/absorption_anisotropic.png
    :height: 250px
-   :target: vaspy-optplot.html#anisotropic-absorption
+   :target: sumo-optplot.html#anisotropic-absorption
 
 .. image:: figures/absorption_bandgap.png
    :height: 250px
-   :target: vaspy-optplot.html#displaying-band-gaps
+   :target: sumo-optplot.html#displaying-band-gaps
 
 .. image:: figures/absorption_multi.png
    :height: 250px
-   :target: vaspy-optplot.html#plotting-multiple-spectra
+   :target: sumo-optplot.html#plotting-multiple-spectra
 
 
-vaspy-phonon-bandplot
+sumo-phonon-bandplot
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: figures/phonon_band_basic.png
    :height: 250px
-   :target: vaspy-phonon-bandplot.html#usage
+   :target: sumo-phonon-bandplot.html#usage

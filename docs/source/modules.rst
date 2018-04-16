@@ -1,7 +1,7 @@
-vaspy
+sumo
 =====
 
 .. toctree::
    :maxdepth: 4
 
-   vaspy
+   sumo

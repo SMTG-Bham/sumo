@@ -6,7 +6,7 @@ from os.path import join as path_join
 
 from pymatgen.core.structure import Structure
 
-from vaspy.symmetry.seekpath_kpath import SeekpathKpath
+from sumo.symmetry.seekpath_kpath import SeekpathKpath
 
 
 class SeekpathKpathTestCase(unittest.TestCase):

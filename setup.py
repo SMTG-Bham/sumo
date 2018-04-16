@@ -1,50 +1,53 @@
 """
-Vaspy: SMTG utils for working with Vasp
+sumo: Heavy weight plotting tools.
 """
 
-from os.path import abspath, dirname
-from os.path import join as path_join
+
 from setuptools import setup, find_packages
+
 import unittest
+
 
 def load_test_suite():
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('tests/tests_symmetry')
     return test_suite
 
+
 setup(
-    name='vaspy',
-    version='2.0.0',
-    description='Convenience tools for working with VASP',
+    name='sumo',
+    version='1.0.0',
+    description='Heavy weight plotting tools',
     long_description="""
-Some handy tools developed by and for the Scanlon Materials Theory Group
+Handy tools for plotting and analysing ab initio calculation data.
+Developed by and for the Scanlon Materials Theory Group
 """,
-    url='https://github.com/smtg-ucl/vaspy',
+    url='https://github.com/smtg-ucl/sumo',
     author='Alex Ganose, Adam J. Jackson',
     author_email='d.scanlon@ucl.ac.uk',
     license='MIT',
 
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
+        'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3 :: Only',
         'Topic :: Scientific/Engineering :: Chemistry',
         'Topic :: Scientific/Engineering :: Physics'
         ],
-    keywords='chemistry ase dft vasp',
+    keywords='chemistry pymatgen dft vasp dos band',
     test_suite='setup.load_test_suite',
     packages=find_packages(),
     install_requires=['spglib', 'numpy', 'scipy', 'pymatgen', 'h5py',
                       'phonopy', 'matplotlib', 'seekpath'],
     extras_require={'docs': ['sphinx', 'sphinx-argparse']},
-    package_data={'vaspy': ['conf/orbital_colours.conf']},
+    package_data={'sumo': ['conf/orbital_colours.conf']},
     entry_points={'console_scripts': [
-                      'vaspy-bandplot = vaspy.cli.bandplot:main',
-                      'vaspy-bandstats = vaspy.cli.bandstats:main',
-                      'vaspy-dosplot = vaspy.cli.dosplot:main',
-                      'vaspy-kgen = vaspy.cli.kgen:main',
-                      'vaspy-phonon-bandplot = vaspy.cli.phonon_bandplot:main',
-                      'vaspy-optplot = vaspy.cli.optplot:main']}
+                      'sumo-bandplot = sumo.cli.bandplot:main',
+                      'sumo-bandstats = sumo.cli.bandstats:main',
+                      'sumo-dosplot = sumo.cli.dosplot:main',
+                      'sumo-kgen = sumo.cli.kgen:main',
+                      'sumo-phonon-bandplot = sumo.cli.phonon_bandplot:main',
+                      'sumo-optplot = sumo.cli.optplot:main']}
     )
