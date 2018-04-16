@@ -1,0 +1,7 @@
+numpy
+scipy
+spglib
+pymatgen
+h5py
+matplotlib
+seekpath
