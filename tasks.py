@@ -41,7 +41,7 @@ def release(ctx):
         "prerelease": False
     }
     response = requests.post(
-        "https://api.github.com/repos/utf/sumo/releases",
+        "https://api.github.com/repos/smtg-ucl/sumo/releases",
         data=json.dumps(payload),
         headers={"Authorization": "token " + os.environ["GITHUB_TOKEN"]})
     print(response.text)
