@@ -1,5 +1,6 @@
 import pkg_resources
 import unittest
+import warnings
 
 from os.path import join as path_join
 
@@ -14,7 +15,9 @@ class SeekpathKpathTestCase(unittest.TestCase):
         ge_poscar = pkg_resources.resource_filename(
             __name__, path_join('..', 'data', 'Ge', 'POSCAR')
         )
-        self.ge_structure = Structure.from_file(ge_poscar)
+        with warnings.catch_warnings():  # Not interested in Pymatgen warnings
+            warnings.simplefilter("ignore")
+            self.ge_structure = Structure.from_file(ge_poscar)
 
     def test_seekpath_conversion(self):
         """Check path format conversion from seekpath"""
