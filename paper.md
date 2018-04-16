@@ -72,7 +72,9 @@ to produce projected density of states and orbital resolved band structures.
 The code additionally supplies a tool for generating k-point paths along high-symmetry directions
 in the Brillouin zone, with the ability to write the necessary input files required to perform the
 calculations in VASP.
-Furthermore, a script is provided to extract information from semiconductor band structures, including
+Crucially, this tool supports splitting up band structures into several parts, as is essential
+when dealing with ambitious calculations or restrictive batch systems.
+Lastly, a script is provided to extract information from semiconductor band structures, including
 direct and indirect band gaps, band edge locations, and parabolic and non-parabolic effective masses.
 
 ![Diagrams produced by `sumo`. a) Density of states, b) projected band structure, and c) optical absorption spectra.](docs/source/figures/sumo_plots.pdf)
