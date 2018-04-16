@@ -4,6 +4,11 @@ Change Log
 [Unreleased]
 ------------
 
+v1.0.4
+------
+
+Minor changes to Pypi config.
+
 v1.0.0
 ------
 

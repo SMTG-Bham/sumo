@@ -13,20 +13,18 @@ def load_test_suite():
     test_suite = test_loader.discover('tests/tests_symmetry')
     return test_suite
 
+with open('README.rst') as file:
+    long_description = file.read()
 
 setup(
     name='sumo',
-    version='1.0.0',
-    description='Heavy weight plotting tools',
-    long_description="""
-Handy tools for plotting and analysing ab initio calculation data.
-Developed by and for the Scanlon Materials Theory Group
-""",
+    version='1.0.4',
+    description='Heavy weight plotting tools for ab initio calculations',
     url='https://github.com/smtg-ucl/sumo',
     author='Alex Ganose, Adam J. Jackson',
     author_email='d.scanlon@ucl.ac.uk',
+    long_description=long_description,
     license='MIT',
-
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',

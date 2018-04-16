@@ -19,7 +19,7 @@ __date__ = "Oct 20 2017"
 @task
 def publish(ctx):
     ctx.run("rm dist/*.*", warn=True)
-    ctx.run("python setup.py sdist bdist_wheel")
+    ctx.run("python3 setup.py sdist bdist_wheel")
     ctx.run("twine upload dist/*")
 
 
