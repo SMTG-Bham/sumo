@@ -18,8 +18,11 @@ Usage
 -----
 
 Primarily, sumo is intended to be used via the command-line, however, a fully-documented
-python API is also provided. The package documentation is still a WIP, however the built-in
-help (``-h``) option for each command provides a summary of the available options.
+python API is also provided.
+A full manual, including tutorials and API documentation,
+is available online at `readthedocs.io <http://sumo.readthedocs.io/en/latest/>`__.
+Additionally, the built-in help (``-h``) option for each command provides a
+summary of the available options.
 
 Currently the scripts provided by sumo are:
 
