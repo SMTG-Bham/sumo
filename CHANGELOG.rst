@@ -4,6 +4,11 @@ Change Log
 [Unreleased]
 ------------
 
+v1.0.5
+------
+
+Minor bug fixes
+
 v1.0.4
 ------
 

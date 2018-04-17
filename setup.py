@@ -18,7 +18,7 @@ with open('README.rst', 'r') as file:
 
 setup(
     name='sumo',
-    version='1.0.4',
+    version='1.0.5',
     description='Heavy weight plotting tools for ab initio calculations',
     url='https://github.com/smtg-ucl/sumo',
     author='Alex Ganose, Adam J. Jackson',
