@@ -56,13 +56,5 @@ docs/_build/
 # PyBuilder
 target/
 
-# Executables
-dosplot
-kgen
-optics
-bandplot
-bandgen
-bandstats
-
 # Rope project settings
 .ropeproject
