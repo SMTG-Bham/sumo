@@ -13,7 +13,7 @@ def load_test_suite():
     test_suite = test_loader.discover('tests/tests_symmetry')
     return test_suite
 
-with open('README.rst') as file:
+with open('README.rst', 'r') as file:
     long_description = file.read()
 
 setup(
