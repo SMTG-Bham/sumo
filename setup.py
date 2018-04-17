@@ -37,10 +37,11 @@ setup(
     keywords='chemistry pymatgen dft vasp dos band',
     test_suite='setup.load_test_suite',
     packages=find_packages(),
-    install_requires=['spglib', 'numpy', 'scipy', 'pymatgen', 'h5py',
+    install_requires=['spglib', 'numpy', 'scipy', 'pymatgen>=2017.12.30', 'h5py',
                       'phonopy', 'matplotlib', 'seekpath'],
     extras_require={'docs': ['sphinx', 'sphinx-argparse']},
-    package_data={'sumo': ['conf/orbital_colours.conf']},
+    package_data={'sumo': ['conf/orbital_colours.conf',
+                           'sumo/symmetry/bradcrack.json']},
     entry_points={'console_scripts': [
                       'sumo-bandplot = sumo.cli.bandplot:main',
                       'sumo-bandstats = sumo.cli.bandstats:main',
