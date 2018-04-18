@@ -148,7 +148,7 @@ class SOpticsPlotter(object):
         ax.set_ylabel(r'Absorption (cm$^\mathregular{-1}$)')
 
         if (not np.all(np.array(self._label) == '')
-                or len(self._abs_data[0]) > 1):
+                or len(self._abs_data[0]) > 2):
             ax.legend(loc='best', frameon=False, ncol=1,
                       prop={'size': label_size - 3})
 
