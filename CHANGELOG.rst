@@ -4,10 +4,15 @@ Change Log
 [Unreleased]
 ------------
 
+v1.0.6
+------
+
+Move package data files.
+
 v1.0.5
 ------
 
-Minor bug fixes
+Minor bug fixes.
 
 v1.0.4
 ------
@@ -30,4 +35,4 @@ Added
   - sumo-phonon-bandplot
 
 `[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.0.4...HEAD>`_.
-`[1.0.4] <https://github.com/smtg-ucl/sumo/compare/v0.0...v1.0.4>`_.
+`[1.0.6] <https://github.com/smtg-ucl/sumo/compare/v0.0...v1.0.4>`_.
