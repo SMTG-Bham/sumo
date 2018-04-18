@@ -149,7 +149,7 @@ def bandstats(filenames=None, num_sample_points=3, temperature=None,
         eff_mass = fit_effective_mass(data['distances'], data['energies'],
                                       parabolic=parabolic)
         data['effective_mass'] = eff_mass
-        _log_effective_mass_data(data, bs.is_spin_polarized)
+        _log_effective_mass_data(data, bs.is_spin_polarized, mass_type='m_h')
 
     logging.info('\nElectron effective masses:')
     for data in elec_data:
@@ -240,7 +240,7 @@ def _log_band_edge_information(bs, edge_data):
     logging.info('  Band indexes: {}'.format(b_indexes))
 
 
-def _log_effective_mass_data(data, is_spin_polarized):
+def _log_effective_mass_data(data, is_spin_polarized, mass_type='m_e'):
     """Log data about the effective masses and their directions.
 
     Args:
@@ -282,8 +282,8 @@ def _log_effective_mass_data(data, is_spin_polarized):
     if end_kpoint.label:
         kpoint_str += ' ({})'.format(end_kpoint.label)
 
-    logging.info('  m_e: {:.3f} | {} | {}'.format(eff_mass, band_str,
-                                                  kpoint_str))
+    logging.info('  {}: {:.3f} | {} | {}'.format(mass_type, eff_mass,
+                                                 band_str, kpoint_str))
 
 
 def _get_parser():
