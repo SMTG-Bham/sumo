@@ -1,2 +1,4 @@
-include conf/orbital_colours.conf
+include sumo/conf/orbital_colours.conf
 include sumo/symmetry/bradcrack.json
+include LICENSE
+include requirements.txt

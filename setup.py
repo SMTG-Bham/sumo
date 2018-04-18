@@ -40,8 +40,9 @@ setup(
     install_requires=['spglib', 'numpy', 'scipy', 'pymatgen>=2017.12.30', 'h5py',
                       'phonopy', 'matplotlib', 'seekpath'],
     extras_require={'docs': ['sphinx', 'sphinx-argparse']},
-    package_data={'sumo': ['conf/orbital_colours.conf',
-                           'sumo/symmetry/bradcrack.json']},
+    package_data={'sumo': ['symmetry/bradcrack.json',
+                           'plotting/orbital_colours.conf']},
+    data_files=['examples/orbital_colours.conf', 'LICENSE', 'requirements.txt'],
     entry_points={'console_scripts': [
                       'sumo-bandplot = sumo.cli.bandplot:main',
                       'sumo-bandstats = sumo.cli.bandstats:main',
