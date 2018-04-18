@@ -12,13 +12,13 @@ tags:
 authors:
  - name: Alex M Ganose
    orcid: 0000-0002-4486-3321
-   affiliation: 1,2,3
+   affiliation: "1, 2, 3"
  - name: Adam J Jackson
    orcid: 0000-0001-5272-6530
    affiliation: 1
  - name: David O Scanlon
    orcid: 0000-0001-9174-8601
-   affiliation: 1,2,3
+   affiliation: "1, 2, 3"
    email: d.scanlon@ucl.ac.uk
 affiliations:
  - name: Dept of Chemistry, University College London, 20 Gordon Street, London WC1H 0AJ, UK
