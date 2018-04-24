@@ -112,7 +112,7 @@ class BradCrackKpath(Kpath):
             if 'P' in spg_symbol:
                 return('orth_p')
 
-            elif 'C' in spg_symbol:
+            elif 'A' in spg_symbol or 'C' in spg_symbol:
                 if a > b:
                     return('orth_c_a')
                 elif b > a:
