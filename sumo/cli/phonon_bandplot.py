@@ -295,9 +295,9 @@ def _get_parser():
                         help='height of the graph')
     parser.add_argument('--width', type=float, default=6.,
                         help='width of the graph')
-    parser.add_argument('--ymin', type=float, default=-6.,
+    parser.add_argument('--ymin', type=float, default=None,
                         help='minimum energy on the y-axis')
-    parser.add_argument('--ymax', type=float, default=6.,
+    parser.add_argument('--ymax', type=float, default=None,
                         help='maximum energy on the y-axis')
     parser.add_argument('--config', type=str, default=None,
                         help='colour configuration file')

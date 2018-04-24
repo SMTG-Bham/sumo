@@ -4,6 +4,14 @@ Change Log
 [Unreleased]
 ------------
 
+v1.0.7
+------
+
+Various bug fixes:
+
+- Fixed density option in kgen.
+- Fixed phonon-bandplot plotting limits.
+
 v1.0.6
 ------
 
