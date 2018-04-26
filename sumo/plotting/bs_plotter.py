@@ -373,7 +373,8 @@ class SBSPlotter(BSPlotter):
                 label = spec
             else:
                 label = '{} ({})'.format(spec[0], " + ".join(spec[1]))
-            ax.scatter([-10000], [-10000], c=c, s=50, label=label)
+            ax.scatter([-10000], [-10000], c=c, s=50, label=label,
+                       edgecolors='none')
 
         if dos_plotter:
             loc = 1
@@ -383,7 +384,8 @@ class SBSPlotter(BSPlotter):
             anchor_point = (0.95, 1)
 
         ax.legend(bbox_to_anchor=anchor_point, loc=loc, frameon=False,
-                  prop={'size': label_size-2}, handletextpad=0.1)
+                  prop={'size': label_size-2}, handletextpad=0.1,
+                  scatterpoints=1)
 
         # finish and tidy plot
         self._maketicks(ax)

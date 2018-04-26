@@ -263,8 +263,7 @@ class SDOSPlotter(object):
             ncol = 1 if subplot else num_columns
             if legend_on:
                 ax.legend(loc=loc, frameon=legend_frame_on, ncol=ncol,
-                          handlelength=1,
-                          prop={'size': label_size - 3})
+                          handlelength=2, prop={'size': label_size - 3})
 
         # no add axis labels and sort out ticks
         if subplot:
