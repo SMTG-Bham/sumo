@@ -6,6 +6,7 @@ Change Log
 
 Various bug fixes:
 
+- Fixed gaussian broadening of DOS
 - Fixed ``--spg`` option in kgen and phonon-bandplot.
 - Fixed default arguments for band structure + dos plotting.
 - Added A centered orthorhombic lattice to ``BradCrackKpath``.

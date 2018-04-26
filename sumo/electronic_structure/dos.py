@@ -101,7 +101,7 @@ def load_dos(filename, elements=None, lm_orbitals=None, atoms=None,
         dos.energies -= vr.parameters['SIGMA']
 
     if gaussian:
-        dos = dos.get_smeared_vaspdos(gaussian)
+        dos.densities = dos.get_smeared_densities(gaussian)
         for site in dos.pdos:
             for orbital in dos.pdos[site]:
                 dos.pdos[site][orbital] = dos.get_site_orbital_dos(site,
