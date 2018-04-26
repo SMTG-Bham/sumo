@@ -4,6 +4,12 @@ Change Log
 [Unreleased]
 ------------
 
+Various bug fixes:
+
+- Fixed ``--spg`` option in kgen and phonon-bandplot.
+- Fixed default arguments for band structure + dos plotting.
+- Added A centered orthorhombic lattice to ``BradCrackKpath``.
+
 v1.0.7
 ------
 

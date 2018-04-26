@@ -105,7 +105,7 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
     poscar = Poscar.from_file(filename)
     kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
                                            symprec=symprec, kpt_list=kpt_list,
-                                           labels=labels,
+                                           labels=labels, spg=spg,
                                            line_density=density)
 
     logging.info('\nk-point label indicies:')

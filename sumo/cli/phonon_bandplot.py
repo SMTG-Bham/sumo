@@ -173,7 +173,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
 
         # calculate band structure
         kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
-                                               symprec=symprec,
+                                               symprec=symprec, spg=spg,
                                                kpt_list=kpt_list,
                                                labels=labels, phonopy=True)
 
