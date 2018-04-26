@@ -308,5 +308,6 @@ def get_colour_for_element_and_orbital(element, orbital, colours=None):
     """
     try:
         return colours.get(element, orbital)
-    except (configparser.NoSectionError, configparser.NoOptionError, KeyError):
+    except (configparser.NoSectionError, configparser.NoOptionError, KeyError,
+            AttributeError):
         return next(col_cycle)

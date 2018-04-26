@@ -417,6 +417,10 @@ class SBSPlotter(BSPlotter):
 
         if dos_plotter:
             ax = fig.axes[1]
+
+            if not dos_options:
+                dos_options = {}
+
             dos_options.update({'xmin': ymin, 'xmax': ymax})
             self._makedos(ax, dos_plotter, dos_options)
         else:
@@ -427,12 +431,15 @@ class SBSPlotter(BSPlotter):
 
     def _makedos(self, ax, dos_plotter, dos_options):
         """This is basically the same as the VDOSPlotter get_plot function."""
+
         plot_data = dos_plotter.dos_plot_data(**dos_options)
+
         mask = plot_data['mask']
         energies = plot_data['energies'][mask]
         lines = plot_data['lines']
         spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else \
             [Spin.up, Spin.down]
+
         for i, line_set in enumerate(plot_data['lines']):
             for line, spin in it.product(line_set, spins):
                 if spin == Spin.up:
