@@ -476,8 +476,7 @@ class SBSPlotter(BSPlotter):
                            labeltop='off', bottom='off', top='off')
 
             if dos_label is not None:
-                ax.yaxis.set_label_position('right')
-                ax.set_ylabel(dos_label, rotation=270, labelpad=label_size)
+                ax.set_xlabel(dos_label)
 
             ax.legend(loc=2, frameon=False, ncol=1,
                       prop={'size': label_size - 3},
