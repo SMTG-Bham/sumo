@@ -288,6 +288,10 @@ def get_colour_for_element_and_orbital(element, orbital, colours=None):
     will be used based on the list of 22 colours of maximum contast:
     http://www.iscc.org/pdf/PC54_1724_001.pdf
 
+    This is cached in sumo.plotting.colour_cache and re-used for subsequent
+    plots within this Python instance. To reset the cache, set
+    ``sumo.plotting.colour_cache = {}``.
+
     Args:
         element (str): The element.
         orbital (str): The orbital.
