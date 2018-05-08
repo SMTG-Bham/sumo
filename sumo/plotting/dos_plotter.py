@@ -10,6 +10,7 @@ import itertools
 
 from sumo.electronic_structure.dos import sort_orbitals
 from sumo.plotting import pretty_plot, pretty_subplot, colour_cycle
+from sumo.plotting import colour_cache
 
 from pymatgen.electronic_structure.core import Spin
 
@@ -287,6 +288,10 @@ def get_colour_for_element_and_orbital(element, orbital, colours=None):
     will be used based on the list of 22 colours of maximum contast:
     http://www.iscc.org/pdf/PC54_1724_001.pdf
 
+    This is cached in sumo.plotting.colour_cache and re-used for subsequent
+    plots within this Python instance. To reset the cache, set
+    ``sumo.plotting.colour_cache = {}``.
+
     Args:
         element (str): The element.
         orbital (str): The orbital.
@@ -305,8 +310,33 @@ def get_colour_for_element_and_orbital(element, orbital, colours=None):
     Returns:
         str: The colour.
     """
-    try:
-        return colours.get(element, orbital)
-    except (configparser.NoSectionError, configparser.NoOptionError, KeyError,
-            AttributeError):
-        return next(col_cycle)
+
+    def _get_colour_with_cache(element, orbital):
+        """Return cached colour if available, or fetch and cache from cycle"""
+        if element in colour_cache and orbital in colour_cache[element]:
+            return colour_cache[element][orbital]
+        else:
+            colour = next(col_cycle)
+            if element not in colour_cache:
+                colour_cache[element] = {}
+            colour_cache[element].update({orbital: colour})
+            return colour
+
+    if isinstance(colours, configparser.ConfigParser):
+        try:
+            return colours.get(element, orbital)
+        except(configparser.NoSectionError, configparser.NoOptionError):
+            return _get_colour_with_cache(element, orbital)
+
+    elif isinstance(colours, dict):
+        try:
+            return colours[element][orbital]
+        except(KeyError):
+            return _get_colour_with_cache(element, orbital)
+
+    elif colours is None:
+        return _get_colour_with_cache(element, orbital)
+
+    else:
+        raise TypeError('Argument "colours" should be dict, '
+                        'ConfigParser or None.')
