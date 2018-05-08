@@ -45,8 +45,11 @@ class SBSPlotter(BSPlotter):
         BSPlotter.__init__(self, bs)
 
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
-                 width=6., height=6., vbm_cbm_marker=False, dpi=400, plt=None,
-                 dos_plotter=None, dos_options=None, dos_aspect=3, fonts=None):
+                 width=6., height=6., vbm_cbm_marker=False,
+                 ylabel='Energy (eV)',
+                 dpi=400, plt=None,
+                 dos_plotter=None, dos_options=None, dos_label=None,
+                 dos_aspect=3, fonts=None):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
         If the system is spin polarised, blue lines are spin up, red lines are
@@ -63,14 +66,15 @@ class SBSPlotter(BSPlotter):
             height (:obj:`float`, optional): The height of the plot.
             vbm_cbm_marker (:obj:`bool`, optional): Plot markers to indicate
                 the VBM and CBM locations.
+            ylabel (:obj:`str`, optional): y-axis (i.e. energy) label/units
             dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
                 the image.
             plt (:obj:`matplotlib.pyplot`, optional): A
                 :obj:`matplotlib.pyplot` object to use for plotting.
-            dos_plotter (:obj:`~sumo.plotting.dos_plotter.VDOSPlotter`, \
+            dos_plotter (:obj:`~sumo.plotting.dos_plotter.SDOSPlotter`, \
                 optional): Plot the density of states alongside the band
                 structure. This should be a
-                :obj:`~sumo.plotting.dos_plotter.VDOSPlotter` object
+                :obj:`~sumo.plotting.dos_plotter.SDOSPlotter` object
                 initialised with the data to plot.
             dos_options (:obj:`dict`, optional): The options for density of
                 states plotting. This should be formatted as a :obj:`dict`
@@ -108,6 +112,7 @@ class SBSPlotter(BSPlotter):
                         Plot the density of states for each element on seperate
                         subplots. Defaults to ``False``.
 
+            dos_label (:obj:`str`, optional): DOS axis label/unitsa
             dos_aspect (:obj:`float`, optional): Aspect ratio for the band
                 structure and density of states subplot. For example,
                 ``dos_aspect = 3``, results in a ratio of 3:1, for the band
@@ -157,18 +162,21 @@ class SBSPlotter(BSPlotter):
                 e = eners[nd][str(Spin.down)][nb]
                 ax.plot(dists[nd], e, 'r--', linewidth=band_linewidth)
 
-        self._maketicks(ax)
+        self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
                        vbm_cbm_marker=vbm_cbm_marker, width=width,
                        height=height, ymin=ymin, ymax=ymax,
-                       dos_plotter=dos_plotter, dos_options=dos_options)
+                       dos_plotter=dos_plotter, dos_options=dos_options,
+                       dos_label=dos_label)
         return plt
 
     def get_projected_plot(self, selection, mode='rgb', interpolate_factor=4,
                            circle_size=150, projection_cutoff=0.001,
                            zero_to_efermi=True, ymin=-6., ymax=6., width=6.,
-                           height=6., vbm_cbm_marker=False, dpi=400, plt=None,
-                           dos_plotter=None, dos_options=None,
+                           height=6., vbm_cbm_marker=False,
+                           ylabel='Energy (eV)',
+                           dpi=400, plt=None,
+                           dos_plotter=None, dos_options=None, dos_label=None,
                            dos_aspect=3, fonts=None):
         """Get a :obj:`matplotlib.pyplot` of the projected band structure.
 
@@ -234,14 +242,15 @@ class SBSPlotter(BSPlotter):
             height (:obj:`float`, optional): The height of the plot.
             vbm_cbm_marker (:obj:`bool`, optional): Plot markers to indicate
                 the VBM and CBM locations.
+            ylabel (:obj:`str`, optional): y-axis (i.e. energy) label/units
             dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
                 the image.
             plt (:obj:`matplotlib.pyplot`, optional): A
                 :obj:`matplotlib.pyplot` object to use for plotting.
-            dos_plotter (:obj:`~sumo.plotting.dos_plotter.VDOSPlotter`, \
+            dos_plotter (:obj:`~sumo.plotting.dos_plotter.SDOSPlotter`, \
                 optional): Plot the density of states alongside the band
                 structure. This should be a
-                :obj:`~sumo.plotting.dos_plotter.VDOSPlotter` object
+                :obj:`~sumo.plotting.dos_plotter.SDOSPlotter` object
                 initialised with the data to plot.
             dos_options (:obj:`dict`, optional): The options for density of
                 states plotting. This should be formatted as a :obj:`dict`
@@ -279,6 +288,7 @@ class SBSPlotter(BSPlotter):
                         Plot the density of states for each element on seperate
                         subplots. Defaults to ``False``.
 
+            dos_label (:obj:`str`, optional): DOS axis label/units
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
                 a single font, specified as a :obj:`str`, or several fonts,
                 specified as a :obj:`list` of :obj:`str`.
@@ -388,16 +398,17 @@ class SBSPlotter(BSPlotter):
                   scatterpoints=1)
 
         # finish and tidy plot
-        self._maketicks(ax)
+        self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
                        vbm_cbm_marker=vbm_cbm_marker, width=width,
                        height=height, ymin=ymin, ymax=ymax,
-                       dos_plotter=dos_plotter, dos_options=dos_options)
+                       dos_plotter=dos_plotter, dos_options=dos_options,
+                       dos_label=dos_label)
         return plt
 
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,
                   vbm_cbm_marker=False, ymin=-6., ymax=6., height=6., width=6.,
-                  dos_plotter=None, dos_options=None):
+                  dos_plotter=None, dos_options=None, dos_label=None):
         """Tidy the band structure & add the density of states if required."""
         # draw line at Fermi level if not zeroing to e-Fermi
         if not zero_to_efermi:
@@ -424,15 +435,15 @@ class SBSPlotter(BSPlotter):
                 dos_options = {}
 
             dos_options.update({'xmin': ymin, 'xmax': ymax})
-            self._makedos(ax, dos_plotter, dos_options)
+            self._makedos(ax, dos_plotter, dos_options, dos_label=dos_label)
         else:
             # keep correct aspect ratio square
             x0, x1 = ax.get_xlim()
             y0, y1 = ax.get_ylim()
             ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
 
-    def _makedos(self, ax, dos_plotter, dos_options):
-        """This is basically the same as the VDOSPlotter get_plot function."""
+    def _makedos(self, ax, dos_plotter, dos_options, dos_label=None):
+        """This is basically the same as the SDOSPlotter get_plot function."""
 
         plot_data = dos_plotter.dos_plot_data(**dos_options)
 
@@ -464,11 +475,15 @@ class SBSPlotter(BSPlotter):
             ax.tick_params(axis='x', which='both', labelbottom='off',
                            labeltop='off', bottom='off', top='off')
 
+            if dos_label is not None:
+                ax.yaxis.set_label_position('right')
+                ax.set_ylabel(dos_label, rotation=270, labelpad=label_size)
+
             ax.legend(loc=2, frameon=False, ncol=1,
                       prop={'size': label_size - 3},
                       bbox_to_anchor=(1., 1.))
 
-    def _maketicks(self, ax):
+    def _maketicks(self, ax, ylabel='Energy (eV)'):
         """Utility method to add tick marks to a band structure."""
         # set y-ticks
         ax.yaxis.set_major_locator(MaxNLocator(6))
@@ -494,4 +509,4 @@ class SBSPlotter(BSPlotter):
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
         ax.xaxis.grid(True, c='k', ls='-', lw=line_width)
-        ax.set_ylabel('Energy (eV)')
+        ax.set_ylabel(ylabel)
