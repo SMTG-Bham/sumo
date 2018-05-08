@@ -167,6 +167,7 @@ class SDOSPlotter(object):
     def get_plot(self, subplot=False, width=6., height=8., xmin=-6., xmax=6.,
                  yscale=1, colours=None, plot_total=True, legend_on=True,
                  num_columns=2, legend_frame_on=False, legend_cutoff=3,
+                 xlabel='Energy (eV)', ylabel='Arb. units',
                  dpi=400, fonts=None, plt=None):
         """Get a :obj:`matplotlib.pyplot` object of the density of states.
 
@@ -202,6 +203,8 @@ class SDOSPlotter(object):
                 elemental orbital to be labelled in the legend. This prevents
                 the legend from containing labels for orbitals that have very
                 little contribution in the plotting range.
+            xlabel (:obj:`str`, optional): Label/units for x-axis (i.e. energy)
+            ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)
             dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
                 the image.
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
@@ -267,15 +270,15 @@ class SDOSPlotter(object):
 
         # no add axis labels and sort out ticks
         if subplot:
-            ax.set_xlabel('Energy (eV)', fontsize=label_size)
+            ax.set_xlabel(xlabel, fontsize=label_size)
             fig.subplots_adjust(hspace=0)
             plt.setp([a.get_xticklabels() for a in fig.axes[:-1]],
                      visible=False)
-            fig.text(0.08, 0.5, 'Arb.units', fontsize=label_size, ha='left',
+            fig.text(0.08, 0.5, ylabel, fontsize=label_size, ha='left',
                      va='center', rotation='vertical', transform=ax.transAxes)
         else:
-            ax.set_xlabel('Energy (eV)')
-            ax.set_ylabel('Arb.units')
+            ax.set_xlabel(xlabel)
+            ax.set_ylabel(ylabel)
 
         return plt
 
