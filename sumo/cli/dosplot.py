@@ -42,6 +42,7 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
             total_only=False, plot_total=True, legend_on=True,
             legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6.,
             width=8., xmin=-6., xmax=6., num_columns=2, colours=None, yscale=1,
+            xlabel='Energy (eV)', ylabel='Arb. units',
             image_format='pdf', dpi=400, plt=None, fonts=None):
     """A script to plot the density of states from a vasprun.xml file.
 
@@ -124,6 +125,8 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
 
             The colour can be a hex code, series of rgb value, or any other
             format supported by matplotlib.
+        xlabel (:obj:`str`, optional): Label/units for x-axis (i.e. energy)
+        ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)
         yscale (:obj:`float`, optional): Scaling factor for the y-axis.
         image_format (:obj:`str`, optional): The image file format. Can be any
             format supported by matplot, including: png, jpg, pdf, and svg.
@@ -159,6 +162,7 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
                            colours=colours, plot_total=plot_total,
                            legend_on=legend_on, num_columns=num_columns,
                            legend_frame_on=legend_frame_on,
+                           xlabel=xlabel, ylabel=ylabel,
                            legend_cutoff=legend_cutoff, dpi=dpi, plt=plt,
                            fonts=fonts)
 
@@ -277,6 +281,10 @@ def _get_parser():
                         help='maximum energy on the x-axis')
     parser.add_argument('--config', type=str, default=None,
                         help='colour configuration file')
+    parser.add_argument('--xlabel', type=str, default='Energy (eV)',
+                        help='x-axis (i.e. energy) label/units'),
+    parser.add_argument('--ylabel', type=str, default='Arb. units',
+                        help='y-axis (i.e. DOS) label/units'),
     parser.add_argument('--yscale', type=float, default=1,
                         help='scaling factor for the y-axis')
     parser.add_argument('--format', type=str, default='pdf',
@@ -320,6 +328,7 @@ def main():
             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
             height=args.height, width=args.width, xmin=args.xmin,
             xmax=args.xmax, num_columns=args.columns, colours=colours,
+            xlabel=args.xlabel, ylabel=args.ylabel,
             yscale=args.yscale, image_format=args.image_format, dpi=args.dpi,
             fonts=[args.font])
 

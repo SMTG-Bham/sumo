@@ -47,6 +47,7 @@ __date__ = "July 18, 2017"
 def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
              projection_selection=None, mode='rgb',
              interpolate_factor=4, circle_size=150, dos_file=None,
+             ylabel='Energy (eV)', dos_label=None,
              elements=None, lm_orbitals=None, atoms=None,
              total_only=False, plot_total=True, legend_cutoff=3, gaussian=None,
              height=6., width=6., ymin=-6., ymax=6., colours=None, yscale=1,
@@ -240,13 +241,16 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                                          zero_to_efermi=True, ymin=ymin,
                                          ymax=ymax, height=height, width=width,
                                          vbm_cbm_marker=vbm_cbm_marker,
-                                         plt=plt, dos_plotter=dos_plotter,
-                                         dos_options=dos_opts, fonts=fonts)
+                                         ylabel=ylabel, plt=plt,
+                                         dos_plotter=dos_plotter,
+                                         dos_options=dos_opts,
+                                         dos_label=dos_label, fonts=fonts)
     else:
         plt = plotter.get_plot(zero_to_efermi=True, ymin=ymin, ymax=ymax,
                                height=height, width=width,
-                               vbm_cbm_marker=vbm_cbm_marker, plt=plt,
-                               dos_plotter=dos_plotter, dos_options=dos_opts,
+                               vbm_cbm_marker=vbm_cbm_marker,
+                               ylabel=ylabel, plt=plt, dos_plotter=dos_plotter,
+                               dos_options=dos_opts, dos_label=dos_label,
                                fonts=fonts)
 
     if save_files:
@@ -396,6 +400,11 @@ def _get_parser():
                         dest='circle_size', metavar='S',
                         help=('circle size for "stacked" projections '
                               '(default: 150)'))
+    parser.add_argument('--ylabel', type=str, default='Energy (eV)',
+                        help='y-axis (i.e. energy) label/units')
+    parser.add_argument('--dos-label', type=str, dest='dos_label',
+                        default=None,
+                        help='Axis label for DOS if included')
     parser.add_argument('--dos', default=None,
                         help='path to density of states vasprun.xml')
     parser.add_argument('--elements', type=_el_orb, metavar='E',
@@ -464,6 +473,7 @@ def main():
              projection_selection=args.projection_selection, mode=args.mode,
              interpolate_factor=args.interpolate_factor,
              circle_size=args.circle_size, yscale=args.scale,
+             ylabel=args.ylabel, dos_label=args.dos_label,
              dos_file=args.dos, elements=args.elements,
              lm_orbitals=args.orbitals, atoms=args.atoms,
              total_only=args.total_only, plot_total=args.total,
