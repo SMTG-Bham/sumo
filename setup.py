@@ -10,7 +10,7 @@ import unittest
 
 def load_test_suite():
     test_loader = unittest.TestLoader()
-    test_suite = test_loader.discover('tests/tests_symmetry')
+    test_suite = test_loader.discover('tests', pattern='test*.py')
     return test_suite
 
 with open('README.rst', 'r') as file:

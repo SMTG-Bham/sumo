@@ -20,6 +20,8 @@ default_colours = [[240, 163, 255], [0, 117, 220], [153, 63, 0], [76, 0, 92],
                    [148, 255, 181], [143, 124, 0], [255, 168, 187],
                    [128, 128, 128]]
 
+colour_cache = {}
+
 default_fonts = ['Whitney Book Extended', 'Arial', 'Whitney Book', 'Helvetica',
                  'Liberation Sans', 'Andale Sans']
 
