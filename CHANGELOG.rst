@@ -4,6 +4,14 @@ Change Log
 [Unreleased]
 ------------
 
+v1.0.8
+------
+
+Enhancements by Adam Jackson:
+
+- Add y-label and dos label options for DOS & band plots.
+- Cache DOS colours for consistent plots.
+
 Various bug fixes:
 
 - Fixed gaussian broadening of DOS
@@ -49,5 +57,5 @@ Added
   - sumo-optplot
   - sumo-phonon-bandplot
 
-`[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.0.4...HEAD>`_.
-`[1.0.6] <https://github.com/smtg-ucl/sumo/compare/v0.0...v1.0.4>`_.
+`[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.0.8...HEAD>`_.
+`[1.0.8] <https://github.com/smtg-ucl/sumo/compare/v1.0.4...v1.0.8>`_.
