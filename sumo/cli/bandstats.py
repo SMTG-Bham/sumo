@@ -172,19 +172,18 @@ def _log_band_gap_information(bs):
         logging.info('Indirect band gap: {:.3f} eV'.format(bg_data['energy']))
 
     direct_data = bs.get_direct_band_gap_dict()
-
     if bs.is_spin_polarized:
-        spins = direct_data.keys()
-        direct_bg = direct_data[spins[0]]['value']
+        direct_bg = min((spin_data['value']
+                         for spin_data in direct_data.values()))
         logging.info('Direct band gap: {:.3f} eV'.format(direct_bg))
 
-        for spin in direct_bg.keys():
-            direct_kindex = direct_data[spin]['kpoint_index']
+        for spin, spin_data in direct_data.items():
+            direct_kindex = spin_data['kpoint_index']
             direct_kpoint = bs.kpoints[direct_kindex].frac_coords
             direct_kpoint = kpt_str.format(k=direct_kpoint)
             eq_kpoints = bs.get_equivalent_kpoints(direct_kindex)
             k_indexes = ', '.join(map(str, eq_kpoints))
-            b_indexes = ', '.join(map(str, direct_data[spin]['band_indices']))
+            b_indexes = ', '.join(map(str, spin_data['band_indices']))
 
             logging.info('  {}:'.format(spin.name.capitalize()))
             logging.info('    k-point: {}'.format(direct_kpoint))
@@ -218,7 +217,7 @@ def _log_band_edge_information(bs, edge_data):
     if bs.is_spin_polarized:
         spins = edge_data['band_index'].keys()
         b_indexes = [', '.join(map(str, edge_data['band_index'][spin]))
-                     + '({})'.format(spin.name.capitalise()) for spin in spins]
+                     + '({})'.format(spin.name.capitalize()) for spin in spins]
         b_indexes = ', '.join(b_indexes)
     else:
         b_indexes = ', '.join(map(str, edge_data['band_index'][Spin.up]))
