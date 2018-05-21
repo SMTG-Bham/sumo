@@ -356,7 +356,7 @@ def main():
 
     phonon_bandplot(args.filename, poscar=args.poscar, prefix=args.prefix,
                     directory=args.directory, dim=dim, born=args.born,
-                    qmesh=args.qmesh, primitive_axis=pa,
+                    qmesh=args.qmesh, primitive_axis=pa, symprec=args.symprec,
                     spg=spg, line_density=args.density,
                     mode=mode, kpt_list=kpoints, labels=labels,
                     height=args.height, width=args.width, ymin=args.ymin,
