@@ -11,6 +11,7 @@ todo:
 
 import numpy as np
 import itertools as it
+from copy import deepcopy
 
 from collections import defaultdict
 
@@ -75,7 +76,7 @@ def get_projections_by_branches(bs, selection, normalise=None):
         s = b['start_index']
         e = b['end_index'] + 1
 
-        branch_proj = projections.copy()
+        branch_proj = deepcopy(projections)
         for spin, i in it.product(spins, range(len(projections))):
             branch_proj[i][spin] = projections[i][spin][:, s:e]
 
