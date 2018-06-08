@@ -9,10 +9,11 @@ This module provides a class for plotting phonon band structure diagrams.
 import logging
 import itertools
 
+import numpy as np
 from matplotlib.ticker import MaxNLocator
 from matplotlib.cbook import flatten
 
-from sumo.plotting import pretty_plot
+from sumo.plotting import pretty_plot, pretty_subplot, default_colours
 
 from pymatgen.phonon.plotter import PhononBSPlotter
 
@@ -35,15 +36,15 @@ class SPhononBSPlotter(PhononBSPlotter):
         PhononBSPlotter.__init__(self, bs)
         self.imag_tol = imag_tol
 
-    def _plot_phonon_dos(dos_file, ax=None):
+    def _plot_phonon_dos(self, dos_file, ax=None):
         if ax is None:
             ax = plt.gca()
-
-        y, x = np.loadtext('total_dos.csv', delimiter=',', unpack=True)
-        ax.plot(x, y, '-')
-        ax.fill_betweenx(y, x, 0)
+        y, x = np.genfromtxt('total_dos.csv', delimiter=',', unpack=True)
+        ax.plot(x, y, '-', color='#3953A4')
+        ax.fill_betweenx(y, x, 0, color='#3953A4', alpha=0.5)
         ax.set_xticks([])
         ax.set_xlim([0, max(x) * 1.1])
+        ax.set_xlabel("DOS")
 
     def get_plot(self, ymin=None, ymax=None, width=6., height=6., dpi=400,
                  plt=None, fonts=None, dos_file=None, dos_aspect=3):
@@ -80,11 +81,10 @@ class SPhononBSPlotter(PhononBSPlotter):
 
 
         if dos_file:
-            plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
+            plt = pretty_subplot(1, 2, width, height, sharex=False, sharey=True, dpi=dpi,
                                  plt=plt, fonts=fonts,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
                                               'wspace': 0})
-            _plot_phonon_dos(dos_file, ax=plt.gcf().axes[1])
             ax = plt.gcf().axes[0]
         else:
             plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
@@ -105,14 +105,14 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, width=width, height=height,
-                       ymin=ymin, ymax=ymax)
+                       ymin=ymin, ymax=ymax, dos_file=dos_file)
         plt.tight_layout()
         plt.subplots_adjust(wspace=0)
 
         return plt
 
     def _makeplot(self, ax, fig, data, ymin=None, ymax=None, height=6,
-                  width=6):
+                  width=6, dos_file=None):
         """Utility method to tidy phonon band structure diagrams. """
         # set x and y limits
         tymax = ymax if ymax else max(flatten(data['frequency']))
@@ -125,11 +125,16 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         ax.set_ylim(ymin, ymax)
         ax.set_xlim(0, data['distances'][-1][-1])
+        ax.axhline(0, color='k')
 
-        # keep correct aspect ratio square
-        x0, x1 = ax.get_xlim()
-        y0, y1 = ax.get_ylim()
-        ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
+        if dos_file is not None:
+            self._plot_phonon_dos(dos_file, ax=fig.axes[1])
+        else:
+
+            # keep correct aspect ratio square
+            x0, x1 = ax.get_xlim()
+            y0, y1 = ax.get_ylim()
+            ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
 
     def _maketicks(self, ax):
         """Utility method to add tick marks to a band structure."""
