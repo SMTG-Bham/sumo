@@ -35,8 +35,18 @@ class SPhononBSPlotter(PhononBSPlotter):
         PhononBSPlotter.__init__(self, bs)
         self.imag_tol = imag_tol
 
+    def _plot_phonon_dos(dos_file, ax=None):
+        if ax is None:
+            ax = plt.gca()
+
+        y, x = np.loadtext('total_dos.csv', delimiter=',', unpack=True)
+        ax.plot(x, y, '-')
+        ax.fill_betweenx(y, x, 0)
+        ax.set_xticks([])
+        ax.set_xlim([0, max(x) * 1.1])
+
     def get_plot(self, ymin=None, ymax=None, width=6., height=6., dpi=400,
-                 plt=None, fonts=None):
+                 plt=None, fonts=None, dos_file=None, dos_aspect=3):
         """Get a :obj:`matplotlib.pyplot` object of the phonon band structure.
 
         Args:
@@ -51,12 +61,34 @@ class SPhononBSPlotter(PhononBSPlotter):
                 specified as a :obj:`list` of :obj:`str`.
             plt (:obj:`matplotlib.pyplot`, optional): A
                 :obj:`matplotlib.pyplot` object to use for plotting.
+            dos_file (str): Path to total dos .csv data
+            dos_aspect (float): Width division for vertical DOS
 
         Returns:
             :obj:`matplotlib.pyplot`: The phonon band structure plot.
         """
-        plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
-        ax = plt.gca()
+
+        # if dos_plotter:
+        #     plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
+        #                          plt=plt, fonts=fonts,
+        #                          gridspec_kw={'width_ratios': [dos_aspect, 1],
+        #                                       'wspace': 0})
+        #     ax = plt.gcf().axes[0]
+        # else:
+        #     plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
+        #     ax = plt.gca()
+
+
+        if dos_file:
+            plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
+                                 plt=plt, fonts=fonts,
+                                 gridspec_kw={'width_ratios': [dos_aspect, 1],
+                                              'wspace': 0})
+            _plot_phonon_dos(dos_file, ax=plt.gcf().axes[1])
+            ax = plt.gcf().axes[0]
+        else:
+            plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
+            ax = plt.gca()
 
         data = self.bs_plot_data()
         dists = data['distances']
@@ -75,6 +107,8 @@ class SPhononBSPlotter(PhononBSPlotter):
         self._makeplot(ax, plt.gcf(), data, width=width, height=height,
                        ymin=ymin, ymax=ymax)
         plt.tight_layout()
+        plt.subplots_adjust(wspace=0)
+
         return plt
 
     def _makeplot(self, ax, fig, data, ymin=None, ymax=None, height=6,
