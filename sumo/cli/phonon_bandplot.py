@@ -53,7 +53,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
                     symprec=0.01, mode='bradcrack', kpt_list=None,
                     eigenvectors=False, labels=None, height=6., width=6.,
                     ymin=None, ymax=None, image_format='pdf', dpi=400,
-                    plt=None, fonts=None, dos_file=None):
+                    plt=None, fonts=None, dos=None):
     """A script to plot phonon band structure diagrams.
 
     Args:
@@ -114,7 +114,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             A -> Z will be used instead.
         eigenvectors (:obj:`bool`, optional): Write the eigenvectors to the
             yaml file.
-        dos_file (str): Path to Phonopy total dos .dat file
+        dos (str): Path to Phonopy total dos .dat file
         height (:obj:`float`, optional): The height of the plot.
         width (:obj:`float`, optional): The width of the plot.
         ymin (:obj:`float`, optional): The minimum energy on the y-axis.
@@ -199,7 +199,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
 
     plotter = SPhononBSPlotter(bs)
     plt = plotter.get_plot(ymin=ymin, ymax=ymax, height=height, width=width,
-                           plt=plt, fonts=fonts, dos_file=dos_file)
+                           plt=plt, fonts=fonts, dos=dos)
 
     if save_files:
         basename = 'phonon_band.{}'.format(image_format)
@@ -308,7 +308,7 @@ def _get_parser():
     parser.add_argument('--dpi', type=int, default=400,
                         help='pixel density for image file')
     parser.add_argument('--font', default=None, help='font to use')
-    parser.add_argument('--dos-file', type=str, dest='dos_file', default=None,
+    parser.add_argument('--dos', type=str, dest='dos', default=None,
                         help='Phonopy .dat file for phonon DOS')
     return parser
 
@@ -365,7 +365,7 @@ def main():
                     height=args.height, width=args.width, ymin=args.ymin,
                     ymax=args.ymax, image_format=args.image_format,
                     dpi=args.dpi, fonts=[args.font],
-                    eigenvectors=args.eigenvectors, dos_file=args.dos_file)
+                    eigenvectors=args.eigenvectors, dos=args.dos)
 
 
 if __name__ == "__main__":
