@@ -70,17 +70,6 @@ class SPhononBSPlotter(PhononBSPlotter):
             :obj:`matplotlib.pyplot`: The phonon band structure plot.
         """
 
-        # if dos_plotter:
-        #     plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
-        #                          plt=plt, fonts=fonts,
-        #                          gridspec_kw={'width_ratios': [dos_aspect, 1],
-        #                                       'wspace': 0})
-        #     ax = plt.gcf().axes[0]
-        # else:
-        #     plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
-        #     ax = plt.gca()
-
-
         if dos_file:
             plt = pretty_subplot(1, 2, width, height, sharex=False, sharey=True, dpi=dpi,
                                  plt=plt, fonts=fonts,
