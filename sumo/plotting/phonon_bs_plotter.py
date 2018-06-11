@@ -36,19 +36,22 @@ class SPhononBSPlotter(PhononBSPlotter):
         PhononBSPlotter.__init__(self, bs)
         self.imag_tol = imag_tol
 
-    def _plot_phonon_dos(self, dos_file, ax=None):
+    def _plot_phonon_dos(self, dos_file, ax=None, color=None):
         if ax is None:
             ax = plt.gca()
+        if color is None:
+            color = 'C0'
         dat = np.genfromtxt(dos_file, comments='#')
         y, x = dat[:, 0], dat[:, 1]
-        ax.plot(x, y, '-', color='#3953A4')
-        ax.fill_betweenx(y, x, 0, color='#3953A4', alpha=0.5)
+        ax.plot(x, y, '-', color=color)
+        ax.fill_betweenx(y, x, 0, color=color, alpha=0.5)
         ax.set_xticks([])
         ax.set_xlim([0, max(x) * 1.1])
         ax.set_xlabel("DOS")
 
     def get_plot(self, ymin=None, ymax=None, width=6., height=6., dpi=400,
-                 plt=None, fonts=None, dos_file=None, dos_aspect=3):
+                 plt=None, fonts=None, dos_file=None, dos_aspect=3,
+                 color=None):
         """Get a :obj:`matplotlib.pyplot` object of the phonon band structure.
 
         Args:
@@ -65,10 +68,15 @@ class SPhononBSPlotter(PhononBSPlotter):
                 :obj:`matplotlib.pyplot` object to use for plotting.
             dos_file (str): Path to total dos .csv data
             dos_aspect (float): Width division for vertical DOS
+            color (:obj:`str` or :obj:`tuple`, optional): Line/fill colour in
+                any matplotlib-accepted format
 
         Returns:
             :obj:`matplotlib.pyplot`: The phonon band structure plot.
         """
+
+        if color is None:
+            color = 'C0' # Default to first colour in matplotlib series
 
         if dos_file:
             plt = pretty_subplot(1, 2, width, height, sharex=False, sharey=True, dpi=dpi,
@@ -90,20 +98,26 @@ class SPhononBSPlotter(PhononBSPlotter):
             f = freqs[nd][nb]
 
             # plot band data
-            ax.plot(dists[nd], f, ls='-', c='#3953A4',
+            ax.plot(dists[nd], f, ls='-', c=color,
                     linewidth=band_linewidth)
 
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, width=width, height=height,
-                       ymin=ymin, ymax=ymax, dos_file=dos_file)
+                       ymin=ymin, ymax=ymax, dos_file=dos_file, color=color)
         plt.tight_layout()
         plt.subplots_adjust(wspace=0)
 
         return plt
 
     def _makeplot(self, ax, fig, data, ymin=None, ymax=None, height=6,
-                  width=6, dos_file=None):
+                  width=6, dos_file=None, color=None):
         """Utility method to tidy phonon band structure diagrams. """
+
+        # Define colours
+        grey = (0.5, 0.5, 0.5)
+        if color is None:
+            color = 'C0' # Default to first colour in matplotlib series
+
         # set x and y limits
         tymax = ymax if ymax else max(flatten(data['frequency']))
         tymin = ymin if ymin else min(flatten(data['frequency']))
@@ -115,10 +129,10 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         ax.set_ylim(ymin, ymax)
         ax.set_xlim(0, data['distances'][-1][-1])
-        ax.axhline(0, color='k')
+        ax.axhline(0, color=grey, linestyle='--')
 
         if dos_file is not None:
-            self._plot_phonon_dos(dos_file, ax=fig.axes[1])
+            self._plot_phonon_dos(dos_file, ax=fig.axes[1], color=color)
         else:
 
             # keep correct aspect ratio square
