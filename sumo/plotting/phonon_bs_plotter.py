@@ -39,7 +39,8 @@ class SPhononBSPlotter(PhononBSPlotter):
     def _plot_phonon_dos(self, dos_file, ax=None):
         if ax is None:
             ax = plt.gca()
-        y, x = np.genfromtxt('total_dos.csv', delimiter=',', unpack=True)
+        dat = np.genfromtxt(dos_file, comments='#')
+        y, x = dat[:, 0], dat[:, 1]
         ax.plot(x, y, '-', color='#3953A4')
         ax.fill_betweenx(y, x, 0, color='#3953A4', alpha=0.5)
         ax.set_xticks([])
