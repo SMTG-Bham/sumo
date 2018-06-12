@@ -41,8 +41,7 @@ class SPhononBSPlotter(PhononBSPlotter):
             ax = plt.gca()
         if color is None:
             color = 'C0'
-        dat = np.genfromtxt(dos, comments='#')
-        y, x = dat[:, 0], dat[:, 1]
+        y, x = dos[:, 0], dos[:, 1]
         ax.plot(x, y, '-', color=color)
         ax.fill_betweenx(y, x, 0, color=color, alpha=0.5)
         ax.set_xticks([])
@@ -66,7 +65,7 @@ class SPhononBSPlotter(PhononBSPlotter):
                 specified as a :obj:`list` of :obj:`str`.
             plt (:obj:`matplotlib.pyplot`, optional): A
                 :obj:`matplotlib.pyplot` object to use for plotting.
-            dos (str): Path to total dos .csv data
+            dos (:obj:`np.ndarray`): 2D Numpy array of total DOS data
             dos_aspect (float): Width division for vertical DOS
             color (:obj:`str` or :obj:`tuple`, optional): Line/fill colour in
                 any matplotlib-accepted format
@@ -76,11 +75,11 @@ class SPhononBSPlotter(PhononBSPlotter):
         """
 
         if color is None:
-            color = 'C0' # Default to first colour in matplotlib series
+            color = 'C0'  # Default to first colour in matplotlib series
 
         if dos is not None:
-            plt = pretty_subplot(1, 2, width, height, sharex=False, sharey=True, dpi=dpi,
-                                 plt=plt, fonts=fonts,
+            plt = pretty_subplot(1, 2, width, height, sharex=False,
+                                 sharey=True, dpi=dpi, plt=plt, fonts=fonts,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
                                               'wspace': 0})
             ax = plt.gcf().axes[0]
@@ -116,7 +115,7 @@ class SPhononBSPlotter(PhononBSPlotter):
         # Define colours
         grey = (0.5, 0.5, 0.5)
         if color is None:
-            color = 'C0' # Default to first colour in matplotlib series
+            color = 'C0'  # Default to first colour in matplotlib series
 
         # set x and y limits
         tymax = ymax if ymax else max(flatten(data['frequency']))
