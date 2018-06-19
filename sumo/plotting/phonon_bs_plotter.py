@@ -40,7 +40,7 @@ class SPhononBSPlotter(PhononBSPlotter):
         if ax is None:
             ax = plt.gca()
         if color is None:
-            color = 'C0'
+            color = 'C2'
         y, x = dos[:, 0], dos[:, 1]
         ax.plot(x, y, '-', color=color)
         ax.fill_betweenx(y, x, 0, color=color, alpha=0.5)
@@ -75,7 +75,7 @@ class SPhononBSPlotter(PhononBSPlotter):
         """
 
         if color is None:
-            color = 'C0'  # Default to first colour in matplotlib series
+            color = 'C2'  # Default to first colour in matplotlib series
 
         if dos is not None:
             plt = pretty_subplot(1, 2, width, height, sharex=False,
