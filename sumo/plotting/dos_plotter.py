@@ -7,6 +7,7 @@ This module provides a class for plotting density of states data.
 """
 
 import itertools
+import matplotlib.pyplot
 
 from sumo.electronic_structure.dos import sort_orbitals
 from sumo.plotting import pretty_plot, pretty_subplot, colour_cycle
@@ -49,7 +50,7 @@ class SDOSPlotter(object):
                 }
 
             Usually generated using the
-            :obj:`sumo.electronric_structure.dos.get_pdos()` function.
+            :obj:`sumo.electronic_structure.dos.get_pdos()` function.
     """
 
     def __init__(self, dos, pdos=None):
@@ -57,7 +58,8 @@ class SDOSPlotter(object):
         self._pdos = pdos
 
     def dos_plot_data(self, yscale=1, xmin=-6., xmax=6., colours=None,
-                      plot_total=True, legend_cutoff=3, subplot=False):
+                      plot_total=True, legend_cutoff=3, subplot=False,
+                      cache=colour_cache):
         """Get the plotting data.
 
         Args:
@@ -86,6 +88,11 @@ class SDOSPlotter(object):
                 little contribution in the plotting range.
             subplot (:obj:`bool`, optional): Plot the density of states for
                 each element on seperate subplots. Defaults to ``False``.
+            cache (:obj:`dict`, optional): Cache object tracking how colours
+                have been assigned to orbitals. The format is the same as the
+                "colours" dict. This defaults to the module-level
+                sumo.plotting.colour_cache object, but an empty dict can be
+                used as a fresh cache. This object will be modified in-place.
 
         Returns:
             dict: The plotting data. Formatted with the following keys:
@@ -151,7 +158,8 @@ class SDOSPlotter(object):
                             for d in el_pdos[orb].densities.values()])
                 ymax = dmax if dmax > ymax else ymax
                 label = None if dmax < cutoff else '{} ({})'.format(el, orb)
-                colour = get_colour_for_element_and_orbital(el, orb, colours)
+                colour, cache = get_cached_colour(el, orb, colours,
+                                                  cache=cache)
                 el_lines.append({'label': label, 'alpha': 0.25,
                                  'colour': colour,
                                  'dens': el_pdos[orb].densities})
@@ -283,21 +291,19 @@ class SDOSPlotter(object):
 
         return plt
 
-
-def get_colour_for_element_and_orbital(element, orbital, colours=None):
+def get_cached_colour(element, orbital, colours=None, cache=colour_cache):
     """Get a colour for a particular elemental and orbital combination.
 
-    If the element is not specified in the colours dictionary, a random colour
-    will be used based on the list of 22 colours of maximum contast:
-    http://www.iscc.org/pdf/PC54_1724_001.pdf
+    If the element is not specified in the colours dictionary, the cache is
+    checked. If this element-orbital combination has not been chached before,
+    a new colour is drawn from the current matplotlib colour cycle and cached.
 
-    This is cached in sumo.plotting.colour_cache and re-used for subsequent
-    plots within this Python instance. To reset the cache, set
+    The default cache is sumo.plotting.colour_cache. To reset this cache, set
     ``sumo.plotting.colour_cache = {}``.
 
     Args:
-        element (str): The element.
-        orbital (str): The orbital.
+        element (:obj:`str`): The element.
+        orbital (:obj:`str`): The orbital.
         colours (:obj:`dict`, optional): Use custom colours for specific
             element and orbital combinations. Specified as a :obj:`dict` of
             :obj:`dict` of the colours. For example::
@@ -309,36 +315,56 @@ def get_colour_for_element_and_orbital(element, orbital, colours=None):
 
             The colour can be a hex code, series of rgb value, or any other
             format supported by matplotlib.
+        cache (:obj:`dict`, optional): Cache of colour values already
+            assigned. The format is the same as the custom colours dict. If
+            None, the module-level cache ``sumo.plotting.colour_cache`` is
+            used.
 
     Returns:
-        str: The colour.
+        tuple: (colour, cache)
     """
 
-    def _get_colour_with_cache(element, orbital):
+    import matplotlib.pyplot as plt
+
+    def _get_colour_with_cache(element, orbital, cache, colour_series):
         """Return cached colour if available, or fetch and cache from cycle"""
-        if element in colour_cache and orbital in colour_cache[element]:
-            return colour_cache[element][orbital]
+        from itertools import chain
+        if element in cache and orbital in cache[element]:
+            return cache[element][orbital], cache
         else:
-            colour = next(col_cycle)
-            if element not in colour_cache:
-                colour_cache[element] = {}
-            colour_cache[element].update({orbital: colour})
-            return colour
+            # Iterate through colours to find one which is unused
+            for colour in colour_series:
+                # Iterate through cache to check if colour already used
+                if colour not in chain(*[[col for _, col in orb.items()]
+                                         for _, orb in cache.items()]):
+                    break
+            else:
+                raise Exception('Not enough colours available for orbitals! '
+                                'Try a different theme.')
+
+            if element not in cache:
+                cache[element] = {}
+            cache[element].update({orbital: colour})
+            return colour, cache
+
+    colour_series = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
     if isinstance(colours, configparser.ConfigParser):
         try:
-            return colours.get(element, orbital)
+            return colours.get(element, orbital), cache
         except(configparser.NoSectionError, configparser.NoOptionError):
-            return _get_colour_with_cache(element, orbital)
+            return _get_colour_with_cache(element, orbital,
+                                          cache, colour_series)
 
     elif isinstance(colours, dict):
         try:
             return colours[element][orbital]
         except(KeyError):
-            return _get_colour_with_cache(element, orbital)
+            return _get_colour_with_cache(element, orbital,
+                                          cache, colour_series)
 
     elif colours is None:
-        return _get_colour_with_cache(element, orbital)
+        return _get_colour_with_cache(element, orbital, cache, colour_series)
 
     else:
         raise TypeError('Argument "colours" should be dict, '
