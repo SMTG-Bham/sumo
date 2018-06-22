@@ -18,6 +18,7 @@ TODO:
 """
 
 import os
+from os.path import isfile
 import sys
 import logging
 import argparse
@@ -53,7 +54,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
                     symprec=0.01, mode='bradcrack', kpt_list=None,
                     eigenvectors=False, labels=None, height=6., width=6.,
                     ymin=None, ymax=None, image_format='pdf', dpi=400,
-                    plt=None, fonts=None):
+                    plt=None, fonts=None, dos=None):
     """A script to plot phonon band structure diagrams.
 
     Args:
@@ -114,6 +115,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             A -> Z will be used instead.
         eigenvectors (:obj:`bool`, optional): Write the eigenvectors to the
             yaml file.
+        dos (str): Path to Phonopy total dos .dat file
         height (:obj:`float`, optional): The height of the plot.
         width (:obj:`float`, optional): The width of the plot.
         ymin (:obj:`float`, optional): The minimum energy on the y-axis.
@@ -196,9 +198,21 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
     bs = get_ph_bs_symm_line(yaml_file, has_nac=False,
                              labels_dict=kpath.kpoints)
 
+    # Replace dos filename with data array
+    if dos is not None:
+        if isfile(dos):
+            dos = np.genfromtxt(dos, comments='#')
+        elif dos:
+            phonon.set_mesh(qmesh, is_gamma_center=False, is_eigenvectors=True,
+                            is_mesh_symmetry=False)
+            phonon.set_total_DOS()
+            dos_freq, dos_val = phonon.get_total_DOS()
+            dos = np.zeros((len(dos_freq), 2))
+            dos[:, 0], dos[:, 1] = dos_freq, dos_val
+
     plotter = SPhononBSPlotter(bs)
     plt = plotter.get_plot(ymin=ymin, ymax=ymax, height=height, width=width,
-                           plt=plt, fonts=fonts)
+                           plt=plt, fonts=fonts, dos=dos)
 
     if save_files:
         basename = 'phonon_band.{}'.format(image_format)
@@ -260,6 +274,7 @@ def _get_parser():
     parser.add_argument('-d', '--directory', metavar='D',
                         help='output directory for files')
     parser.add_argument('-q', '--qmesh', nargs=3, metavar='N',
+                        default=(8, 8, 8),
                         help='q-mesh to use for phonon DOS')
     parser.add_argument('-b', '--born', metavar='B',
                         help='born effective charge file')
@@ -307,6 +322,9 @@ def _get_parser():
     parser.add_argument('--dpi', type=int, default=400,
                         help='pixel density for image file')
     parser.add_argument('--font', default=None, help='font to use')
+    parser.add_argument('--dos', nargs='?', type=str,
+                        default=None, const=True,
+                        help='Phonopy .dat file for phonon DOS')
     return parser
 
 
@@ -362,7 +380,7 @@ def main():
                     height=args.height, width=args.width, ymin=args.ymin,
                     ymax=args.ymax, image_format=args.image_format,
                     dpi=args.dpi, fonts=[args.font],
-                    eigenvectors=args.eigenvectors)
+                    eigenvectors=args.eigenvectors, dos=args.dos)
 
 
 if __name__ == "__main__":

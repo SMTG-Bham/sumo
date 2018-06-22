@@ -8,6 +8,18 @@ Various bug fixes:
 
 - Fix many typos.
 
+v1.0.9
+------
+
+``phonon-bandplot`` now supports combined DOS & band structure plots (Adam Jackson, Arthur Yaud).
+
+Various bug fixes:
+
+- Fix P centered trigonal k-point path.
+- Fix ``--symprec`` behaviour in phonon-bandplot.
+- Fix orbital projected band structures with branches (Adam Jackson).
+- Fix reading Eg from spin-pol calculations (Adam Jackson).
+
 v1.0.8
 ------
 
@@ -18,7 +30,6 @@ Enhancements by Adam Jackson:
 
 Various bug fixes:
 
-- Fixed for ``--symprec`` in phonon-bandplot.
 - Fixed gaussian broadening of DOS.
 - Fixed ``--spg`` option in kgen and phonon-bandplot.
 - Fixed default arguments for band structure + dos plotting.
@@ -62,5 +73,5 @@ Added
   - sumo-optplot
   - sumo-phonon-bandplot
 
-`[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.0.8...HEAD>`_.
-`[1.0.8] <https://github.com/smtg-ucl/sumo/compare/v1.0.4...v1.0.8>`_.
+`[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.0.9...HEAD>`_.
+`[1.0.8] <https://github.com/smtg-ucl/sumo/compare/v1.0.4...v1.0.9>`_.
