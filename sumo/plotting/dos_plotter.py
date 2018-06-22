@@ -49,7 +49,7 @@ class SDOSPlotter(object):
                 }
 
             Usually generated using the
-            :obj:`sumo.electronric_structure.dos.get_pdos()` function.
+            :obj:`sumo.electronic_structure.dos.get_pdos()` function.
     """
 
     def __init__(self, dos, pdos=None):
@@ -85,7 +85,7 @@ class SDOSPlotter(object):
                 the legend from containing labels for orbitals that have very
                 little contribution in the plotting range.
             subplot (:obj:`bool`, optional): Plot the density of states for
-                each element on seperate subplots. Defaults to ``False``.
+                each element on separate subplots. Defaults to ``False``.
 
         Returns:
             dict: The plotting data. Formatted with the following keys:
@@ -133,7 +133,7 @@ class SDOSPlotter(object):
                     'colour': 'k', 'alpha': 0.15}
 
             # subplot data formatted as a list of lists of dicts, with each
-            # list of dicts being plotted on a seperate graph, if only one list
+            # list of dicts being plotted on a separate graph, if only one list
             # then solo plot
             lines.append([tdos])
             dmax = max([max(d[mask]) for d in dos.densities.values()])
@@ -174,7 +174,7 @@ class SDOSPlotter(object):
 
         Args:
             subplot (:obj:`bool`, optional): Plot the density of states for
-                each element on seperate subplots. Defaults to ``False``.
+                each element on separate subplots. Defaults to ``False``.
             width (:obj:`float`, optional): The width of the plot.
             height (:obj:`float`, optional): The height of the plot.
             xmin (:obj:`float`, optional): The minimum energy on the x-axis.
@@ -288,7 +288,7 @@ def get_colour_for_element_and_orbital(element, orbital, colours=None):
     """Get a colour for a particular elemental and orbital combination.
 
     If the element is not specified in the colours dictionary, a random colour
-    will be used based on the list of 22 colours of maximum contast:
+    will be used based on the list of 22 colours of maximum contrast:
     http://www.iscc.org/pdf/PC54_1724_001.pdf
 
     This is cached in sumo.plotting.colour_cache and re-used for subsequent

@@ -74,9 +74,9 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
         atoms (:obj:`dict`, optional): Which atomic sites to use when
             calculating the projected density of states. Should be provided as
             a :obj:`dict`, with the element names as keys and a :obj:`tuple` of
-            :obj:`int` specifiying the atomic indicies as the corresponding
+            :obj:`int` specifying the atomic indices as the corresponding
             values. The elemental projected density of states will be summed
-            only over the atom inidices specified. If an element is included
+            only over the atom indices specified. If an element is included
             with an empty :obj:`tuple`, then all sites for that element will
             be included. The indices are 0 based for each element specified in
             the POSCAR. For example, the following will calculate the density
@@ -88,7 +88,7 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
             If ``atoms`` is not set or set to ``None`` then all atomic sites
             for all elements will be considered.
         subplot (:obj:`bool`, optional): Plot the density of states for each
-            element on seperate subplots. Defaults to ``False``.
+            element on separate subplots. Defaults to ``False``.
         shift (:obj:`bool`, optional): Shift the energies such that the valence
             band maximum (or Fermi level for metals) is at 0 eV. Defaults to
             ``True``.
@@ -129,7 +129,7 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
         ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)
         yscale (:obj:`float`, optional): Scaling factor for the y-axis.
         image_format (:obj:`str`, optional): The image file format. Can be any
-            format supported by matplot, including: png, jpg, pdf, and svg.
+            format supported by matplotlib, including: png, jpg, pdf, and svg.
             Defaults to pdf.
         dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
             the image.
@@ -211,11 +211,11 @@ def _atoms(atoms_string):
         atoms_string (str): The atoms to plot, in the form ``"C.1.2.3,"``.
 
     Returns:
-        dict: The atomic indicies over which to sum the DOS. Formatted as::
+        dict: The atomic indices over which to sum the DOS. Formatted as::
 
-            {Element: [atom_indicies]}.
+            {Element: [atom_indices]}.
 
-        Indicies are zero indexed for each atomic species. If an element symbol
+        Indices are zero indexed for each atomic species. If an element symbol
         is included with an empty list, then all sites for that species are
         considered.
     """

@@ -56,7 +56,7 @@ made more appealing using the following command::
    :height: 400px
    :align: center
 
-Additional gaussian broading can be applied using the ``--gaussian`` option. The setting expects a floating
+Additional gaussian broadening can be applied using the ``--gaussian`` option. The setting expects a floating
 point number as the argument and controls the standard deviation of the broadening applied.
 
 
@@ -112,7 +112,7 @@ The ``--elements`` option controls which elemental orbitals are included in the 
 The syntax for specifying which elemental orbitals to include is as follows:
 
 - Elements are identified using their symbol from the ``POSCAR``
-- Multple elements are separated via commas.
+- Multiple elements are separated via commas.
 - Specific orbitals can be chosen by adding the orbital after the element using a period as a separator.
 - If no orbitals are specified but the atomic symbol is included, then all orbitals of that element will
   be plotted.
@@ -127,7 +127,7 @@ The ``--atoms`` option controls which atoms are included in the plot.
 The syntax for specifying which atoms to include is as follows:
 
 - Elements are identified using their symbol from the ``POSCAR``
-- Multple elements are separated via commas.
+- Multiple elements are separated via commas.
 - Specific atoms can be chosen by adding the atomic index after the element using a period as a separator.
 - Atomic indexes begin at 1 for each species in the structure.
 - If no atoms are specified but the atomic symbol is included, then all atoms of that element will
@@ -147,7 +147,7 @@ any physical meaning. If you are unsure what this means, then you probably shoul
 The syntax for specifying which orbitals to split into their lm contributions is as follows:
 
 - Elements are identified using their symbol from the ``POSCAR``
-- Multple elements are separated via commas.
+- Multiple elements are separated via commas.
 - Specific orbitals can be chosen by adding the orbital after the element using a period as a separator.
 - If no orbitals are specified but the atomic symbol is included, then all orbitals of that element will
   be split.
@@ -156,7 +156,7 @@ For example, to split the Os d orbitals, the command would be::
 
     sumo-dosplot --orbitals Os.d
 
-All the above options can be used similatenously. For example, plot the lm-decomposed d orbitals for
+All the above options can be used simultaneously. For example, plot the lm-decomposed d orbitals for
 the first Os atom, the following command would be used::
 
     sumo-dosplot --orbitals Os.d --elements Os.d --atoms Os.1 --no-total
@@ -181,7 +181,7 @@ The default colours can be found in ``sumo/conf/orbital_colours.conf``. The form
     p = #D93B2B
 
 The element is specified in square brackets, with the orbitals and their colours listed beneath. The supported
-colour idenifiers include hex codes, rgb values or any other format supported by matplotlib.
+colour identifiers include hex codes, rgb values or any other format supported by matplotlib.
 
 To use your own custom colours, simply create your own config file in the current directory (e.g. ``my_colours.conf``) and use the ``--config`` option to read in your settings. For example::
 

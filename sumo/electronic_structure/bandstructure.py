@@ -48,7 +48,7 @@ def get_projections_by_branches(bs, selection, normalise=None):
               * ``'all'``: Projections normalised against the sum of all
                    other projections.
               * ``'select'``: Projections normalised against the sum of the
-                   selected projetions.
+                   selected projections.
               * ``None``: No normalisation performed.
 
             Defaults to ``None``.
@@ -112,7 +112,7 @@ def get_projections(bs, selection, normalise=None):
               * ``'all'``: Projections normalised against the sum of all
                    other projections.
               * ``'select'``: Projections normalised against the sum of the
-                   selected projetions.
+                   selected projections.
               * ``None``: No normalisation performed.
 
             Defaults to ``None``.
@@ -143,7 +143,7 @@ def get_projections(bs, selection, normalise=None):
     dictio = dict(zip(elements, [all_orbitals]*len(elements)))
 
     # bs.get_projection_on_elements_and_orbitals() returns the data in a
-    # really fustrating format, namely:
+    # really frustrating format, namely:
     #     {spin: [band_index][kpoint_index]{element: {orbital: projection}}}
     all_proj = bs.get_projections_on_elements_and_orbitals(dictio)
 
@@ -212,7 +212,7 @@ def get_reconstructed_band_structure(list_bs, efermi=None):
             The band structures.
         efermi (:obj:`float`, optional): The Fermi energy of the reconstructed
             band structure. If `None`, an average of all the Fermi energies
-            across all band structrues is used.
+            across all band structures is used.
 
     Returns:
         :obj:`pymatgen.electronic_structure.bandstructure.BandStructure` or \

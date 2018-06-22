@@ -3,5 +3,5 @@
 # Distributed under the terms of the MIT License.
 
 """
-Package containing functions for manuipulating electron structure data.
+Package containing functions for manipulating electron structure data.
 """

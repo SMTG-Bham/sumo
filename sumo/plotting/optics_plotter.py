@@ -31,7 +31,7 @@ class SOpticsPlotter(object):
 
                 ([energies], [alpha])
 
-            Alternatively, the ansiotropic (directional dependent) absorption
+            Alternatively, the anisotropic (directional dependent) absorption
             can be plotted if the data formatted as::
 
                 ([energies], [alpha_xx, alpha_yy, alpha_zz])

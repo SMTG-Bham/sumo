@@ -4,6 +4,10 @@ Change Log
 [Unreleased]
 ------------
 
+Various bug fixes:
+
+- Fix many typos.
+
 v1.0.8
 ------
 

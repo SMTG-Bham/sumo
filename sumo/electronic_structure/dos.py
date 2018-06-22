@@ -48,9 +48,9 @@ def load_dos(filename, elements=None, lm_orbitals=None, atoms=None,
         atoms (:obj:`dict`, optional): Which atomic sites to use when
             calculating the projected density of states. Should be provided as
             a :obj:`dict`, with the element names as keys and a :obj:`tuple` of
-            :obj:`int` specifiying the atomic indicies as the corresponding
+            :obj:`int` specifying the atomic indices as the corresponding
             values. The elemental projected density of states will be summed
-            only over the atom inidices specified. If an element is included
+            only over the atom indices specified. If an element is included
             with an empty :obj:`tuple`, then all sites for that element will
             be included. The indices are 0 based for each element specified in
             the POSCAR. For example, the following will calculate the density
@@ -152,9 +152,9 @@ def get_pdos(dos, lm_orbitals=None, atoms=None, elements=None):
         atoms (:obj:`dict`, optional): Which atomic sites to use when
             calculating the projected density of states. Should be provided as
             a :obj:`dict`, with the element names as keys and a :obj:`tuple` of
-            :obj:`int` specifiying the atomic indicies as the corresponding
+            :obj:`int` specifying the atomic indices as the corresponding
             values. The elemental projected density of states will be summed
-            only over the atom inidices specified. If an element is included
+            only over the atom indices specified. If an element is included
             with an empty :obj:`tuple`, then all sites for that element will
             be included. The indices are 0 based for each element specified in
             the POSCAR. For example, the following will calculate the density
@@ -206,8 +206,8 @@ def get_element_pdos(dos, element, sites, lm_orbitals=None, orbitals=None):
         dos (:obj:`~pymatgen.electronic_structure.dos.CompleteDos`): The
             density of states.
         element (str): Element symbol. E.g. 'Zn'.
-        sites (tuple): The atomic indicies over which to sum the density of
-            states, as a :obj:`tuple`. Inidicies are zero based for each
+        sites (tuple): The atomic indices over which to sum the density of
+            states, as a :obj:`tuple`. Indices are zero based for each
             element. For example, ``(0, 1, 2)`` will sum the density of states
             for the 1st, 2nd and 3rd sites of the element specified.
         lm_orbitals (:obj:`tuple`, optional): The orbitals to decompose into
@@ -323,7 +323,7 @@ def sort_orbitals(element_pdos):
     Args:
         element_pdos (dict): An element's pdos. Should be formatted as a
             :obj:`dict` of ``{orbital: dos}``. Where dos is a
-            :obj:`~pymatgen.electornic_structure.dos.Dos` object. For example::
+            :obj:`~pymatgen.electronic_structure.dos.Dos` object. For example::
 
                 {'s': dos, 'px': dos}
 

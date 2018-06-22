@@ -41,7 +41,7 @@ To specify a particular ``vasprun.xml`` to plot, the ``--filenames`` option can 
 The height, and width of the graphic, along with the y-axis limits, can be controlled via the
 ``--width``, ``--height``, ``--ymax``, and ``--ymin`` options.
 
-Additional gaussian broading can be applied using the ``--gaussian`` option. The setting expects a floating
+Additional gaussian broadening can be applied using the ``--gaussian`` option. The setting expects a floating
 point number as the argument and controls the standard deviation of the broadening applied.
 
 
@@ -87,7 +87,7 @@ the plot should look like::
 Plotting Multiple Spectra
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Multiple absorption spectra can be plotted simultaneously by specifying mutliple
+Multiple absorption spectra can be plotted simultaneously by specifying multiple
 ``vasprun.xml`` files using the ``--filenames`` option.
 A label will be generated for each system, based on the composition. Alternatively,
 the ``--labels`` option can be used to provide a name for each system. The number

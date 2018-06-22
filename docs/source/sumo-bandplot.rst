@@ -109,13 +109,13 @@ to a band are plotted. This behaviour is accessed using the ``--project`` option
 The syntax for specifying which orbitals to project is as follows:
 
 - Elements are identified using their symbol from the ``POSCAR``
-- Multple elements are separated via commas.
+- Multiple elements are separated via commas.
 - Specific orbitals can be chosen by adding the orbital after the element using a period as a separator.
 - If multiple orbitals are included for a single element definition, these will be combined into a single
   contribution.
 - If no orbitals are specified but the atomic symbol is included, then all orbitals of that element will
   be combined.
-- Multiple definitions for the same element are allowed (e.g. each specifiying different orbitals).
+- Multiple definitions for the same element are allowed (e.g. each specifying different orbitals).
 
 For example, to project the Sn s orbitals, the Sn p orbitals and a combined contribution from all the I orbitals,
 the command would be::
@@ -133,7 +133,7 @@ Multiple projection modes are supported. These are controlled by the ``--mode`` 
 The default is ``--mode rgb``. Here the line colour depends on the character of the band. Each
 element or orbital contributes either red, green or blue, with the corresponding line colour
 a mixture of all three colours. **This mode only supports up to 3 element/orbitals combinations.**
-The order of the elemenets/orbitals determines which colour is used for each selection.
+The order of the elements/orbitals determines which colour is used for each selection.
 
 For example, if the following command is run in the ``sumo/tests/data/Cs2SnI6/bandstructure`` directory,
 the output should look like::

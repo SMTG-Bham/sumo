@@ -168,14 +168,14 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
                 ['\Gamma', '', 'X', '', 'Y']
 
         make_folders (:obj:`bool`, optional): Generate folders and copy in
-            required files (INCAR, POTCAR, POSCAR, and possibily CHGCAR) from
+            required files (INCAR, POTCAR, POSCAR, and possibly CHGCAR) from
             the current directory.
         ibzkpt (:obj:`str`, optional): Path to IBZKPT file. If set, the
             generated k-points will be appended to the k-points in this file
             and given a weight of 0. This is necessary for hybrid band
             structure calculations.
         kpts_per_split (:obj:`int`, optional): If set, the k-points are split
-            into seperate k-point files (or folders) each containing the number
+            into separate k-point files (or folders) each containing the number
             of k-points specified. This is useful for hybrid band structure
             calculations where it is often intractable to calculate all
             k-points in the same calculation.

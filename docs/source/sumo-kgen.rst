@@ -42,7 +42,7 @@ a file called ``KPOINTS_band``, with the terminal showing the following informat
       K: -0.333 0.667 0.0
       H: -0.333 0.667 0.6
 
-   k-point label indicies:
+   k-point label indices:
       \Gamma: 1
       A: 21
       L: 74
@@ -73,7 +73,7 @@ The density of the k-points along the path can be controlled using the ``--densi
 Hybrid Band Structures
 ~~~~~~~~~~~~~~~~~~~~~~
 
-By default, ``sumo-kgen`` generates ``KPOINTS`` files for use in non-selfconsistent band structure calculations
+By default, ``sumo-kgen`` generates ``KPOINTS`` files for use in non-self-consistent band structure calculations
 (e.g. for use with generalised-gradient approximation functionals). To perform hybrid band structures, the
 zero-weighted k-point scheme should be used. To generate ``KPOINTS`` files for use in hybrid band structures, an
 ``IBZKPT`` file must be located in the current directory (the generated k-points will be appended to those in
@@ -94,10 +94,10 @@ Folder Generation
 Often it is desirable to generate a new folder in which to run the band structure. ``sumo-kgen`` can automate
 this procedure using the ``--folders`` (or ``-f``) option. The script will also copy in the required VASP
 files from the current directory. Which files are copied depends on the mode of k-point generation.
-For example, for non-selfconsistent band structures, ``POSCAR``, ``INCAR``, ``POTCAR``, and ``CHGCAR``
+For example, for non-self-consistent band structures, ``POSCAR``, ``INCAR``, ``POTCAR``, and ``CHGCAR``
 will be copied.  For hybrid band structures, only the ``POSCAR``, ``INCAR``, and ``POTCAR`` files will be copied.
 
-If you choose to split the hybrid k-points among a number of ``KPOINTS`` files, a seperate folder will be
+If you choose to split the hybrid k-points among a number of ``KPOINTS`` files, a separate folder will be
 generated for each file. These will be named ``split-01``, ``split-02``, etc...
 
 The ``sumo-bandplot`` command can automatically detect the presence of these folders and will

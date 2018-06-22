@@ -119,7 +119,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
         ymin (:obj:`float`, optional): The minimum energy on the y-axis.
         ymax (:obj:`float`, optional): The maximum energy on the y-axis.
         image_format (:obj:`str`, optional): The image file format. Can be any
-            format supported by matplot, including: png, jpg, pdf, and svg.
+            format supported by matplotlib, including: png, jpg, pdf, and svg.
             Defaults to pdf.
         dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
             the image.
