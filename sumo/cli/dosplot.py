@@ -21,6 +21,7 @@ import warnings
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
+import matplotlib.pyplot
 
 from sumo.electronic_structure.dos import load_dos, write_files
 from sumo.plotting.dos_plotter import SDOSPlotter
