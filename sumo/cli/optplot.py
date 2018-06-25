@@ -11,9 +11,11 @@ import sys
 import logging
 import warnings
 import argparse
+from pkg_resources import resource_filename
 
 import matplotlib as mpl
 mpl.use('Agg')
+from matplotlib.pyplot import style as mpl_style
 
 from pymatgen.io.vasp import Vasprun
 from pymatgen.util.string import latexify
@@ -32,6 +34,7 @@ __date__ = "Jan 10, 2018"
 def optplot(filenames=None, prefix=None, directory=None,
             gaussian=None, band_gaps=None, labels=None, average=True, height=6,
             width=6, xmin=0, xmax=None, ymin=0, ymax=1e5, colours=None,
+            style=None, no_base_style=None,
             image_format='pdf', dpi=400, plt=None, fonts=None):
     """A script to plot optical absorption spectra from VASP calculations.
 
@@ -62,6 +65,10 @@ def optplot(filenames=None, prefix=None, directory=None,
         colours (:obj:`list`, optional): A :obj:`list` of colours to use in the
             plot. The colours can be specified as a hex code, set of rgb
             values, or any other format supported by matplotlib.
+        style (:obj:`list` or :obj:`str`, optional): (List of) matplotlib style
+            specifications, to be composed on top of Sumo base style.
+        no_base_style (:obj:`bool`, optional): Prevent use of sumo base style.
+            This can make alternative styles behave more predictably.
         image_format (:obj:`str`, optional): The image file format. Can be any
             format supported by matplotlib, including: png, jpg, pdf, and svg.
             Defaults to pdf.
@@ -118,20 +125,32 @@ def optplot(filenames=None, prefix=None, directory=None,
         labels = [latexify(vr.final_structure.composition.reduced_formula).
                   replace('$_', '$_\mathregular') for vr in vrs]
 
-    plotter = SOpticsPlotter(abs_data, band_gap=band_gaps, label=labels)
-    plt = plotter.get_plot(width=width, height=height, xmin=xmin,
-                           xmax=xmax, ymin=ymin, ymax=ymax,
-                           colours=colours, dpi=dpi, plt=plt, fonts=fonts)
-
-    if save_files:
-        basename = 'absorption.{}'.format(image_format)
-        filename = '{}_{}'.format(prefix, basename) if prefix else basename
-        if directory:
-            filename = os.path.join(directory, filename)
-        plt.savefig(filename, format=image_format, dpi=dpi)
-        write_files(abs_data, prefix=prefix, directory=directory)
+    if style is None:
+        style = []
+    elif type(style) == str:
+        style = [style]
+    if no_base_style:
+        base_style = []
     else:
-        return plt
+        base_style = [resource_filename('sumo.plotting', 'sumo_base.mplstyle'),
+                      resource_filename('sumo.plotting', 'sumo_optics.mplstyle'
+                                        )]
+
+    with mpl_style.context(base_style + style):
+        plotter = SOpticsPlotter(abs_data, band_gap=band_gaps, label=labels)
+        plt = plotter.get_plot(width=width, height=height, xmin=xmin,
+                               xmax=xmax, ymin=ymin, ymax=ymax,
+                               colours=colours, dpi=dpi, plt=plt, fonts=fonts)
+
+        if save_files:
+            basename = 'absorption.{}'.format(image_format)
+            filename = '{}_{}'.format(prefix, basename) if prefix else basename
+            if directory:
+                filename = os.path.join(directory, filename)
+            plt.savefig(filename, format=image_format, dpi=dpi)
+            write_files(abs_data, prefix=prefix, directory=directory)
+        else:
+            return plt
 
 
 def _get_parser():
@@ -170,6 +189,14 @@ def _get_parser():
                         help='minimum intensity on the y-axis')
     parser.add_argument('--ymax', type=float, default=1e5,
                         help='maximum intensity on the y-axis')
+    parser.add_argument('--style', type=str, nargs='+', default=None,
+                        help=('(List of) matplotlib style specifications, to '
+                              'be composed on top of Sumo base style. '
+                              'Try dark_background!'))
+    parser.add_argument('--no-base-style', action='store_true',
+                        dest='no_base_style',
+                        help=('Prevent use of sumo base style. This can make '
+                              'alternative styles behave more predictably.'))
     parser.add_argument('--format', type=str, default='pdf',
                         dest='image_format', metavar='FORMAT',
                         help='image file format (options: pdf, svg, jpg, png)')
@@ -201,6 +228,7 @@ def main():
             average=args.anisotropic, height=args.height, width=args.width,
             xmin=args.xmin, xmax=args.xmax, ymin=args.ymin, ymax=args.ymax,
             colours=None, image_format=args.image_format, dpi=args.dpi,
+            style=args.style, no_base_style=args.no_base_style,
             fonts=[args.font])
 
 

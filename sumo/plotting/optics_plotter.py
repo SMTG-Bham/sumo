@@ -8,16 +8,13 @@ This module provides a class for plotting optical absorption spectra.
 
 import numpy as np
 
+import matplotlib
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 
 from sumo.plotting import pretty_plot, default_colours, power_tick
 
 line_width = 1.5
 label_size = 22
-optics_colours = np.array([[23, 71, 158], [217, 59, 43],
-                           [13, 177, 75], [247, 148, 51],
-                           [13, 177, 75]] + default_colours) / 255.
-
 
 class SOpticsPlotter(object):
     """Class for plotting optical absorption spectra.
@@ -111,9 +108,15 @@ class SOpticsPlotter(object):
                           fonts=fonts)
         ax = plt.gca()
 
-        colours = colours + optics_colours if colours else optics_colours
-        for (ener, alpha), abs_label, bg, c in zip(self._abs_data, self._label,
-                                                   self._band_gap, colours):
+        optics_colours = matplotlib.rcParams[
+            'axes.prop_cycle'].by_key()['color']
+        if colours is not None:
+            optics_colours = colours + optics_colours
+
+        for (ener, alpha), abs_label, bg, c in zip(self._abs_data,
+                                                   self._label,
+                                                   self._band_gap,
+                                                   optics_colours):
             if len(alpha.shape) == 1:
                 # if averaged optics only plot one line
                 ax.plot(ener, alpha, lw=line_width, label=abs_label, c=c)
@@ -139,8 +142,6 @@ class SOpticsPlotter(object):
         ax.set_xlim(xmin, xmax)
         ax.set_ylim(ymin, ymax)
 
-        ax.tick_params(axis='x', which='both', top='off')
-        ax.tick_params(axis='x', which='both', right='off')
         ax.yaxis.set_major_formatter(FuncFormatter(power_tick))
         ax.yaxis.set_major_locator(MaxNLocator(4))
 
