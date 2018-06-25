@@ -8,6 +8,7 @@ This module provides a class for plotting density of states data.
 
 import itertools
 from pkg_resources import resource_filename
+import matplotlib
 import matplotlib.pyplot
 
 from sumo.electronic_structure.dos import sort_orbitals
@@ -134,9 +135,15 @@ class SDOSPlotter(object):
         ymax = 0
 
         if plot_total:
+            if 'text.color' in matplotlib.rcParams:
+                tdos_colour = matplotlib.rcParams['text.color']
+                if tdos_colour is None:
+                    tdos_colour = 'k'
+            else:
+                tdos_colour = 'k'
             lines = []
             tdos = {'label': 'Total DOS', 'dens': dos.densities,
-                    'colour': 'k', 'alpha': 0.15}
+                    'colour': tdos_colour, 'alpha': 0.15}
 
             # subplot data formatted as a list of lists of dicts, with each
             # list of dicts being plotted on a separate graph, if only one list
