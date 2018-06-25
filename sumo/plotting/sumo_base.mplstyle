@@ -37,4 +37,4 @@ pdf.fonttype : 42
 mathtext.fontset : stixsans
 
 legend.handlelength  : 2
-legend.labelsize     : 19
+legend.fontsize     : 19
