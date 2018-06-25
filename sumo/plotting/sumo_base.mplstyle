@@ -1,1 +1,40 @@
+figure.figsize : 5, 5
+figure.dpi: 300
+
 axes.prop_cycle: cycler('color', ['f0a3ff', '0075dc', '993f00', '4c005c', '426600', 'ff0010', '9dcc00', 'c20088', '003380', 'ffa405', 'ffff00', 'ff5005', '5ef1f2', '740aff', '990000', '00998f', '005c31', '2bce48', 'ffcc99', '94ffb5', '8f7c00', 'ffa8bb', '808080'])
+
+font.family : sans-serif
+font.sans-serif : Whitney Book Extended, Whitney Book, Helvetica, Liberation Sans, Andale Sans, Arial
+
+font.size : 22
+axes.titlesize : 20
+# axes.titlepad :
+axes.linewidth : 1.3
+
+## Relative label size can be set relative to font:
+## smaller, small, medium, large, x-large, xx-large, larger
+# axes.labelsize      : medium
+
+xtick.major.size     : 15      # major tick size in points
+xtick.minor.size     : 7.5     # minor tick size in points
+xtick.major.width    : 1.3
+xtick.minor.width    : 1.3
+xtick.major.pad      : 7
+xtick.direction      : in
+xtick.major.top      : False
+xtick.minor.top      : False
+
+ytick.major.size     : 15      # major tick size in points
+ytick.minor.size     : 7.5     # minor tick size in points
+ytick.major.width    : 1.3
+ytick.minor.width    : 1.3
+ytick.major.pad      : 7
+ytick.direction      : in
+ytick.major.right    : False
+ytick.minor.right    : False
+
+pdf.fonttype : 42
+mathtext.fontset : stixsans
+
+legend.handlelength  : 2
+legend.labelsize     : 19

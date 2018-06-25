@@ -7,10 +7,11 @@ This module provides a class for plotting density of states data.
 """
 
 import itertools
+from pkg_resources import resource_filename
 import matplotlib.pyplot
 
 from sumo.electronic_structure.dos import sort_orbitals
-from sumo.plotting import pretty_plot, pretty_subplot, colour_cycle
+from sumo.plotting import pretty_plot, pretty_subplot
 from sumo.plotting import colour_cache
 
 from pymatgen.electronic_structure.core import Spin
@@ -22,9 +23,7 @@ except ImportError:
 
 line_width = 1.5
 empty_space = 1.05
-label_size = 22
 band_linewidth = 2
-col_cycle = colour_cycle()
 
 
 class SDOSPlotter(object):
@@ -274,8 +273,7 @@ class SDOSPlotter(object):
             loc = 'upper right' if subplot else 'best'
             ncol = 1 if subplot else num_columns
             if legend_on:
-                ax.legend(loc=loc, frameon=legend_frame_on, ncol=ncol,
-                          handlelength=2, prop={'size': label_size - 3})
+                ax.legend(loc=loc, frameon=legend_frame_on, ncol=ncol)
 
         # no add axis labels and sort out ticks
         if subplot:

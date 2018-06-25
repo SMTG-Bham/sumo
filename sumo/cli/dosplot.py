@@ -44,6 +44,7 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
             legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6.,
             width=8., xmin=-6., xmax=6., num_columns=2, colours=None, yscale=1,
             xlabel='Energy (eV)', ylabel='Arb. units',
+            style=None, no_base_style=False,
             image_format='pdf', dpi=400, plt=None, fonts=None):
     """A script to plot the density of states from a vasprun.xml file.
 
@@ -129,6 +130,10 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
         xlabel (:obj:`str`, optional): Label/units for x-axis (i.e. energy)
         ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)
         yscale (:obj:`float`, optional): Scaling factor for the y-axis.
+        style (:obj:`list` or :obj:`str`, optional): (List of) matplotlib style
+            specifications, to be composed on top of Sumo base style.
+        no_base_style (:obj:`bool`, optional): Prevent use of sumo base style.
+            This can make alternative styles behave more predictably.
         image_format (:obj:`str`, optional): The image file format. Can be any
             format supported by matplotlib, including: png, jpg, pdf, and svg.
             Defaults to pdf.
@@ -157,26 +162,38 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
 
     save_files = False if plt else True  # don't save if pyplot object provided
 
-    plotter = SDOSPlotter(dos, pdos)
-    plt = plotter.get_plot(subplot=subplot, width=width, height=height,
-                           xmin=xmin, xmax=xmax, yscale=yscale,
-                           colours=colours, plot_total=plot_total,
-                           legend_on=legend_on, num_columns=num_columns,
-                           legend_frame_on=legend_frame_on,
-                           xlabel=xlabel, ylabel=ylabel,
-                           legend_cutoff=legend_cutoff, dpi=dpi, plt=plt,
-                           fonts=fonts)
+    if style is None:
+        style = []
+    elif type(style) == str:
+        style = [style]
 
-    if save_files:
-        basename = 'dos.{}'.format(image_format)
-        filename = '{}_{}'.format(prefix, basename) if prefix else basename
-        if directory:
-            filename = os.path.join(directory, filename)
-        plt.savefig(filename, format=image_format, dpi=dpi,
-                    bbox_inches='tight')
-        write_files(dos, pdos, prefix=prefix, directory=directory)
+    if no_base_style:
+        base_style = []
     else:
-        return plt
+        base_style = [resource_filename('sumo.plotting', 'sumo_base.mplstyle')]
+
+    with matplotlib.pyplot.style.context(style + base_style):
+
+        plotter = SDOSPlotter(dos, pdos)
+        plt = plotter.get_plot(subplot=subplot, width=width, height=height,
+                               xmin=xmin, xmax=xmax, yscale=yscale,
+                               colours=colours, plot_total=plot_total,
+                               legend_on=legend_on, num_columns=num_columns,
+                               legend_frame_on=legend_frame_on,
+                               xlabel=xlabel, ylabel=ylabel,
+                               legend_cutoff=legend_cutoff, dpi=dpi, plt=plt,
+                               fonts=fonts)
+
+        if save_files:
+            basename = 'dos.{}'.format(image_format)
+            filename = '{}_{}'.format(prefix, basename) if prefix else basename
+            if directory:
+                filename = os.path.join(directory, filename)
+            plt.savefig(filename, format=image_format, dpi=dpi,
+                        bbox_inches='tight')
+            write_files(dos, pdos, prefix=prefix, directory=directory)
+        else:
+            return plt
 
 
 def _el_orb(string):
@@ -282,6 +299,14 @@ def _get_parser():
                         help='maximum energy on the x-axis')
     parser.add_argument('--config', type=str, default=None,
                         help='colour configuration file')
+    parser.add_argument('--style', type=str, nargs='+', default=None,
+                        help=('(List of) matplotlib style specifications, to '
+                              'be composed on top of Sumo base style. '
+                              'Try dark_background!'))
+    parser.add_argument('--no-base-style', action='store_true',
+                        dest='no_base_style',
+                        help=('Prevent use of sumo base style. This can make '
+                              'alternative styles behave more predictably.'))
     parser.add_argument('--xlabel', type=str, default='Energy (eV)',
                         help='x-axis (i.e. energy) label/units'),
     parser.add_argument('--ylabel', type=str, default='Arb. units',
@@ -329,6 +354,7 @@ def main():
             legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
             height=args.height, width=args.width, xmin=args.xmin,
             xmax=args.xmax, num_columns=args.columns, colours=colours,
+            style=args.style, no_base_style=args.no_base_style,
             xlabel=args.xlabel, ylabel=args.ylabel,
             yscale=args.yscale, image_format=args.image_format, dpi=args.dpi,
             fonts=[args.font])

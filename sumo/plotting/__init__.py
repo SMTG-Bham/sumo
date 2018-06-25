@@ -10,7 +10,11 @@ import numpy as np
 
 from cycler import cycler
 from itertools import cycle
+import matplotlib.pyplot
 from matplotlib.collections import LineCollection
+from matplotlib import rc
+
+from pkg_resources import resource_filename
 
 default_colours = [[240, 163, 255], [0, 117, 220], [153, 63, 0], [76, 0, 92],
                    [66, 102, 0], [255, 0, 16], [157, 204, 0], [194, 0, 136],
@@ -31,7 +35,7 @@ _ticksize = 15
 _linewidth = 1.3
 
 
-def pretty_plot(width=5, height=5, plt=None, dpi=None, fonts=None):
+def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
     """Get a :obj:`matplotlib.pyplot` object with publication ready defaults.
 
     Args:
@@ -49,43 +53,34 @@ def pretty_plot(width=5, height=5, plt=None, dpi=None, fonts=None):
         :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` object with
         publication ready defaults set.
     """
-    from matplotlib import rc
+
 
     if plt is None:
         import matplotlib.pyplot as plt
-        plt.figure(figsize=(width, height), facecolor="w", dpi=dpi)
+        if width is None:
+            width=matplotlib.rcParams['figure.figsize'][0]
+        if height is None:
+            width=matplotlib.rcParams['figure.figsize'][1]
+
+        if dpi is not None:
+            matplotlib.rcParams['figure.dpi'] = dpi
+
+        fig = plt.figure(figsize=(width, height))
+        ax = fig.add_subplot(1, 1, 1)
+    else:
         ax = plt.gca()
-        ax.set_prop_cycle(colour_cycler())
 
-    ax = plt.gca()
+    if fonts is not None:
+        if type(fonts) is str:
+            fonts = [fonts]
 
-    ax.tick_params(width=_linewidth, size=_ticksize)
-    ax.tick_params(which='major', size=_ticksize, width=_linewidth,
-                   labelsize=_ticklabelsize, pad=7, direction='in',
-                   right='off', top='off')
-    ax.tick_params(which='minor', size=_ticksize/2, width=_linewidth,
-                   direction='in', right='off', top='off')
+        rc('font', **{'family': 'sans-serif', 'sans-serif': fonts})
+        rc('text', usetex=False)
 
-    ax.set_title(ax.get_title(), size=20)
-    for axis in ['top', 'bottom', 'left', 'right']:
-        ax.spines[axis].set_linewidth(_linewidth)
-
-    ax.set_xlabel(ax.get_xlabel(), size=_labelsize)
-    ax.set_ylabel(ax.get_ylabel(), size=_labelsize)
-
-    if type(fonts) is str:
-        fonts = [fonts]
-    fonts = default_fonts if fonts is None else fonts + default_fonts
-
-    rc('font', **{'family': 'sans-serif', 'sans-serif': fonts})
-    rc('text', usetex=False)
-    rc('pdf', fonttype=42)
-    rc('mathtext', fontset='stixsans')
-    rc('legend', handlelength=2)
     return plt
 
 
-def pretty_subplot(nrows, ncols, width=5, height=5, sharex=True,
+def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
                    sharey=True, dpi=None, fonts=None, plt=None,
                    gridspec_kw=None):
     """Get a :obj:`matplotlib.pyplot` subplot object with pretty defaults.
@@ -114,7 +109,6 @@ def pretty_subplot(nrows, ncols, width=5, height=5, sharex=True,
         :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` subplot object
         with publication ready defaults set.
     """
-    from matplotlib import rc
 
     # TODO: Make this work if plt is already set...
     if plt is None:
