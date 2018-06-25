@@ -12,6 +12,7 @@ import numpy as np
 import itertools as it
 
 from scipy.interpolate import interp1d
+import matplotlib
 from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 
 from sumo.plotting import pretty_plot, pretty_subplot, rgbline, default_colours
@@ -45,9 +46,9 @@ class SBSPlotter(BSPlotter):
         BSPlotter.__init__(self, bs)
 
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
-                 width=6., height=6., vbm_cbm_marker=False,
+                 width=None, height=None, vbm_cbm_marker=False,
                  ylabel='Energy (eV)',
-                 dpi=400, plt=None,
+                 dpi=None, plt=None,
                  dos_plotter=None, dos_options=None, dos_label=None,
                  dos_aspect=3, fonts=None):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
@@ -125,13 +126,14 @@ class SBSPlotter(BSPlotter):
             :obj:`matplotlib.pyplot`: The electronic band structure plot.
         """
         if dos_plotter:
-            plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
+            plt = pretty_subplot(1, 2, width=width, height=height,
+                                 sharex=False, dpi=dpi,
                                  plt=plt, fonts=fonts,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
                                               'wspace': 0})
             ax = plt.gcf().axes[0]
         else:
-            plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
+            plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt, fonts=fonts)
             ax = plt.gca()
 
         data = self.bs_plot_data(zero_to_efermi)
@@ -152,9 +154,9 @@ class SBSPlotter(BSPlotter):
             # colour valence bands blue and conduction bands orange
             if (self._bs.is_spin_polarized or self._bs.is_metal() or
                     np.all(is_vb[nb])):
-                c = '#3953A4'
+                c = 'C0'
             else:
-                c = '#FAA316'
+                c = 'C1'
 
             # plot band data
             ax.plot(dists[nd], e, ls='-', c=c, linewidth=band_linewidth)
@@ -412,8 +414,9 @@ class SBSPlotter(BSPlotter):
         """Tidy the band structure & add the density of states if required."""
         # draw line at Fermi level if not zeroing to e-Fermi
         if not zero_to_efermi:
+            ytick_color = matplotlib.rcParams['ytick.color']
             ef = self._bs.efermi
-            ax.axhline(ef, linewidth=2, color='k')
+            ax.axhline(ef, color=ytick_color)
 
         # set x and y limits
         ax.set_xlim(0, data['distances'][-1][-1])
@@ -424,9 +427,9 @@ class SBSPlotter(BSPlotter):
 
         if vbm_cbm_marker:
             for cbm in data['cbm']:
-                ax.scatter(cbm[0], cbm[1], color='#D93B2B', marker='o', s=100)
+                ax.scatter(cbm[0], cbm[1], color='C2', marker='o', s=100)
             for vbm in data['vbm']:
-                ax.scatter(vbm[0], vbm[1], color='#0DB14B', marker='o', s=100)
+                ax.scatter(vbm[0], vbm[1], color='C3', marker='o', s=100)
 
         if dos_plotter:
             ax = fig.axes[1]

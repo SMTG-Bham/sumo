@@ -172,7 +172,7 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
     else:
         base_style = [resource_filename('sumo.plotting', 'sumo_base.mplstyle')]
 
-    with matplotlib.pyplot.style.context(style + base_style):
+    with matplotlib.pyplot.style.context(base_style + style):
 
         plotter = SDOSPlotter(dos, pdos)
         plt = plotter.get_plot(subplot=subplot, width=width, height=height,

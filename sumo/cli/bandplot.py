@@ -164,6 +164,10 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         width (:obj:`float`, optional): The width of the plot.
         ymin (:obj:`float`, optional): The minimum energy on the y-axis.
         ymax (:obj:`float`, optional): The maximum energy on the y-axis.
+        style (:obj:`list` or :obj:`str`, optional): (List of) matplotlib style
+            specifications, to be composed on top of Sumo base style.
+        no_base_style (:obj:`bool`, optional): Prevent use of sumo base style.
+            This can make alternative styles behave more predictably.
         colours (:obj:`dict`, optional): Use custom colours for specific
             element and orbital combinations. Specified as a :obj:`dict` of
             :obj:`dict` of the colours. For example::
@@ -243,29 +247,26 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     if no_base_style:
         base_style = []
     else:
-        base_style = [resource_filename('sumo.plotting', 'sumo_base.mplstyle')]
+        base_style = [resource_filename('sumo.plotting', 'sumo_base.mplstyle'),
+                      resource_filename('sumo.plotting', 'sumo_bs.mplstyle')]
 
-    with mpl_style.context(style + base_style):
+    with mpl_style.context(base_style + style):
 
         plotter = SBSPlotter(bs)
         if projection_selection:
-            plt = plotter.get_projected_plot(projection_selection, mode=mode,
-                                             interpolate_factor=interpolate_factor,
-                                             circle_size=circle_size,
-                                             zero_to_efermi=True, ymin=ymin,
-                                             ymax=ymax, height=height, width=width,
-                                             vbm_cbm_marker=vbm_cbm_marker,
-                                             ylabel=ylabel, plt=plt,
-                                             dos_plotter=dos_plotter,
-                                             dos_options=dos_opts,
-                                             dos_label=dos_label, fonts=fonts)
+            plt = plotter.get_projected_plot(
+                projection_selection, mode=mode,
+                interpolate_factor=interpolate_factor, circle_size=circle_size,
+                zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
+                width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
+                plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
+                dos_label=dos_label, fonts=fonts)
         else:
-            plt = plotter.get_plot(zero_to_efermi=True, ymin=ymin, ymax=ymax,
-                                   height=height, width=width,
-                                   vbm_cbm_marker=vbm_cbm_marker,
-                                   ylabel=ylabel, plt=plt, dos_plotter=dos_plotter,
-                                   dos_options=dos_opts, dos_label=dos_label,
-                                   fonts=fonts)
+            plt = plotter.get_plot(
+                zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
+                width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
+                plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
+                dos_label=dos_label, fonts=fonts)
 
         if save_files:
             basename = 'band.{}'.format(image_format)
@@ -448,6 +449,14 @@ def _get_parser():
                         help='minimum energy on the y-axis')
     parser.add_argument('--ymax', type=float, default=6.,
                         help='maximum energy on the y-axis')
+    parser.add_argument('--style', type=str, nargs='+', default=None,
+                        help=('(List of) matplotlib style specifications, to '
+                              'be composed on top of Sumo base style. '
+                              'Try dark_background!'))
+    parser.add_argument('--no-base-style', action='store_true',
+                        dest='no_base_style',
+                        help=('Prevent use of sumo base style. This can make '
+                              'alternative styles behave more predictably.'))
     parser.add_argument('--config', type=str, default=None,
                         help='colour configuration file')
     parser.add_argument('--format', type=str, default='pdf',
@@ -493,6 +502,7 @@ def main():
              total_only=args.total_only, plot_total=args.total,
              legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
              height=args.height, width=args.width, ymin=args.ymin,
+             style=args.style, no_base_style=args.no_base_style,
              ymax=args.ymax, colours=colours, image_format=args.image_format,
              dpi=args.dpi, fonts=[args.font])
 
