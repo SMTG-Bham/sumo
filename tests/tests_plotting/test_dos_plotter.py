@@ -10,6 +10,7 @@ except ImportError:
 
 import matplotlib.pyplot
 
+import sumo.plotting
 import sumo.plotting.dos_plotter
 from sumo.plotting.dos_plotter import get_cached_colour
 
@@ -25,9 +26,9 @@ class GetColourTestCase(unittest.TestCase):
 
     def test_get_colour_cache(self):
         """Check colour caching"""
-        col1, cache = tuple(get_cached_colour('Hf', 's', cache=cache))
-        col2, cache = tuple(get_cached_colour('Zr', 'd', cache=cache))
-        col3, cache = tuple(get_cached_colour('Hf', 's', cache=cache))
+        col1, cache = get_cached_colour('Hf', 's', cache={})
+        col2, cache = get_cached_colour('Zr', 'd', cache=cache)
+        col3, cache = get_cached_colour('Hf', 's', cache=cache)
         self.assertEqual(col1, col3)
         self.assertNotEqual(col1, col2)
 
@@ -37,15 +38,16 @@ class GetColourTestCase(unittest.TestCase):
 
     def test_get_colour_global_cache(self):
         """Check colour caching"""
-        col1, cache = tuple(get_cached_colour('Hf', 's'))
-        col2, cache = tuple(get_cached_colour('Zr', 'd'))
-        col3, cache = tuple(get_cached_colour('Hf', 's'))
+        sumo.plotting.colour_cache.clear()
+        col1, _ = get_cached_colour('Hf', 's')
+        col2, _ = get_cached_colour('Zr', 'd')
+        col3, _ = get_cached_colour('Hf', 's')
         self.assertEqual(col1, col3)
         self.assertNotEqual(col1, col2)
 
         # Try rebooting with new cache
-        colour_cache={}
-        col4, cache = tuple(get_cached_colour('Zr', 'd'))
+        sumo.plotting.colour_cache.clear()
+        col4, _ = get_cached_colour('Zr', 'd')
         self.assertEqual(col1, col4)
 
     def test_get_colour_type_error(self):
@@ -63,16 +65,16 @@ class GetColourTestCase(unittest.TestCase):
 
     def test_get_colour_mixed(self):
         """Check new colours drawn in correct sequence"""
+        sumo.plotting.colour_cache.clear()
         with matplotlib.pyplot.style.context('ggplot'):
-
             col_O_p, _ = get_cached_colour('O', 'p', colours=self.config)
             col_Hf_s, _ = get_cached_colour('Hf', 's', colours=self.config)
             col_Re_d, _ = get_cached_colour('Re', 'd', colours=self.config)
             col_Zr_d, _ = get_cached_colour('Zr', 'd', colours=self.config)
 
-            prop_cycle = matplotlib.rcParams['axes.prop_cycle'].by_key()['color']
-            default_0 = prop_cycle[0]
-            default_1 = prop_cycle[1]
+            prop_cyc = matplotlib.rcParams['axes.prop_cycle'].by_key()['color']
+            default_0 = prop_cyc[0]
+            default_1 = prop_cyc[1]
             self.assertEqual(col_Hf_s, default_0)
             self.assertEqual(col_Zr_d, default_1)
 

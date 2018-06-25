@@ -298,8 +298,8 @@ def get_cached_colour(element, orbital, colours=None, cache=colour_cache):
     checked. If this element-orbital combination has not been chached before,
     a new colour is drawn from the current matplotlib colour cycle and cached.
 
-    The default cache is sumo.plotting.colour_cache. To reset this cache, set
-    ``sumo.plotting.colour_cache = {}``.
+    The default cache is sumo.plotting.colour_cache. To reset this cache, use
+    ``sumo.plotting.colour_cache.clear()``.
 
     Args:
         element (:obj:`str`): The element.
