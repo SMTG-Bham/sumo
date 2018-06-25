@@ -10,6 +10,7 @@ import logging
 import itertools
 
 import numpy as np
+from matplotlib import rcParams
 from matplotlib.ticker import MaxNLocator
 from matplotlib.cbook import flatten
 
@@ -48,7 +49,7 @@ class SPhononBSPlotter(PhononBSPlotter):
         ax.set_xlim([0, max(x) * 1.1])
         ax.set_xlabel("DOS")
 
-    def get_plot(self, ymin=None, ymax=None, width=6., height=6., dpi=400,
+    def get_plot(self, ymin=None, ymax=None, width=None, height=None, dpi=None,
                  plt=None, fonts=None, dos=None, dos_aspect=3,
                  color=None):
         """Get a :obj:`matplotlib.pyplot` object of the phonon band structure.
@@ -78,8 +79,9 @@ class SPhononBSPlotter(PhononBSPlotter):
             color = 'C0'  # Default to first colour in matplotlib series
 
         if dos is not None:
-            plt = pretty_subplot(1, 2, width, height, sharex=False,
-                                 sharey=True, dpi=dpi, plt=plt, fonts=fonts,
+            plt = pretty_subplot(1, 2, width=width, height=height,
+                                 sharex=False, sharey=True, dpi=dpi, plt=plt,
+                                 fonts=fonts,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
                                               'wspace': 0})
             ax = plt.gcf().axes[0]
@@ -137,6 +139,7 @@ class SPhononBSPlotter(PhononBSPlotter):
             # keep correct aspect ratio square
             x0, x1 = ax.get_xlim()
             y0, y1 = ax.get_ylim()
+            height, width = rcParams['figure.figsize']
             ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
 
     def _maketicks(self, ax):

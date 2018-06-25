@@ -12,7 +12,7 @@ from cycler import cycler
 from itertools import cycle
 import matplotlib.pyplot
 from matplotlib.collections import LineCollection
-from matplotlib import rc
+from matplotlib import rc, rcParams
 
 from pkg_resources import resource_filename
 
@@ -60,7 +60,7 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
         if width is None:
             width=matplotlib.rcParams['figure.figsize'][0]
         if height is None:
-            width=matplotlib.rcParams['figure.figsize'][1]
+            height=matplotlib.rcParams['figure.figsize'][1]
 
         if dpi is not None:
             matplotlib.rcParams['figure.dpi'] = dpi
@@ -110,6 +110,12 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
         with publication ready defaults set.
     """
 
+    if width is None:
+        width=rcParams['figure.figsize'][0]
+    if height is None:
+        height=rcParams['figure.figsize'][1]
+
+
     # TODO: Make this work if plt is already set...
     if plt is None:
         import matplotlib.pyplot as plt
@@ -117,28 +123,13 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
                                dpi=dpi, figsize=(width, height), facecolor='w',
                                gridspec_kw=gridspec_kw)
 
-    for ax in axes:
-        ax.set_prop_cycle(colour_cycler())
-        ax.tick_params(width=_linewidth, size=_ticksize)
-        ax.tick_params(which='major', size=_ticksize, width=_linewidth,
-                       labelsize=_ticklabelsize, pad=7, direction='in',
-                       right='off', top='off')
-        ax.tick_params(which='minor', size=_ticksize/2, width=_linewidth,
-                       direction='in', right='off', top='off')
+    if fonts is not None:
+        if type(fonts) is str:
+            fonts = [fonts]
 
-        ax.set_title(ax.get_title(), size=20)
-        for axis in ['top', 'bottom', 'left', 'right']:
-            ax.spines[axis].set_linewidth(_linewidth)
+        rc('font', **{'family': 'sans-serif', 'sans-serif': fonts})
+        rc('text', usetex=False)
 
-        ax.set_xlabel(ax.get_xlabel(), size=_labelsize)
-        ax.set_ylabel(ax.get_ylabel(), size=_labelsize)
-
-    fonts = default_fonts if fonts is None else fonts + default_fonts
-
-    rc('font', **{'family': 'sans-serif', 'sans-serif': fonts})
-    rc('text', usetex=False)
-    rc('pdf', fonttype=42)
-    rc('mathtext', fontset='stixsans')
     rc('legend', handlelength=1.5)
     return plt
 

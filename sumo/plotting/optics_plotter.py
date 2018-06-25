@@ -77,7 +77,7 @@ class SOpticsPlotter(object):
         self._label = label
         self._xmax = xmax + 1.
 
-    def get_plot(self, width=6., height=6., xmin=0., xmax=None, ymin=0,
+    def get_plot(self, width=None, height=None, xmin=0., xmax=None, ymin=0,
                  ymax=1e5, colours=None, dpi=400, plt=None, fonts=None):
         """Get a :obj:`matplotlib.pyplot` object of the optical spectra.
 

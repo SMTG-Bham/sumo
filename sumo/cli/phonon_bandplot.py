@@ -327,9 +327,9 @@ def _get_parser():
     parser.add_argument('--labels', type=str, default=None,
                         help=('specify the labels for kpoints '
                               r'(e.g. "\Gamma,X")'))
-    parser.add_argument('--height', type=float, default=6.,
+    parser.add_argument('--height', type=float, default=None,
                         help='height of the graph')
-    parser.add_argument('--width', type=float, default=6.,
+    parser.add_argument('--width', type=float, default=None,
                         help='width of the graph')
     parser.add_argument('--ymin', type=float, default=None,
                         help='minimum energy on the y-axis')
