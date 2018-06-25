@@ -51,7 +51,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
              ylabel='Energy (eV)', dos_label=None,
              elements=None, lm_orbitals=None, atoms=None,
              total_only=False, plot_total=True, legend_cutoff=3, gaussian=None,
-             height=6., width=6., ymin=-6., ymax=6., colours=None, yscale=1,
+             height=None, width=None, ymin=-6., ymax=6., colours=None, yscale=1,
              style=None, no_base_style=False,
              image_format='pdf', dpi=400, plt=None, fonts=None):
     """Plot electronic band structure diagrams from vasprun.xml files.
@@ -276,7 +276,8 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                         bbox_inches='tight')
 
             written = [filename]
-            written += save_data_files(vr, bs, prefix=prefix, directory=directory)
+            written += save_data_files(vr, bs, prefix=prefix,
+                                       directory=directory)
             return written
 
         else:
@@ -440,9 +441,9 @@ def _get_parser():
                         help='standard deviation of DOS gaussian broadening')
     parser.add_argument('--scale', type=float, default=1,
                         help='scaling factor for the density of states')
-    parser.add_argument('--height', type=float, default=6.,
+    parser.add_argument('--height', type=float, default=None,
                         help='height of the graph')
-    parser.add_argument('--width', type=float, default=6.,
+    parser.add_argument('--width', type=float, default=None,
                         help='width of the graph')
     parser.add_argument('--ymin', type=float, default=-6.,
                         help='minimum energy on the y-axis')
@@ -504,7 +505,6 @@ def main():
              style=args.style, no_base_style=args.no_base_style,
              ymax=args.ymax, colours=colours, image_format=args.image_format,
              dpi=args.dpi, fonts=[args.font])
-
 
 if __name__ == "__main__":
     main()

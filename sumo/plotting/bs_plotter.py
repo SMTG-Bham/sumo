@@ -12,7 +12,7 @@ import numpy as np
 import itertools as it
 
 from scipy.interpolate import interp1d
-import matplotlib
+from matplotlib import rcParams
 from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 
 from sumo.plotting import pretty_plot, pretty_subplot, rgbline
@@ -22,10 +22,7 @@ from sumo.electronic_structure.bandstructure import \
 from pymatgen.electronic_structure.plotter import BSPlotter
 from pymatgen.electronic_structure.core import Spin
 
-line_width = 1.5
 label_size = 22
-band_linewidth = 2
-
 
 class SBSPlotter(BSPlotter):
     """Class for plotting electronic band structures.
@@ -159,10 +156,10 @@ class SBSPlotter(BSPlotter):
                 c = 'C1'
 
             # plot band data
-            ax.plot(dists[nd], e, ls='-', c=c, linewidth=band_linewidth)
+            ax.plot(dists[nd], e, ls='-', c=c)
             if self._bs.is_spin_polarized:
                 e = eners[nd][str(Spin.down)][nb]
-                ax.plot(dists[nd], e, 'r--', linewidth=band_linewidth)
+                ax.plot(dists[nd], e, 'r--')
 
         self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
@@ -174,8 +171,8 @@ class SBSPlotter(BSPlotter):
 
     def get_projected_plot(self, selection, mode='rgb', interpolate_factor=4,
                            circle_size=150, projection_cutoff=0.001,
-                           zero_to_efermi=True, ymin=-6., ymax=6., width=6.,
-                           height=6., vbm_cbm_marker=False,
+                           zero_to_efermi=True, ymin=-6., ymax=6., width=None,
+                           height=None, vbm_cbm_marker=False,
                            ylabel='Energy (eV)',
                            dpi=400, plt=None,
                            dos_plotter=None, dos_options=None, dos_label=None,
@@ -358,7 +355,7 @@ class SBSPlotter(BSPlotter):
                 ls = '-' if spin == Spin.up else '--'
                 lc = rgbline(distances, bands, weights[0], weights[1],
                              weights[2], alpha=1, linestyles=ls,
-                             linewidth=2.5)
+                             linewidth=(rcParams['lines.linewidth'] * 1.25))
                 ax.add_collection(lc)
 
             elif mode == 'stacked':
@@ -367,8 +364,7 @@ class SBSPlotter(BSPlotter):
                 # use some nice custom colours first, then default colours
                 colours = ['#3952A3', '#FAA41A', '#67BC47', '#6ECCDD',
                            '#ED2025']
-                colour_series = matplotlib.rcParams[
-                    'axes.prop_cycle'].by_key()['color']
+                colour_series = rcParams['axes.prop_cycle'].by_key()['color']
                 colours.extend(colour_series)
 
                 # very small circles look crap
@@ -398,8 +394,7 @@ class SBSPlotter(BSPlotter):
             anchor_point = (0.95, 1)
 
         ax.legend(bbox_to_anchor=anchor_point, loc=loc, frameon=False,
-                  prop={'size': label_size-2}, handletextpad=0.1,
-                  scatterpoints=1)
+                  handletextpad=0.1, scatterpoints=1)
 
         # finish and tidy plot
         self._maketicks(ax, ylabel=ylabel)
@@ -411,12 +406,13 @@ class SBSPlotter(BSPlotter):
         return plt
 
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,
-                  vbm_cbm_marker=False, ymin=-6., ymax=6., height=6., width=6.,
+                  vbm_cbm_marker=False, ymin=-6., ymax=6.,
+                  height=None, width=None,
                   dos_plotter=None, dos_options=None, dos_label=None):
         """Tidy the band structure & add the density of states if required."""
         # draw line at Fermi level if not zeroing to e-Fermi
         if not zero_to_efermi:
-            ytick_color = matplotlib.rcParams['ytick.color']
+            ytick_color = rcParams['ytick.color']
             ef = self._bs.efermi
             ax.axhline(ef, color=ytick_color)
 
@@ -445,6 +441,7 @@ class SBSPlotter(BSPlotter):
             # keep correct aspect ratio square
             x0, x1 = ax.get_xlim()
             y0, y1 = ax.get_ylim()
+            width, height = rcParams['figure.figsize']
             ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
 
     def _makedos(self, ax, dos_plotter, dos_options, dos_label=None):
@@ -470,7 +467,7 @@ class SBSPlotter(BSPlotter):
                                  facecolor=line['colour'],
                                  alpha=line['alpha'])
                 ax.plot(densities, energies, label=label,
-                        color=line['colour'], lw=line_width)
+                        color=line['colour'])
 
             # x and y axis reversed versus normal dos plotting
             ax.set_ylim(dos_options['xmin'], dos_options['xmax'])
@@ -484,7 +481,6 @@ class SBSPlotter(BSPlotter):
                 ax.set_xlabel(dos_label)
 
             ax.legend(loc=2, frameon=False, ncol=1,
-                      prop={'size': label_size - 3},
                       bbox_to_anchor=(1., 1.))
 
     def _maketicks(self, ax, ylabel='Energy (eV)'):
@@ -512,5 +508,5 @@ class SBSPlotter(BSPlotter):
 
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
-        ax.xaxis.grid(True, c='k', ls='-', lw=line_width)
+        ax.xaxis.grid(True, c='k', ls='-')
         ax.set_ylabel(ylabel)
