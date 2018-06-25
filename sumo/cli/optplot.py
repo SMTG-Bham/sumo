@@ -37,7 +37,7 @@ def optplot(filenames=None, prefix=None, directory=None,
 
     Args:
         filenames (:obj:`str` or :obj:`list`, optional): Path to vasprun.xml
-            file (can be gziped). Alternatively, a list of paths can be
+            file (can be gzipped). Alternatively, a list of paths can be
             provided, in which case the absorption spectra for each will be
             plotted concurrently.
         prefix (:obj:`str`, optional): Prefix for file names.
@@ -63,7 +63,7 @@ def optplot(filenames=None, prefix=None, directory=None,
             plot. The colours can be specified as a hex code, set of rgb
             values, or any other format supported by matplotlib.
         image_format (:obj:`str`, optional): The image file format. Can be any
-            format supported by matplot, including: png, jpg, pdf, and svg.
+            format supported by matplotlib, including: png, jpg, pdf, and svg.
             Defaults to pdf.
         dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
             the image.

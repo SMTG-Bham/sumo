@@ -109,10 +109,10 @@ class SBSPlotter(BSPlotter):
                         from containing labels for orbitals that have very
                         little contribution in the plotting range.
                     "subplot" (:obj:`bool`)
-                        Plot the density of states for each element on seperate
+                        Plot the density of states for each element on separate
                         subplots. Defaults to ``False``.
 
-            dos_label (:obj:`str`, optional): DOS axis label/unitsa
+            dos_label (:obj:`str`, optional): DOS axis label/units
             dos_aspect (:obj:`float`, optional): Aspect ratio for the band
                 structure and density of states subplot. For example,
                 ``dos_aspect = 3``, results in a ratio of 3:1, for the band
@@ -181,8 +181,8 @@ class SBSPlotter(BSPlotter):
         """Get a :obj:`matplotlib.pyplot` of the projected band structure.
 
         If the system is spin polarised and ``mode = 'rgb'`` spin up and spin
-        down bands are differientiated by solid and dashed lines, repsecitvely.
-        For the other modes, spin up and spin down are plotted seperately.
+        down bands are differentiated by solid and dashed lines, respectively.
+        For the other modes, spin up and spin down are plotted separately.
 
         Args:
             selection (list): A list of :obj:`tuple` or :obj:`string`
@@ -227,12 +227,12 @@ class SBSPlotter(BSPlotter):
                         can be scaled using the ``circle_size`` option.
 
             interpolate_factor (:obj:`int`, optional): The factor by which to
-                interpolate the band structure (neccessary to make smooth
+                interpolate the band structure (necessary to make smooth
                 lines). A larger number indicates greater interpolation.
             circle_size (:obj:`float`, optional): The area of the circles used
                 when ``mode = 'stacked'``.
             projection_cutoff (:obj:`float`): Don't plot projections with
-                intensitites below this number. This option is useful for
+                intensities below this number. This option is useful for
                 stacked plots, where small projections clutter the plot.
             zero_to_efermi (:obj:`bool`): Normalise the plot such that the
                 valence band maximum is set as 0 eV.
@@ -285,7 +285,7 @@ class SBSPlotter(BSPlotter):
                         from containing labels for orbitals that have very
                         little contribution in the plotting range.
                     "subplot" (:obj:`bool`)
-                        Plot the density of states for each element on seperate
+                        Plot the density of states for each element on separate
                         subplots. Defaults to ``False``.
 
             dos_label (:obj:`str`, optional): DOS axis label/units
@@ -367,7 +367,7 @@ class SBSPlotter(BSPlotter):
                            '#ED2025']
                 colours.extend(np.array(default_colours)/255)
 
-                # very small cicles look crap
+                # very small circles look crap
                 weights[weights < projection_cutoff] = 0
 
                 distances = list(distances) * len(bands)

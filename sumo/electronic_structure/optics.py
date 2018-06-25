@@ -62,7 +62,7 @@ def calculate_alpha(dielectric, average=True):
 
     The unit of alpha is :math:`\mathrm{cm}^{-1}`.
 
-    Refactive index :math:`n` has real and imaginary parts:
+    Refractive index :math:`n` has real and imaginary parts:
 
     .. math::
 
@@ -128,7 +128,7 @@ def calculate_alpha(dielectric, average=True):
 def write_files(abs_data, prefix=None, directory=None):
     """Write the absorption spectra to a file.
 
-    Note that this function expects to recieve an iterable series of spectra.
+    Note that this function expects to receive an iterable series of spectra.
 
     Args:
         abs_data (tuple): Series (either :obj:`list` or :obj:`tuple`) of

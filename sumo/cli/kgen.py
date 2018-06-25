@@ -49,12 +49,12 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
             is ``POSCAR``.
         directory (:obj:`str`, optional): The output file directory.
         make_folders (:obj:`bool`, optional): Generate folders and copy in
-            required files (INCAR, POTCAR, POSCAR, and possibily CHGCAR) from
+            required files (INCAR, POTCAR, POSCAR, and possibly CHGCAR) from
             the current directory.
         symprec (:obj:`float`, optional): The precision used for determining
             the cell symmetry.
         kpts_per_split (:obj:`int`, optional): If set, the k-points are split
-            into seperate k-point files (or folders) each containing the number
+            into separate k-point files (or folders) each containing the number
             of k-points specified. This is useful for hybrid band structure
             calculations where it is often intractable to calculate all
             k-points in the same calculation.
@@ -108,7 +108,7 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
                                            labels=labels, spg=spg,
                                            line_density=density)
 
-    logging.info('\nk-point label indicies:')
+    logging.info('\nk-point label indices:')
     for i, label in enumerate(labels):
         if label:
             logging.info('\t{}: {}'.format(label, i+1))
@@ -171,7 +171,7 @@ def _get_parser():
     parser.add_argument('-s', '--split', type=int, default=None, metavar='N',
                         help='number of k-points to include per file')
     parser.add_argument('-f', '--folders', action='store_true',
-                        help='creater folders and copy in necessary files')
+                        help='create folders and copy in necessary files')
     parser.add_argument('-y', '--hybrid', default=False, action='store_true',
                         help='append k-points to IBZKPT file with zero weight')
     parser.add_argument('--symprec', default=0.01, type=float,

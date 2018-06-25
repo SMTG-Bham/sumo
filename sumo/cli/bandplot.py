@@ -133,9 +133,9 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         atoms (:obj:`dict`, optional): Which atomic sites to use when
             calculating the projected density of states. Should be provided as
             a :obj:`dict`, with the element names as keys and a :obj:`tuple` of
-            :obj:`int` specifiying the atomic indicies as the corresponding
+            :obj:`int` specifying the atomic indices as the corresponding
             values. The elemental projected density of states will be summed
-            only over the atom inidices specified. If an element is included
+            only over the atom indices specified. If an element is included
             with an empty :obj:`tuple`, then all sites for that element will
             be included. The indices are 0 based for each element specified in
             the POSCAR. For example, the following will calculate the density
@@ -175,7 +175,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
             format supported by matplotlib.
         yscale (:obj:`float`, optional): Scaling factor for the y-axis.
         image_format (:obj:`str`, optional): The image file format. Can be any
-            format supported by matplot, including: png, jpg, pdf, and svg.
+            format supported by matplotlib, including: png, jpg, pdf, and svg.
             Defaults to pdf.
         dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
             the image.
@@ -194,7 +194,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     elif type(filenames) == str:
         filenames = [filenames]
 
-    # only laod the orbital proejcts if we definitely need them
+    # only load the orbital projects if we definitely need them
     parse_projected = True if projection_selection else False
 
     # now load all the vaspruns and combine them together using the
@@ -277,7 +277,7 @@ def find_vasprun_files():
       1. First search for folders named: 'split-0*'
       2. Else, look in the current directory.
 
-    The split folder names should always be zerop based, therefore easily
+    The split folder names should always be zero based, therefore easily
     sortable.
     """
     folders = glob.glob('split-*')
@@ -346,7 +346,7 @@ def _el_orb_tuple(string):
     all of its orbitals.
 
     Args:
-        string (`str`): The selected eleemtns and orbitals in in the form:
+        string (`str`): The selected elements and orbitals in in the form:
             `"Sn.s.p,O"`.
 
     Returns:

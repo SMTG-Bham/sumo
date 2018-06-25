@@ -87,7 +87,7 @@ class SDOSPlotter(object):
                 the legend from containing labels for orbitals that have very
                 little contribution in the plotting range.
             subplot (:obj:`bool`, optional): Plot the density of states for
-                each element on seperate subplots. Defaults to ``False``.
+                each element on separate subplots. Defaults to ``False``.
             cache (:obj:`dict`, optional): Cache object tracking how colours
                 have been assigned to orbitals. The format is the same as the
                 "colours" dict. This defaults to the module-level
@@ -140,7 +140,7 @@ class SDOSPlotter(object):
                     'colour': 'k', 'alpha': 0.15}
 
             # subplot data formatted as a list of lists of dicts, with each
-            # list of dicts being plotted on a seperate graph, if only one list
+            # list of dicts being plotted on a separate graph, if only one list
             # then solo plot
             lines.append([tdos])
             dmax = max([max(d[mask]) for d in dos.densities.values()])
@@ -182,7 +182,7 @@ class SDOSPlotter(object):
 
         Args:
             subplot (:obj:`bool`, optional): Plot the density of states for
-                each element on seperate subplots. Defaults to ``False``.
+                each element on separate subplots. Defaults to ``False``.
             width (:obj:`float`, optional): The width of the plot.
             height (:obj:`float`, optional): The height of the plot.
             xmin (:obj:`float`, optional): The minimum energy on the x-axis.

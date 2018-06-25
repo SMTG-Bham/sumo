@@ -73,7 +73,7 @@ class Kpath(object):
 
         Returns:
             bool: ``True`` if the structure is the same as the standard
-            primtive, otherwise ``False``.
+            primitive, otherwise ``False``.
         """
         return np.allclose(self.structure.lattice.matrix,
                            self.prim.lattice.matrix, atol=atol)
@@ -155,7 +155,7 @@ class Kpath(object):
                 else:
                     list_k_points.extend(kpts)
 
-            # append last k-point to avoid repition as in pymatgen
+            # append last k-point to avoid repetition as in pymatgen
             if not phonopy:
                 # for VASP we label every k-point. If a k-point has no
                 # high-symmetry label then just use an empty string.
