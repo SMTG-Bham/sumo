@@ -15,7 +15,7 @@ from scipy.interpolate import interp1d
 import matplotlib
 from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 
-from sumo.plotting import pretty_plot, pretty_subplot, rgbline, default_colours
+from sumo.plotting import pretty_plot, pretty_subplot, rgbline
 from sumo.electronic_structure.bandstructure import \
         get_projections_by_branches
 
@@ -367,7 +367,9 @@ class SBSPlotter(BSPlotter):
                 # use some nice custom colours first, then default colours
                 colours = ['#3952A3', '#FAA41A', '#67BC47', '#6ECCDD',
                            '#ED2025']
-                colours.extend(np.array(default_colours)/255)
+                colour_series = matplotlib.rcParams[
+                    'axes.prop_cycle'].by_key()['color']
+                colours.extend(colour_series)
 
                 # very small circles look crap
                 weights[weights < projection_cutoff] = 0

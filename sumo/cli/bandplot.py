@@ -243,7 +243,6 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         style = []
     elif type(style) == str:
         style = [style]
-
     if no_base_style:
         base_style = []
     else:
