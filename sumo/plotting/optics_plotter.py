@@ -8,13 +8,10 @@ This module provides a class for plotting optical absorption spectra.
 
 import numpy as np
 
-import matplotlib
+from matplotlib import rcParams
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 
 from sumo.plotting import pretty_plot, default_colours, power_tick
-
-line_width = 1.5
-label_size = 22
 
 class SOpticsPlotter(object):
     """Class for plotting optical absorption spectra.
@@ -108,8 +105,7 @@ class SOpticsPlotter(object):
                           fonts=fonts)
         ax = plt.gca()
 
-        optics_colours = matplotlib.rcParams[
-            'axes.prop_cycle'].by_key()['color']
+        optics_colours = rcParams['axes.prop_cycle'].by_key()['color']
         if colours is not None:
             optics_colours = colours + optics_colours
 
@@ -119,7 +115,7 @@ class SOpticsPlotter(object):
                                                    optics_colours):
             if len(alpha.shape) == 1:
                 # if averaged optics only plot one line
-                ax.plot(ener, alpha, lw=line_width, label=abs_label, c=c)
+                ax.plot(ener, alpha, label=abs_label, c=c)
 
             else:
                 data = zip(range(3), ['xx', 'yy', 'zz'], ['-', '--', '-.'])
@@ -131,12 +127,12 @@ class SOpticsPlotter(object):
                         label = r'{}$_\mathregular{{{}}}$'
                         label.format(direction_label, direction_id)
 
-                    ax.plot(ener, alpha[:, direction_id], lw=line_width, ls=ls,
+                    ax.plot(ener, alpha[:, direction_id], ls=ls,
                             label=label, c=c)
 
             if bg:
                 # plot band gap line
-                ax.plot([bg, bg], [ymin, ymax], lw=line_width, ls=':', c=c)
+                ax.plot([bg, bg], [ymin, ymax], ls=':', c=c)
 
         xmax = xmax if xmax else self._xmax
         ax.set_xlim(xmin, xmax)
@@ -150,11 +146,11 @@ class SOpticsPlotter(object):
 
         if (not np.all(np.array(self._label) == '')
                 or len(np.array(self._abs_data[0][1]).shape) > 1):
-            ax.legend(loc='best', frameon=False, ncol=1,
-                      prop={'size': label_size - 3})
+            ax.legend(loc='best', frameon=False, ncol=1)
 
         x0, x1 = ax.get_xlim()
         y0, y1 = ax.get_ylim()
+        height, width = rcParams['figure.figsize']
         ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
         plt.tight_layout()
 

@@ -177,9 +177,9 @@ def _get_parser():
                         help='labels for the absorption specta')
     parser.add_argument('-a', '--anisotropic', action='store_false',
                         help='separate spectra into to x, y, and z directions')
-    parser.add_argument('--height', type=float, default=6.,
+    parser.add_argument('--height', type=float, default=None,
                         help='height of the graph')
-    parser.add_argument('--width', type=float, default=6.,
+    parser.add_argument('--width', type=float, default=None,
                         help='width of the graph')
     parser.add_argument('--xmin', type=float, default=0.,
                         help='minimum energy on the x-axis')
