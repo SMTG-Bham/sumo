@@ -284,11 +284,19 @@ class SDOSPlotter(object):
 
         # no add axis labels and sort out ticks
         if subplot:
-            ax.set_xlabel(xlabel, fontsize=label_size)
+            ax.set_xlabel(xlabel)
             fig.subplots_adjust(hspace=0)
             plt.setp([a.get_xticklabels() for a in fig.axes[:-1]],
                      visible=False)
-            fig.text(0.08, 0.5, ylabel, fontsize=label_size, ha='left',
+
+            if 'axes.labelcolor' in matplotlib.rcParams:
+                print("labelcolor")
+                print(matplotlib.rcParams['axes.labelcolor'])
+                ylabelcolor = matplotlib.rcParams['axes.labelcolor']
+            else:
+                ylabelcolor = None
+
+            fig.text(0.08, 0.5, ylabel, ha='left', color=ylabelcolor,
                      va='center', rotation='vertical', transform=ax.transAxes)
         else:
             ax.set_xlabel(xlabel)
