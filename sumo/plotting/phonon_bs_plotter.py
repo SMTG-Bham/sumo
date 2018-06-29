@@ -100,7 +100,7 @@ class SPhononBSPlotter(PhononBSPlotter):
 
             # plot band data
             ax.plot(dists[nd], f, ls='-', c=color,
-                    linewidth=band_linewidth)
+                    linewidth=band_linewidth, zorder=1)
 
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, width=width, height=height,
@@ -120,17 +120,20 @@ class SPhononBSPlotter(PhononBSPlotter):
             color = 'C0'  # Default to first colour in matplotlib series
 
         # set x and y limits
-        tymax = ymax if ymax else max(flatten(data['frequency']))
-        tymin = ymin if ymin else min(flatten(data['frequency']))
+        tymax = ymax if (ymax is not None) else max(flatten(data['frequency']))
+        tymin = ymin if (ymin is not None) else min(flatten(data['frequency']))
         pad = (tymax - tymin) * 0.05
 
-        if not ymin:
+        if ymin is None:
             ymin = 0 if tymin >= self.imag_tol else tymin - pad
         ymax = ymax if ymax else tymax + pad
 
         ax.set_ylim(ymin, ymax)
         ax.set_xlim(0, data['distances'][-1][-1])
-        ax.axhline(0, color=grey, linestyle='--')
+
+        if ymin < 0:
+            ax.axhline(0, color=grey, linestyle='--',
+                       zorder=0, linewidth=rcParams['ytick.major.width'])
 
         if dos is not None:
             self._plot_phonon_dos(dos, ax=fig.axes[1], color=color)

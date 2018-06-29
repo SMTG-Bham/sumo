@@ -130,7 +130,8 @@ class SBSPlotter(BSPlotter):
                                               'wspace': 0})
             ax = plt.gcf().axes[0]
         else:
-            plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt, fonts=fonts)
+            plt = pretty_plot(width=width, height=height,
+                              dpi=dpi, plt=plt, fonts=fonts)
             ax = plt.gca()
 
         data = self.bs_plot_data(zero_to_efermi)
@@ -147,19 +148,30 @@ class SBSPlotter(BSPlotter):
                                  range(self._nb_bands)):
             e = eners[nd][str(Spin.up)][nb]
 
-            # this check is very slow but works for now
-            # colour valence bands blue and conduction bands orange
-            if (self._bs.is_spin_polarized or self._bs.is_metal() or
-                    np.all(is_vb[nb])):
+            # For closed-shell calculations with a bandgap, colour valence
+            # bands blue (C0) and conduction bands orange (C1)
+            #
+            # For closed-shell calculations with no bandgap, colour with C0
+            #
+            # For spin-polarized calculations, colour spin up channel with C1
+            # and overlay with C0 (dashed) spin down channel
+
+            if self._bs.is_spin_polarized:
+                c = 'C1'
+            elif self._bs.is_metal() or np.all(is_vb[nb]):
                 c = 'C0'
             else:
                 c = 'C1'
 
             # plot band data
-            ax.plot(dists[nd], e, ls='-', c=c)
-            if self._bs.is_spin_polarized:
+            ax.plot(dists[nd], e, ls='-', c=c, zorder=0)
+
+        # Plot second spin channel if it exists
+        if self._bs.is_spin_polarized:
+            for nd, nb in it.product(range(len(data['distances'])),
+                                     range(self._nb_bands)):
                 e = eners[nd][str(Spin.down)][nb]
-                ax.plot(dists[nd], e, 'r--')
+                ax.plot(dists[nd], e, c='C0', linestyle='--', zorder=1)
 
         self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
