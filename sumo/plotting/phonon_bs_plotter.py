@@ -132,8 +132,10 @@ class SPhononBSPlotter(PhononBSPlotter):
         ax.set_xlim(0, data['distances'][-1][-1])
 
         if ymin < 0:
-            ax.axhline(0, color=grey, linestyle='--',
-                       zorder=0, linewidth=rcParams['ytick.major.width'])
+            ax.axhline(0, color=rcParams['grid.color'], linestyle='--',
+                       dashes=(5, 2),
+                       zorder=0,
+                       linewidth=rcParams['ytick.major.width'])
 
         if dos is not None:
             self._plot_phonon_dos(dos, ax=fig.axes[1], color=color)
@@ -169,5 +171,5 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
-        ax.xaxis.grid(True, c='k', ls='-', lw=line_width)
+        ax.xaxis.grid(True, ls='-')
         ax.set_ylabel('Frequency (THz)')

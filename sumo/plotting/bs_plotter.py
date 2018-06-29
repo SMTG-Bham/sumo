@@ -164,14 +164,14 @@ class SBSPlotter(BSPlotter):
                 c = 'C1'
 
             # plot band data
-            ax.plot(dists[nd], e, ls='-', c=c, zorder=0)
+            ax.plot(dists[nd], e, ls='-', c=c, zorder=0.1)
 
         # Plot second spin channel if it exists
         if self._bs.is_spin_polarized:
             for nd, nb in it.product(range(len(data['distances'])),
                                      range(self._nb_bands)):
                 e = eners[nd][str(Spin.down)][nb]
-                ax.plot(dists[nd], e, c='C0', linestyle='--', zorder=1)
+                ax.plot(dists[nd], e, c='C0', linestyle='--', zorder=0.2)
 
         self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
@@ -520,5 +520,5 @@ class SBSPlotter(BSPlotter):
 
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
-        ax.xaxis.grid(True, c='k', ls='-')
+        ax.xaxis.grid(True, ls='-')
         ax.set_ylabel(ylabel)

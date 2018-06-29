@@ -11,6 +11,7 @@ axes.titlesize : 20
 # axes.titlepad :
 axes.linewidth       : 1.5
 grid.linewidth       : 1.5
+grid.color           : black
 
 ## Relative label size can be set relative to font:
 ## smaller, small, medium, large, x-large, xx-large, larger
