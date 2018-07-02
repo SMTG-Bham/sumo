@@ -14,15 +14,17 @@ import itertools as it
 from scipy.interpolate import interp1d
 from matplotlib import rcParams
 from matplotlib.ticker import MaxNLocator, AutoMinorLocator
+from matplotlib.transforms import blended_transform_factory
 
 from sumo.plotting import pretty_plot, pretty_subplot, rgbline
 from sumo.electronic_structure.bandstructure import \
-        get_projections_by_branches
+    get_projections_by_branches
 
 from pymatgen.electronic_structure.plotter import BSPlotter
 from pymatgen.electronic_structure.core import Spin
 
 label_size = 22
+
 
 class SBSPlotter(BSPlotter):
     """Class for plotting electronic band structures.
@@ -164,14 +166,14 @@ class SBSPlotter(BSPlotter):
                 c = 'C1'
 
             # plot band data
-            ax.plot(dists[nd], e, ls='-', c=c, zorder=0.1)
+            ax.plot(dists[nd], e, ls='-', c=c, zorder=1)
 
         # Plot second spin channel if it exists
         if self._bs.is_spin_polarized:
             for nd, nb in it.product(range(len(data['distances'])),
                                      range(self._nb_bands)):
                 e = eners[nd][str(Spin.down)][nb]
-                ax.plot(dists[nd], e, c='C0', linestyle='--', zorder=0.2)
+                ax.plot(dists[nd], e, c='C0', linestyle='--', zorder=2)
 
         self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
@@ -522,3 +524,11 @@ class SBSPlotter(BSPlotter):
         ax.set_xticklabels(unique_l)
         ax.xaxis.grid(True, ls='-')
         ax.set_ylabel(ylabel)
+
+        trans_xdata_yaxes = blended_transform_factory(ax.transData,
+                                                      ax.transAxes)
+        ax.vlines(unique_d, 0, 1,
+                  transform=trans_xdata_yaxes,
+                  colors=rcParams['grid.color'],
+                  linewidth=rcParams['grid.linewidth'],
+                  zorder=3)

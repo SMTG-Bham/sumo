@@ -13,13 +13,14 @@ import numpy as np
 from matplotlib import rcParams
 from matplotlib.ticker import MaxNLocator
 from matplotlib.cbook import flatten
+from matplotlib.transforms import blended_transform_factory
 
 from sumo.plotting import pretty_plot, pretty_subplot, default_colours
 
 from pymatgen.phonon.plotter import PhononBSPlotter
 
+dashes = (5, 2)
 line_width = 1.5
-band_linewidth = 2
 
 
 class SPhononBSPlotter(PhononBSPlotter):
@@ -37,7 +38,7 @@ class SPhononBSPlotter(PhononBSPlotter):
         PhononBSPlotter.__init__(self, bs)
         self.imag_tol = imag_tol
 
-    def _plot_phonon_dos(self, dos, ax=None, color=None):
+    def _plot_phonon_dos(self, dos, ax=None, color=None, dashline=False):
         if ax is None:
             ax = plt.gca()
         if color is None:
@@ -48,6 +49,12 @@ class SPhononBSPlotter(PhononBSPlotter):
         ax.set_xticks([])
         ax.set_xlim([0, max(x) * 1.1])
         ax.set_xlabel("DOS")
+
+        if dashline:
+            ax.axhline(0, color=rcParams['grid.color'], linestyle='--',
+                       dashes=dashes,
+                       zorder=0,
+                       linewidth=rcParams['ytick.major.width'])
 
     def get_plot(self, ymin=None, ymax=None, width=None, height=None, dpi=None,
                  plt=None, fonts=None, dos=None, dos_aspect=3,
@@ -99,8 +106,7 @@ class SPhononBSPlotter(PhononBSPlotter):
             f = freqs[nd][nb]
 
             # plot band data
-            ax.plot(dists[nd], f, ls='-', c=color,
-                    linewidth=band_linewidth, zorder=1)
+            ax.plot(dists[nd], f, ls='-', c=color, zorder=1)
 
         self._maketicks(ax)
         self._makeplot(ax, plt.gcf(), data, width=width, height=height,
@@ -132,13 +138,17 @@ class SPhononBSPlotter(PhononBSPlotter):
         ax.set_xlim(0, data['distances'][-1][-1])
 
         if ymin < 0:
+            dashline = True
             ax.axhline(0, color=rcParams['grid.color'], linestyle='--',
-                       dashes=(5, 2),
+                       dashes=dashes,
                        zorder=0,
                        linewidth=rcParams['ytick.major.width'])
+        else:
+            dashline = False
 
         if dos is not None:
-            self._plot_phonon_dos(dos, ax=fig.axes[1], color=color)
+            self._plot_phonon_dos(dos, ax=fig.axes[1], color=color,
+                                  dashline=dashline)
         else:
 
             # keep correct aspect ratio square
@@ -172,4 +182,11 @@ class SPhononBSPlotter(PhononBSPlotter):
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
         ax.xaxis.grid(True, ls='-')
+
+        trans_xdata_yaxes = blended_transform_factory(ax.transData,
+                                                      ax.transAxes)
+        ax.vlines(unique_d, 0, 1,
+                  transform=trans_xdata_yaxes,
+                  colors=rcParams['grid.color'],
+                  linewidth=rcParams['grid.linewidth'])
         ax.set_ylabel('Frequency (THz)')
