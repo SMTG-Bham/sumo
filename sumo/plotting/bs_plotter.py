@@ -452,10 +452,13 @@ class SBSPlotter(BSPlotter):
             dos_options.update({'xmin': ymin, 'xmax': ymax})
             self._makedos(ax, dos_plotter, dos_options, dos_label=dos_label)
         else:
-            # keep correct aspect ratio square
+            # keep correct aspect ratio for axes based on canvas size
             x0, x1 = ax.get_xlim()
             y0, y1 = ax.get_ylim()
-            width, height = rcParams['figure.figsize']
+            if width is None:
+                width = rcParams['figure.figsize'][0]
+            if height is None:
+                height = rcParams['figure.figsize'][1]
             ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
 
     def _makedos(self, ax, dos_plotter, dos_options, dos_label=None):

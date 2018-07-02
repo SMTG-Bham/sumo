@@ -32,6 +32,7 @@ warnings.filterwarnings("ignore", category=FutureWarning,
 import matplotlib as mpl
 mpl.use('Agg')
 from matplotlib.pyplot import style as mpl_style
+from matplotlib import rcParams
 
 from phonopy.units import VaspToTHz
 
@@ -242,6 +243,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             if directory:
                 filename = os.path.join(directory, filename)
 
+            if dpi is None:
+                dpi = rcParams['figure.dpi']
             plt.savefig(filename, format=image_format, dpi=dpi,
                         bbox_inches='tight')
 
@@ -348,7 +351,7 @@ def _get_parser():
     parser.add_argument('--format', type=str, default='pdf',
                         dest='image_format', metavar='FORMAT',
                         help='image file format (options: pdf, svg, jpg, png)')
-    parser.add_argument('--dpi', type=int, default=400,
+    parser.add_argument('--dpi', type=int, default=None,
                         help='pixel density for image file')
     parser.add_argument('--font', default=None, help='font to use')
     parser.add_argument('--dos', nargs='?', type=str,

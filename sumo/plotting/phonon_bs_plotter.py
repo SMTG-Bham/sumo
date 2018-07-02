@@ -81,7 +81,6 @@ class SPhononBSPlotter(PhononBSPlotter):
         Returns:
             :obj:`matplotlib.pyplot`: The phonon band structure plot.
         """
-
         if color is None:
             color = 'C0'  # Default to first colour in matplotlib series
 
@@ -119,7 +118,6 @@ class SPhononBSPlotter(PhononBSPlotter):
     def _makeplot(self, ax, fig, data, ymin=None, ymax=None, height=6,
                   width=6, dos=None, color=None):
         """Utility method to tidy phonon band structure diagrams. """
-
         # Define colours
         grey = (0.5, 0.5, 0.5)
         if color is None:
@@ -151,10 +149,14 @@ class SPhononBSPlotter(PhononBSPlotter):
                                   dashline=dashline)
         else:
 
-            # keep correct aspect ratio square
+            # keep correct aspect ratio; match axis to canvas
             x0, x1 = ax.get_xlim()
             y0, y1 = ax.get_ylim()
-            height, width = rcParams['figure.figsize']
+
+            if width is None:
+                width = rcParams['figure.figsize'][0]
+            if height is None:
+                height = rcParams['figure.figsize'][1]
             ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
 
     def _maketicks(self, ax):
