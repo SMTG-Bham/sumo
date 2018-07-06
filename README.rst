@@ -159,7 +159,7 @@ Contributing
 ------------
 
 Bugs reports and feature requests
-+++++++++++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are probably still some bugs. If you think you've found
 one, please report it on the `Issue Tracker
@@ -170,7 +170,7 @@ Poor documentation is considered a bug, but please be as specific as
 possible when asking for improvements.
 
 Code contributions
-++++++++++++++++++
+~~~~~~~~~~~~~~~~~~
 
 We welcome your help in improving and extending the package with your
 own contributions. This is managed through Github pull requests;
