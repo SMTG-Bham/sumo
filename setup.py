@@ -19,7 +19,8 @@ with open('README.rst', 'r') as file:
 setup(
     name='sumo',
     version='1.0.9',
-    description='Heavy weight plotting tools for ab initio calculations',
+    description=('Heavy weight plotting tools for ab initio '
+                 'solid-state calculations'),
     url='https://github.com/smtg-ucl/sumo',
     author='Alex Ganose, Adam J. Jackson',
     author_email='d.scanlon@ucl.ac.uk',
@@ -37,8 +38,8 @@ setup(
     keywords='chemistry pymatgen dft vasp dos band',
     test_suite='setup.load_test_suite',
     packages=find_packages(),
-    install_requires=['spglib', 'numpy', 'scipy', 'pymatgen>=2017.12.30', 'h5py',
-                      'phonopy', 'matplotlib', 'seekpath'],
+    install_requires=['spglib', 'numpy', 'scipy', 'pymatgen>=2017.12.30',
+                      'h5py', 'phonopy', 'matplotlib', 'seekpath'],
     extras_require={'docs': ['sphinx', 'sphinx-argparse']},
     package_data={'sumo': ['symmetry/bradcrack.json',
                            'plotting/orbital_colours.conf']},
