@@ -43,7 +43,8 @@ setup(
     extras_require={'docs': ['sphinx', 'sphinx-argparse']},
     package_data={'sumo': ['symmetry/bradcrack.json',
                            'plotting/orbital_colours.conf']},
-    data_files=['examples/orbital_colours.conf', 'LICENSE', 'requirements.txt'],
+    data_files=['examples/orbital_colours.conf', 'LICENSE',
+                'requirements_rtd.txt'],
     entry_points={'console_scripts': [
                       'sumo-bandplot = sumo.cli.bandplot:main',
                       'sumo-bandstats = sumo.cli.bandstats:main',
