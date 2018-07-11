@@ -11,8 +11,8 @@ import matplotlib
 import matplotlib.pyplot
 
 from sumo.electronic_structure.dos import sort_orbitals
-from sumo.plotting import pretty_plot, pretty_subplot
-from sumo.plotting import colour_cache
+from sumo.plotting import (pretty_plot, pretty_subplot, colour_cache,
+                           styled_plot, sumo_base_style, sumo_dos_style)
 
 from pymatgen.electronic_structure.core import Spin
 
@@ -179,11 +179,13 @@ class SDOSPlotter(object):
         plot_data.update({'lines': lines, 'ymax': ymax, 'ymin': ymin})
         return plot_data
 
+    @styled_plot(sumo_base_style, sumo_dos_style)
     def get_plot(self, subplot=False, width=6., height=8., xmin=-6., xmax=6.,
                  yscale=1, colours=None, plot_total=True, legend_on=True,
                  num_columns=2, legend_frame_on=False, legend_cutoff=3,
                  xlabel='Energy (eV)', ylabel='Arb. units',
-                 dpi=400, fonts=None, plt=None):
+                 dpi=400, fonts=None, plt=None, style=None,
+                 no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the density of states.
 
         Args:
@@ -227,6 +229,12 @@ class SDOSPlotter(object):
                 specified as a :obj:`list` of :obj:`str`.
             plt (:obj:`matplotlib.pyplot`, optional): A
                 :obj:`matplotlib.pyplot` object to use for plotting.
+            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+                style specifications, to be composed on top of Sumo base
+                style.
+            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                style. This can make alternative styles behave more
+                predictably.
 
         Returns:
             :obj:`matplotlib.pyplot`: The density of states plot.

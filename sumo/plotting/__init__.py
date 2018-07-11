@@ -11,8 +11,45 @@ import numpy as np
 import matplotlib.pyplot
 from matplotlib.collections import LineCollection
 from matplotlib import rc, rcParams
+from pkg_resources import resource_filename
 
 colour_cache = {}
+
+sumo_base_style = resource_filename('sumo.plotting', 'sumo_base.mplstyle')
+sumo_dos_style = resource_filename('sumo.plotting', 'sumo_dos.mplstyle')
+sumo_bs_style = resource_filename('sumo.plotting', 'sumo_bs.mplstyle')
+sumo_phonon_style = resource_filename('sumo.plotting', 'sumo_phonon.mplstyle')
+sumo_optics_style = resource_filename('sumo.plotting', 'sumo_optics.mplstyle')
+
+
+def styled_plot(*style_sheets):
+    """Return a decorator that will apply matplotlib style sheets to a plot.
+
+    Args:
+        style_sheets (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+            supported definition of a style sheet.
+    """
+
+    def decorator(get_plot):
+
+        def wrapper(*args, **kwargs):
+
+            if 'no_base_style' in kwargs and kwargs['no_base_style']:
+                style = []
+            else:
+                style = list(style_sheets)
+
+            if 'style' in kwargs and kwargs['style'] is not None:
+                if isinstance(kwargs['style'], list):
+                    style += kwargs['style']
+                else:
+                    style += [kwargs['style']]
+
+            with matplotlib.pyplot.style.context(style):
+                return get_plot(*args, **kwargs)
+
+        return wrapper
+    return decorator
 
 
 def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):

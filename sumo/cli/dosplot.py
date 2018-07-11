@@ -21,7 +21,6 @@ import warnings
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
-import matplotlib.pyplot
 
 from sumo.electronic_structure.dos import load_dos, write_files
 from sumo.plotting.dos_plotter import SDOSPlotter
@@ -162,38 +161,27 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
 
     save_files = False if plt else True  # don't save if pyplot object provided
 
-    if style is None:
-        style = []
-    elif isinstance(style, str):
-        style = [style]
+    plotter = SDOSPlotter(dos, pdos)
+    plt = plotter.get_plot(subplot=subplot, width=width, height=height,
+                           xmin=xmin, xmax=xmax, yscale=yscale,
+                           colours=colours, plot_total=plot_total,
+                           legend_on=legend_on, num_columns=num_columns,
+                           legend_frame_on=legend_frame_on,
+                           xlabel=xlabel, ylabel=ylabel,
+                           legend_cutoff=legend_cutoff, dpi=dpi, plt=plt,
+                           fonts=fonts, style=style,
+                           no_base_style=no_base_style)
 
-    if no_base_style:
-        base_style = []
+    if save_files:
+        basename = 'dos.{}'.format(image_format)
+        filename = '{}_{}'.format(prefix, basename) if prefix else basename
+        if directory:
+            filename = os.path.join(directory, filename)
+        plt.savefig(filename, format=image_format, dpi=dpi,
+                    bbox_inches='tight')
+        write_files(dos, pdos, prefix=prefix, directory=directory)
     else:
-        base_style = [resource_filename('sumo.plotting', 'sumo_base.mplstyle')]
-
-    with matplotlib.pyplot.style.context(base_style + style):
-
-        plotter = SDOSPlotter(dos, pdos)
-        plt = plotter.get_plot(subplot=subplot, width=width, height=height,
-                               xmin=xmin, xmax=xmax, yscale=yscale,
-                               colours=colours, plot_total=plot_total,
-                               legend_on=legend_on, num_columns=num_columns,
-                               legend_frame_on=legend_frame_on,
-                               xlabel=xlabel, ylabel=ylabel,
-                               legend_cutoff=legend_cutoff, dpi=dpi, plt=plt,
-                               fonts=fonts)
-
-        if save_files:
-            basename = 'dos.{}'.format(image_format)
-            filename = '{}_{}'.format(prefix, basename) if prefix else basename
-            if directory:
-                filename = os.path.join(directory, filename)
-            plt.savefig(filename, format=image_format, dpi=dpi,
-                        bbox_inches='tight')
-            write_files(dos, pdos, prefix=prefix, directory=directory)
-        else:
-            return plt
+        return plt
 
 
 def _el_orb(string):
@@ -300,13 +288,10 @@ def _get_parser():
     parser.add_argument('--config', type=str, default=None,
                         help='colour configuration file')
     parser.add_argument('--style', type=str, nargs='+', default=None,
-                        help=('(List of) matplotlib style specifications, to '
-                              'be composed on top of Sumo base style. '
-                              'Try dark_background!'))
+                        help='matplotlib style specifications')
     parser.add_argument('--no-base-style', action='store_true',
                         dest='no_base_style',
-                        help=('Prevent use of sumo base style. This can make '
-                              'alternative styles behave more predictably.'))
+                        help='prevent use of sumo base style')
     parser.add_argument('--xlabel', type=str, default='Energy (eV)',
                         help='x-axis (i.e. energy) label/units'),
     parser.add_argument('--ylabel', type=str, default='Arb. units',
