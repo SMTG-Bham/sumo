@@ -106,16 +106,16 @@ def optplot(filenames=None, prefix=None, directory=None,
     abs_data = [calculate_alpha(d, average=average)
                 for d in dielectrics]
 
-    if type(band_gaps) is list and not band_gaps:
+    if isinstance(band_gaps, list) and not band_gaps:
         # empty list therefore get bandgap from vasprun files
         band_gaps = [vr.get_band_structure().get_band_gap()['energy']
                      for vr in vrs]
-    elif type(band_gaps) is list and 'vasprun' in band_gaps[0]:
+    elif isinstance(band_gaps, list) and 'vasprun' in band_gaps[0]:
         # band_gaps contains list of vasprun files
         bg_vrs = [Vasprun(f) for f in band_gaps]
         band_gaps = [vr.get_band_structure().get_band_gap()['energy']
                      for vr in bg_vrs]
-    elif type(band_gaps) is list:
+    elif isinstance(band_gaps, list):
         # band_gaps is non empty list w. no vaspruns; presume floats
         band_gaps = [float(i) for i in band_gaps]
 
@@ -127,7 +127,7 @@ def optplot(filenames=None, prefix=None, directory=None,
 
     if style is None:
         style = []
-    elif type(style) == str:
+    elif isinstance(style, str):
         style = [style]
     if no_base_style:
         base_style = []

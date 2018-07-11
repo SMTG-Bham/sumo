@@ -164,7 +164,7 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
 
     if style is None:
         style = []
-    elif type(style) == str:
+    elif isinstance(style, str):
         style = [style]
 
     if no_base_style:

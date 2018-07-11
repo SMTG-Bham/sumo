@@ -116,7 +116,7 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
 
     # TODO: Make this work if plt is already set...
     if plt is None:
-        import matplotlib.pyplot as plt
+        plt = matplotlib.pyplot
         f, axes = plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey,
                                dpi=dpi, figsize=(width, height), facecolor='w',
                                gridspec_kw=gridspec_kw)
