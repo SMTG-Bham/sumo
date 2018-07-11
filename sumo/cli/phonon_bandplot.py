@@ -220,7 +220,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
 
     if style is None:
         style = []
-    elif type(style) == str:
+    elif isinstance(style, str):
         style = [style]
     if no_base_style:
         base_style = []

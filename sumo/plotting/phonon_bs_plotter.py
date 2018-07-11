@@ -38,7 +38,8 @@ class SPhononBSPlotter(PhononBSPlotter):
         PhononBSPlotter.__init__(self, bs)
         self.imag_tol = imag_tol
 
-    def _plot_phonon_dos(self, dos, ax=None, color=None, dashline=False):
+    @staticmethod
+    def _plot_phonon_dos(dos, ax=None, color=None, dashline=False):
         if ax is None:
             ax = plt.gca()
         if color is None:
@@ -119,7 +120,6 @@ class SPhononBSPlotter(PhononBSPlotter):
                   width=6, dos=None, color=None):
         """Utility method to tidy phonon band structure diagrams. """
         # Define colours
-        grey = (0.5, 0.5, 0.5)
         if color is None:
             color = 'C0'  # Default to first colour in matplotlib series
 

@@ -197,7 +197,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     """
     if not filenames:
         filenames = find_vasprun_files()
-    elif type(filenames) == str:
+    elif isinstance(filenames, str):
         filenames = [filenames]
 
     # only load the orbital projects if we definitely need them
@@ -241,7 +241,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
 
     if style is None:
         style = []
-    elif type(style) == str:
+    elif isinstance(style, str):
         style = [style]
     if no_base_style:
         base_style = []

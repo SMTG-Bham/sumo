@@ -56,7 +56,7 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
 
 
     if plt is None:
-        import matplotlib.pyplot as plt
+        plt = matplotlib.pyplot
         if width is None:
             width=matplotlib.rcParams['figure.figsize'][0]
         if height is None:
@@ -66,9 +66,7 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
             matplotlib.rcParams['figure.dpi'] = dpi
 
         fig = plt.figure(figsize=(width, height))
-        ax = fig.add_subplot(1, 1, 1)
-    else:
-        ax = plt.gca()
+        fig.add_subplot(1, 1, 1)
 
     if fonts is not None:
         if type(fonts) is str:

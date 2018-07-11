@@ -11,7 +11,7 @@ import numpy as np
 from matplotlib import rcParams
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 
-from sumo.plotting import pretty_plot, default_colours, power_tick
+from sumo.plotting import pretty_plot, power_tick
 
 class SOpticsPlotter(object):
     """Class for plotting optical absorption spectra.

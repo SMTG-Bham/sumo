@@ -7,7 +7,6 @@ This module provides a class for plotting density of states data.
 """
 
 import itertools
-from pkg_resources import resource_filename
 import matplotlib
 import matplotlib.pyplot
 
@@ -59,7 +58,7 @@ class SDOSPlotter(object):
 
     def dos_plot_data(self, yscale=1, xmin=-6., xmax=6., colours=None,
                       plot_total=True, legend_cutoff=3, subplot=False,
-                      cache=colour_cache):
+                      cache=None):
         """Get the plotting data.
 
         Args:
@@ -126,6 +125,9 @@ class SDOSPlotter(object):
                 "ymax" (:obj:`float`)
                     The maximum y-axis limit.
         """
+        if cache is None:
+            cache = colour_cache
+
         # mask needed to prevent unwanted data in pdf and for finding y limit
         dos = self._dos
         pdos = self._pdos
@@ -304,7 +306,8 @@ class SDOSPlotter(object):
 
         return plt
 
-def get_cached_colour(element, orbital, colours=None, cache=colour_cache):
+
+def get_cached_colour(element, orbital, colours=None, cache=None):
     """Get a colour for a particular elemental and orbital combination.
 
     If the element is not specified in the colours dictionary, the cache is
@@ -337,7 +340,8 @@ def get_cached_colour(element, orbital, colours=None, cache=colour_cache):
         tuple: (colour, cache)
     """
 
-    import matplotlib.pyplot as plt
+    if cache is None:
+        cache = colour_cache
 
     def _get_colour_with_cache(element, orbital, cache, colour_series):
         """Return cached colour if available, or fetch and cache from cycle"""
@@ -360,7 +364,7 @@ def get_cached_colour(element, orbital, colours=None, cache=colour_cache):
             cache[element].update({orbital: colour})
             return colour, cache
 
-    colour_series = plt.rcParams['axes.prop_cycle'].by_key()['color']
+    colour_series = matplotlib.rcParams['axes.prop_cycle'].by_key()['color']
 
     if isinstance(colours, configparser.ConfigParser):
         try:

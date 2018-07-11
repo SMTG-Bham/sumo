@@ -93,7 +93,7 @@ def optplot(filenames=None, prefix=None, directory=None,
             logging.error('ERROR: No vasprun.xml found!')
             sys.exit()
 
-    elif type(filenames) is str:
+    elif isinstance(filenames, str):
         filenames = [filenames]
 
     vrs = [Vasprun(f) for f in filenames]

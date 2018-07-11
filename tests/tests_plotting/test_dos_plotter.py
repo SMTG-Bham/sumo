@@ -67,9 +67,9 @@ class GetColourTestCase(unittest.TestCase):
         """Check new colours drawn in correct sequence"""
         sumo.plotting.colour_cache.clear()
         with matplotlib.pyplot.style.context('ggplot'):
-            col_O_p, _ = get_cached_colour('O', 'p', colours=self.config)
+            _, __ = get_cached_colour('O', 'p', colours=self.config)
             col_Hf_s, _ = get_cached_colour('Hf', 's', colours=self.config)
-            col_Re_d, _ = get_cached_colour('Re', 'd', colours=self.config)
+            _, __ = get_cached_colour('Re', 'd', colours=self.config)
             col_Zr_d, _ = get_cached_colour('Zr', 'd', colours=self.config)
 
             prop_cyc = matplotlib.rcParams['axes.prop_cycle'].by_key()['color']
