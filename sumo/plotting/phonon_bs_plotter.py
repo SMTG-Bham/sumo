@@ -9,18 +9,16 @@ This module provides a class for plotting phonon band structure diagrams.
 import logging
 import itertools
 
-import numpy as np
 from matplotlib import rcParams
 from matplotlib.ticker import MaxNLocator
 from matplotlib.cbook import flatten
 from matplotlib.transforms import blended_transform_factory
 
-from sumo.plotting import pretty_plot, pretty_subplot, default_colours
+from sumo.plotting import pretty_plot, pretty_subplot
 
 from pymatgen.phonon.plotter import PhononBSPlotter
 
 dashes = (5, 2)
-line_width = 1.5
 
 
 class SPhononBSPlotter(PhononBSPlotter):

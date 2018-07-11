@@ -8,31 +8,11 @@ Subpackage providing helper functions for generating publication ready plots.
 
 import numpy as np
 
-from cycler import cycler
-from itertools import cycle
 import matplotlib.pyplot
 from matplotlib.collections import LineCollection
 from matplotlib import rc, rcParams
 
-from pkg_resources import resource_filename
-
-default_colours = [[240, 163, 255], [0, 117, 220], [153, 63, 0], [76, 0, 92],
-                   [66, 102, 0], [255, 0, 16], [157, 204, 0], [194, 0, 136],
-                   [0, 51, 128], [255, 164, 5], [255, 255, 0], [255, 80, 5],
-                   [94, 241, 242], [116, 10, 255], [153, 0, 0], [0, 153, 143],
-                   [0, 92, 49], [43, 206, 72], [255, 204, 153],
-                   [148, 255, 181], [143, 124, 0], [255, 168, 187],
-                   [128, 128, 128]]
-
 colour_cache = {}
-
-default_fonts = ['Whitney Book Extended', 'Arial', 'Whitney Book', 'Helvetica',
-                 'Liberation Sans', 'Andale Sans']
-
-_ticklabelsize = 22
-_labelsize = 22
-_ticksize = 15
-_linewidth = 1.3
 
 
 def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
@@ -54,13 +34,12 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
         publication ready defaults set.
     """
 
-
     if plt is None:
         plt = matplotlib.pyplot
         if width is None:
-            width=matplotlib.rcParams['figure.figsize'][0]
+            width = matplotlib.rcParams['figure.figsize'][0]
         if height is None:
-            height=matplotlib.rcParams['figure.figsize'][1]
+            height = matplotlib.rcParams['figure.figsize'][1]
 
         if dpi is not None:
             matplotlib.rcParams['figure.dpi'] = dpi
@@ -109,10 +88,9 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
     """
 
     if width is None:
-        width=rcParams['figure.figsize'][0]
+        width = rcParams['figure.figsize'][0]
     if height is None:
-        height=rcParams['figure.figsize'][1]
-
+        height = rcParams['figure.figsize'][1]
 
     # TODO: Make this work if plt is already set...
     if plt is None:
@@ -130,18 +108,6 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
 
     rc('legend', handlelength=1.5)
     return plt
-
-
-def colour_cycle():
-    """Return an :obj:`itertools.cycle` of the default sumo colours. """
-    rgb_colours = np.array(default_colours)/255.
-    return cycle(rgb_colours)
-
-
-def colour_cycler():
-    """Return an :obj:`cycler.cycler` of the default sumo colours. """
-    rgb_colours = np.array(default_colours)/255.
-    return cycler('color', rgb_colours)
 
 
 def power_tick(val, pos):

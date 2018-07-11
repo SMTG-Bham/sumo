@@ -13,6 +13,7 @@ from matplotlib.ticker import MaxNLocator, FuncFormatter
 
 from sumo.plotting import pretty_plot, power_tick
 
+
 class SOpticsPlotter(object):
     """Class for plotting optical absorption spectra.
 

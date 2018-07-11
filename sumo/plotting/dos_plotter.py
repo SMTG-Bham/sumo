@@ -21,9 +21,7 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-line_width = 1.5
 empty_space = 1.05
-band_linewidth = 2
 
 
 class SDOSPlotter(object):
@@ -270,7 +268,7 @@ class SDOSPlotter(object):
                                 facecolor=line['colour'],
                                 alpha=line['alpha'])
                 ax.plot(energies, densities, label=label,
-                        color=line['colour'], lw=line_width)
+                        color=line['colour'])
 
             ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
             ax.set_xlim(xmin, xmax)
@@ -292,8 +290,6 @@ class SDOSPlotter(object):
                      visible=False)
 
             if 'axes.labelcolor' in matplotlib.rcParams:
-                print("labelcolor")
-                print(matplotlib.rcParams['axes.labelcolor'])
                 ylabelcolor = matplotlib.rcParams['axes.labelcolor']
             else:
                 ylabelcolor = None
