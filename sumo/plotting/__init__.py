@@ -25,27 +25,34 @@ sumo_optics_style = resource_filename('sumo.plotting', 'sumo_optics.mplstyle')
 def styled_plot(*style_sheets):
     """Return a decorator that will apply matplotlib style sheets to a plot.
 
+    ``style_sheets`` is a base set of styles, which will be ignored if
+    ``no_base_style`` is set in the decorated function arguments.
+
+    The style will further be overwritten by any styles in the ``style``
+    optional argument of the decorated function.
+
     Args:
         style_sheets (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
-            supported definition of a style sheet.
+            supported definition of a style sheet. Can be a list of style of
+            style sheets.
     """
 
     def decorator(get_plot):
 
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, style=None, no_base_style=False, **kwargs):
 
-            if 'no_base_style' in kwargs and kwargs['no_base_style']:
-                style = []
+            if no_base_style:
+                list_style = []
             else:
-                style = list(style_sheets)
+                list_style = list(style_sheets)
 
-            if 'style' in kwargs and kwargs['style'] is not None:
-                if isinstance(kwargs['style'], list):
-                    style += kwargs['style']
+            if style is not None:
+                if isinstance(style, list):
+                    list_style += style
                 else:
-                    style += [kwargs['style']]
+                    list_style += [style]
 
-            with matplotlib.pyplot.style.context(style):
+            with matplotlib.pyplot.style.context(list_style):
                 return get_plot(*args, **kwargs)
 
         return wrapper
