@@ -92,11 +92,14 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
         fig.add_subplot(1, 1, 1)
 
     if fonts is not None:
-        if type(fonts) is str:
+        if isinstance(fonts, str):
             fonts = [fonts]
 
-        rc('font', **{'family': 'sans-serif', 'sans-serif': fonts})
-        rc('text', usetex=False)
+        fonts += matplotlib.rcParams['font.sans-serif']
+        rc('font', **{'sans-serif': fonts})
+
+    rc('font', **{'family': 'sans-serif'})
+    rc('text', usetex=False)
 
     return plt
 
@@ -160,7 +163,7 @@ def power_tick(val, pos):
         return r'$\mathregular{0}$'
     exponent = int(np.log10(val))
     coeff = val / 10**exponent
-    return r'$\mathregular{{{:0.1f} x 10^{:2d}}}$'.format(coeff, exponent)
+    return r'$\mathregular{{{:.1g} x 10^{:2d}}}$'.format(coeff, exponent)
 
 
 def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",

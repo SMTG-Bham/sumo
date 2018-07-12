@@ -342,7 +342,7 @@ def main():
             style=args.style, no_base_style=args.no_base_style,
             xlabel=args.xlabel, ylabel=args.ylabel,
             yscale=args.yscale, image_format=args.image_format, dpi=args.dpi,
-            fonts=[args.font])
+            fonts=args.font)
 
 
 if __name__ == "__main__":

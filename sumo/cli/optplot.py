@@ -11,11 +11,9 @@ import sys
 import logging
 import warnings
 import argparse
-from pkg_resources import resource_filename
 
 import matplotlib as mpl
 mpl.use('Agg')
-from matplotlib.pyplot import style as mpl_style
 
 from pymatgen.io.vasp import Vasprun
 from pymatgen.util.string import latexify
@@ -84,7 +82,6 @@ def optplot(filenames=None, prefix=None, directory=None,
         A matplotlib pyplot object.
     """
     if not filenames:
-
         if os.path.exists('vasprun.xml'):
             filenames = ['vasprun.xml']
         elif os.path.exists('vasprun.xml.gz'):
@@ -125,32 +122,21 @@ def optplot(filenames=None, prefix=None, directory=None,
         labels = [latexify(vr.final_structure.composition.reduced_formula).
                   replace('$_', '$_\mathregular') for vr in vrs]
 
-    if style is None:
-        style = []
-    elif isinstance(style, str):
-        style = [style]
-    if no_base_style:
-        base_style = []
+    plotter = SOpticsPlotter(abs_data, band_gap=band_gaps, label=labels)
+    plt = plotter.get_plot(width=width, height=height, xmin=xmin,
+                           xmax=xmax, ymin=ymin, ymax=ymax,
+                           colours=colours, dpi=dpi, plt=plt, fonts=fonts,
+                           style=style, no_base_style=no_base_style)
+
+    if save_files:
+        basename = 'absorption.{}'.format(image_format)
+        filename = '{}_{}'.format(prefix, basename) if prefix else basename
+        if directory:
+            filename = os.path.join(directory, filename)
+        plt.savefig(filename, format=image_format, dpi=dpi)
+        write_files(abs_data, prefix=prefix, directory=directory)
     else:
-        base_style = [resource_filename('sumo.plotting', 'sumo_base.mplstyle'),
-                      resource_filename('sumo.plotting', 'sumo_optics.mplstyle'
-                                        )]
-
-    with mpl_style.context(base_style + style):
-        plotter = SOpticsPlotter(abs_data, band_gap=band_gaps, label=labels)
-        plt = plotter.get_plot(width=width, height=height, xmin=xmin,
-                               xmax=xmax, ymin=ymin, ymax=ymax,
-                               colours=colours, dpi=dpi, plt=plt, fonts=fonts)
-
-        if save_files:
-            basename = 'absorption.{}'.format(image_format)
-            filename = '{}_{}'.format(prefix, basename) if prefix else basename
-            if directory:
-                filename = os.path.join(directory, filename)
-            plt.savefig(filename, format=image_format, dpi=dpi)
-            write_files(abs_data, prefix=prefix, directory=directory)
-        else:
-            return plt
+        return plt
 
 
 def _get_parser():
@@ -190,13 +176,10 @@ def _get_parser():
     parser.add_argument('--ymax', type=float, default=1e5,
                         help='maximum intensity on the y-axis')
     parser.add_argument('--style', type=str, nargs='+', default=None,
-                        help=('(List of) matplotlib style specifications, to '
-                              'be composed on top of Sumo base style. '
-                              'Try dark_background!'))
+                        help='matplotlib style specifications')
     parser.add_argument('--no-base-style', action='store_true',
                         dest='no_base_style',
-                        help=('Prevent use of sumo base style. This can make '
-                              'alternative styles behave more predictably.'))
+                        help='prevent use of sumo base style')
     parser.add_argument('--format', type=str, default='pdf',
                         dest='image_format', metavar='FORMAT',
                         help='image file format (options: pdf, svg, jpg, png)')
@@ -229,7 +212,7 @@ def main():
             xmin=args.xmin, xmax=args.xmax, ymin=args.ymin, ymax=args.ymax,
             colours=None, image_format=args.image_format, dpi=args.dpi,
             style=args.style, no_base_style=args.no_base_style,
-            fonts=[args.font])
+            fonts=args.font)
 
 
 if __name__ == "__main__":

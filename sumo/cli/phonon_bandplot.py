@@ -21,7 +21,6 @@ import os
 from os.path import isfile
 import sys
 import logging
-from pkg_resources import resource_filename
 import argparse
 import numpy as np
 
@@ -31,7 +30,6 @@ warnings.filterwarnings("ignore", category=FutureWarning,
 
 import matplotlib as mpl
 mpl.use('Agg')
-from matplotlib.pyplot import style as mpl_style
 from matplotlib import rcParams
 
 from phonopy.units import VaspToTHz
@@ -218,39 +216,25 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             dos = np.zeros((len(dos_freq), 2))
             dos[:, 0], dos[:, 1] = dos_freq, dos_val
 
-    if style is None:
-        style = []
-    elif isinstance(style, str):
-        style = [style]
-    if no_base_style:
-        base_style = []
+    plotter = SPhononBSPlotter(bs)
+    plt = plotter.get_plot(ymin=ymin, ymax=ymax, height=height,
+                           width=width, plt=plt, fonts=fonts, dos=dos)
+
+    if save_files:
+        basename = 'phonon_band.{}'.format(image_format)
+        filename = '{}_{}'.format(prefix, basename) if prefix else basename
+
+        if directory:
+            filename = os.path.join(directory, filename)
+
+        if dpi is None:
+            dpi = rcParams['figure.dpi']
+        plt.savefig(filename, format=image_format, dpi=dpi,
+                    bbox_inches='tight')
+
+        filename = save_data_files(bs, prefix=prefix, directory=directory)
     else:
-        base_style = [resource_filename('sumo.plotting', 'sumo_base.mplstyle'),
-                      resource_filename('sumo.plotting', 'sumo_bs.mplstyle'),
-                      resource_filename('sumo.plotting', 'sumo_phonon.mplstyle'
-                                        )]
-
-    with mpl_style.context(base_style + style):
-
-        plotter = SPhononBSPlotter(bs)
-        plt = plotter.get_plot(ymin=ymin, ymax=ymax, height=height,
-                               width=width, plt=plt, fonts=fonts, dos=dos)
-
-        if save_files:
-            basename = 'phonon_band.{}'.format(image_format)
-            filename = '{}_{}'.format(prefix, basename) if prefix else basename
-
-            if directory:
-                filename = os.path.join(directory, filename)
-
-            if dpi is None:
-                dpi = rcParams['figure.dpi']
-            plt.savefig(filename, format=image_format, dpi=dpi,
-                        bbox_inches='tight')
-
-            filename = save_data_files(bs, prefix=prefix, directory=directory)
-        else:
-            return plt
+        return plt
 
 
 def save_data_files(bs, prefix=None, directory=None):
@@ -339,13 +323,10 @@ def _get_parser():
     parser.add_argument('--ymax', type=float, default=None,
                         help='maximum energy on the y-axis')
     parser.add_argument('--style', type=str, nargs='+', default=None,
-                        help=('(List of) matplotlib style specifications, to '
-                              'be composed on top of Sumo base style. '
-                              'Try dark_background!'))
+                        help='matplotlib style specifications')
     parser.add_argument('--no-base-style', action='store_true',
                         dest='no_base_style',
-                        help=('Prevent use of sumo base style. This can make '
-                              'alternative styles behave more predictably.'))
+                        help='prevent use of sumo base style')
     parser.add_argument('--config', type=str, default=None,
                         help='colour configuration file')
     parser.add_argument('--format', type=str, default='pdf',
@@ -412,7 +393,7 @@ def main():
                     height=args.height, width=args.width, ymin=args.ymin,
                     ymax=args.ymax, image_format=args.image_format,
                     style=args.style, no_base_style=args.no_base_style,
-                    dpi=args.dpi, fonts=[args.font],
+                    dpi=args.dpi, fonts=args.font,
                     eigenvectors=args.eigenvectors, dos=args.dos)
 
 

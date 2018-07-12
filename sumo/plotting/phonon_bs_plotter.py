@@ -14,7 +14,8 @@ from matplotlib.ticker import MaxNLocator
 from matplotlib.cbook import flatten
 from matplotlib.transforms import blended_transform_factory
 
-from sumo.plotting import pretty_plot, pretty_subplot
+from sumo.plotting import (pretty_plot, pretty_subplot, styled_plot,
+                           sumo_base_style, sumo_bs_style, sumo_phonon_style)
 
 from pymatgen.phonon.plotter import PhononBSPlotter
 
@@ -55,9 +56,10 @@ class SPhononBSPlotter(PhononBSPlotter):
                        zorder=0,
                        linewidth=rcParams['ytick.major.width'])
 
+    @styled_plot(sumo_base_style, sumo_bs_style, sumo_phonon_style)
     def get_plot(self, ymin=None, ymax=None, width=None, height=None, dpi=None,
                  plt=None, fonts=None, dos=None, dos_aspect=3,
-                 color=None):
+                 color=None, style=None, no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the phonon band structure.
 
         Args:
@@ -76,6 +78,12 @@ class SPhononBSPlotter(PhononBSPlotter):
             dos_aspect (float): Width division for vertical DOS
             color (:obj:`str` or :obj:`tuple`, optional): Line/fill colour in
                 any matplotlib-accepted format
+            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+                style specifications, to be composed on top of Sumo base
+                style.
+            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                style. This can make alternative styles behave more
+                predictably.
 
         Returns:
             :obj:`matplotlib.pyplot`: The phonon band structure plot.

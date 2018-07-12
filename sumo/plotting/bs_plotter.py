@@ -16,7 +16,8 @@ from matplotlib import rcParams
 from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 from matplotlib.transforms import blended_transform_factory
 
-from sumo.plotting import pretty_plot, pretty_subplot, rgbline
+from sumo.plotting import (pretty_plot, pretty_subplot, rgbline,
+                           styled_plot, sumo_base_style, sumo_bs_style)
 from sumo.electronic_structure.bandstructure import \
     get_projections_by_branches
 
@@ -44,12 +45,14 @@ class SBSPlotter(BSPlotter):
     def __init__(self, bs):
         BSPlotter.__init__(self, bs)
 
+    @styled_plot(sumo_base_style, sumo_bs_style)
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
                  width=None, height=None, vbm_cbm_marker=False,
                  ylabel='Energy (eV)',
                  dpi=None, plt=None,
                  dos_plotter=None, dos_options=None, dos_label=None,
-                 dos_aspect=3, fonts=None):
+                 dos_aspect=3, fonts=None, style=None,
+                 no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
         If the system is spin polarised, blue lines are spin up, red lines are
@@ -120,6 +123,12 @@ class SBSPlotter(BSPlotter):
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
                 a single font, specified as a :obj:`str`, or several fonts,
                 specified as a :obj:`list` of :obj:`str`.
+            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+                style specifications, to be composed on top of Sumo base
+                style.
+            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                style. This can make alternative styles behave more
+                predictably.
 
         Returns:
             :obj:`matplotlib.pyplot`: The electronic band structure plot.
@@ -183,6 +192,7 @@ class SBSPlotter(BSPlotter):
                        dos_label=dos_label)
         return plt
 
+    @styled_plot(sumo_base_style, sumo_bs_style)
     def get_projected_plot(self, selection, mode='rgb', interpolate_factor=4,
                            circle_size=150, projection_cutoff=0.001,
                            zero_to_efermi=True, ymin=-6., ymax=6., width=None,
@@ -190,7 +200,8 @@ class SBSPlotter(BSPlotter):
                            ylabel='Energy (eV)',
                            dpi=400, plt=None,
                            dos_plotter=None, dos_options=None, dos_label=None,
-                           dos_aspect=3, fonts=None):
+                           dos_aspect=3, fonts=None, style=None,
+                           no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` of the projected band structure.
 
         If the system is spin polarised and ``mode = 'rgb'`` spin up and spin
@@ -305,6 +316,12 @@ class SBSPlotter(BSPlotter):
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
                 a single font, specified as a :obj:`str`, or several fonts,
                 specified as a :obj:`list` of :obj:`str`.
+            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+                style specifications, to be composed on top of Sumo base
+                style.
+            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                style. This can make alternative styles behave more
+                predictably.
 
         Returns:
             :obj:`matplotlib.pyplot`: The projected electronic band structure

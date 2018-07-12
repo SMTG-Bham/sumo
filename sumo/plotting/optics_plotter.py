@@ -11,7 +11,8 @@ import numpy as np
 from matplotlib import rcParams
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 
-from sumo.plotting import pretty_plot, power_tick
+from sumo.plotting import (pretty_plot, power_tick, styled_plot,
+                           sumo_base_style, sumo_optics_style)
 
 
 class SOpticsPlotter(object):
@@ -75,8 +76,10 @@ class SOpticsPlotter(object):
         self._label = label
         self._xmax = xmax + 1.
 
+    @styled_plot(sumo_base_style, sumo_optics_style)
     def get_plot(self, width=None, height=None, xmin=0., xmax=None, ymin=0,
-                 ymax=1e5, colours=None, dpi=400, plt=None, fonts=None):
+                 ymax=1e5, colours=None, dpi=400, plt=None, fonts=None,
+                 style=None, no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the optical spectra.
 
         Args:
@@ -98,6 +101,12 @@ class SOpticsPlotter(object):
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
                 a single font, specified as a :obj:`str`, or several fonts,
                 specified as a :obj:`list` of :obj:`str`.
+            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+                style specifications, to be composed on top of Sumo base
+                style.
+            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                style. This can make alternative styles behave more
+                predictably.
 
         Returns:
             :obj:`matplotlib.pyplot`: The plot of optical spectra.
@@ -105,6 +114,9 @@ class SOpticsPlotter(object):
         plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt,
                           fonts=fonts)
         ax = plt.gca()
+
+        print(rcParams['font.sans-serif'])
+        print(rcParams['font.family'])
 
         optics_colours = rcParams['axes.prop_cycle'].by_key()['color']
         if colours is not None:
@@ -140,7 +152,8 @@ class SOpticsPlotter(object):
         ax.set_ylim(ymin, ymax)
 
         ax.yaxis.set_major_formatter(FuncFormatter(power_tick))
-        ax.yaxis.set_major_locator(MaxNLocator(4))
+        ax.yaxis.set_major_locator(MaxNLocator(5))
+        ax.xaxis.set_major_locator(MaxNLocator(3))
 
         ax.set_xlabel('Energy (eV)')
         ax.set_ylabel(r'Absorption (cm$^\mathregular{-1}$)')

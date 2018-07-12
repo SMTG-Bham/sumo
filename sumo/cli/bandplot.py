@@ -26,7 +26,6 @@ from pymatgen.electronic_structure.bandstructure import \
 
 import matplotlib as mpl
 mpl.use('Agg')
-from matplotlib.pyplot import style as mpl_style
 
 from sumo.plotting.bs_plotter import SBSPlotter
 from sumo.plotting.dos_plotter import SDOSPlotter
@@ -51,8 +50,8 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
              ylabel='Energy (eV)', dos_label=None,
              elements=None, lm_orbitals=None, atoms=None,
              total_only=False, plot_total=True, legend_cutoff=3, gaussian=None,
-             height=None, width=None, ymin=-6., ymax=6., colours=None, yscale=1,
-             style=None, no_base_style=False,
+             height=None, width=None, ymin=-6., ymax=6., colours=None,
+             yscale=1, style=None, no_base_style=False,
              image_format='pdf', dpi=400, plt=None, fonts=None):
     """Plot electronic band structure diagrams from vasprun.xml files.
 
@@ -239,49 +238,39 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         dos_opts = {'plot_total': plot_total, 'legend_cutoff': legend_cutoff,
                     'colours': colours, 'yscale': yscale}
 
-    if style is None:
-        style = []
-    elif isinstance(style, str):
-        style = [style]
-    if no_base_style:
-        base_style = []
+    plotter = SBSPlotter(bs)
+    if projection_selection:
+        plt = plotter.get_projected_plot(
+            projection_selection, mode=mode,
+            interpolate_factor=interpolate_factor, circle_size=circle_size,
+            zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
+            width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
+            plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
+            dos_label=dos_label, fonts=fonts, style=style,
+            no_base_style=no_base_style)
     else:
-        base_style = [resource_filename('sumo.plotting', 'sumo_base.mplstyle'),
-                      resource_filename('sumo.plotting', 'sumo_bs.mplstyle')]
+        plt = plotter.get_plot(
+            zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
+            width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
+            plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
+            dos_label=dos_label, fonts=fonts, style=style,
+            no_base_style=no_base_style)
 
-    with mpl_style.context(base_style + style):
+    if save_files:
+        basename = 'band.{}'.format(image_format)
+        filename = '{}_{}'.format(prefix, basename) if prefix else basename
+        if directory:
+            filename = os.path.join(directory, filename)
+        plt.savefig(filename, format=image_format, dpi=dpi,
+                    bbox_inches='tight')
 
-        plotter = SBSPlotter(bs)
-        if projection_selection:
-            plt = plotter.get_projected_plot(
-                projection_selection, mode=mode,
-                interpolate_factor=interpolate_factor, circle_size=circle_size,
-                zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
-                width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
-                plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
-                dos_label=dos_label, fonts=fonts)
-        else:
-            plt = plotter.get_plot(
-                zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
-                width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
-                plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
-                dos_label=dos_label, fonts=fonts)
+        written = [filename]
+        written += save_data_files(vr, bs, prefix=prefix,
+                                   directory=directory)
+        return written
 
-        if save_files:
-            basename = 'band.{}'.format(image_format)
-            filename = '{}_{}'.format(prefix, basename) if prefix else basename
-            if directory:
-                filename = os.path.join(directory, filename)
-            plt.savefig(filename, format=image_format, dpi=dpi,
-                        bbox_inches='tight')
-
-            written = [filename]
-            written += save_data_files(vr, bs, prefix=prefix,
-                                       directory=directory)
-            return written
-
-        else:
-            return plt
+    else:
+        return plt
 
 
 def find_vasprun_files():
@@ -450,13 +439,10 @@ def _get_parser():
     parser.add_argument('--ymax', type=float, default=6.,
                         help='maximum energy on the y-axis')
     parser.add_argument('--style', type=str, nargs='+', default=None,
-                        help=('(List of) matplotlib style specifications, to '
-                              'be composed on top of Sumo base style. '
-                              'Try dark_background!'))
+                        help='matplotlib style specifications')
     parser.add_argument('--no-base-style', action='store_true',
                         dest='no_base_style',
-                        help=('Prevent use of sumo base style. This can make '
-                              'alternative styles behave more predictably.'))
+                        help='prevent use of sumo base style')
     parser.add_argument('--config', type=str, default=None,
                         help='colour configuration file')
     parser.add_argument('--format', type=str, default='pdf',
@@ -504,7 +490,8 @@ def main():
              height=args.height, width=args.width, ymin=args.ymin,
              style=args.style, no_base_style=args.no_base_style,
              ymax=args.ymax, colours=colours, image_format=args.image_format,
-             dpi=args.dpi, fonts=[args.font])
+             dpi=args.dpi, fonts=args.font)
+
 
 if __name__ == "__main__":
     main()
