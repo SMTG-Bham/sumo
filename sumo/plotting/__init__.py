@@ -52,8 +52,11 @@ def styled_plot(*style_sheets):
                 else:
                     list_style += [style]
 
-            with matplotlib.pyplot.style.context(list_style):
-                return get_plot(*args, **kwargs)
+            # Ideally would use temporary styling but font choice is not
+            # retained after leaving the context.
+            # with matplotlib.pyplot.style.context(list_style):
+            matplotlib.pyplot.style.use(list_style)
+            return get_plot(*args, **kwargs)
 
         return wrapper
     return decorator
@@ -98,6 +101,9 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
         fonts += matplotlib.rcParams['font.sans-serif']
         rc('font', **{'sans-serif': fonts})
 
+    default_fonts = ['Whitney Book Extended', 'Arial', 'Whitney Book', 'Helvetica',
+                     'Liberation Sans', 'Andale Sans']
+    rc('font', **{'sans-serif': default_fonts})
     rc('font', **{'family': 'sans-serif'})
     rc('text', usetex=False)
 

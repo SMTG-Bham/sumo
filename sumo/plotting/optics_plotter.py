@@ -115,9 +115,6 @@ class SOpticsPlotter(object):
                           fonts=fonts)
         ax = plt.gca()
 
-        print(rcParams['font.sans-serif'])
-        print(rcParams['font.family'])
-
         optics_colours = rcParams['axes.prop_cycle'].by_key()['color']
         if colours is not None:
             optics_colours = colours + optics_colours
