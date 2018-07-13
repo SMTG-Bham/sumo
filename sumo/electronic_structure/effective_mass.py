@@ -142,8 +142,8 @@ def fit_effective_mass(distances, energies, parabolic=True):
         # set boundaries for curve fitting: alpha > 1e-8
         # as alpha = 0 causes an error
         bounds = ((1e-8, -np.inf), (np.inf, np.inf))
-        popt, pconv = curve_fit(f, distances, energies, p0=[1., 1.],
-                                bounds=bounds)
+        popt, _ = curve_fit(f, distances, energies, p0=[1., 1.],
+                            bounds=bounds)
         c = 2 * popt[1]
 
     # coefficient is currently in eV/Angstrom^2/h_bar^2

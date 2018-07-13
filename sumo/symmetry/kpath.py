@@ -173,7 +173,6 @@ class Kpath(object):
                 for n, label in enumerate(path_branch):
                     if i != 0 and n == 0:
                         sym_point_labels[-1] += " | {}".format(label)
-                        pass
                     else:
                         sym_point_labels.append(label)
 

@@ -148,12 +148,12 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
     # TODO: Make this work if plt is already set...
     if plt is None:
         plt = matplotlib.pyplot
-        f, axes = plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey,
+        _, axes = plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey,
                                dpi=dpi, figsize=(width, height), facecolor='w',
                                gridspec_kw=gridspec_kw)
 
     if fonts is not None:
-        if type(fonts) is str:
+        if isinstance(fonts, str):
             fonts = [fonts]
 
         rc('font', **{'family': 'sans-serif', 'sans-serif': fonts})
@@ -194,7 +194,7 @@ def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",
         green = np.array([green])
         blue = np.array([blue])
         alpha = np.array([alpha])
-    elif type(alpha) == int:
+    elif isinstance(alpha, int):
         alpha = [alpha] * len(y)
 
     seg = []

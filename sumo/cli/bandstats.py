@@ -84,7 +84,7 @@ def bandstats(filenames=None, num_sample_points=3, temperature=None,
     """
     if not filenames:
         filenames = find_vasprun_files()
-    elif type(filenames) == str:
+    elif isinstance(filenames, str):
         filenames = [filenames]
 
     bandstructures = []

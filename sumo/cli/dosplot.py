@@ -293,9 +293,9 @@ def _get_parser():
                         dest='no_base_style',
                         help='prevent use of sumo base style')
     parser.add_argument('--xlabel', type=str, default='Energy (eV)',
-                        help='x-axis (i.e. energy) label/units'),
+                        help='x-axis (i.e. energy) label/units')
     parser.add_argument('--ylabel', type=str, default='Arb. units',
-                        help='y-axis (i.e. DOS) label/units'),
+                        help='y-axis (i.e. DOS) label/units')
     parser.add_argument('--yscale', type=float, default=1,
                         help='scaling factor for the y-axis')
     parser.add_argument('--format', type=str, default='pdf',

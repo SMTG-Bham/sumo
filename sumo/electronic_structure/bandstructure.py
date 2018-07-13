@@ -167,7 +167,7 @@ def get_projections(bs, selection, normalise=None):
     spec_proj = []
     for spec in selection:
 
-        if type(spec) == str:
+        if isinstance(spec, str):
             # spec is just an element type, therefore sum all orbitals
             element = spec
             orbitals = all_orbitals

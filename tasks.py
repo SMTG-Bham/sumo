@@ -1,15 +1,14 @@
+"""
+Deployment file to facilitate releases of sumo.
+Note that this file is meant to be run from the root directory of the repo.
+"""
+
 from invoke import task
 
 import os
 import json
 import requests
 import re
-
-
-"""
-Deployment file to facilitate releases of sumo.
-Note that this file is meant to be run from the root directory of the repo.
-"""
 
 __author__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"

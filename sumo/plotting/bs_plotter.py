@@ -410,7 +410,7 @@ class SBSPlotter(BSPlotter):
 
         # plot the legend
         for c, spec in zip(colours, selection):
-            if type(spec) == str:
+            if isinstance(spec, str):
                 label = spec
             else:
                 label = '{} ({})'.format(spec[0], " + ".join(spec[1]))
@@ -489,7 +489,7 @@ class SBSPlotter(BSPlotter):
         spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else \
             [Spin.up, Spin.down]
 
-        for i, line_set in enumerate(plot_data['lines']):
+        for line_set in plot_data['lines']:
             for line, spin in it.product(line_set, spins):
                 if spin == Spin.up:
                     label = line['label']

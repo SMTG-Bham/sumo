@@ -43,15 +43,15 @@ class SOpticsPlotter(object):
     """
 
     def __init__(self, abs_data, band_gap=None, label=None):
-        if type(abs_data) is tuple:
+        if isinstance(abs_data, tuple):
             abs_data = [abs_data]
 
-        if type(band_gap) is float:
+        if isinstance(band_gap, float):
             band_gap = [band_gap]
         elif not band_gap:
             band_gap = [None] * len(abs_data)
 
-        if type(label) is str:
+        if isinstance(label, str):
             label = [label]
         elif not label and len(abs_data) > 1:
             label = [str(i) for i in range(1, len(abs_data) + 1)]
