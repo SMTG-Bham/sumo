@@ -10,7 +10,7 @@ import logging
 import itertools
 
 from matplotlib import rcParams
-from matplotlib.ticker import MaxNLocator
+from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 from matplotlib.cbook import flatten
 from matplotlib.transforms import blended_transform_factory
 
@@ -169,6 +169,8 @@ class SPhononBSPlotter(PhononBSPlotter):
         """Utility method to add tick marks to a band structure."""
         # set y-ticks
         ax.yaxis.set_major_locator(MaxNLocator(6))
+        ax.yaxis.set_minor_locator(AutoMinorLocator(2))
+        ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 
         # set x-ticks; only plot the unique tick labels
         ticks = self.get_ticks()

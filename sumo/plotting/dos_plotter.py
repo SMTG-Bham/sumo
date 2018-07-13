@@ -10,6 +10,8 @@ import itertools
 import matplotlib
 import matplotlib.pyplot
 
+from matplotlib.ticker import AutoMinorLocator
+
 from sumo.electronic_structure.dos import sort_orbitals
 from sumo.plotting import (pretty_plot, pretty_subplot, colour_cache,
                            styled_plot, sumo_base_style, sumo_dos_style)
@@ -180,7 +182,7 @@ class SDOSPlotter(object):
         return plot_data
 
     @styled_plot(sumo_base_style, sumo_dos_style)
-    def get_plot(self, subplot=False, width=6., height=8., xmin=-6., xmax=6.,
+    def get_plot(self, subplot=False, width=None, height=None, xmin=-6., xmax=6.,
                  yscale=1, colours=None, plot_total=True, legend_on=True,
                  num_columns=2, legend_frame_on=False, legend_cutoff=3,
                  xlabel='Energy (eV)', ylabel='Arb. units',
@@ -281,9 +283,9 @@ class SDOSPlotter(object):
             ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
             ax.set_xlim(xmin, xmax)
 
-            ax.tick_params(axis='x', which='both', top='off')
-            ax.tick_params(axis='y', which='both', labelleft='off',
-                           labelright='off', left='off', right='off')
+            ax.tick_params(axis='y', labelleft='off', left='off')
+            ax.yaxis.set_minor_locator(AutoMinorLocator(2))
+            ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 
             loc = 'upper right' if subplot else 'best'
             ncol = 1 if subplot else num_columns

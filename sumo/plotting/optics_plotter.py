@@ -9,7 +9,7 @@ This module provides a class for plotting optical absorption spectra.
 import numpy as np
 
 from matplotlib import rcParams
-from matplotlib.ticker import MaxNLocator, FuncFormatter
+from matplotlib.ticker import MaxNLocator, FuncFormatter, AutoMinorLocator
 
 from sumo.plotting import (pretty_plot, power_tick, styled_plot,
                            sumo_base_style, sumo_optics_style)
@@ -151,6 +151,8 @@ class SOpticsPlotter(object):
         ax.yaxis.set_major_formatter(FuncFormatter(power_tick))
         ax.yaxis.set_major_locator(MaxNLocator(5))
         ax.xaxis.set_major_locator(MaxNLocator(3))
+        ax.yaxis.set_minor_locator(AutoMinorLocator(2))
+        ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 
         ax.set_xlabel('Energy (eV)')
         ax.set_ylabel(r'Absorption (cm$^\mathregular{-1}$)')

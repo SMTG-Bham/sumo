@@ -1,1 +1,3 @@
-lines.linewidth : 2.0
+ytick.left           : False
+
+figure.figsize : 8, 6

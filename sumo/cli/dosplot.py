@@ -277,9 +277,9 @@ def _get_parser():
                         help='only plot the total density of states')
     parser.add_argument('--no-total', action='store_false', dest='total',
                         help='don\'t plot the total density of states')
-    parser.add_argument('--height', type=float, default=6.,
+    parser.add_argument('--height', type=float, default=None,
                         help='height of the graph')
-    parser.add_argument('--width', type=float, default=8.,
+    parser.add_argument('--width', type=float, default=None,
                         help='width of the graph')
     parser.add_argument('--xmin', type=float, default=-6.,
                         help='minimum energy on the x-axis')

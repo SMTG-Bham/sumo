@@ -507,10 +507,6 @@ class SBSPlotter(BSPlotter):
             ax.set_ylim(dos_options['xmin'], dos_options['xmax'])
             ax.set_xlim(plot_data['ymin'], plot_data['ymax'])
 
-            ax.tick_params(axis='y', which='both', top='off')
-            ax.tick_params(axis='x', which='both', labelbottom='off',
-                           labeltop='off', bottom='off', top='off')
-
             if dos_label is not None:
                 ax.set_xlabel(dos_label)
 

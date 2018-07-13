@@ -1,13 +1,4 @@
-figure.figsize : 6, 6
-figure.dpi : 400
-
-lines.linewidth : 2
-
 xtick.bottom         : False
-xtick.top            : False
 ytick.right          : True
-ytick.left           : True
-ytick.minor.size     : 0
-
 
 axes.prop_cycle : cycler('color', ['3953a4', 'faa316', 'd93b2b', '0db14b'])
