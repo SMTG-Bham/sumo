@@ -101,12 +101,6 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
         fonts += matplotlib.rcParams['font.sans-serif']
         rc('font', **{'sans-serif': fonts})
 
-    default_fonts = ['Whitney Book Extended', 'Arial', 'Whitney Book', 'Helvetica',
-                     'Liberation Sans', 'Andale Sans']
-    rc('font', **{'sans-serif': default_fonts})
-    rc('font', **{'family': 'sans-serif'})
-    rc('text', usetex=False)
-
     return plt
 
 
@@ -148,18 +142,14 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
     # TODO: Make this work if plt is already set...
     if plt is None:
         plt = matplotlib.pyplot
-        _, axes = plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey,
-                               dpi=dpi, figsize=(width, height), facecolor='w',
-                               gridspec_kw=gridspec_kw)
+        plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey, dpi=dpi,
+                     figsize=(width, height), facecolor='w',
+                     gridspec_kw=gridspec_kw)
 
     if fonts is not None:
         if isinstance(fonts, str):
             fonts = [fonts]
 
-        rc('font', **{'family': 'sans-serif', 'sans-serif': fonts})
-        rc('text', usetex=False)
-
-    rc('legend', handlelength=1.5)
     return plt
 
 

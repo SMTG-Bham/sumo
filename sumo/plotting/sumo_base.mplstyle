@@ -8,6 +8,8 @@ font.sans-serif : Whitney Book Extended, Whitney Book, Helvetica, Liberation San
 
 font.size : 22
 
+text.usetex : False
+
 axes.titlesize : 22
 axes.linewidth       : 1.5
 
@@ -16,8 +18,8 @@ grid.color           : black
 
 lines.linewidth : 2
 
-xtick.major.size     : 15      # major tick size in points
-xtick.minor.size     : 0       # minor tick size in points
+xtick.major.size     : 1
+xtick.minor.size     : 0
 xtick.major.width    : 1.5
 xtick.minor.width    : 1.5
 xtick.major.pad      : 7
@@ -25,8 +27,8 @@ xtick.direction      : in
 xtick.top            : False
 xtick.bottom         : True
 
-ytick.major.size     : 15      # major tick size in points
-ytick.minor.size     : 0       # minor tick size in points
+ytick.major.size     : 15
+ytick.minor.size     : 0
 ytick.major.width    : 1.5
 ytick.minor.width    : 1.5
 ytick.major.pad      : 7
