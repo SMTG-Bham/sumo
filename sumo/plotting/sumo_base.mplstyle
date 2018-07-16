@@ -18,7 +18,7 @@ grid.color           : black
 
 lines.linewidth : 2
 
-xtick.major.size     : 1
+xtick.major.size     : 15
 xtick.minor.size     : 0
 xtick.major.width    : 1.5
 xtick.minor.width    : 1.5
