@@ -136,13 +136,13 @@ class SBSPlotter(BSPlotter):
         if dos_plotter:
             plt = pretty_subplot(1, 2, width=width, height=height,
                                  sharex=False, dpi=dpi,
-                                 plt=plt, fonts=fonts,
+                                 plt=plt,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
                                               'wspace': 0})
             ax = plt.gcf().axes[0]
         else:
             plt = pretty_plot(width=width, height=height,
-                              dpi=dpi, plt=plt, fonts=fonts)
+                              dpi=dpi, plt=plt)
             ax = plt.gca()
 
         data = self.bs_plot_data(zero_to_efermi)
@@ -334,12 +334,12 @@ class SBSPlotter(BSPlotter):
 
         if dos_plotter:
             plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
-                                 plt=plt, fonts=fonts,
+                                 plt=plt,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
                                               'wspace': 0})
             ax = plt.gcf().axes[0]
         else:
-            plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
+            plt = pretty_plot(width, height, dpi=dpi, plt=plt)
             ax = plt.gca()
 
         data = self.bs_plot_data(zero_to_efermi)

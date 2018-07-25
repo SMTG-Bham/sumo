@@ -39,7 +39,8 @@ def styled_plot(*style_sheets):
 
     def decorator(get_plot):
 
-        def wrapper(*args, style=None, no_base_style=False, **kwargs):
+        def wrapper(*args, fonts=None, style=None, no_base_style=False,
+                    **kwargs):
 
             if no_base_style:
                 list_style = []
@@ -52,9 +53,10 @@ def styled_plot(*style_sheets):
                 else:
                     list_style += [style]
 
-            # Ideally would use temporary styling but font choice is not
-            # retained after leaving the context.
-            # with matplotlib.pyplot.style.context(list_style):
+            if fonts is not None:
+                list_style += [{'font.family': 'sans-serif',
+                               'font.sans-serif': fonts}]
+
             matplotlib.pyplot.style.use(list_style)
             return get_plot(*args, **kwargs)
 
@@ -62,7 +64,7 @@ def styled_plot(*style_sheets):
     return decorator
 
 
-def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
+def pretty_plot(width=None, height=None, plt=None, dpi=None):
     """Get a :obj:`matplotlib.pyplot` object with publication ready defaults.
 
     Args:
@@ -72,9 +74,6 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
             object to use for plotting.
         dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
             the plot.
-        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
-            a single font, specified as a :obj:`str`, or several fonts,
-            specified as a :obj:`list` of :obj:`str`.
 
     Returns:
         :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` object with
@@ -94,19 +93,11 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None, fonts=None):
         fig = plt.figure(figsize=(width, height))
         fig.add_subplot(1, 1, 1)
 
-    if fonts is not None:
-        if isinstance(fonts, str):
-            fonts = [fonts]
-
-        fonts += matplotlib.rcParams['font.sans-serif']
-        rc('font', **{'sans-serif': fonts})
-
     return plt
 
 
 def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
-                   sharey=True, dpi=None, fonts=None, plt=None,
-                   gridspec_kw=None):
+                   sharey=True, dpi=None, plt=None, gridspec_kw=None):
     """Get a :obj:`matplotlib.pyplot` subplot object with pretty defaults.
 
     Args:
@@ -122,9 +113,6 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
             the plot.
         plt (:obj:`matplotlib.pyplot`, optional): A :obj:`matplotlib.pyplot`
             object to use for plotting.
-        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
-            a single font, specified as a :obj:`str`, or several fonts,
-            specified as a :obj:`list` of :obj:`str`.
         gridspec_kw (:obj:`dict`, optional): Gridspec parameters. Please see:
             :obj:`matplotlib.pyplot.subplot` for more information. Defaults
             to ``None``.
@@ -145,10 +133,6 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
         plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey, dpi=dpi,
                      figsize=(width, height), facecolor='w',
                      gridspec_kw=gridspec_kw)
-
-    if fonts is not None:
-        if isinstance(fonts, str):
-            fonts = [fonts]
 
     return plt
 

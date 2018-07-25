@@ -111,8 +111,7 @@ class SOpticsPlotter(object):
         Returns:
             :obj:`matplotlib.pyplot`: The plot of optical spectra.
         """
-        plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt,
-                          fonts=fonts)
+        plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt)
         ax = plt.gca()
 
         optics_colours = rcParams['axes.prop_cycle'].by_key()['color']

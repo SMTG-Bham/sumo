@@ -249,10 +249,9 @@ class SDOSPlotter(object):
         if subplot:
             nplots = len(plot_data['lines'])
             plt = pretty_subplot(nplots, 1, width=width, height=height,
-                                 dpi=dpi, plt=plt, fonts=fonts)
+                                 dpi=dpi, plt=plt)
         else:
-            plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt,
-                              fonts=fonts)
+            plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt)
 
         mask = plot_data['mask']
         energies = plot_data['energies'][mask]
