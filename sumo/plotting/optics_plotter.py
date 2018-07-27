@@ -269,7 +269,6 @@ class SLossPlotter(object):
                 # plot band gap line
                 ax.plot([bg, bg], [ymin, ymax], lw=line_width, ls=':', c=c)
 
-            
 
         xmax = xmax if xmax else self._xmax
         ax.set_xlim(xmin, xmax)

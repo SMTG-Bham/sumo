@@ -13,7 +13,6 @@ import warnings
 import argparse
 import matplotlib as mpl
 mpl.use('Agg')
-import sumo
 
 from pymatgen.io.vasp import Vasprun
 from pymatgen.util.string import latexify
