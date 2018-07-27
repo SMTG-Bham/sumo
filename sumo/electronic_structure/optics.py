@@ -124,21 +124,64 @@ def calculate_alpha(dielectric, average=True):
 
     return (energies, alpha)
 
+def calculate_loss(dielectric, average=True):
+    r"""Calculate the optical loss from the high-frequency dielectric (:math:`\epsilon`).
+
+    .. math::
+
+        a = -\mathrm{Im}(1 / \epsilon)
+
+    Args:
+        dielectric_data (tuple): The high-frequency dielectric data, following
+            the same format as :obj:`pymatgen.io.vasp.Vasprun.dielectric`.
+            This is a :obj:`tuple` containing the energy, the real part of the
+            dielectric tensor, and the imaginary part of the tensor, as a
+            :obj:`list` of :obj:`floats`. E.g.::
+
+                (
+                    [energies],
+                    [[real_xx, real_yy, real_zz, real_xy, real_yz, real_xz]],
+                    [[imag_xx, imag_yy, imag_zz, imag_xy, imag_yz, imag_xz]]
+                )
+
+        average (:obj:`bool`, optional): Average the dielectric response across
+            all lattice directions. Defaults to ``True``.
+
+    Returns:
+        :obj:`tuple` of :obj:`list` of :obj:`float`: The optical loss.
+        Returned as::
+
+            ([energies], [loss]).
+
+    """
+    real_eps = np.array(dielectric[1])[:, :3]
+    imag_eps = np.array(dielectric[2])[:, :3]
+    energies = np.array(dielectric[0])
+
+    if average:
+        real_eps = np.average(real_eps, axis=1)
+        imag_eps = np.average(imag_eps, axis=1)
+
+    eps = real_eps + 1j * imag_eps
+
+    loss = -np.imag(1/eps)
+
+    return (energies, loss)
 
 def write_files(abs_data, prefix=None, directory=None):
-    """Write the absorption spectra to a file.
+    """Write the absorption or loss spectra to a file.
 
     Note that this function expects to receive an iterable series of spectra.
 
     Args:
         abs_data (tuple): Series (either :obj:`list` or :obj:`tuple`) of
-            optical absorption spectra. Each spectra should be formatted as a
-            :obj:`tuple` of :obj:`list` of :obj:`float`. If the absorption data
-            has been averaged, each spectra should be::
+            optical absorption or loss spectra. Each spectrum should be formatted as a
+            :obj:`tuple` of :obj:`list` of :obj:`float`. If the data
+            has been averaged, each spectrum should be::
 
                 ([energies], [alpha])
 
-            Else, if the data has not been averaged, each spectra should be::
+            Else, if the data has not been averaged, each spectrum should be::
 
                 ([energies], [alpha_xx, alpha_yy, alpha_zz]).
 
