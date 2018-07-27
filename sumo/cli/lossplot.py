@@ -11,7 +11,6 @@ import sys
 import logging
 import warnings
 import argparse
-sys.path.insert(0, '/Users/keithbutler/src/sumo/')
 import matplotlib as mpl
 mpl.use('Agg')
 import sumo
