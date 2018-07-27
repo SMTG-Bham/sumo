@@ -32,7 +32,7 @@ __date__ = "July 25, 2018"
 
 def lossplot(filenames=None, prefix=None, directory=None,
             gaussian=None, band_gaps=None, labels=None, average=True, height=6,
-            width=6, xmin=0, xmax=None, ymin=0, ymax=2.0, colours=None,
+            width=6, xmin=0, xmax=None, ymin=0, ymax=None, colours=None,
             image_format='pdf', dpi=400, plt=None, fonts=None):
     """A script to plot optical loss spectra from VASP calculations.
 
@@ -166,7 +166,7 @@ def _get_parser():
                         help='maximum energy on the x-axis')
     parser.add_argument('--ymin', type=float, default=0.,
                         help='minimum intensity on the y-axis')
-    parser.add_argument('--ymax', type=float, default=2.0,
+    parser.add_argument('--ymax', type=float, default=None,
                         help='maximum intensity on the y-axis')
     parser.add_argument('--format', type=str, default='pdf',
                         dest='image_format', metavar='FORMAT',

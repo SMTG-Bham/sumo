@@ -211,7 +211,7 @@ class SLossPlotter(object):
         self._xmax = max(loss_data[0][0])
 
     def get_plot(self, width=6., height=6., xmin=0., xmax=None, ymin=0,
-                 ymax=2., colours=None, dpi=400, plt=None, fonts=None):
+                 ymax=None, colours=None, dpi=400, plt=None, fonts=None):
         """Get a :obj:`matplotlib.pyplot` object of the optical spectra.
 
         Args:
@@ -245,11 +245,15 @@ class SLossPlotter(object):
         for (ener, alpha), loss_label, bg, c in zip(self._loss_data, self._label,
                                                    self._band_gap, colours):
             if len(alpha.shape) == 1:
+                if not ymax:
+                    ymax = max(alpha) + 0.5
                 # if averaged optics only plot one line
                 ax.plot(ener, alpha, lw=line_width, label=loss_label, c=c)
 
             else:
                 data = zip(range(3), ['xx', 'yy', 'zz'], ['-', '--', '-.'])
+                if not ymax:
+                    ymax = max(alpha.flatten()) + 0.5
 
                 for direction_id, direction_label, ls in data:
                     if not loss_label:
@@ -264,6 +268,8 @@ class SLossPlotter(object):
             if bg:
                 # plot band gap line
                 ax.plot([bg, bg], [ymin, ymax], lw=line_width, ls=':', c=c)
+
+            
 
         xmax = xmax if xmax else self._xmax
         ax.set_xlim(xmin, xmax)
