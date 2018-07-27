@@ -253,7 +253,7 @@ class SLossPlotter(object):
             else:
                 data = zip(range(3), ['xx', 'yy', 'zz'], ['-', '--', '-.'])
                 if not ymax:
-                    ymax = max(data)   0.5
+                    ymax = max(alpha.flatten()) + 0.5
 
                 for direction_id, direction_label, ls in data:
                     if not loss_label:
