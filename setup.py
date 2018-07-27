@@ -51,5 +51,6 @@ setup(
                       'sumo-dosplot = sumo.cli.dosplot:main',
                       'sumo-kgen = sumo.cli.kgen:main',
                       'sumo-phonon-bandplot = sumo.cli.phonon_bandplot:main',
+                      'sumo-lossplot = sumo.cli.lossplot:main',
                       'sumo-optplot = sumo.cli.optplot:main']}
     )
