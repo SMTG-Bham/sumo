@@ -58,7 +58,7 @@ class SDOSPlotter(object):
 
     def dos_plot_data(self, yscale=1, xmin=-6., xmax=6., colours=None,
                       plot_total=True, legend_cutoff=3, subplot=False,
-                      cache=None):
+                      zero_to_efermi=True, cache=None):
         """Get the plotting data.
 
         Args:
@@ -87,6 +87,8 @@ class SDOSPlotter(object):
                 little contribution in the plotting range.
             subplot (:obj:`bool`, optional): Plot the density of states for
                 each element on separate subplots. Defaults to ``False``.
+            zero_to_efermi (:obj:`bool`, optional): Normalise the plot such
+                that the valence band maximum is set as 0 eV.
             cache (:obj:`dict`, optional): Cache object tracking how colours
                 have been assigned to orbitals. The format is the same as the
                 "colours" dict. This defaults to the module-level
@@ -132,7 +134,9 @@ class SDOSPlotter(object):
         dos = self._dos
         pdos = self._pdos
         mask = (dos.energies >= xmin - 0.05) & (dos.energies <= xmax + 0.05)
-        plot_data = {'mask': mask, 'energies': dos.energies}
+        plot_data = {'mask': mask,
+                     'energies': dos.energies - dos.efermi
+                     if zero_to_efermi else dos.energies}
         spins = dos.densities.keys()
         ymax = 0
 
@@ -182,10 +186,10 @@ class SDOSPlotter(object):
         return plot_data
 
     @styled_plot(sumo_base_style, sumo_dos_style)
-    def get_plot(self, subplot=False, width=None, height=None, xmin=-6., xmax=6.,
-                 yscale=1, colours=None, plot_total=True, legend_on=True,
-                 num_columns=2, legend_frame_on=False, legend_cutoff=3,
-                 xlabel='Energy (eV)', ylabel='Arb. units',
+    def get_plot(self, subplot=False, width=None, height=None, xmin=-6.,
+                 xmax=6., yscale=1, colours=None, plot_total=True,
+                 legend_on=True, num_columns=2, legend_frame_on=False,
+                 legend_cutoff=3, xlabel='Energy (eV)', ylabel='Arb. units',
                  dpi=400, fonts=None, plt=None, style=None,
                  no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the density of states.

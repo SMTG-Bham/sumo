@@ -1,0 +1,10 @@
+These tests use the unittest framework and are not intended to be run directly.
+Sample data is made available in the data/ folder; feel free to use this data
+when exploring Sumo. If possible, when reporting bugs try to reproduce them
+using these data files as it will make communication easier.
+
+The tests can be run from the root directory of the project (i.e. one
+level above this file) using:
+
+  python3 -m unittest discover tests
+
