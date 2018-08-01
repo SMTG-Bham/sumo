@@ -57,7 +57,8 @@ class SDOSPlotter(object):
         self._pdos = pdos
 
     def dos_plot_data(self, yscale=1, xmin=-6., xmax=6., colours=None,
-                      plot_total=True, legend_cutoff=3, subplot=False):
+                      plot_total=True, legend_cutoff=3, subplot=False,
+                      zero_to_efermi=True):
         """Get the plotting data.
 
         Args:
@@ -86,6 +87,8 @@ class SDOSPlotter(object):
                 little contribution in the plotting range.
             subplot (:obj:`bool`, optional): Plot the density of states for
                 each element on separate subplots. Defaults to ``False``.
+            zero_to_efermi (:obj:`bool`, optional): Normalise the plot such that the
+                valence band maximum is set as 0 eV.
 
         Returns:
             dict: The plotting data. Formatted with the following keys:
@@ -123,7 +126,9 @@ class SDOSPlotter(object):
         dos = self._dos
         pdos = self._pdos
         mask = (dos.energies >= xmin - 0.05) & (dos.energies <= xmax + 0.05)
-        plot_data = {'mask': mask, 'energies': dos.energies}
+        plot_data = {'mask': mask,
+                     'energies': dos.energies - dos.efermi
+                     if zero_to_efermi else dos.energies}
         spins = dos.densities.keys()
         ymax = 0
 
