@@ -97,8 +97,41 @@ If this is your first entry to the scientific Python ecosystem, be
 aware that the full stack including Scipy with need several hundred MB
 of disk space.
 
-To build the documentation, download the package source and install with
-extra dependencies from the package directory:
+
+Developer installation
+~~~~~~~~~~~~~~~~~~~~~~
+
+Sumo can also be installed from a copy of the source repository
+(https://github.com/smtg-ucl/sumo); this will be preferred for development
+work or if using experimental code branches.
+
+From the source folder, install with
+
+.. code-block:: bash
+
+    pip3 install --user -e .
+
+creating an "editable" local installation. Instead of copying files,
+this creates links to the source folder so that that tweaks to the
+code in your source folder will be immediately reflected on the PATH.
+
+
+Tests
+^^^^^
+
+From a developer installation, the unit tests can be
+run (from the root directory of the project) using::
+
+  python3 -m unittest discover tests
+
+Automatic testing is run on the master branch of Sumo and proposed
+features at https://travis-ci.org/SMTG-UCL/sumo .
+
+Documentation
+^^^^^^^^^^^^^
+
+To build the documentation from the project files, install
+sumo with extra Sphinx dependencies before compiling with ``make``:
 
 .. code-block:: bash
 
@@ -106,24 +139,7 @@ extra dependencies from the package directory:
     cd docs
     make html
 
-
-Developer installation
-~~~~~~~~~~~~~~~~~~~~~~
-
-Developers may prefer to install using ``pip3 install --user -e .``
-which creates an "editable" local installation. Instead of copying files,
-this creates links to the source folder so that that tweaks to the
-code in your source folder will be immediately reflected on the PATH.
-
-
-Tests
-~~~~~
-
-To ensure the code has been installed correctly, the unittests can be
-run (from the root directory of the project) using::
-
-  python3 -m unittest discover tests
-
+The user guide can then be explored from *docs/build/html/index.html*.
 
 License
 -------
