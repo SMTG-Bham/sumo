@@ -1,5 +1,5 @@
 ---
-title: 'sumo: Command-line tools for plotting and analysis of *ab initio* calculations'
+title: 'sumo: Command-line tools for plotting and analysis of periodic *ab initio* calculations'
 tags:
   - plotting
   - ab initio
@@ -32,7 +32,7 @@ bibliography: paper.bib
 ---
 
 *Ab initio* electronic structure modelling is capable of providing an
-insight into the fundamental properties of materials, at a resolution
+insight into the fundamental properties of solid-state materials, at a resolution
 beyond that of experimental techniques. The optoelectronic properties
 of a compound are analysed through several key descriptions, including:
 density-of-states distributions, which provide information on the
@@ -44,7 +44,8 @@ when selecting or optimising materials for particular applications,
 including photovoltaics [@solar], transparent conductors [@TCO], and
 thermoelectrics [@thermoelectrics].
 
-Most common *ab initio* calculation software, such as Vienna *ab
+Most common *ab initio* calculation software for analysing crystalline
+materials with periodic boundary condictions, such as Vienna *ab
 initio* Simulation Package (VASP) [@vasp] and Quantum Espresso
 [@QEcode], write raw data which require post-processing to plot or
 convert into a human-readable format. Several packages exist that
@@ -63,10 +64,11 @@ flexibility needed for a broad range of analysis modes.
 # `sumo`
 
 `sumo` is a set of command-line tools for publication-ready plotting
-and analysis of *ab initio* calculation data. The code includes a
+and analysis of *ab initio* calculation data for solid-state materials.
+The code includes a
 fully-documented Python module, upon which the command-line
 scripts are built. `sumo` currently only supports VASP, however,
-extending the code to other *ab initio* calculators is planned for future
+extending the code to other solid-state *ab initio* calculators is planned for future
 releases. The code relies on several open-source Python packages for
 common tasks, including pymatgen for data loading [@pymatgen], spglib
 for symmetry analysis [@spglib], and matplotlib for plotting
