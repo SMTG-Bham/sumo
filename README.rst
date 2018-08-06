@@ -101,20 +101,27 @@ of disk space.
 Developer installation
 ~~~~~~~~~~~~~~~~~~~~~~
 
+*Regular users can skip this section!*
+
 Sumo can also be installed from a copy of the source repository
 (https://github.com/smtg-ucl/sumo); this will be preferred for development
 work or if using experimental code branches.
 
-From the source folder, install with
+To clone the project from Github and make a local installation:
 
 .. code-block:: bash
 
+    git clone https://github.com/smtg-ucl/sumo.git
+    cd sumo
     pip3 install --user -e .
 
-creating an "editable" local installation. Instead of copying files,
-this creates links to the source folder so that that tweaks to the
-code in your source folder will be immediately reflected on the PATH.
-
+The ``-e`` and ``--user`` options are recommended:
+Instead of copying files, with ``-e`` pip will create links to the
+source folder so that that tweaks to the code will be immediately
+reflected on the PATH.
+The ``--user`` flag installs to a directory in your home folder
+(usually under the hidden directory *~/.local*),
+preventing interference with your root Python installation.
 
 Tests
 ^^^^^
