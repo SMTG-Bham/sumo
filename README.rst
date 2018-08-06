@@ -9,9 +9,13 @@ Sumo
     :target: http://sumo.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d/status.svg
+    :target: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d
+    :alt: JOSS Paper
+
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1338124.svg
     :target: https://doi.org/10.5281/zenodo.1338124
-    :alt: Zenodo repository
+    :alt: Zenodo Repository
 
 
 Sumo is a Python toolkit for plotting and analysis of ab initio
