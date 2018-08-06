@@ -3,10 +3,16 @@ Sumo
 
 .. image:: https://travis-ci.org/SMTG-UCL/sumo.svg?branch=master
     :target: https://travis-ci.org/SMTG-UCL/sumo
+    :alt: Build Status
 
 .. image:: https://readthedocs.org/projects/sumo/badge/?version=latest
     :target: http://sumo.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
+
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1338124.svg
+    :target: https://doi.org/10.5281/zenodo.1338124
+    :alt: Zenodo repository
+
 
 Sumo is a Python toolkit for plotting and analysis of ab initio
 solid-state calculation data,
@@ -153,7 +159,7 @@ License
 
 Sumo is made available under the MIT License.
 
-  
+
 Detailed requirements
 ---------------------
 
@@ -170,7 +176,7 @@ open-source python packages, specifically:
 - `H5py <https://www.h5py.org>`_
 
 .. _matplotlib: https://matplotlib.org
-.. _numpy: http://www.numpy.org 
+.. _numpy: http://www.numpy.org
 .. _phonopy: https://atztogo.github.io/phonopy
 .. _pymatgen: http://pymatgen.org
 .. _scipy: https://www.scipy.org
