@@ -1,13 +1,17 @@
 Sumo
 ====
 
-.. image:: https://travis-ci.org/SMTG-UCL/sumo.svg?branch=master
-    :target: https://travis-ci.org/SMTG-UCL/sumo
-    :alt: Build Status
-
 .. image:: https://readthedocs.org/projects/sumo/badge/?version=latest
     :target: http://sumo.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
+
+.. image:: https://badge.fury.io/py/sumo.svg
+    :target: https://badge.fury.io/py/sumo
+    :alt: Pypi Repository
+
+.. image:: https://travis-ci.org/SMTG-UCL/sumo.svg?branch=master
+    :target: https://travis-ci.org/SMTG-UCL/sumo
+    :alt: Build Status
 
 .. image:: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d/status.svg
     :target: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d
@@ -28,21 +32,21 @@ publication-ready plotting (powered by Matplotlib_.)
 
 The main features include:
 
-1. An extensive framework for generating high-symmetry k-point paths.
+1. **An extensive framework for generating high-symmetry k-point paths.**
 
    - Crystallographic spacegroups are determined using Spglib_.
    - Conventional crystallographic paths are built in as well as interfaces to
      the SeeK-path_ and
      Pymatgen_ implementations.
 
-2. Plotting scripts for electronic and phonon band structures, density
-   of states, and optical absorption diagrams.
+2. **Plotting scripts for electronic and phonon band structures, density
+   of states, and optical absorption diagrams.**
 
    - VASP calculations are imported using Pymatgen_.
    - The Phonopy_ framework is supported for phonon band structures.
 
-3. Analysis scripts to calculate parabolic and non-parabolic band
-   effective masses.
+3. **Analysis scripts to calculate parabolic and non-parabolic band
+   effective masses.**
 
    - Curve fitting is performed using `Scipy <https://www.scipy.org>`_.
 
