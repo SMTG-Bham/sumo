@@ -26,11 +26,10 @@ def publish(ctx):
 def release(ctx):
     with open("CHANGELOG.rst") as f:
         contents = f.read()
-    toks = re.split("\-+", contents)
     new_ver = re.findall('\n(v.*)', contents)[0]
-    desc = toks[1].strip()
-    toks = desc.split("\n")
-    desc = "\n".join(toks[:-1]).strip()
+    toks = re.finditer("v\d\.\d\.\d*\n\-*(.*?)^v\d\.\d\.\d", contents,
+                       re.MULTILINE | re.DOTALL)
+    desc = list(toks)[0].groups()[0].strip()
     payload = {
         "tag_name": new_ver,
         "target_commitish": "master",
