@@ -19,12 +19,14 @@ from pymatgen.core.periodic_table import get_el_sp
 from pymatgen.electronic_structure.core import Orbital, Spin
 
 
-def load_dos(filename, elements=None, lm_orbitals=None, atoms=None,
-             gaussian=None, total_only=False, log=False):
+def load_dos(vasprun, elements=None, lm_orbitals=None, atoms=None,
+             gaussian=None, total_only=False, log=False,
+             adjust_fermi=True):
     """Load a vasprun and extract the total and projected density of states.
 
     Args:
-        filename (str): Path to a vasprun.xml or vasprun.xml.gz file.
+        vasprun (str): Path to a vasprun.xml or vasprun.xml.gz file or
+            a :obj:`pymatgen.io.vasp.outputs.Vasprun` object.
         elements (:obj:`dict`, optional): The elements and orbitals to extract
             from the projected density of states. Should be provided as a
             :obj:`dict` with the keys as the element names and corresponding
@@ -67,6 +69,8 @@ def load_dos(filename, elements=None, lm_orbitals=None, atoms=None,
         total_only (:obj:`bool`, optional): Only extract the total density of
             states. Defaults to ``False``.
         log (:obj:`bool`): Print logging messages. Defaults to ``False``.
+        adjust_fermi (:obj:`bool`, optional): Shift the Fermi level to sit at
+            the valence band maximum (does not affect metals).
 
     Returns:
         dict: The total and projected density of states. Formatted as a
@@ -81,7 +85,11 @@ def load_dos(filename, elements=None, lm_orbitals=None, atoms=None,
                 'S': {'s': Dos}
             }
     """
-    vr = Vasprun(filename)
+    if isinstance(vasprun, str):
+        vr = Vasprun(vasprun)
+    else:
+        vr = vasprun
+
     band = vr.get_band_structure()
     dos = vr.complete_dos
 
@@ -96,7 +104,9 @@ def load_dos(filename, elements=None, lm_orbitals=None, atoms=None,
             logging.info('DOS band gap: {:.3f}'.format(dos.get_gap()))
         zero_point = band.get_vbm()['energy']
 
-    dos.energies -= zero_point
+    if adjust_fermi:
+        dos.efermi -= dos.efermi - zero_point
+
     if vr.parameters['ISMEAR'] in [-1, 0, 1]:
         dos.energies -= vr.parameters['SIGMA']
 
@@ -104,8 +114,8 @@ def load_dos(filename, elements=None, lm_orbitals=None, atoms=None,
         dos.densities = dos.get_smeared_densities(gaussian)
         for site in dos.pdos:
             for orbital in dos.pdos[site]:
-                dos.pdos[site][orbital] = dos.get_site_orbital_dos(site,
-                                    orbital).get_smeared_densities(gaussian)
+                dos.pdos[site][orbital] = dos.get_site_orbital_dos(
+                    site, orbital).get_smeared_densities(gaussian)
 
     if vr.parameters['LSORBIT']:
         # pymatgen includes the spin down channel for SOC calculations, even
@@ -247,13 +257,13 @@ def get_element_pdos(dos, element, sites, lm_orbitals=None, orbitals=None):
         # extract the data
         for orb in spd:
             pdos = dos.get_site_spd_dos(site)[orb]
-            el_dos[orb.name] = el_dos[orb.name] + pdos if orb.name in el_dos \
-                               else pdos
+            el_dos[orb.name] = (el_dos[orb.name] + pdos if orb.name in el_dos
+                                else pdos)
 
         for orb in lm:
             pdos = dos.get_site_orbital_dos(site, orb)
-            el_dos[orb.name] = el_dos[orb.name] + pdos if orb.name in el_dos \
-                               else pdos
+            el_dos[orb.name] = (el_dos[orb.name] + pdos if orb.name in el_dos
+                                else pdos)
     return el_dos
 
 

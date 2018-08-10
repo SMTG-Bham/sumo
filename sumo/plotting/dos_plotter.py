@@ -88,7 +88,7 @@ class SDOSPlotter(object):
             subplot (:obj:`bool`, optional): Plot the density of states for
                 each element on separate subplots. Defaults to ``False``.
             zero_to_efermi (:obj:`bool`, optional): Normalise the plot such
-                that the valence band maximum is set as 0 eV.
+                that the Fermi level is set as 0 eV.
             cache (:obj:`dict`, optional): Cache object tracking how colours
                 have been assigned to orbitals. The format is the same as the
                 "colours" dict. This defaults to the module-level
@@ -133,10 +133,9 @@ class SDOSPlotter(object):
         # mask needed to prevent unwanted data in pdf and for finding y limit
         dos = self._dos
         pdos = self._pdos
-        mask = (dos.energies >= xmin - 0.05) & (dos.energies <= xmax + 0.05)
-        plot_data = {'mask': mask,
-                     'energies': dos.energies - dos.efermi
-                     if zero_to_efermi else dos.energies}
+        eners = dos.energies - dos.efermi if zero_to_efermi else dos.energies
+        mask = (eners >= xmin - 0.05) & (eners <= xmax + 0.05)
+        plot_data = {'mask': mask, 'energies': eners}
         spins = dos.densities.keys()
         ymax = 0
 
@@ -190,8 +189,8 @@ class SDOSPlotter(object):
                  xmax=6., yscale=1, colours=None, plot_total=True,
                  legend_on=True, num_columns=2, legend_frame_on=False,
                  legend_cutoff=3, xlabel='Energy (eV)', ylabel='Arb. units',
-                 dpi=400, fonts=None, plt=None, style=None,
-                 no_base_style=False):
+                 zero_to_efermi=True, dpi=400, fonts=None, plt=None,
+                 style=None, no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the density of states.
 
         Args:
@@ -228,6 +227,8 @@ class SDOSPlotter(object):
                 little contribution in the plotting range.
             xlabel (:obj:`str`, optional): Label/units for x-axis (i.e. energy)
             ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)
+            zero_to_efermi (:obj:`bool`, optional): Normalise the plot such
+                that the Fermi level is set as 0 eV.
             dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
                 the image.
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
@@ -248,7 +249,8 @@ class SDOSPlotter(object):
         plot_data = self.dos_plot_data(yscale=yscale, xmin=xmin, xmax=xmax,
                                        colours=colours, plot_total=plot_total,
                                        legend_cutoff=legend_cutoff,
-                                       subplot=subplot)
+                                       subplot=subplot,
+                                       zero_to_efermi=zero_to_efermi)
 
         if subplot:
             nplots = len(plot_data['lines'])
