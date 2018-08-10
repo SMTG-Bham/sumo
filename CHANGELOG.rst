@@ -4,9 +4,16 @@ Change Log
 [Unreleased]
 ------------
 
+v1.0.10
+-------
+
+Add option to align DOS to Fermi level (@shyamd)
+
 Various bug fixes:
 
 - Fix many typos.
+- Updates to paper and documentation.
+
 
 v1.0.9
 ------
