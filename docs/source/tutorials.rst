@@ -14,3 +14,5 @@ for each command for more details:
    sumo-bandstats
    sumo-optplot
    sumo-phonon-bandplot
+
+   customising-plots

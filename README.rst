@@ -76,6 +76,10 @@ Currently, the scripts provided are:
 - ``sumo-bandstats``: For calculating electron and hole effective masses
   from a band structure.
 
+Information on how to tweak the style of sumo plots is provided on the
+`Customising Sumo Plots page
+<http://sumo.readthedocs.io/en/latest/customising-plots.html>`_.
+
 
 Installation
 ------------
@@ -130,7 +134,7 @@ License
 
 Sumo is made available under the MIT License.
 
-  
+
 Detailed requirements
 ---------------------
 
@@ -147,7 +151,7 @@ open-source python packages, specifically:
 - `H5py <https://www.h5py.org>`_
 
 .. _matplotlib: https://matplotlib.org
-.. _numpy: http://www.numpy.org 
+.. _numpy: http://www.numpy.org
 .. _phonopy: https://atztogo.github.io/phonopy
 .. _pymatgen: http://pymatgen.org
 .. _scipy: https://www.scipy.org
