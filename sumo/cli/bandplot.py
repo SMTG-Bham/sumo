@@ -50,7 +50,8 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
              ylabel='Energy (eV)', dos_label=None,
              elements=None, lm_orbitals=None, atoms=None,
              total_only=False, plot_total=True, legend_cutoff=3, gaussian=None,
-             height=6., width=6., ymin=-6., ymax=6., colours=None, yscale=1,
+             height=None, width=None, ymin=-6., ymax=6., colours=None,
+             yscale=1, style=None, no_base_style=False,
              image_format='pdf', dpi=400, plt=None, fonts=None):
     """Plot electronic band structure diagrams from vasprun.xml files.
 
@@ -162,6 +163,10 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
         width (:obj:`float`, optional): The width of the plot.
         ymin (:obj:`float`, optional): The minimum energy on the y-axis.
         ymax (:obj:`float`, optional): The maximum energy on the y-axis.
+        style (:obj:`list` or :obj:`str`, optional): (List of) matplotlib style
+            specifications, to be composed on top of Sumo base style.
+        no_base_style (:obj:`bool`, optional): Prevent use of sumo base style.
+            This can make alternative styles behave more predictably.
         colours (:obj:`dict`, optional): Use custom colours for specific
             element and orbital combinations. Specified as a :obj:`dict` of
             :obj:`dict` of the colours. For example::
@@ -191,7 +196,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     """
     if not filenames:
         filenames = find_vasprun_files()
-    elif type(filenames) == str:
+    elif isinstance(filenames, str):
         filenames = [filenames]
 
     # only load the orbital projects if we definitely need them
@@ -235,23 +240,21 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
 
     plotter = SBSPlotter(bs)
     if projection_selection:
-        plt = plotter.get_projected_plot(projection_selection, mode=mode,
-                                         interpolate_factor=interpolate_factor,
-                                         circle_size=circle_size,
-                                         zero_to_efermi=True, ymin=ymin,
-                                         ymax=ymax, height=height, width=width,
-                                         vbm_cbm_marker=vbm_cbm_marker,
-                                         ylabel=ylabel, plt=plt,
-                                         dos_plotter=dos_plotter,
-                                         dos_options=dos_opts,
-                                         dos_label=dos_label, fonts=fonts)
+        plt = plotter.get_projected_plot(
+            projection_selection, mode=mode,
+            interpolate_factor=interpolate_factor, circle_size=circle_size,
+            zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
+            width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
+            plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
+            dos_label=dos_label, fonts=fonts, style=style,
+            no_base_style=no_base_style)
     else:
-        plt = plotter.get_plot(zero_to_efermi=True, ymin=ymin, ymax=ymax,
-                               height=height, width=width,
-                               vbm_cbm_marker=vbm_cbm_marker,
-                               ylabel=ylabel, plt=plt, dos_plotter=dos_plotter,
-                               dos_options=dos_opts, dos_label=dos_label,
-                               fonts=fonts)
+        plt = plotter.get_plot(
+            zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
+            width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
+            plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
+            dos_label=dos_label, fonts=fonts, style=style,
+            no_base_style=no_base_style)
 
     if save_files:
         basename = 'band.{}'.format(image_format)
@@ -262,7 +265,8 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                     bbox_inches='tight')
 
         written = [filename]
-        written += save_data_files(vr, bs, prefix=prefix, directory=directory)
+        written += save_data_files(vr, bs, prefix=prefix,
+                                   directory=directory)
         return written
 
     else:
@@ -426,14 +430,19 @@ def _get_parser():
                         help='standard deviation of DOS gaussian broadening')
     parser.add_argument('--scale', type=float, default=1,
                         help='scaling factor for the density of states')
-    parser.add_argument('--height', type=float, default=6.,
+    parser.add_argument('--height', type=float, default=None,
                         help='height of the graph')
-    parser.add_argument('--width', type=float, default=6.,
+    parser.add_argument('--width', type=float, default=None,
                         help='width of the graph')
     parser.add_argument('--ymin', type=float, default=-6.,
                         help='minimum energy on the y-axis')
     parser.add_argument('--ymax', type=float, default=6.,
                         help='maximum energy on the y-axis')
+    parser.add_argument('--style', type=str, nargs='+', default=None,
+                        help='matplotlib style specifications')
+    parser.add_argument('--no-base-style', action='store_true',
+                        dest='no_base_style',
+                        help='prevent use of sumo base style')
     parser.add_argument('--config', type=str, default=None,
                         help='colour configuration file')
     parser.add_argument('--format', type=str, default='pdf',
@@ -479,8 +488,9 @@ def main():
              total_only=args.total_only, plot_total=args.total,
              legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
              height=args.height, width=args.width, ymin=args.ymin,
+             style=args.style, no_base_style=args.no_base_style,
              ymax=args.ymax, colours=colours, image_format=args.image_format,
-             dpi=args.dpi, fonts=[args.font])
+             dpi=args.dpi, fonts=args.font)
 
 
 if __name__ == "__main__":

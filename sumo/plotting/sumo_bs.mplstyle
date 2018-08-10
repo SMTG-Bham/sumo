@@ -1,0 +1,4 @@
+xtick.bottom         : False
+ytick.right          : True
+
+axes.prop_cycle : cycler('color', ['3953a4', 'faa316', 'd93b2b', '0db14b'])

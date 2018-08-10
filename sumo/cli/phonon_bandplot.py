@@ -30,6 +30,7 @@ warnings.filterwarnings("ignore", category=FutureWarning,
 
 import matplotlib as mpl
 mpl.use('Agg')
+from matplotlib import rcParams
 
 from phonopy.units import VaspToTHz
 
@@ -53,6 +54,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
                     primitive_axis=None, line_density=60,
                     symprec=0.01, mode='bradcrack', kpt_list=None,
                     eigenvectors=False, labels=None, height=6., width=6.,
+                    style=None, no_base_style=False,
                     ymin=None, ymax=None, image_format='pdf', dpi=400,
                     plt=None, fonts=None, dos=None):
     """A script to plot phonon band structure diagrams.
@@ -120,6 +122,10 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
         width (:obj:`float`, optional): The width of the plot.
         ymin (:obj:`float`, optional): The minimum energy on the y-axis.
         ymax (:obj:`float`, optional): The maximum energy on the y-axis.
+        style (:obj:`list` or :obj:`str`, optional): (List of) matplotlib style
+            specifications, to be composed on top of Sumo base style.
+        no_base_style (:obj:`bool`, optional): Prevent use of sumo base style.
+            This can make alternative styles behave more predictably.
         image_format (:obj:`str`, optional): The image file format. Can be any
             format supported by matplotlib, including: png, jpg, pdf, and svg.
             Defaults to pdf.
@@ -211,8 +217,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             dos[:, 0], dos[:, 1] = dos_freq, dos_val
 
     plotter = SPhononBSPlotter(bs)
-    plt = plotter.get_plot(ymin=ymin, ymax=ymax, height=height, width=width,
-                           plt=plt, fonts=fonts, dos=dos)
+    plt = plotter.get_plot(ymin=ymin, ymax=ymax, height=height,
+                           width=width, plt=plt, fonts=fonts, dos=dos)
 
     if save_files:
         basename = 'phonon_band.{}'.format(image_format)
@@ -221,6 +227,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
         if directory:
             filename = os.path.join(directory, filename)
 
+        if dpi is None:
+            dpi = rcParams['figure.dpi']
         plt.savefig(filename, format=image_format, dpi=dpi,
                     bbox_inches='tight')
 
@@ -306,20 +314,25 @@ def _get_parser():
     parser.add_argument('--labels', type=str, default=None,
                         help=('specify the labels for kpoints '
                               r'(e.g. "\Gamma,X")'))
-    parser.add_argument('--height', type=float, default=6.,
+    parser.add_argument('--height', type=float, default=None,
                         help='height of the graph')
-    parser.add_argument('--width', type=float, default=6.,
+    parser.add_argument('--width', type=float, default=None,
                         help='width of the graph')
     parser.add_argument('--ymin', type=float, default=None,
                         help='minimum energy on the y-axis')
     parser.add_argument('--ymax', type=float, default=None,
                         help='maximum energy on the y-axis')
+    parser.add_argument('--style', type=str, nargs='+', default=None,
+                        help='matplotlib style specifications')
+    parser.add_argument('--no-base-style', action='store_true',
+                        dest='no_base_style',
+                        help='prevent use of sumo base style')
     parser.add_argument('--config', type=str, default=None,
                         help='colour configuration file')
     parser.add_argument('--format', type=str, default='pdf',
                         dest='image_format', metavar='FORMAT',
                         help='image file format (options: pdf, svg, jpg, png)')
-    parser.add_argument('--dpi', type=int, default=400,
+    parser.add_argument('--dpi', type=int, default=None,
                         help='pixel density for image file')
     parser.add_argument('--font', default=None, help='font to use')
     parser.add_argument('--dos', nargs='?', type=str,
@@ -379,7 +392,8 @@ def main():
                     mode=mode, kpt_list=kpoints, labels=labels,
                     height=args.height, width=args.width, ymin=args.ymin,
                     ymax=args.ymax, image_format=args.image_format,
-                    dpi=args.dpi, fonts=[args.font],
+                    style=args.style, no_base_style=args.no_base_style,
+                    dpi=args.dpi, fonts=args.font,
                     eigenvectors=args.eigenvectors, dos=args.dos)
 
 

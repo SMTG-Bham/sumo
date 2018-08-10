@@ -7,10 +7,14 @@ This module provides a class for plotting density of states data.
 """
 
 import itertools
+import matplotlib
+import matplotlib.pyplot
+
+from matplotlib.ticker import AutoMinorLocator
 
 from sumo.electronic_structure.dos import sort_orbitals
-from sumo.plotting import pretty_plot, pretty_subplot, colour_cycle
-from sumo.plotting import colour_cache
+from sumo.plotting import (pretty_plot, pretty_subplot, colour_cache,
+                           styled_plot, sumo_base_style, sumo_dos_style)
 
 from pymatgen.electronic_structure.core import Spin
 
@@ -19,11 +23,7 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-line_width = 1.5
 empty_space = 1.05
-label_size = 22
-band_linewidth = 2
-col_cycle = colour_cycle()
 
 
 class SDOSPlotter(object):
@@ -58,7 +58,7 @@ class SDOSPlotter(object):
 
     def dos_plot_data(self, yscale=1, xmin=-6., xmax=6., colours=None,
                       plot_total=True, legend_cutoff=3, subplot=False,
-                      zero_to_efermi=True):
+                      zero_to_efermi=True, cache=None):
         """Get the plotting data.
 
         Args:
@@ -87,8 +87,13 @@ class SDOSPlotter(object):
                 little contribution in the plotting range.
             subplot (:obj:`bool`, optional): Plot the density of states for
                 each element on separate subplots. Defaults to ``False``.
-            zero_to_efermi (:obj:`bool`, optional): Normalise the plot such that the
-                valence band maximum is set as 0 eV.
+            zero_to_efermi (:obj:`bool`, optional): Normalise the plot such
+                that the Fermi level is set as 0 eV.
+            cache (:obj:`dict`, optional): Cache object tracking how colours
+                have been assigned to orbitals. The format is the same as the
+                "colours" dict. This defaults to the module-level
+                sumo.plotting.colour_cache object, but an empty dict can be
+                used as a fresh cache. This object will be modified in-place.
 
         Returns:
             dict: The plotting data. Formatted with the following keys:
@@ -122,20 +127,28 @@ class SDOSPlotter(object):
                 "ymax" (:obj:`float`)
                     The maximum y-axis limit.
         """
+        if cache is None:
+            cache = colour_cache
+
         # mask needed to prevent unwanted data in pdf and for finding y limit
         dos = self._dos
         pdos = self._pdos
-        mask = (dos.energies >= xmin - 0.05) & (dos.energies <= xmax + 0.05)
-        plot_data = {'mask': mask,
-                     'energies': dos.energies - dos.efermi
-                     if zero_to_efermi else dos.energies}
+        eners = dos.energies - dos.efermi if zero_to_efermi else dos.energies
+        mask = (eners >= xmin - 0.05) & (eners <= xmax + 0.05)
+        plot_data = {'mask': mask, 'energies': eners}
         spins = dos.densities.keys()
         ymax = 0
 
         if plot_total:
+            if 'text.color' in matplotlib.rcParams:
+                tdos_colour = matplotlib.rcParams['text.color']
+                if tdos_colour is None:
+                    tdos_colour = 'k'
+            else:
+                tdos_colour = 'k'
             lines = []
             tdos = {'label': 'Total DOS', 'dens': dos.densities,
-                    'colour': 'k', 'alpha': 0.15}
+                    'colour': tdos_colour, 'alpha': 0.15}
 
             # subplot data formatted as a list of lists of dicts, with each
             # list of dicts being plotted on a separate graph, if only one list
@@ -156,7 +169,8 @@ class SDOSPlotter(object):
                             for d in el_pdos[orb].densities.values()])
                 ymax = dmax if dmax > ymax else ymax
                 label = None if dmax < cutoff else '{} ({})'.format(el, orb)
-                colour = get_colour_for_element_and_orbital(el, orb, colours)
+                colour, cache = get_cached_colour(el, orb, colours,
+                                                  cache=cache)
                 el_lines.append({'label': label, 'alpha': 0.25,
                                  'colour': colour,
                                  'dens': el_pdos[orb].densities})
@@ -170,11 +184,13 @@ class SDOSPlotter(object):
         plot_data.update({'lines': lines, 'ymax': ymax, 'ymin': ymin})
         return plot_data
 
-    def get_plot(self, subplot=False, width=6., height=8., xmin=-6., xmax=6.,
-                 yscale=1, colours=None, plot_total=True, legend_on=True,
-                 num_columns=2, legend_frame_on=False, legend_cutoff=3,
-                 xlabel='Energy (eV)', ylabel='Arb. units',
-                 dpi=400, fonts=None, plt=None):
+    @styled_plot(sumo_base_style, sumo_dos_style)
+    def get_plot(self, subplot=False, width=None, height=None, xmin=-6.,
+                 xmax=6., yscale=1, colours=None, plot_total=True,
+                 legend_on=True, num_columns=2, legend_frame_on=False,
+                 legend_cutoff=3, xlabel='Energy (eV)', ylabel='Arb. units',
+                 zero_to_efermi=True, dpi=400, fonts=None, plt=None,
+                 style=None, no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the density of states.
 
         Args:
@@ -211,6 +227,8 @@ class SDOSPlotter(object):
                 little contribution in the plotting range.
             xlabel (:obj:`str`, optional): Label/units for x-axis (i.e. energy)
             ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)
+            zero_to_efermi (:obj:`bool`, optional): Normalise the plot such
+                that the Fermi level is set as 0 eV.
             dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
                 the image.
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
@@ -218,6 +236,12 @@ class SDOSPlotter(object):
                 specified as a :obj:`list` of :obj:`str`.
             plt (:obj:`matplotlib.pyplot`, optional): A
                 :obj:`matplotlib.pyplot` object to use for plotting.
+            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+                style specifications, to be composed on top of Sumo base
+                style.
+            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                style. This can make alternative styles behave more
+                predictably.
 
         Returns:
             :obj:`matplotlib.pyplot`: The density of states plot.
@@ -225,15 +249,15 @@ class SDOSPlotter(object):
         plot_data = self.dos_plot_data(yscale=yscale, xmin=xmin, xmax=xmax,
                                        colours=colours, plot_total=plot_total,
                                        legend_cutoff=legend_cutoff,
-                                       subplot=subplot)
+                                       subplot=subplot,
+                                       zero_to_efermi=zero_to_efermi)
 
         if subplot:
             nplots = len(plot_data['lines'])
             plt = pretty_subplot(nplots, 1, width=width, height=height,
-                                 dpi=dpi, plt=plt, fonts=fonts)
+                                 dpi=dpi, plt=plt)
         else:
-            plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt,
-                              fonts=fonts)
+            plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt)
 
         mask = plot_data['mask']
         energies = plot_data['energies'][mask]
@@ -259,28 +283,33 @@ class SDOSPlotter(object):
                                 facecolor=line['colour'],
                                 alpha=line['alpha'])
                 ax.plot(energies, densities, label=label,
-                        color=line['colour'], lw=line_width)
+                        color=line['colour'])
 
             ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
             ax.set_xlim(xmin, xmax)
 
-            ax.tick_params(axis='x', which='both', top='off')
-            ax.tick_params(axis='y', which='both', labelleft='off',
-                           labelright='off', left='off', right='off')
+            ax.tick_params(axis='y', labelleft='off', left='off')
+            ax.yaxis.set_minor_locator(AutoMinorLocator(2))
+            ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 
             loc = 'upper right' if subplot else 'best'
             ncol = 1 if subplot else num_columns
             if legend_on:
-                ax.legend(loc=loc, frameon=legend_frame_on, ncol=ncol,
-                          handlelength=2, prop={'size': label_size - 3})
+                ax.legend(loc=loc, frameon=legend_frame_on, ncol=ncol)
 
         # no add axis labels and sort out ticks
         if subplot:
-            ax.set_xlabel(xlabel, fontsize=label_size)
+            ax.set_xlabel(xlabel)
             fig.subplots_adjust(hspace=0)
             plt.setp([a.get_xticklabels() for a in fig.axes[:-1]],
                      visible=False)
-            fig.text(0.08, 0.5, ylabel, fontsize=label_size, ha='left',
+
+            if 'axes.labelcolor' in matplotlib.rcParams:
+                ylabelcolor = matplotlib.rcParams['axes.labelcolor']
+            else:
+                ylabelcolor = None
+
+            fig.text(0.08, 0.5, ylabel, ha='left', color=ylabelcolor,
                      va='center', rotation='vertical', transform=ax.transAxes)
         else:
             ax.set_xlabel(xlabel)
@@ -289,20 +318,19 @@ class SDOSPlotter(object):
         return plt
 
 
-def get_colour_for_element_and_orbital(element, orbital, colours=None):
+def get_cached_colour(element, orbital, colours=None, cache=None):
     """Get a colour for a particular elemental and orbital combination.
 
-    If the element is not specified in the colours dictionary, a random colour
-    will be used based on the list of 22 colours of maximum contrast:
-    http://www.iscc.org/pdf/PC54_1724_001.pdf
+    If the element is not specified in the colours dictionary, the cache is
+    checked. If this element-orbital combination has not been chached before,
+    a new colour is drawn from the current matplotlib colour cycle and cached.
 
-    This is cached in sumo.plotting.colour_cache and re-used for subsequent
-    plots within this Python instance. To reset the cache, set
-    ``sumo.plotting.colour_cache = {}``.
+    The default cache is sumo.plotting.colour_cache. To reset this cache, use
+    ``sumo.plotting.colour_cache.clear()``.
 
     Args:
-        element (str): The element.
-        orbital (str): The orbital.
+        element (:obj:`str`): The element.
+        orbital (:obj:`str`): The orbital.
         colours (:obj:`dict`, optional): Use custom colours for specific
             element and orbital combinations. Specified as a :obj:`dict` of
             :obj:`dict` of the colours. For example::
@@ -314,36 +342,57 @@ def get_colour_for_element_and_orbital(element, orbital, colours=None):
 
             The colour can be a hex code, series of rgb value, or any other
             format supported by matplotlib.
+        cache (:obj:`dict`, optional): Cache of colour values already
+            assigned. The format is the same as the custom colours dict. If
+            None, the module-level cache ``sumo.plotting.colour_cache`` is
+            used.
 
     Returns:
-        str: The colour.
+        tuple: (colour, cache)
     """
 
-    def _get_colour_with_cache(element, orbital):
+    if cache is None:
+        cache = colour_cache
+
+    def _get_colour_with_cache(element, orbital, cache, colour_series):
         """Return cached colour if available, or fetch and cache from cycle"""
-        if element in colour_cache and orbital in colour_cache[element]:
-            return colour_cache[element][orbital]
+        from itertools import chain
+        if element in cache and orbital in cache[element]:
+            return cache[element][orbital], cache
         else:
-            colour = next(col_cycle)
-            if element not in colour_cache:
-                colour_cache[element] = {}
-            colour_cache[element].update({orbital: colour})
-            return colour
+            # Iterate through colours to find one which is unused
+            for colour in colour_series:
+                # Iterate through cache to check if colour already used
+                if colour not in chain(*[[col for _, col in orb.items()]
+                                         for _, orb in cache.items()]):
+                    break
+            else:
+                raise Exception('Not enough colours available for orbitals! '
+                                'Try a different theme.')
+
+            if element not in cache:
+                cache[element] = {}
+            cache[element].update({orbital: colour})
+            return colour, cache
+
+    colour_series = matplotlib.rcParams['axes.prop_cycle'].by_key()['color']
 
     if isinstance(colours, configparser.ConfigParser):
         try:
-            return colours.get(element, orbital)
+            return colours.get(element, orbital), cache
         except(configparser.NoSectionError, configparser.NoOptionError):
-            return _get_colour_with_cache(element, orbital)
+            return _get_colour_with_cache(element, orbital,
+                                          cache, colour_series)
 
     elif isinstance(colours, dict):
         try:
             return colours[element][orbital]
         except(KeyError):
-            return _get_colour_with_cache(element, orbital)
+            return _get_colour_with_cache(element, orbital,
+                                          cache, colour_series)
 
     elif colours is None:
-        return _get_colour_with_cache(element, orbital)
+        return _get_colour_with_cache(element, orbital, cache, colour_series)
 
     else:
         raise TypeError('Argument "colours" should be dict, '

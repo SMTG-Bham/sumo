@@ -90,6 +90,10 @@ Currently, the scripts provided are:
 - ``sumo-bandstats``: For calculating electron and hole effective masses
   from a band structure.
 
+Information on how to tweak the style of sumo plots is provided on the
+`Customising Sumo Plots page
+<http://sumo.readthedocs.io/en/latest/customising-plots.html>`_.
+
 
 Installation
 ------------

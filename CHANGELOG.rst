@@ -4,6 +4,18 @@ Change Log
 [Unreleased]
 ------------
 
+v1.1.0
+-------
+
+Use matplotlib style sheets for styling plots (@ajjackson & @utf).
+Enables plots to be customised based on user settings.
+
+Various bug fixes:
+
+- Fix bug when normalising DOS to Fermi level.
+- Fix codacy style issues.
+- Plotting style standardised across all plots.
+
 v1.0.10
 -------
 
@@ -13,7 +25,6 @@ Various bug fixes:
 
 - Fix many typos.
 - Updates to paper and documentation.
-
 
 v1.0.9
 ------

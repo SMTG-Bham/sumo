@@ -1,0 +1,3 @@
+ytick.left           : False
+
+figure.figsize : 8, 6

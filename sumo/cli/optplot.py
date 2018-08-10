@@ -32,6 +32,7 @@ __date__ = "Jan 10, 2018"
 def optplot(filenames=None, prefix=None, directory=None,
             gaussian=None, band_gaps=None, labels=None, average=True, height=6,
             width=6, xmin=0, xmax=None, ymin=0, ymax=1e5, colours=None,
+            style=None, no_base_style=None,
             image_format='pdf', dpi=400, plt=None, fonts=None):
     """A script to plot optical absorption spectra from VASP calculations.
 
@@ -62,6 +63,10 @@ def optplot(filenames=None, prefix=None, directory=None,
         colours (:obj:`list`, optional): A :obj:`list` of colours to use in the
             plot. The colours can be specified as a hex code, set of rgb
             values, or any other format supported by matplotlib.
+        style (:obj:`list` or :obj:`str`, optional): (List of) matplotlib style
+            specifications, to be composed on top of Sumo base style.
+        no_base_style (:obj:`bool`, optional): Prevent use of sumo base style.
+            This can make alternative styles behave more predictably.
         image_format (:obj:`str`, optional): The image file format. Can be any
             format supported by matplotlib, including: png, jpg, pdf, and svg.
             Defaults to pdf.
@@ -77,7 +82,6 @@ def optplot(filenames=None, prefix=None, directory=None,
         A matplotlib pyplot object.
     """
     if not filenames:
-
         if os.path.exists('vasprun.xml'):
             filenames = ['vasprun.xml']
         elif os.path.exists('vasprun.xml.gz'):
@@ -86,7 +90,7 @@ def optplot(filenames=None, prefix=None, directory=None,
             logging.error('ERROR: No vasprun.xml found!')
             sys.exit()
 
-    elif type(filenames) is str:
+    elif isinstance(filenames, str):
         filenames = [filenames]
 
     vrs = [Vasprun(f) for f in filenames]
@@ -99,16 +103,16 @@ def optplot(filenames=None, prefix=None, directory=None,
     abs_data = [calculate_alpha(d, average=average)
                 for d in dielectrics]
 
-    if type(band_gaps) is list and not band_gaps:
+    if isinstance(band_gaps, list) and not band_gaps:
         # empty list therefore get bandgap from vasprun files
         band_gaps = [vr.get_band_structure().get_band_gap()['energy']
                      for vr in vrs]
-    elif type(band_gaps) is list and 'vasprun' in band_gaps[0]:
+    elif isinstance(band_gaps, list) and 'vasprun' in band_gaps[0]:
         # band_gaps contains list of vasprun files
         bg_vrs = [Vasprun(f) for f in band_gaps]
         band_gaps = [vr.get_band_structure().get_band_gap()['energy']
                      for vr in bg_vrs]
-    elif type(band_gaps) is list:
+    elif isinstance(band_gaps, list):
         # band_gaps is non empty list w. no vaspruns; presume floats
         band_gaps = [float(i) for i in band_gaps]
 
@@ -121,7 +125,8 @@ def optplot(filenames=None, prefix=None, directory=None,
     plotter = SOpticsPlotter(abs_data, band_gap=band_gaps, label=labels)
     plt = plotter.get_plot(width=width, height=height, xmin=xmin,
                            xmax=xmax, ymin=ymin, ymax=ymax,
-                           colours=colours, dpi=dpi, plt=plt, fonts=fonts)
+                           colours=colours, dpi=dpi, plt=plt, fonts=fonts,
+                           style=style, no_base_style=no_base_style)
 
     if save_files:
         basename = 'absorption.{}'.format(image_format)
@@ -158,9 +163,9 @@ def _get_parser():
                         help='labels for the absorption specta')
     parser.add_argument('-a', '--anisotropic', action='store_false',
                         help='separate spectra into to x, y, and z directions')
-    parser.add_argument('--height', type=float, default=6.,
+    parser.add_argument('--height', type=float, default=None,
                         help='height of the graph')
-    parser.add_argument('--width', type=float, default=6.,
+    parser.add_argument('--width', type=float, default=None,
                         help='width of the graph')
     parser.add_argument('--xmin', type=float, default=0.,
                         help='minimum energy on the x-axis')
@@ -170,6 +175,11 @@ def _get_parser():
                         help='minimum intensity on the y-axis')
     parser.add_argument('--ymax', type=float, default=1e5,
                         help='maximum intensity on the y-axis')
+    parser.add_argument('--style', type=str, nargs='+', default=None,
+                        help='matplotlib style specifications')
+    parser.add_argument('--no-base-style', action='store_true',
+                        dest='no_base_style',
+                        help='prevent use of sumo base style')
     parser.add_argument('--format', type=str, default='pdf',
                         dest='image_format', metavar='FORMAT',
                         help='image file format (options: pdf, svg, jpg, png)')
@@ -201,7 +211,8 @@ def main():
             average=args.anisotropic, height=args.height, width=args.width,
             xmin=args.xmin, xmax=args.xmax, ymin=args.ymin, ymax=args.ymax,
             colours=None, image_format=args.image_format, dpi=args.dpi,
-            fonts=[args.font])
+            style=args.style, no_base_style=args.no_base_style,
+            fonts=args.font)
 
 
 if __name__ == "__main__":
