@@ -4,6 +4,12 @@ Change Log
 [Unreleased]
 ------------
 
+v1.1.1
+-------
+
+Fix bug when installing from Pypi.
+
+
 v1.1.0
 -------
 

@@ -18,7 +18,7 @@ with open('README.rst', 'r') as file:
 
 setup(
     name='sumo',
-    version='1.1.0',
+    version='1.1.1',
     description=('Heavy weight plotting tools for ab initio '
                  'solid-state calculations'),
     url='https://github.com/smtg-ucl/sumo',
@@ -40,7 +40,7 @@ setup(
     packages=find_packages(),
     install_requires=['spglib', 'numpy', 'scipy', 'pymatgen>=2017.12.30',
                       'h5py', 'phonopy', 'matplotlib', 'seekpath'],
-    extras_require={'docs': ['sphinx', 'sphinx-argparse']},   
+    extras_require={'docs': ['sphinx', 'sphinx-argparse']},
     package_data={'sumo': ['symmetry/bradcrack.json',
                            'plotting/orbital_colours.conf',
                            'plotting/sumo_base.mplstyle',
