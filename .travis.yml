@@ -10,7 +10,8 @@ os:
 # command to install dependencies
 install:
   - pip install numpy
-  - travis_wait pip install .
+  - python setup.py sdist
+  - travis_wait pip install dist/sumo-*.tar.gz
 # command to run tests
 script:
   - python -m unittest discover tests
