@@ -510,8 +510,8 @@ class SBSPlotter(BSPlotter):
             if dos_label is not None:
                 ax.set_xlabel(dos_label)
 
-            ax.legend(loc=2, frameon=False, ncol=1,
-                      bbox_to_anchor=(1., 1.))
+        ax.set_xticklabels([])
+        ax.legend(loc=2, frameon=False, ncol=1, bbox_to_anchor=(1., 1.))
 
     def _maketicks(self, ax, ylabel='Energy (eV)'):
         """Utility method to add tick marks to a band structure."""
