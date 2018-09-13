@@ -57,12 +57,14 @@ class SPhononBSPlotter(PhononBSPlotter):
                        linewidth=rcParams['ytick.major.width'])
 
     @styled_plot(sumo_base_style, sumo_bs_style, sumo_phonon_style)
-    def get_plot(self, ymin=None, ymax=None, width=None, height=None, dpi=None,
-                 plt=None, fonts=None, dos=None, dos_aspect=3,
-                 color=None, style=None, no_base_style=False):
+    def get_plot(self, units='THz', ymin=None, ymax=None, width=None,
+                 height=None, dpi=None, plt=None, fonts=None, dos=None,
+                 dos_aspect=3, color=None, style=None, no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the phonon band structure.
 
         Args:
+            units (:obj:`str`, optional): Units of phonon frequency. Accepted
+                (case-insensitive) values are Thz, cm-1, eV, meV.
             ymin (:obj:`float`, optional): The minimum energy on the y-axis.
             ymax (:obj:`float`, optional): The maximum energy on the y-axis.
             width (:obj:`float`, optional): The width of the plot.
@@ -113,7 +115,7 @@ class SPhononBSPlotter(PhononBSPlotter):
             # plot band data
             ax.plot(dists[nd], f, ls='-', c=color, zorder=1)
 
-        self._maketicks(ax)
+        self._maketicks(ax, units=units)
         self._makeplot(ax, plt.gcf(), data, width=width, height=height,
                        ymin=ymin, ymax=ymax, dos=dos, color=color)
         plt.tight_layout()
@@ -164,7 +166,7 @@ class SPhononBSPlotter(PhononBSPlotter):
                 height = rcParams['figure.figsize'][1]
             ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
 
-    def _maketicks(self, ax):
+    def _maketicks(self, ax, units='THz'):
         """Utility method to add tick marks to a band structure."""
         # set y-ticks
         ax.yaxis.set_major_locator(MaxNLocator(6))
@@ -198,4 +200,9 @@ class SPhononBSPlotter(PhononBSPlotter):
                   transform=trans_xdata_yaxes,
                   colors=rcParams['grid.color'],
                   linewidth=rcParams['grid.linewidth'])
-        ax.set_ylabel('Frequency (THz)')
+
+        # Use a text hyphen instead of a minus sign because some nice fonts
+        # like Whitney don't come with a real minus
+        labels = {'thz': 'THz', 'cm-1': r'cm$^{\mathrm{-}\mathregular{1}}$',
+                  'ev': 'eV', 'mev': 'meV'}
+        ax.set_ylabel('Frequency ({0})'.format(labels[units.lower()]))
