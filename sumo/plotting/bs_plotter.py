@@ -55,10 +55,10 @@ class SBSPlotter(BSPlotter):
                  no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
-        If the system is spin polarised, blue lines are spin up, red lines are
-        spin down. For metals, all bands are coloured blue. For semiconductors,
-        blue lines indicate valence bands and orange lines indicates conduction
-        bands.
+        If the system is spin polarised, orange lines are spin up, dashed
+        blue lines are spin down. For metals, all bands are coloured blue. For
+        semiconductors, blue lines indicate valence bands and orange lines
+        indicates conduction bands.
 
         Args:
             zero_to_efermi (:obj:`bool`): Normalise the plot such that the
@@ -150,7 +150,7 @@ class SBSPlotter(BSPlotter):
         eners = data['energy']
 
         if self._bs.is_spin_polarized or self._bs.is_metal():
-            is_vb = True
+            is_vb = [True]
         else:
             is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
 
@@ -346,7 +346,7 @@ class SBSPlotter(BSPlotter):
         nbranches = len(data['distances'])
 
         # Ensure we do spin up first, then spin down
-        spins = sorted(self._bs.bands.keys(), key=lambda spin: -spin.value)
+        spins = sorted(self._bs.bands.keys(), key=lambda s: -s.value)
 
         proj = get_projections_by_branches(self._bs, selection,
                                            normalise='select')
