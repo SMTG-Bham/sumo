@@ -32,7 +32,7 @@ import matplotlib as mpl
 mpl.use('Agg')
 from matplotlib import rcParams
 
-from phonopy.units import VaspToTHz
+from phonopy.units import VaspToTHz, VaspToEv, VaspToCm
 
 from pymatgen.io.vasp.inputs import Poscar
 from pymatgen.io.phonopy import get_ph_bs_symm_line
@@ -51,7 +51,7 @@ __date__ = "Jan 17, 2018"
 
 def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
                     dim=None, born=None, qmesh=None, spg=None,
-                    primitive_axis=None, line_density=60,
+                    primitive_axis=None, line_density=60, units='THz',
                     symprec=0.01, mode='bradcrack', kpt_list=None,
                     eigenvectors=False, labels=None, height=6., width=6.,
                     style=None, no_base_style=False,
@@ -67,7 +67,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             required if plotting the phonon band structure from a yaml file. If
             not specified, the script will search for a POSCAR file in the
             current directory.
-        prefIx (:obj:`str`, optional): Prefix for file names.
+        prefix (:obj:`str`, optional): Prefix for file names.
         directory (:obj:`str`, optional): The directory in which to save files.
         born (:obj:`str`, optional): Path to file containing Born effective
             charges. Should be in the same format as the file produced by the
@@ -85,6 +85,10 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             provided as a 3x3 :obj:`list` of :obj:`float`.
         line_density (:obj:`int`, optional): Density of k-points along the
             path.
+        units (:obj:`str`, optional): Units of phonon frequency. Accepted
+            (case-insensitive) values are Thz, cm-1, eV, meV.
+        symprec (:obj:`float`, optional): Tolerance for space-group-finding
+            operations
         mode (:obj:`str`, optional): Method used for calculating the
             high-symmetry path. The options are:
 
@@ -174,9 +178,13 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
         logging.info("Using supercell with dimensions:")
         logging.info('\t' + str(dim).replace('\n', '\n\t')+'\n')
 
+        factors = {'ev': VaspToEv, 'thz': VaspToTHz, 'mev': VaspToEv * 1000,
+                   'cm-1': VaspToCm}
+
         phonon = load_phonopy(filename, poscar.structure, dim, symprec=symprec,
                               primitive_matrix=primitive_axis,
-                              factor=VaspToTHz, symmetrise=True, born=born,
+                              factor=factors[units.lower()],
+                              symmetrise=True, born=born,
                               write_fc=False)
 
         # calculate band structure
@@ -217,7 +225,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             dos[:, 0], dos[:, 1] = dos_freq, dos_val
 
     plotter = SPhononBSPlotter(bs)
-    plt = plotter.get_plot(ymin=ymin, ymax=ymax, height=height,
+    plt = plotter.get_plot(units=units, ymin=ymin, ymax=ymax, height=height,
                            width=width, plt=plt, fonts=fonts, dos=dos)
 
     if save_files:
@@ -298,6 +306,11 @@ def _get_parser():
                         help='conventional to primitive cell transformation')
     parser.add_argument('--symprec', default=0.01, type=float,
                         help='tolerance for finding symmetry (default: 0.01)')
+    parser.add_argument('--units', '-u', metavar='UNITS', default='THz',
+                        choices=('THz', 'thz', 'cm-1',
+                                 'eV', 'ev', 'meV', 'mev'),
+                        help=('choose units of phonon frequency '
+                              '(THz, cm-1, eV, meV)'))
     parser.add_argument('--spg', type=str, default=None,
                         help='space group number or symbol')
     parser.add_argument('--density', type=int, default=60,
@@ -388,7 +401,7 @@ def main():
     phonon_bandplot(args.filename, poscar=args.poscar, prefix=args.prefix,
                     directory=args.directory, dim=dim, born=args.born,
                     qmesh=args.qmesh, primitive_axis=pa, symprec=args.symprec,
-                    spg=spg, line_density=args.density,
+                    units=args.units, spg=spg, line_density=args.density,
                     mode=mode, kpt_list=kpoints, labels=labels,
                     height=args.height, width=args.width, ymin=args.ymin,
                     ymax=args.ymax, image_format=args.image_format,
