@@ -154,4 +154,67 @@ class QuestaalInit(object):
         Returns:
             :obj:`~sumo.io.questaal.QuestaalInit`"""
 
-        pass
+        if preprocessor:
+            from subprocess import Popen, PIPE
+            process = Popen(['rdfile', filename], stdout=PIPE)
+            lines = process.stdout.readlines()
+            #  Need to decode from bytes. Hard-coding ASCII here - it doesn't
+            #  seem likely that Questaal would support unicode?
+            lines = [line.decode('ascii') for line in lines]
+        else:
+            with open(filename, 'r') as f:
+                lines = f.readlines()
+
+        categories = {'LATTICE', 'SITE', 'SPEC'}
+
+        # Find which lines begin a new category
+        cat_lines = []
+        for i, line in enumerate(lines):
+            if line.strip().split()[0] in categories:
+                cat_lines.append(i)
+        cat_lines.append(None)  # None allows us to slice up to the file end
+
+        # Grab the lines corresponding to each section and collect by category
+        grouped_lines = {}
+        for i in range(len(cat_lines) - 1):
+            category = lines[cat_lines[i]].split()[0]
+            grouped_lines[category] = lines[cat_lines[i]:cat_lines[i + 1]]
+
+        # Initial cleanup: - Remove leading/trailing whitespace
+        #                  - drop lines beginning with '#'
+        #                  - remove category name from first line
+
+        for category, lines in grouped_lines.items():
+            lines = [line.strip() for line in lines if line.strip()[0] != '#']
+
+            category_line_remainder = lines[0][len(category):].strip()
+            lines = [category_line_remainder] + lines[1:]
+
+            grouped_lines[category] = lines
+
+        # Join lines and split into tags
+        init_data = {}
+        for category, lines in grouped_lines.items():
+            tag_text = ' '.join(lines)
+
+            if category == 'SITE':
+                pass
+            else:
+
+            # We have something like this:
+            # "TAG1= X Y Z TAG2 = A TAG3 =A B C D E F"
+            # Split on = sign.
+            # For each split, next tag symbol is at the end
+            # (e.g. " X Y Z ->TAG2<-")
+            tag_symbols = [x.split()[-1] for x in tag_text.split('=')]
+            # Except for the last one (A B C D E ->F<-) so drop that
+            tag_symbols = tag_symbols[:-1]
+            # For each split, tag content is right of split up to penultimate
+            # item (e.g. ->X Y Z<- TAG2)
+            tag_content = [x.split()[:-1] for x in tag_text.split('=')]
+            # Except for the last one, which is whole item (->A B C D E F<-)
+            tag_content[-1] = tag_text.split('=')[-1].split()
+
+            init_data[category] = dict(zip(tag_symbols, tag_content))
+
+        print(init_data)
