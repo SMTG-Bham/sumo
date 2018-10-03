@@ -142,11 +142,14 @@ class QuestaalInit(object):
                          coords_are_cartesian=self.cartesian)
 
     @staticmethod
-    def from_file(filename, tol=1e-5):
+    def from_file(filename, preprocessor=True, tol=1e-5):
         """Read QuestaalInit object from init.ext file
 
         Args:
             filename (:obj:`str`): Path to init.ext file
+            preprocessor (:obj:`bool`): Process file with ``rdfile`` (must be
+                available on shell PATH).
+            tol (:obj:`float`, optional): tolerance for symmetry operations
 
         Returns:
             :obj:`~sumo.io.questaal.QuestaalInit`"""
