@@ -58,3 +58,6 @@ target/
 
 # Rope project settings
 .ropeproject
+
+# Pycharm settings
+.idea
