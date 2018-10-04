@@ -1,8 +1,10 @@
+import re
 import logging
 from pymatgen.core.structure import Structure
 from pymatgen.core.lattice import Lattice
 
 _bohr_to_angstrom = 0.5291772
+
 
 class QuestaalInit(object):
     """Structure information: Questaal init.ext file
@@ -103,7 +105,8 @@ class QuestaalInit(object):
                              'hexagonal space group, assume 120')
                 self.lattice['GAMMA'] = 120
             else:
-                logging.info('Lattice angle GAMMA not given, assume right-angle')
+                logging.info('Lattice angle GAMMA not given, '
+                             'assume right-angle')
                 self.lattice['GAMMA'] = 90
 
         if self.cartesian:
@@ -135,6 +138,9 @@ class QuestaalInit(object):
     def _get_structure_from_lattice(self):
         lattice = Lattice(self.lattice['PLAT'])
         lattice = Lattice(lattice.matrix * self.lattice['ALAT'])
+        if 'UNITS' not in self.lattice or self.lattice['UNITS'] is None:
+            lattice = Lattice(lattice.matrix * _bohr_to_angstrom)
+
 
         species, coords = self._get_species_coords()
 
@@ -198,23 +204,76 @@ class QuestaalInit(object):
             tag_text = ' '.join(lines)
 
             if category == 'SITE':
-                pass
+                site_data = []
+                #  Split on regex: ATOM tag will be removed, species is left
+                #  followed by other tags, e.g.
+                #  "ATOM=Zn X = 0.0 0.0 0.5 ATOM = S  X= 0.0 0.0 0.0"
+                #  is split to
+                #  ['', 'Zn X = 0.0 0.0 0.5', 'S X = 0.0 0.0 0.0']
+                #
+                atom_entries = re.split(r'ATOM\s*=\s*', tag_text)
+
+                for line in atom_entries[1:]:  # Drop the empty first line
+                    atom = line.split()[0]
+                    tag_dict = {'ATOM': atom}
+
+                    line = line[len(atom):]    # Drop species tag from line
+                    tags = re.findall(r'(\w+)\s*=', line)  # Find tags
+                    # Split on tags to find tag parameters
+                    tag_data = re.split(r'\s*\w+\s*=\s*', line)[1:]
+                    tag_dict.update(dict(zip(tags, tag_data)))
+
+                    # Cast coordinates to tuple
+                    for key in ('POS', 'X'):
+                        if key in tag_dict:
+                            tag_dict[key] = tuple(map(float,
+                                                      tag_dict[key].split()))
+
+                    site_data.append(tag_dict)
+
+                init_data['SITE'] = site_data
+
             else:
+                float_params = ('A', 'B', 'C',
+                                'ALPHA', 'BETA', 'GAMMA',
+                                'ALAT')
 
-            # We have something like this:
-            # "TAG1= X Y Z TAG2 = A TAG3 =A B C D E F"
-            # Split on = sign.
-            # For each split, next tag symbol is at the end
-            # (e.g. " X Y Z ->TAG2<-")
-            tag_symbols = [x.split()[-1] for x in tag_text.split('=')]
-            # Except for the last one (A B C D E ->F<-) so drop that
-            tag_symbols = tag_symbols[:-1]
-            # For each split, tag content is right of split up to penultimate
-            # item (e.g. ->X Y Z<- TAG2)
-            tag_content = [x.split()[:-1] for x in tag_text.split('=')]
-            # Except for the last one, which is whole item (->A B C D E F<-)
-            tag_content[-1] = tag_text.split('=')[-1].split()
+                unsupported_params = ('GENS')
 
-            init_data[category] = dict(zip(tag_symbols, tag_content))
+                tags = re.findall(r'(\w+)\s*=', tag_text)  # Find tags
+                # Split on tags to find tag parameters
+                tag_data = re.split(r'\s*\w+\s*=\s*', tag_text)[1:]
+                tag_dict = dict(zip(tags, tag_data))
 
-        print(init_data)
+                if 'SPCGRP' in tag_dict:
+                    try:
+                        tag_dict['SPCGRP'] = int(tag_dict['SPCGRP'])
+                    except ValueError:
+                        pass
+
+                if 'PLAT' in tag_dict:
+                    lattice = tuple(map(float, tag_dict['PLAT'].split()))
+                    assert len(lattice) == 9
+                    tag_dict['PLAT'] = [[lattice[0], lattice[1], lattice[2]],
+                                        [lattice[3], lattice[4], lattice[5]],
+                                        [lattice[6], lattice[7], lattice[8]]]
+
+                for float_param in float_params:
+                    if float_param in tag_dict:
+                        tag_dict[float_param] = float(tag_dict[float_param])
+
+                for unsupported_param in unsupported_params:
+                    if unsupported_param in tag_dict:
+                        raise NotImplementedError(
+                            'Questaal tag {0}_{1} is not supported'.format(
+                                category, unsupported_param))
+
+                init_data[category] = tag_dict
+
+            if 'SPEC' not in init_data or init_data['SPEC'] == {}:
+                init_data['SPEC'] = None
+
+        return QuestaalInit(init_data['LATTICE'],
+                            init_data['SITE'],
+                            spec=init_data['SPEC'],
+                            tol=tol)
