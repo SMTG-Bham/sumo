@@ -48,6 +48,7 @@ class QuestaalInit(object):
     def __init__(self, lattice, site, spec=None, tol=1e-5):
         self.lattice = lattice
         self.site = site
+        self.spec = spec
         self.tol = tol
 
         cartesian_sites = any('POS' in item for item in site)
@@ -149,6 +150,42 @@ class QuestaalInit(object):
 
         return Structure(lattice, species, coords,
                          coords_are_cartesian=self.cartesian)
+
+    def to_file(self, filename):
+        """Write QuestaalInit object to init file"""
+        with open(filename, 'w') as f:
+
+            f.write('LATTICE\n')
+            for key, value in self.lattice.items():
+                if key == 'PLAT':
+                    #  Expand nested lists to one flat list.
+                    #  Yes, nested list comprehensions look weird!
+                    lattice_params = [c for row in self.lattice['PLAT']
+                                          for c in row]
+                    # Write out as string-separated row of 9
+                    f.write('    PLAT= ' + ' '.join(map(str, lattice_params)))
+                    f.write('\n')
+                else:
+                    f.write('    {0}={1}\n'.format(key, value))
+
+            f.write('SITE\n')
+            for row in self.site:
+                f.write('    ATOM={0:4s}  '.format(row['ATOM']))
+                if 'POS' in self.site:
+                    f.write('POS= {0:11.8f} {1:11.8f} {2:11.8f}'.format(
+                        *row['POS']))
+                else:
+                    f.write('X= {0:11.8f} {1:11.8f} {2:11.8f}'.format(
+                        *row['X']))
+                for key, value in row.items():
+                    if key not in ('ATOM', 'POS', 'X'):
+                        f.write('  {0}= {1}'.format(key, value))
+                f.write('\n')
+
+            if self.spec is not None:
+                f.write('SPEC')
+                for key, value in self.spec.items():
+                    f.write('  {0}= {1}\n'.format(key, value))
 
     @staticmethod
     def from_file(filename, preprocessor=True, tol=1e-5):
