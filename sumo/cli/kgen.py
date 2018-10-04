@@ -22,7 +22,7 @@ import numpy as np
 
 from sumo.symmetry.kpoints import get_path_data, write_kpoint_files
 from pymatgen.io.vasp.inputs import Poscar, Kpoints
-
+from sumo.io.questaal import QuestaalInit
 
 __author__ = "Alex Ganose"
 __version__ = "1.0"
@@ -31,7 +31,8 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "July 6, 2017"
 
 
-def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
+def kgen(filename='POSCAR', code='vasp',
+         directory=None, make_folders=False, symprec=0.01,
          kpts_per_split=None, ibzkpt=None, spg=None, density=60,
          mode='bradcrack', cart_coords=False, kpt_list=None, labels=None):
     """Generate KPOINTS files for VASP band structure calculations.
@@ -47,6 +48,8 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
     Args:
         filename (:obj:`str`, optional): Path to VASP structure file. Default
             is ``POSCAR``.
+        code (:obj:`str`, optional): Calculation type. Default is 'vasp';
+            'questaal' also supported.
         directory (:obj:`str`, optional): The output file directory.
         make_folders (:obj:`bool`, optional): Generate folders and copy in
             required files (INCAR, POTCAR, POSCAR, and possibly CHGCAR) from
@@ -102,18 +105,25 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
             path: Gamma -> Z | X -> M. If no labels are provided, letters from
             A -> Z will be used instead.
     """
-    poscar = Poscar.from_file(filename)
-    kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
+    if code.lower() == 'vasp':
+        structure = Poscar.from_file(filename).structure
+    elif code.lower() == 'questaal':
+        structure = QuestaalInit.from_file(filename).structure
+    else:
+        raise ValueError('Code "{0}" not recognized.'.format(code))
+
+    kpath, kpoints, labels = get_path_data(structure, mode=mode,
                                            symprec=symprec, kpt_list=kpt_list,
                                            labels=labels, spg=spg,
-                                           line_density=density)
+                                           line_density=density,
+                                           cart_coords=cart_coords)
 
     logging.info('\nk-point label indices:')
     for i, label in enumerate(labels):
         if label:
             logging.info('\t{}: {}'.format(label, i+1))
 
-    if not kpt_list and not np.allclose(poscar.structure.lattice.matrix,
+    if not kpt_list and not np.allclose(structure.lattice.matrix,
                                         kpath.prim.lattice.matrix):
         prim_filename = '{}_prim'.format(os.path.basename(filename))
         kpath.prim.to(filename=prim_filename)
@@ -133,10 +143,17 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
             logging.info("How many kpoints per file?")
             kpts_per_split = int(input())
 
-    write_kpoint_files(filename, kpoints, labels, make_folders=make_folders,
-                       ibzkpt=ibz, kpts_per_split=kpts_per_split,
-                       directory=directory, cart_coords=cart_coords)
+    if code.lower() == 'vasp':
+        write_kpoint_files(filename, kpoints, labels, make_folders=make_folders,
+                           ibzkpt=ibz, kpts_per_split=kpts_per_split,
+                           directory=directory, cart_coords=cart_coords)
 
+    elif code.lower() == 'questaal':
+        import sumo.io.questaal
+        sumo.io.questaal.write_kpoint_files(filename, kpoints, labels,
+                                            make_folders=make_folders,
+                                            directory=directory,
+                                            cart_coords=cart_coords)
 
 def _parse_ibzkpt(ibzkpt):
     if ibzkpt:
@@ -165,7 +182,10 @@ def _get_parser():
     Last updated: {}""".format(__author__, __version__, __date__))
 
     parser.add_argument('-p', '--poscar', default='POSCAR', metavar='P',
-                        help='input VASP structure (default: POSCAR)',)
+                        help='input structure file (default: POSCAR)',)
+    parser.add_argument('-c', '--code', default='vasp',
+                        help='Electronic structure code (default: vasp).'
+                             '"questaal" also supported.')
     parser.add_argument('-d', '--directory', type=str, default=None,
                         metavar='D', help='output directory for files')
     parser.add_argument('-s', '--split', type=int, default=None, metavar='N',
@@ -227,7 +247,8 @@ def main():
     if args.labels:
         labels = [path.split(',') for path in args.labels.split('|')]
 
-    kgen(args.poscar, directory=args.directory, symprec=args.symprec,
+    kgen(args.poscar, code=args.code,
+         directory=args.directory, symprec=args.symprec,
          make_folders=args.folders, kpts_per_split=args.split,
          ibzkpt=ibzkpt, spg=spg, density=args.density, mode=mode,
          cart_coords=args.cartesian, kpt_list=kpoints, labels=labels)

@@ -1,3 +1,6 @@
+import errno
+import os.path
+from os import makedirs
 import re
 import logging
 from pymatgen.core.structure import Structure
@@ -277,3 +280,99 @@ class QuestaalInit(object):
                             init_data['SITE'],
                             spec=init_data['SPEC'],
                             tol=tol)
+
+def write_kpoint_files(filename, kpoints, labels,
+                       make_folders=False, directory=None, cart_coords=False,
+                       **kwargs):
+    """Write syml file for Questaal kpoints
+
+    The interface imitates the VASP KPOINTS file writer for simplicity of
+    integration into Sumo, but there are some conceptual differences:
+
+    If *labels* is None, then *kpoints* will be written to a simple file in
+    "List mode".
+
+    If labels are provided, then labelled points will be extracted from the
+    list of kpoints and "line mode" is used to create a compact band-structure
+    input file with the same number of k-points.
+
+    Args:
+        filename (:obj:`str`): Path to init.ext file. (Extension is used to
+            name syml file).
+        kpoints (:obj:`numpy.ndarray`): The k-point coordinates along the
+            high-symmetry path. For example::
+
+                [[0, 0, 0], [0.25, 0, 0], [0.5, 0, 0], [0.5, 0, 0.25],
+                [0.5, 0, 0.5]]
+
+        labels (:obj:`list`) The high symmetry labels for each k-point (will be
+            an empty :obj:`str` if the k-point has no label). For example::
+
+                ['\Gamma', '', 'X', '', 'Y']
+
+        make_folders (:obj:`bool`, optional): Generate folders and copy in
+            required files if found from the current directory.
+        directory (:obj:`str`, optional): The output file directory.
+        cart_coords (:obj:`bool`, optional): Whether the k-points are returned
+            in cartesian or reciprocal coordinates. Defaults to ``False``
+            (fractional coordinates).
+    """
+
+    for key, value in kwargs.items():
+        if value is not None:
+            logging.info('Ignoring k-point write option "{0}"; not '
+                         'implemented for Questaal calculations.'.format(key))
+
+    ext = filename.split('.')[-1]
+    logging.info('System id from init filename: {0}'.format(ext))
+
+    if directory is not None:
+        path = directory
+    else:
+        path = os.path.curdir
+
+    if make_folders:
+        path = os.path.join(path, 'band-calc')
+
+        try:
+            makedirs(path)
+        except OSError as e:
+                if e.errno == errno.EEXIST:
+                    logging.error("\nERROR: Folders already exist, won't "
+                                  "overwrite.")
+                    sys.exit()
+                else:
+                    raise
+
+    if cart_coords:
+        logging.info('Writing band structure in Cartesian coordinates...\n'
+                     'Remember to run full-potential calc with --band and '
+                     'NOT --band~mq')
+    else:
+        logging.info('Writing band structure in direct coordinates...\n'
+                     'Remember to run full-potential calc with --band~mq.')
+    if labels is None:
+        with open(os.path.join(path, 'syml.' + ext), 'w') as f:
+            for kpt in kpoints:
+                f.write('{0:11.8f} {1:11.8f} {2:11.8f}\n'.format(kpt[0],
+                                                               kpt[1],
+                                                               kpt[2]))
+    else:
+        label_positions = [i for i, l in enumerate(labels) if l != '']
+        special_points = [kpoints[i] for i in label_positions]
+        segment_samples = [label_positions[i + 1] - label_positions[i] + 1
+                               for i in range(len(label_positions) - 1)]
+        with open(os.path.join(path, 'syml.' + ext), 'w') as f:
+            for i, samples in enumerate(segment_samples):
+                if samples == 2:
+                    continue   # Don't add segments between branches
+                f.write('{0:5d}    {1:11.8f} {2:11.8f} {3:11.8f}    '
+                        '{4:11.8f} {5:11.8f} {6:11.8f}    {7} to {8}\n'.format(
+                            samples,
+                            special_points[i][0], special_points[i][1],
+                            special_points[i][2],
+                            special_points[i + 1][0], special_points[i + 1][1],
+                            special_points[i + 1][2],
+                            labels[label_positions[i]],
+                            labels[label_positions[i + 1]]))
+            f.write('    0 0 0 0 0 0 0\n')

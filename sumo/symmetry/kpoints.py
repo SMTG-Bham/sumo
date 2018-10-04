@@ -125,7 +125,8 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
         kpath = PymatgenKpath(structure, symprec=symprec)
 
     kpoints, labels = kpath.get_kpoints(line_density=line_density,
-                                        phonopy=phonopy)
+                                        phonopy=phonopy,
+                                        cart_coords=cart_coords)
     path_str = kpath.path_string
     kpt_dict = kpath.kpoints
 
@@ -148,7 +149,7 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
 def write_kpoint_files(filename, kpoints, labels, make_folders=False,
                        ibzkpt=None, kpts_per_split=None, directory=None,
                        cart_coords=False):
-    r"""Write the k-points data to VASP KPOINTS files.
+    r"""Write the k-points data to files.
 
     Folders are named as 'split-01', 'split-02', etc ...
     KPOINTS files are named KPOINTS_band_split_01 etc ...
