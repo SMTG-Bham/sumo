@@ -188,6 +188,16 @@ class QuestaalInit(object):
                     f.write('  {0}= {1}\n'.format(key, value))
 
     @staticmethod
+    def from_structure(structure):
+        """Generate QuestaalInit object from pymatgen structure"""
+        lattice = {'ALAT': 1, 'UNITS': 'A'}
+        lattice['PLAT'] = structure.lattice.matrix
+
+        sites = [{'ATOM': site.species_string, 'X': tuple(site.frac_coords)}
+                     for site in structure.sites]
+        return QuestaalInit(lattice, sites)
+
+    @staticmethod
     def from_file(filename, preprocessor=True, tol=1e-5):
         """Read QuestaalInit object from init.ext file
 
