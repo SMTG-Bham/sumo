@@ -5,6 +5,8 @@ import re
 import logging
 from pymatgen.core.structure import Structure
 from pymatgen.core.lattice import Lattice
+from pymatgen.electronic_structure.core import Spin
+from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
 
 _bohr_to_angstrom = 0.5291772
 
@@ -423,3 +425,41 @@ def write_kpoint_files(filename, kpoints, labels,
                             labels[label_positions[i]],
                             labels[label_positions[i + 1]]))
             f.write('    0 0 0 0 0 0 0\n')
+
+def band_structure(bnds_file, syml_file, coords_are_cartesian=False):
+    """Read band structure data
+
+    Args:
+        bands_file (:obj:`str`): Path to questaal bnds.ext output file. The
+            k-point positions and eigenvalues are read from this file.
+        syml_file (:obj:`str`): Path to questaal syml.ext input file. The
+            locations and labels of special points are read from this file.
+
+    Returns:
+        :obj:`pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`
+    """
+
+    with open(bnds_file, 'r') as f:
+        kpoints = []
+
+        # Read heading, get metadata and check no orbital projections used
+        nbands, efermi, n_color_wts, *_ = f.readline().split()
+
+        if int(n_color_wts) > 0:
+            raise NotImplementedError("Band data includes orbital data: "
+                                      "this format is not currently supported."
+                                     )
+
+        nbands, efermi = int(nbands), float(efermi)
+
+        eigenvals = {Spin.up: [[]], Spin.down[[]]}
+
+    kpoints = None # list of kpoints as numpy arrays
+    eigenvals = None # dict of energies for spin up and spin down {Spin.up:[band][i_kpt]}
+    lattice = None # reciprocal lattice incl 2pi
+
+    labels_dict = None
+
+    return BandStructureSymmLine(kpoints, eigenvals, lattice, efermi,
+                                 labels_dict,
+                                 coords_are_cartesian=coords_are_cartesian)
