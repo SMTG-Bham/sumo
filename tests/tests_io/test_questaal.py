@@ -1,9 +1,20 @@
 import unittest
 from os.path import abspath
-from pkg_resources import Requirement, resource_filename
+from os.path import join as path_join
+from pkg_resources import resource_filename
+import numpy as np
+
+from pymatgen.core.lattice import Lattice
 from sumo.io.questaal import QuestaalInit
 
 class QuestaalInitTestCase(unittest.TestCase):
+    def setUp(self):
+        self.ref_lat = np.array([[1.59205, -2.757511, 0.],
+                                 [1.59205, 2.757511, 0.],
+                                 [0., 0., 5.1551]])
+
+        self.ref_pmg_lat = Lattice(self.ref_lat)
+
     def test_init_from_python(self):
         """Check Questaal input object"""
         # spcgroup example
@@ -46,3 +57,26 @@ class QuestaalInitTestCase(unittest.TestCase):
                 {'ATOM': 'O', 'C': (0.6666670, 0.3333330, 0.8803100)}]
         with self.assertRaises(NotImplementedError):
             init = QuestaalInit(lattice, site)
+
+    def test_init_from_file(self):
+        zno_path = resource_filename(__name__, path_join('..', 'data', 'ZnO'))
+        init1 = QuestaalInit.from_file(path_join(zno_path, 'init.zno_nosym'),
+                                       preprocessor=False)
+        init2 = QuestaalInit.from_file(path_join(zno_path, 'init.zno_sym'),
+                                       preprocessor=False)
+        nosym_structure = init1.structure
+        sym_structure = init2.structure
+
+        self.assertLess((abs(np.array(self.ref_pmg_lat.abc) -
+                             np.array(nosym_structure.lattice.abc))).max(),
+                             1e-5)
+        self.assertLess((abs(np.array(self.ref_pmg_lat.angles) -
+                             np.array(nosym_structure.lattice.angles))).max(),
+                            1e-3)
+
+        self.assertLess((abs(np.array(self.ref_pmg_lat.abc) -
+                             np.array(sym_structure.lattice.abc))).max(),
+                             1e-5)
+        self.assertLess((abs(np.array(self.ref_pmg_lat.angles) -
+                             np.array(sym_structure.lattice.angles))).max(),
+                            1e-3)
