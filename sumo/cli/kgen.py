@@ -126,7 +126,10 @@ def kgen(filename='POSCAR', code='vasp',
     if not kpt_list and not np.allclose(structure.lattice.matrix,
                                         kpath.prim.lattice.matrix):
         prim_filename = '{}_prim'.format(os.path.basename(filename))
-        kpath.prim.to(filename=prim_filename)
+        if code.lower() == 'questaal':
+            QuestaalInit.from_structure(kpath.prim).to_file(prim_filename)
+        else:
+            kpath.prim.to(filename=prim_filename)
 
         logging.error("\nWARNING: The input structure does not match the "
                       "expected standard\nprimitive symmetry, the path may be "
