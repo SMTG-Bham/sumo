@@ -452,7 +452,7 @@ def band_structure(bnds_file, syml_file, coords_are_cartesian=False):
 
         nbands, efermi = int(nbands), float(efermi)
 
-        eigenvals = {Spin.up: [[]], Spin.down[[]]}
+        eigenvals = {Spin.up: [[]], Spin.down: [[]]}
 
     kpoints = None # list of kpoints as numpy arrays
     eigenvals = None # dict of energies for spin up and spin down {Spin.up:[band][i_kpt]}
