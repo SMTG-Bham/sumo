@@ -27,6 +27,8 @@ from pymatgen.electronic_structure.bandstructure import \
 import matplotlib as mpl
 mpl.use('Agg')
 
+from sumo.io.questaal import QuestaalInit, labels_from_syml
+from sumo.io.questaal import band_structure as questaal_band_structure
 from sumo.plotting.bs_plotter import SBSPlotter
 from sumo.plotting.dos_plotter import SDOSPlotter
 from sumo.electronic_structure.dos import load_dos
@@ -44,9 +46,10 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "July 18, 2017"
 
 
-def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
-             projection_selection=None, mode='rgb',
+def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
+             vbm_cbm_marker=False, projection_selection=None, mode='rgb',
              interpolate_factor=4, circle_size=150, dos_file=None,
+             cart_coords=False,
              ylabel='Energy (eV)', dos_label=None,
              elements=None, lm_orbitals=None, atoms=None,
              total_only=False, plot_total=True, legend_cutoff=3, gaussian=None,
@@ -56,12 +59,21 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     """Plot electronic band structure diagrams from vasprun.xml files.
 
     Args:
-        filenames (:obj:`str` or :obj:`list`, optional): Path to vasprun.xml
-            or vasprun.xml.gz file. If no filenames are provided, the code
+        filenames (:obj:`str` or :obj:`list`, optional): Path to input files.
+            Vasp:
+                Use vasprun.xml or vasprun.xml.gz file.
+            Questaal:
+                Path to a bnds.ext file. The extension will also be used to
+                find init.ext and syml.ext files in the same directory.
+
+            If no filenames are provided, sumo
             will search for vasprun.xml or vasprun.xml.gz files in folders
             named 'split-0*'. Failing that, the code will look for a vasprun in
             the current directory. If a :obj:`list` of vasprun files is
             provided, these will be combined into a single band structure.
+
+        code (:obj:`str`, optional): Calculation type. Default is 'vasp';
+            'questaal' also supported (with a reduced feature-set).
         prefix (:obj:`str`, optional): Prefix for file names.
         directory (:obj:`str`, optional): The directory in which to save files.
         vbm_cbm_marker (:obj:`bool`, optional): Plot markers to indicate the
@@ -108,6 +120,10 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                     can be scaled using the ``circle_size`` option.
         circle_size (:obj:`float`, optional): The area of the circles used
             when ``mode = 'stacked'``.
+        cart_coords (:obj:`bool`, optional): Whether the k-points are read as
+            cartesian or reciprocal coordinates. This is only required for
+            Questaal output; Vasp output is less ambiguous. Defaults to
+            ``False`` (fractional coordinates).
         dos_file (:obj:'str', optional): Path to vasprun.xml file from which to
             read the density of states information. If set, the density of
             states will be plotted alongside the bandstructure.
@@ -202,14 +218,42 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
     # only load the orbital projects if we definitely need them
     parse_projected = True if projection_selection else False
 
-    # now load all the vaspruns and combine them together using the
+    # now load all the band structure data and combine using the
     # get_reconstructed_band_structure function from pymatgen
     bandstructures = []
-    for vr_file in filenames:
-        vr = BSVasprun(vr_file, parse_projected_eigen=parse_projected)
-        bs = vr.get_band_structure(line_mode=True)
-        bandstructures.append(bs)
-    bs = get_reconstructed_band_structure(bandstructures)
+    if code == 'vasp':
+        for vr_file in filenames:
+            vr = BSVasprun(vr_file, parse_projected_eigen=parse_projected)
+            bs = vr.get_band_structure(line_mode=True)
+            bandstructures.append(bs)
+        bs = get_reconstructed_band_structure(bandstructures)
+    elif code == 'questaal':
+        bnds_file = filenames[0]
+        ext = bnds_file.split('.')[-1]
+        bnds_folder = os.path.join(bnds_file, os.path.pardir)
+
+        init_file = os.path.abspath(
+            os.path.join(bnds_folder, 'init.{}'.format(ext)))
+
+        if os.path.isfile(init_file):
+            logging.info('init file found, reading lattice...')
+            bnds_lattice = QuestaalInit.from_file(init_file).structure.lattice
+        else:
+            raise IOError('Init file {} not found: '
+                          'needed to determine lattice'.format(init_file))
+
+        syml_file = os.path.abspath(
+            os.path.join(bnds_folder, 'syml.{}'.format(ext)))
+        if os.path.isfile(syml_file):
+            logging.info('syml file found, reading special-point labels...')
+            bnds_labels = labels_from_syml(syml_file)
+        else:
+            logging.info('syml file not found, band structure lacks labels')
+            bnds_labels = {}
+
+        bs = questaal_band_structure(bnds_file, bnds_lattice,
+                                     labels=bnds_labels,
+                                     coords_are_cartesian=cart_coords)
 
     # currently not supported as it is a pain to make subplots within subplots,
     # although need to check this is still the case
@@ -265,7 +309,7 @@ def bandplot(filenames=None, prefix=None, directory=None, vbm_cbm_marker=False,
                     bbox_inches='tight')
 
         written = [filename]
-        written += save_data_files(vr, bs, prefix=prefix,
+        written += save_data_files(bs, prefix=prefix,
                                    directory=directory)
         return written
 
@@ -303,11 +347,10 @@ def find_vasprun_files():
     return filenames
 
 
-def save_data_files(vr, bs, prefix=None, directory=None):
+def save_data_files(bs, prefix=None, directory=None):
     """Write the band structure data files to disk.
 
     Args:
-        vs (`Vasprun`): Pymatgen `Vasprun` object.
         bs (`BandStructureSymmLine`): Calculated band structure.
         prefix (`str`, optional): Prefix for data file.
         directory (`str`, optional): Directory in which to save the data.
@@ -320,7 +363,7 @@ def save_data_files(vr, bs, prefix=None, directory=None):
     filename = os.path.join(directory, filename)
 
     if bs.is_metal():
-        zero = vr.efermi
+        zero = bs.efermi
     else:
         zero = bs.get_vbm()['energy']
 
@@ -382,6 +425,9 @@ def _get_parser():
     parser.add_argument('-f', '--filenames', default=None, nargs='+',
                         metavar='F',
                         help="one or more vasprun.xml files to plot")
+    parser.add_argument('-c', '--code', default='vasp',
+                        help='Electronic structure code (default: vasp).'
+                             '"questaal" also supported.')
     parser.add_argument('-p', '--prefix', metavar='P',
                         help='prefix for the files generated')
     parser.add_argument('-d', '--directory', metavar='D',
@@ -400,6 +446,11 @@ def _get_parser():
                         dest='interpolate_factor', metavar='N',
                         help=('interpolate factor for band structure '
                               'projections (default: 4)'))
+    parser.add_argument('--cartesian', action='store_true',
+                        help='Read cartesian k-point coordinates. This is only'
+                             ' necessary for some Questaal calculations; Vasp '
+                             'outputs are less ambiguous and this option will '
+                             'be ignored if --code=vasp.')
     parser.add_argument('--circle-size', type=int, default=150,
                         dest='circle_size', metavar='S',
                         help=('circle size for "stacked" projections '
@@ -477,10 +528,11 @@ def main():
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="pymatgen")
 
-    bandplot(filenames=args.filenames, prefix=args.prefix,
+    bandplot(filenames=args.filenames, code=args.code, prefix=args.prefix,
              directory=args.directory, vbm_cbm_marker=args.band_edges,
              projection_selection=args.projection_selection, mode=args.mode,
              interpolate_factor=args.interpolate_factor,
+             cart_coords=args.cartesian,
              circle_size=args.circle_size, yscale=args.scale,
              ylabel=args.ylabel, dos_label=args.dos_label,
              dos_file=args.dos, elements=args.elements,

@@ -12,6 +12,7 @@ from pymatgen.electronic_structure.core import Spin
 from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
 
 _bohr_to_angstrom = 0.5291772
+_ry_to_ev = 13.605693009
 
 
 class QuestaalInit(object):
@@ -366,8 +367,10 @@ def write_kpoint_files(filename, kpoints, labels,
             required files if found from the current directory.
         directory (:obj:`str`, optional): The output file directory.
         cart_coords (:obj:`bool`, optional): Whether the k-points are returned
-            in cartesian or reciprocal coordinates. Defaults to ``False``
-            (fractional coordinates).
+            in Cartesian or reciprocal coordinates. Defaults to ``False``
+            (fractional coordinates). Note that Questaal uses crystallographic-
+            style Cartesian coordinates and a factor of 1/(2 pi) should be
+            included in the kpoints data.
     """
 
     for key, value in kwargs.items():
@@ -564,9 +567,21 @@ def band_structure(bnds_file, lattice, labels={},
             if spin_pol:
                 block_nkpts = block_nkpts // 2
 
-    eigenvals = {key: np.array(data).T for key, data in eigenvals.items()}
+    # Transpose matrix to arrange by band and convert to eV from Ry
+    eigenvals = {key: np.array(data).T * _ry_to_ev
+                 for key, data in eigenvals.items()}
 
+    # Convert labels to Cartesian coordinates
+    # [a, b, c] [ax, ay, az] = [a.ax + b.bx + x.cx, a.ay + b.by,...] = [x y z]
+    #           |bx, by, bz|
+    #           [cx, cy, cz]
+    if not coords_are_cartesian:
+        for label, coords in labels.items():
+            labels[label] = np.dot(
+                coords, lattice.reciprocal_lattice_crystallographic.matrix)
+
+    # Data in bnds file seems to always be Cartesian
     return BandStructureSymmLine(kpoints, eigenvals,
-                                 lattice.reciprocal_lattice,
+                                 lattice.reciprocal_lattice_crystallographic,
                                  efermi, labels,
-                                 coords_are_cartesian=coords_are_cartesian)
+                                 coords_are_cartesian=True)
