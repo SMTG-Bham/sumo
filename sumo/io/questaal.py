@@ -1,8 +1,11 @@
+from math import ceil
+from itertools import chain
 import errno
 import os.path
 from os import makedirs
 import re
 import logging
+import numpy as np
 from pymatgen.core.structure import Structure
 from pymatgen.core.lattice import Lattice
 from pymatgen.electronic_structure.core import Spin
@@ -147,7 +150,6 @@ class QuestaalInit(object):
         if 'UNITS' not in self.lattice or self.lattice['UNITS'] is None:
             lattice = Lattice(lattice.matrix * _bohr_to_angstrom)
 
-
         species, coords = self._get_species_coords()
 
         return Structure(lattice, species, coords,
@@ -163,7 +165,7 @@ class QuestaalInit(object):
                     #  Expand nested lists to one flat list.
                     #  Yes, nested list comprehensions look weird!
                     lattice_params = [c for row in self.lattice['PLAT']
-                                          for c in row]
+                                      for c in row]
                     # Write out as string-separated row of 9
                     f.write('    PLAT= ' + ' '.join(map(str, lattice_params)))
                     f.write('\n')
@@ -196,7 +198,7 @@ class QuestaalInit(object):
         lattice['PLAT'] = structure.lattice.matrix
 
         sites = [{'ATOM': site.species_string, 'X': tuple(site.frac_coords)}
-                     for site in structure.sites]
+                 for site in structure.sites]
         return QuestaalInit(lattice, sites)
 
     @staticmethod
@@ -330,6 +332,7 @@ class QuestaalInit(object):
                             spec=init_data['SPEC'],
                             tol=tol)
 
+
 def write_kpoint_files(filename, kpoints, labels,
                        make_folders=False, directory=None, cart_coords=False,
                        **kwargs):
@@ -404,13 +407,13 @@ def write_kpoint_files(filename, kpoints, labels,
         with open(os.path.join(path, 'syml.' + ext), 'w') as f:
             for kpt in kpoints:
                 f.write('{0:11.8f} {1:11.8f} {2:11.8f}\n'.format(kpt[0],
-                                                               kpt[1],
-                                                               kpt[2]))
+                                                                 kpt[1],
+                                                                 kpt[2]))
     else:
         label_positions = [i for i, l in enumerate(labels) if l != '']
         special_points = [kpoints[i] for i in label_positions]
         segment_samples = [label_positions[i + 1] - label_positions[i] + 1
-                               for i in range(len(label_positions) - 1)]
+                           for i in range(len(label_positions) - 1)]
         with open(os.path.join(path, 'syml.' + ext), 'w') as f:
             for i, samples in enumerate(segment_samples):
                 if samples == 2:
@@ -426,18 +429,69 @@ def write_kpoint_files(filename, kpoints, labels,
                             labels[label_positions[i + 1]]))
             f.write('    0 0 0 0 0 0 0\n')
 
-def band_structure(bnds_file, syml_file, coords_are_cartesian=False):
+
+def labels_from_syml(syml_file):
+    """Read special point locations from Questaal syml file
+
+    Each line of file should have format:
+
+        NPTS  X1 Y1 Z1  X2 Y2 Z2  label1 to label2
+
+    except the last line which is seven 0 characters. Whitespace amounts
+    are flexible. If a label is defined more than once, the last definition
+    will be used.
+
+    Args:
+        syml_file (:obj:`str`): Path to questaal syml.ext input file. The
+            locations and labels of special points are read from this file.
+
+    """
+    labels = {}
+
+    with open(syml_file, 'r') as f:
+        lines = f.readlines()
+    for line in lines:
+        npts, x1, y1, z1, x2, y2, z2, *label_text = line.split()
+        if len(label_text) < 3:
+            pass
+        else:
+            kpt1 = tuple(map(float, (x1, y1, z1)))
+            kpt2 = tuple(map(float, (x2, y2, z2)))
+
+            label_text = ' '.join(label_text)  # Undo previous split
+            label1_label2 = label_text.split(' to ')
+            if len(label1_label2) != 2:
+                raise ValueError("Not clear how to interpret labels from "
+                                 "this line: {}".format(line))
+            label1, label2 = label1_label2
+            labels.update({label1: kpt1, label2: kpt2})
+    return labels
+
+
+def band_structure(bnds_file, lattice, labels={},
+                   coords_are_cartesian=False):
     """Read band structure data
 
     Args:
         bands_file (:obj:`str`): Path to questaal bnds.ext output file. The
             k-point positions and eigenvalues are read from this file.
-        syml_file (:obj:`str`): Path to questaal syml.ext input file. The
-            locations and labels of special points are read from this file.
+        labels (:obj:`dict`): Dict of special point locations and labels. This
+            is generally obtained from a syml.ext file using
+            :obj:`sumo.io.questaal.labels_from_syml`.
+        lattice (:obj:`pymatgen.core.lattice.Lattice`)
 
     Returns:
         :obj:`pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`
     """
+
+    # Implementation note: pymatgen band structure expects an eigenvalue array
+    # ordered [band][kpt] but the data will be read in one kpt at a time as
+    # this is the format of the bnd data file.
+    #
+    # We will first build a nested list [[bnd1_kpt1, bnd2_kpt1, ...],
+    #                                    [bnd1_kpt2, bnd2_kpt2, ...], ...]
+    # then convert to a numpy array (i.e. with each row for a kpoint)
+    # and then transpose the array to obtain desired format
 
     with open(bnds_file, 'r') as f:
         kpoints = []
@@ -448,18 +502,71 @@ def band_structure(bnds_file, syml_file, coords_are_cartesian=False):
         if int(n_color_wts) > 0:
             raise NotImplementedError("Band data includes orbital data: "
                                       "this format is not currently supported."
-                                     )
+                                      )
 
         nbands, efermi = int(nbands), float(efermi)
+        eig_lines = ceil(nbands / 10)
 
-        eigenvals = {Spin.up: [[]], Spin.down: [[]]}
+        # Check if first two kpts are the same: if so, assume there are two
+        # spin channels
+        _ = f.readline()
+        kpt1 = list(map(float, f.readline().split()))
 
-    kpoints = None # list of kpoints as numpy arrays
-    eigenvals = None # dict of energies for spin up and spin down {Spin.up:[band][i_kpt]}
-    lattice = None # reciprocal lattice incl 2pi
+        for line in range(eig_lines):      # Skip over the eigenvalues
+            _ = f.readline()                     # for now: re-read file later
+        kpt2 = list(map(float, f.readline().split()))
+        assert(len(kpt1) == 3)
+        assert(len(kpt2) == 3)
+        if kpt1 == kpt2:
+            spin_pol = True
+        else:
+            spin_pol = False
 
-    labels_dict = None
+    logging.info("Reading Questaal band structure header...")
+    logging.info("nbands: {}, efermi / Ry: {}, spin channels: {}".format(
+        nbands, efermi, (2 if spin_pol else 1)))
+    logging.info("Reading band structure eigenvalues...")
 
-    return BandStructureSymmLine(kpoints, eigenvals, lattice, efermi,
-                                 labels_dict,
+    # Key info has been collected: re-read file for kpts and eigenvalues
+    def _read_eigenvals(f, nlines):
+        lines = [f.readline() for i in range(nlines)]
+        # This statement is very "functional programming"; read it
+        # backwards.  List of split lines is "flattened" by chain into
+        # iterator of values; this is fed into map to make floats and
+        # stored to a list
+        return list(map(float, chain(*(line.split() for line in lines))))
+
+    with open(bnds_file, 'r') as f:
+        _ = f.readline()
+        if spin_pol:  # Need to read two spin channels
+            block_nkpts = int(f.readline().strip()) // 2
+            eigenvals = {Spin.up: [], Spin.down: []}
+        else:
+            block_nkpts = int(f.readline().strip())
+            eigenvals = {Spin.up: []}
+
+        while block_nkpts > 0:  # File should be terminated with a 0
+            for i in range(block_nkpts):
+                kpoint = list(map(float, f.readline().split()))
+                kpoints.append(np.array(kpoint))
+
+                eigenvals[Spin.up].append(_read_eigenvals(f, eig_lines))
+
+                if spin_pol:
+                    spin_down_kpoint = list(map(float, f.readline().split()))
+                    if spin_down_kpoint != kpoint:
+                        raise AssertionError(
+                            "File interpreted as spin-polarised, but this"
+                            " kpoint only has one entry: {}".format(kpoint))
+                    eigenvals[Spin.down].append(_read_eigenvals(f, eig_lines))
+
+            block_nkpts = int(f.readline().strip())
+            if spin_pol:
+                block_nkpts = block_nkpts // 2
+
+    eigenvals = {key: np.array(data).T for key, data in eigenvals.items()}
+
+    return BandStructureSymmLine(kpoints, eigenvals,
+                                 lattice.reciprocal_lattice,
+                                 efermi, labels,
                                  coords_are_cartesian=coords_are_cartesian)
