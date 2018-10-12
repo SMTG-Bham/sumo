@@ -570,6 +570,7 @@ def band_structure(bnds_file, lattice, labels={},
     # Transpose matrix to arrange by band and convert to eV from Ry
     eigenvals = {key: np.array(data).T * _ry_to_ev
                  for key, data in eigenvals.items()}
+    efermi *= _ry_to_ev
 
     # Convert labels to Cartesian coordinates
     # [a, b, c] [ax, ay, az] = [a.ax + b.bx + x.cx, a.ay + b.by,...] = [x y z]
