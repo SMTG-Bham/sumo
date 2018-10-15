@@ -387,7 +387,7 @@ def get_cached_colour(element, orbital, colours=None, cache=None):
     elif isinstance(colours, dict):
         try:
             return colours[element][orbital]
-        except(KeyError):
+        except KeyError:
             return _get_colour_with_cache(element, orbital,
                                           cache, colour_series)
 

@@ -13,6 +13,7 @@ import itertools as it
 
 from scipy.interpolate import interp1d
 from matplotlib import rcParams
+from matplotlib.style import context
 from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 from matplotlib.transforms import blended_transform_factory
 
@@ -481,7 +482,8 @@ class SBSPlotter(BSPlotter):
     def _makedos(self, ax, dos_plotter, dos_options, dos_label=None):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
-        plot_data = dos_plotter.dos_plot_data(**dos_options)
+        with context(sumo_base_style):
+            plot_data = dos_plotter.dos_plot_data(**dos_options)
 
         mask = plot_data['mask']
         energies = plot_data['energies'][mask]
