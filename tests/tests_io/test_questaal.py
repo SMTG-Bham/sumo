@@ -28,6 +28,13 @@ class QuestaalInitTestCase(unittest.TestCase):
         structure = init_sym.structure
         self.assertFalse(init_sym.cartesian)
 
+        # Check ALAT ok
+        init_sym_alat = QuestaalInit(
+            {'SPCGRP': 186, 'A': 0.318409958, 'C': 0.51551,
+             'UNITS': 'A', 'ALAT': 10},
+            site)
+        self.assertEqual(init_sym.structure, init_sym_alat.structure)
+
         # unitcell example
         lattice = {'ALAT': 1, 'UNITS': 'A',
                    'PLAT': [[1.5920500, -2.7575110, 0.0000000],
@@ -42,6 +49,46 @@ class QuestaalInitTestCase(unittest.TestCase):
 
         structure = init_plat.structure
         self.assertFalse(init_plat.cartesian)
+
+        init_plat_alat = QuestaalInit(lattice, site)
+        init_plat_alat.lattice['PLAT'] = np.array(
+            init_plat_alat.lattice['PLAT']) * 0.1
+        init_plat_alat.lattice['ALAT'] = 10
+        self.assertEqual(init_plat.structure, init_plat_alat.structure)
+
+        # Bohr, Cartesian units
+        bohr_lattice = {'ALAT': 1, 'UNITS': None,
+                        'PLAT': [[3.00853848, -5.21094058, 0.],
+                                 [3.00853848, 5.21094058, 0.],
+                                 [0., 0., 9.74172715]]}
+        bohr_cart_sites = [
+            {'ATOM': 'Zn', 'POS': (3.00853848, -1.73698367, 4.87086358)},
+            {'ATOM': 'Zn', 'POS': (3.00853848, 1.73698367, 9.74172715)},
+            {'ATOM': 'O',  'POS': (3.00853848, -1.73698367, 8.57573983)},
+            {'ATOM': 'O',  'POS': (3.00853848, 1.73698367, 3.70487625)}]
+
+        bohr_init_lat = QuestaalInit(bohr_lattice, bohr_cart_sites)
+        # Cartesian detected
+        self.assertTrue(bohr_init_lat.cartesian)
+        # unit conversion: lattice
+        self.assertLess(
+            (abs(np.array(self.ref_pmg_lat.abc) -
+                 np.array(bohr_init_lat.structure.lattice.abc))).max(),
+            1e-5)
+        # unit conversion: sites  (Use distance matrix so translation ignored)
+        self.assertLess(
+            (abs(init_plat.structure.distance_matrix -
+                 bohr_init_lat.structure.distance_matrix)).max(),
+             1e-5)
+        # Ignore_units option
+        bohr_init_noconvert = QuestaalInit(bohr_lattice, bohr_cart_sites,
+                                           ignore_units=True)
+        self.assertAlmostEqual(
+            bohr_init_noconvert.structure.lattice.abc[2],
+            9.74172715)
+        self.assertAlmostEqual(
+            bohr_init_noconvert.structure.distance_matrix[0, -1],
+            3.66441077)
 
     def test_init_coordinate_safety(self):
         """Check illegal Questaal input caught"""

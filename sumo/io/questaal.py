@@ -48,14 +48,25 @@ class QuestaalInit(object):
             (Cartesian) or ``'X'`` (direct/fractional) and (a, b, c) is a tuple
             giving the site position in Cartesian or fractional coordinates.
 
-        spec
+        spec (:obj:`dict`, optional): Content of SPEC section, expressed as
+            Python dict
+
+        tol (:obj:`float`, optional): Tolerance in units of distance used when
+            constructing cell from space group
+
+        ignore_units (:obj:`bool`, optional): If True, no unit conversions will
+            be applied when converting to other formats (e.g. Pymatgen
+            structure). This is needed for consistent use of Bohr units when
+            interpreting band structure data.
+
     """
 
-    def __init__(self, lattice, site, spec=None, tol=1e-5):
+    def __init__(self, lattice, site, spec=None, tol=1e-5, ignore_units=False):
         self.lattice = lattice
         self.site = site
         self.spec = spec
         self.tol = tol
+        self.ignore_units = ignore_units
 
         cartesian_sites = any('POS' in item for item in site)
         fractional_sites = any('X' in item for item in site)
@@ -124,8 +135,11 @@ class QuestaalInit(object):
                          "explicit lattice vectors")
 
         if 'UNITS' not in self.lattice or self.lattice['UNITS'] is None:
-            for length in ('A', 'B', 'C'):
-                self.lattice[length] *= _bohr_to_angstrom
+            if self.ignore_units:
+                pass
+            else:
+                for length in ('A', 'B', 'C'):
+                    self.lattice[length] *= _bohr_to_angstrom
 
         assert('ALAT' in self.lattice)
         for length in ('A', 'B', 'C'):
@@ -148,10 +162,15 @@ class QuestaalInit(object):
     def _get_structure_from_lattice(self):
         lattice = Lattice(self.lattice['PLAT'])
         lattice = Lattice(lattice.matrix * self.lattice['ALAT'])
-        if 'UNITS' not in self.lattice or self.lattice['UNITS'] is None:
-            lattice = Lattice(lattice.matrix * _bohr_to_angstrom)
-
         species, coords = self._get_species_coords()
+
+        if self.ignore_units:
+            pass
+        else:
+            if 'UNITS' not in self.lattice or self.lattice['UNITS'] is None:
+                lattice = Lattice(lattice.matrix * _bohr_to_angstrom)
+                coords = [tuple([x * _bohr_to_angstrom for x in site_coords])
+                          for site_coords in coords]
 
         return Structure(lattice, species, coords,
                          coords_are_cartesian=self.cartesian)
@@ -203,7 +222,7 @@ class QuestaalInit(object):
         return QuestaalInit(lattice, sites)
 
     @staticmethod
-    def from_file(filename, preprocessor=True, tol=1e-5):
+    def from_file(filename, preprocessor=True, tol=1e-5, ignore_units=False):
         """Read QuestaalInit object from init.ext file
 
         Args:
@@ -211,6 +230,11 @@ class QuestaalInit(object):
             preprocessor (:obj:`bool`): Process file with ``rdfile`` (must be
                 available on shell PATH).
             tol (:obj:`float`, optional): tolerance for symmetry operations
+            ignore_units (:obj:`bool`, optional): If True, no unit conversions
+                will be applied when converting to other formats (e.g. Pymatgen
+                structure). This is needed for consistent use of Bohr units
+                when interpreting band structure data.
+
 
         Returns:
             :obj:`~sumo.io.questaal.QuestaalInit`"""
