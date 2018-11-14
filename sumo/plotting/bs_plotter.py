@@ -12,7 +12,7 @@ import numpy as np
 import itertools as it
 
 from scipy.interpolate import interp1d
-from matplotlib import rcParams
+from matplotlib import rcParams, cycler
 from matplotlib.style import context
 from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 from matplotlib.transforms import blended_transform_factory
@@ -482,7 +482,10 @@ class SBSPlotter(BSPlotter):
     def _makedos(self, ax, dos_plotter, dos_options, dos_label=None):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
-        with context(sumo_base_style):
+        # don't use first 4 colours as these are the band structure line colours
+        cycle = cycler(
+            'color', rcParams['axes.prop_cycle'].by_key()['color'][4:])
+        with context({'axes.prop_cycle': cycle}):
             plot_data = dos_plotter.dos_plot_data(**dos_options)
 
         mask = plot_data['mask']
@@ -496,7 +499,7 @@ class SBSPlotter(BSPlotter):
                 if spin == Spin.up:
                     label = line['label']
                     densities = line['dens'][spin][mask]
-                elif spin == Spin.down:
+                else:
                     label = ""
                     densities = -line['dens'][spin][mask]
                 ax.fill_betweenx(energies, densities, 0, lw=0,
