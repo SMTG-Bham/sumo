@@ -267,7 +267,7 @@ def get_element_pdos(dos, element, sites, lm_orbitals=None, orbitals=None):
     return el_dos
 
 
-def write_files(dos, pdos, prefix=None, directory=None):
+def write_files(dos, pdos, prefix=None, directory=None, zero_to_efermi=True):
     """Write the density of states data to disk.
 
     Args:
@@ -286,6 +286,8 @@ def write_files(dos, pdos, prefix=None, directory=None):
 
         prefix (:obj:`str`, optional): A prefix for file names.
         directory (:obj:`str`, optional): The directory in which to save files.
+        zero_to_efermi (:obj:`bool`, optional): Normalise the energy such
+             that the Fermi level is set as 0 eV.
     """
     # defining these cryptic lists makes formatting the data much easier later
     if len(dos.densities) == 1:
@@ -294,7 +296,8 @@ def write_files(dos, pdos, prefix=None, directory=None):
         sdata = [[Spin.up, 1, '(up)'], [Spin.down, -1, '(down)']]
 
     header = ['energy']
-    tdos_data = [dos.energies]
+    eners = dos.energies - dos.efermi if zero_to_efermi else dos.energies
+    tdos_data = [eners]
     for spin, sign, label in sdata:
         header.append('dos{}'.format(label))
         tdos_data.append(dos.densities[spin] * sign)
@@ -308,7 +311,7 @@ def write_files(dos, pdos, prefix=None, directory=None):
     spin = len(dos.densities)
     for el, el_pdos in pdos.items():
         header = ['energy']
-        pdos_data = [dos.energies]
+        pdos_data = [eners]
         for orb in sort_orbitals(el_pdos):
             for spin, sign, label in sdata:
                 header.append('{}{}'.format(orb, label))
