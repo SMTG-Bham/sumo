@@ -182,13 +182,15 @@ def _log_band_gap_information(bs):
             direct_kpoint = bs.kpoints[direct_kindex].frac_coords
             direct_kpoint = kpt_str.format(k=direct_kpoint)
             eq_kpoints = bs.get_equivalent_kpoints(direct_kindex)
-            k_indexes = ', '.join(map(str, eq_kpoints))
-            b_indexes = ', '.join(map(str, spin_data['band_indices']))
+            k_indices = ', '.join(map(str, eq_kpoints))
+
+            # add 1 to band indices to be consistent with VASP band numbers.
+            b_indices = ', '.join([str(i+1) for i in spin_data['band_indices']])
 
             logging.info('  {}:'.format(spin.name.capitalize()))
             logging.info('    k-point: {}'.format(direct_kpoint))
-            logging.info('    k-point indexes: {}'.format(k_indexes))
-            logging.info('    Band indexes: {}'.format(b_indexes))
+            logging.info('    k-point indices: {}'.format(k_indices))
+            logging.info('    Band indices: {}'.format(b_indices))
 
     else:
         direct_bg = direct_data[Spin.up]['value']
@@ -196,13 +198,14 @@ def _log_band_gap_information(bs):
 
         direct_kindex = direct_data[Spin.up]['kpoint_index']
         direct_kpoint = kpt_str.format(k=bs.kpoints[direct_kindex].frac_coords)
-        k_indexes = ', '.join(map(str,
+        k_indices = ', '.join(map(str,
                                   bs.get_equivalent_kpoints(direct_kindex)))
-        b_indexes = ', '.join(map(str, direct_data[Spin.up]['band_indices']))
+        b_indices = ', '.join([str(i+1) for i in
+                               direct_data[Spin.up]['band_indices']])
 
         logging.info('  k-point: {}'.format(direct_kpoint))
-        logging.info('  k-point indexes: {}'.format(k_indexes))
-        logging.info('  Band indexes: {}'.format(b_indexes))
+        logging.info('  k-point indices: {}'.format(k_indices))
+        logging.info('  Band indices: {}'.format(b_indices))
 
 
 def _log_band_edge_information(bs, edge_data):
@@ -216,15 +219,17 @@ def _log_band_edge_information(bs, edge_data):
     """
     if bs.is_spin_polarized:
         spins = edge_data['band_index'].keys()
-        b_indexes = [', '.join(map(str, edge_data['band_index'][spin]))
+        b_indices = [', '.join([str(i+1) for i in
+                                edge_data['band_index'][spin]])
                      + '({})'.format(spin.name.capitalize()) for spin in spins]
-        b_indexes = ', '.join(b_indexes)
+        b_indices = ', '.join(b_indices)
     else:
-        b_indexes = ', '.join(map(str, edge_data['band_index'][Spin.up]))
+        b_indices = ', '.join([str(i+1) for i in
+                               edge_data['band_index'][Spin.up]])
 
     kpoint = edge_data['kpoint']
     kpoint_str = kpt_str.format(k=kpoint.frac_coords)
-    k_indexes = ', '.join(map(str, edge_data['kpoint_index']))
+    k_indices = ', '.join(map(str, edge_data['kpoint_index']))
 
     if kpoint.label:
         k_loc = kpoint.label
@@ -235,8 +240,8 @@ def _log_band_edge_information(bs, edge_data):
     logging.info('  Energy: {:.3f} eV'.format(edge_data['energy']))
     logging.info('  k-point: {}'.format(kpoint_str))
     logging.info('  k-point location: {}'.format(k_loc))
-    logging.info('  k-point indexes: {}'.format(k_indexes))
-    logging.info('  Band indexes: {}'.format(b_indexes))
+    logging.info('  k-point indices: {}'.format(k_indices))
+    logging.info('  Band indices: {}'.format(b_indices))
 
 
 def _log_effective_mass_data(data, is_spin_polarized, mass_type='m_e'):
@@ -267,7 +272,9 @@ def _log_effective_mass_data(data, is_spin_polarized, mass_type='m_e'):
         is_spin_polarized (bool): Whether the system is spin polarized.
     """
     s = ' ({})'.format(data['spin'].name) if is_spin_polarized else ''
-    band_str = 'band {}{}'.format(data['band_id'], s)
+
+    # add 1 to band id to be consistent with VASP
+    band_str = 'band {}{}'.format(data['band_id'] + 1, s)
 
     start_kpoint = data['start_kpoint']
     end_kpoint = data['end_kpoint']
