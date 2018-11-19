@@ -143,7 +143,7 @@ def power_tick(val, pos):
         return r'$\mathregular{0}$'
     exponent = int(np.log10(val))
     coeff = val / 10**exponent
-    return r'$\mathregular{{{:.1g} x 10^{:2d}}}$'.format(coeff, exponent)
+    return r'$\mathregular{{{:.1f} x 10^{:2d}}}$'.format(coeff, exponent)
 
 
 def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",
