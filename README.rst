@@ -166,6 +166,13 @@ sumo with extra Sphinx dependencies before compiling with ``make``:
 
 The user guide can then be explored from *docs/build/html/index.html*.
 
+How to cite sumo
+----------------
+
+If you use sumo in your research, please consider citing the following work:
+
+    Alex M. Ganose, Adam J. Jackson, David O. Scanlon. *sumo: Command-line tools for plotting and analysis of periodic ab initio calculations.* Journal of Open Source Software, 2018 3 (28), 717, `doi:10.21105/joss.00717 <https://doi.org/10.21105/joss.00717>`_.
+
 License
 -------
 
