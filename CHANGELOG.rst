@@ -4,6 +4,11 @@ Change Log
 [Unreleased]
 ------------
 
+v1.1.3
+-------
+
+Update Manifest.in
+
 v1.1.2
 -------
 
