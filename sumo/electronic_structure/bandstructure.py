@@ -140,7 +140,7 @@ def get_projections(bs, selection, normalise=None):
     all_orbitals = ['s', 'p', 'd', 'f']
 
     # dictio has the form: {'el1': [s, p, d, f], 'el2': [s, p, d, f]...}
-    dictio = dict(zip(elements, [all_orbitals]*len(elements)))
+    dictio = dict(zip(elements, [all_orbitals] * len(elements)))
 
     # bs.get_projection_on_elements_and_orbitals() returns the data in a
     # really frustrating format, namely:
@@ -243,8 +243,8 @@ def get_reconstructed_band_structure(list_bs, efermi=None):
         dup_ids.append(i)
         if (tuple(k) in tuple(map(tuple, labels_dict.values()))
                 and i != 0 and i != len(kpoints) - 1
-                and (not np.array_equal(kpoints[i+1], k)
-                     or not np.array_equal(kpoints[i-1], k))):
+                and (not np.array_equal(kpoints[i + 1], k)
+                     or not np.array_equal(kpoints[i - 1], k))):
             dup_ids.append(i)
 
     kpoints = kpoints[dup_ids]

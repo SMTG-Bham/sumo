@@ -4,6 +4,24 @@ Change Log
 [Unreleased]
 ------------
 
+v1.1.3
+-------
+
+Update Manifest.in
+
+v1.1.2
+-------
+
+Various bugfixes and enhancements:
+
+- Fix manual k-point selection in kgen.
+- Band indicies in bandstats now 1-based.
+- Fix colour cycler issue in band structures with DOS.
+- Allow overriding y-axis DOS ticks.
+- Fermi level now set to 0 eV in dosplot .dat files (@frssp).
+- Add ``--units`` option for phonon band structures (@ajjackson).
+- Remove numbers from x-axis in band structures with DOS.
+
 v1.1.1
 -------
 

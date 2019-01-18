@@ -247,8 +247,8 @@ def main():
 
     kpoints = None
     if args.kpoints:
-        kpoints = [[map(float, kpt.split()) for kpt in kpts.split(',')] for
-                   kpts in args.kpoints.split('|')]
+        kpoints = [[list(map(float, kpt.split())) for kpt in kpts.split(',')]
+                   for kpts in args.kpoints.split('|')]
     labels = None
     if args.labels:
         labels = [path.split(',') for path in args.labels.split('|')]

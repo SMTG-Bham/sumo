@@ -12,7 +12,8 @@ import numpy as np
 import itertools as it
 
 from scipy.interpolate import interp1d
-from matplotlib import rcParams
+from matplotlib import rcParams, cycler
+from matplotlib.style import context
 from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 from matplotlib.transforms import blended_transform_factory
 
@@ -55,10 +56,10 @@ class SBSPlotter(BSPlotter):
                  no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
-        If the system is spin polarised, blue lines are spin up, red lines are
-        spin down. For metals, all bands are coloured blue. For semiconductors,
-        blue lines indicate valence bands and orange lines indicates conduction
-        bands.
+        If the system is spin polarised, orange lines are spin up, dashed
+        blue lines are spin down. For metals, all bands are coloured blue. For
+        semiconductors, blue lines indicate valence bands and orange lines
+        indicates conduction bands.
 
         Args:
             zero_to_efermi (:obj:`bool`): Normalise the plot such that the
@@ -150,7 +151,7 @@ class SBSPlotter(BSPlotter):
         eners = data['energy']
 
         if self._bs.is_spin_polarized or self._bs.is_metal():
-            is_vb = True
+            is_vb = [True]
         else:
             is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
 
@@ -346,7 +347,7 @@ class SBSPlotter(BSPlotter):
         nbranches = len(data['distances'])
 
         # Ensure we do spin up first, then spin down
-        spins = sorted(self._bs.bands.keys(), key=lambda spin: -spin.value)
+        spins = sorted(self._bs.bands.keys(), key=lambda s: -s.value)
 
         proj = get_projections_by_branches(self._bs, selection,
                                            normalise='select')
@@ -481,7 +482,11 @@ class SBSPlotter(BSPlotter):
     def _makedos(self, ax, dos_plotter, dos_options, dos_label=None):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
-        plot_data = dos_plotter.dos_plot_data(**dos_options)
+        # don't use first 4 colours as these are the band structure line colours
+        cycle = cycler(
+            'color', rcParams['axes.prop_cycle'].by_key()['color'][4:])
+        with context({'axes.prop_cycle': cycle}):
+            plot_data = dos_plotter.dos_plot_data(**dos_options)
 
         mask = plot_data['mask']
         energies = plot_data['energies'][mask]
@@ -494,7 +499,7 @@ class SBSPlotter(BSPlotter):
                 if spin == Spin.up:
                     label = line['label']
                     densities = line['dens'][spin][mask]
-                elif spin == Spin.down:
+                else:
                     label = ""
                     densities = -line['dens'][spin][mask]
                 ax.fill_betweenx(energies, densities, 0, lw=0,

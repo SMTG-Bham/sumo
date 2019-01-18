@@ -288,7 +288,7 @@ class SDOSPlotter(object):
             ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
             ax.set_xlim(xmin, xmax)
 
-            ax.tick_params(axis='y', labelleft='off', left='off')
+            ax.tick_params(axis='y', labelleft='off')
             ax.yaxis.set_minor_locator(AutoMinorLocator(2))
             ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 
@@ -387,7 +387,7 @@ def get_cached_colour(element, orbital, colours=None, cache=None):
     elif isinstance(colours, dict):
         try:
             return colours[element][orbital]
-        except(KeyError):
+        except KeyError:
             return _get_colour_with_cache(element, orbital,
                                           cache, colour_series)
 
