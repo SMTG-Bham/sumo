@@ -3,10 +3,11 @@
 # Distributed under the terms of the MIT License.
 
 """
-A script to calculate and plot optical spectra from a VASP calculation.
+A script to calculate and plot optical spectra from ab initio calculations.
 """
 
 import os
+from glob import glob
 import sys
 import logging
 import warnings
@@ -17,6 +18,7 @@ mpl.use('Agg')
 
 from pymatgen.io.vasp import Vasprun
 from pymatgen.util.string import latexify
+from sumo.io import questaal
 
 from sumo.plotting.optics_plotter import SOpticsPlotter
 from sumo.electronic_structure.optics import (broaden_eps, calculate_alpha,
@@ -29,7 +31,7 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "Jan 10, 2018"
 
 
-def optplot(filenames=None, prefix=None, directory=None,
+def optplot(filenames=None, prefix=None, directory=None, code='vasp',
             gaussian=None, band_gaps=None, labels=None, average=True, height=6,
             width=6, xmin=0, xmax=None, ymin=0, ymax=1e5, colours=None,
             style=None, no_base_style=None,
@@ -43,6 +45,8 @@ def optplot(filenames=None, prefix=None, directory=None,
             plotted concurrently.
         prefix (:obj:`str`, optional): Prefix for file names.
         directory (:obj:`str`, optional): The directory in which to save files.
+        code (:obj:`str`, optional): Original calculator. Accepted values are
+            'vasp' and 'questaal'.
         gaussian (:obj:`float`): Standard deviation for gaussian broadening.
         band_gaps (:obj:`float` or :obj:`list`, optional): The band gap as a
             :obj:`float`, plotted as a dashed line. If plotting multiple
@@ -81,20 +85,36 @@ def optplot(filenames=None, prefix=None, directory=None,
     Returns:
         A matplotlib pyplot object.
     """
-    if not filenames:
-        if os.path.exists('vasprun.xml'):
-            filenames = ['vasprun.xml']
-        elif os.path.exists('vasprun.xml.gz'):
-            filenames = ['vasprun.xml.gz']
-        else:
-            logging.error('ERROR: No vasprun.xml found!')
-            sys.exit()
 
-    elif isinstance(filenames, str):
+    if code == 'vasp':
+        if not filenames:
+            if os.path.exists('vasprun.xml'):
+                filenames = ['vasprun.xml']
+            elif os.path.exists('vasprun.xml.gz'):
+                filenames = ['vasprun.xml.gz']
+            else:
+                logging.error('ERROR: No vasprun.xml found!')
+                sys.exit()
+
+    elif code == 'questaal':
+        if not filenames:
+            if len(glob('opt.*')) > 0:
+                filenames = glob('opt.*')
+                if len(filenames) == 1:
+                    logging.info("Found optics file: " + filenames[0])
+                else:
+                    logging.info("Found optics files: " + ", ".join(filenames))
+
+    if isinstance(filenames, str):
         filenames = [filenames]
 
-    vrs = [Vasprun(f) for f in filenames]
-    dielectrics = [vr.dielectric for vr in vrs]
+    if code == 'vasp':
+        vrs = [Vasprun(f) for f in filenames]
+        dielectrics = [vr.dielectric for vr in vrs]
+
+    elif code == 'questaal':
+        dielectrics = [questaal.dielectric_from_opt(filename)
+                       for filename in filenames]
 
     if gaussian:
         dielectrics = [broaden_eps(d, gaussian)
@@ -154,6 +174,9 @@ def _get_parser():
                         help='prefix for the files generated')
     parser.add_argument('-d', '--directory', metavar='D',
                         help='output directory for files')
+    parser.add_argument('-c', '--code', metavar='C',
+                        help=('Original calculator. Accepted values are '
+                              '"vasp" and "questaal".'))
     parser.add_argument('-g', '--gaussian', type=float, metavar='G',
                         help='standard deviation of gaussian broadening')
     parser.add_argument('-b', '--bandgaps', nargs='*', metavar='E',
@@ -206,7 +229,7 @@ def main():
                             module="pymatgen")
 
     optplot(filenames=args.filenames, prefix=args.prefix,
-            directory=args.directory, gaussian=args.gaussian,
+            directory=args.directory, code=args.code, gaussian=args.gaussian,
             band_gaps=args.bandgaps, labels=args.labels,
             average=args.anisotropic, height=args.height, width=args.width,
             xmin=args.xmin, xmax=args.xmax, ymin=args.ymin, ymax=args.ymax,

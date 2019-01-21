@@ -11,8 +11,70 @@ from pymatgen.core.lattice import Lattice
 from pymatgen.electronic_structure.core import Spin
 from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
 
+from sumo.electronic_structure.optics import kkr
+
 _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009
+
+
+def dielectric_from_opt(filename, cshift=1e-6):
+    """Read a Questaal opt.ext file and return dielectric function
+
+    opt.ext files only provide x, y, z components so the off-diagonal terms are
+    set to zero.
+
+    Args:
+        filename (:obj:`float`):
+            Path to ``opt.ext`` output of LMF optics calculation. If this is
+            split into spin channels, the values will be recombined to a single
+            (observable) channel.
+        cshift (:obj:`float`, optional):
+            A small imaginary element used in Kramers-Kronig integration.
+
+    Returns:
+        :obj:`tuple`
+            The format imitates the ``dielectric`` attribute of
+            :obj:`pymatgen.io.vasp.outputs.Vasprun`: a tuple of the form::
+
+                ([energy1, energy2, ...],
+                 [[real_xx_1, real_yy_1, real_zz_1,
+                   real_xy_1, real_yz_1, real_xz_1],
+                  [real_xx_2, real_yy_2, real_zz_2,
+                   real_xy_2, real_yz_2, real_xz_2], ...],
+                 [[imag_xx_1, imag_yy_1, imag_zz_1,
+                   imag_xy_1, imag_yz_1, imag_xz_1],
+                  [imag_xx_2, imag_yy_2, imag_zz_2,
+                   imag_xy_2, imag_yz_2, imag_xz_2], ...])
+
+            The off-diagonal (xy, yz, xz) terms are not given in ``opt.ext``
+            and are set to zero. Only the imaginary part is provided so the
+            real part is constructed by a Kramers-Kronig trasformation.
+            Energy units are converted from Ry to eV.
+    """
+
+    data = np.genfromtxt(filename, skip_header=1)
+    if data.shape[1] == 4:
+        pass
+    elif data.shape[1] == 7:
+        data = np.hstack(data[:, :1], data[1:4] + data[4:7])
+    else:
+        raise ValueError("Not sure how to interpret {}; expected "
+                         "4 or 7 columns.".format(filename))
+
+    data[:, 0] *= _ry_to_ev
+    de = data[1, 0] - data[0, 0]
+    eps_imag = [[[row[1], 0, 0], [0, row[2], 0], [0, 0, row[3]]]
+                for row in data]
+    eps_real = kkr(de, eps_imag)
+
+    # Re-shape to XX YY ZZ XY YZ XZ format
+    eps_imag = np.array(eps_imag).reshape(len(eps_imag), 9)
+    eps_imag = eps_imag[:, [0, 4, 7, 1, 5, 2]]
+
+    eps_real = eps_real.reshape(len(eps_real), 9)
+    eps_real = eps_real[:, [0, 4, 7, 1, 5, 2]]
+
+    return (data[:, 0].flatten(), eps_real, eps_imag)
 
 
 class QuestaalInit(object):
