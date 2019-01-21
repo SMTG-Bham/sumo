@@ -185,7 +185,7 @@ def kkr(de, eps_imag, cshift=1e-6):
     eps_imag = np.array(eps_imag)
     nedos = eps_imag.shape[0]
     cshift = complex(0, cshift)
-    w_i = np.arange(0, nedos*de, de, dtype=np.complex_)
+    w_i = np.arange(0, (nedos - 0.5)*de, de, dtype=np.complex_)
     w_i = np.reshape(w_i, (nedos, 1, 1))
 
     def integration_element(w_r):
