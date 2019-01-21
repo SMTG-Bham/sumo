@@ -188,6 +188,20 @@ The following command, run in the ``sumo/tests/docs/Cs2SnI6/bandstructure`` fold
    :height: 400px
    :align: center
 
+Questaal
+~~~~~~~~
+
+Basic band structure plotting is supported for LMTO calculations with
+Questaal using ``lmf``. (Orbital projection is not currently included.)
+
+A structure file (*init.ext*), symmetry lines file (*syml.ext*) and
+band structure output file (*bnds.ext*) should be present in the same
+directory with the same *ext* identifier. You can then plot with Sumo::
+
+    sumo-bandplot --code questaal -f bnds.ext
+
+The usual appearance options are supported.
+
 Command-Line Interface
 ----------------------
 
