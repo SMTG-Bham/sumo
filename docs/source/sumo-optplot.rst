@@ -117,6 +117,10 @@ when ``OPTICS MODE=1`` (or greater) in the *ctrl.ext* file an
 
    sumo-optplot --code questaal -f opt.ext
 
+The *opt_BSE.out* file from ``bethesalpeter`` calculations is also
+supported; this format will be detected as long as "opt_BSE" is
+somewhere in the filename.
+
 Command-Line Interface
 ----------------------
 

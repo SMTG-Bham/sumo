@@ -39,8 +39,11 @@ def optplot(filenames=None, prefix=None, directory=None, code='vasp',
     """A script to plot optical absorption spectra from VASP calculations.
 
     Args:
-        filenames (:obj:`str` or :obj:`list`, optional): Path to vasprun.xml
-            file (can be gzipped). Alternatively, a list of paths can be
+        filenames (:obj:`str` or :obj:`list`, optional): Path to data file.
+            For VASP this is a *vasprun.xml* file (can be gzipped); for
+            Questaal the *opt.ext* file from *lmf* or *eps_BSE.out* from
+            *bethesalpeter* may be used.
+            Alternatively, a list of paths can be
             provided, in which case the absorption spectra for each will be
             plotted concurrently.
         prefix (:obj:`str`, optional): Prefix for file names.
@@ -113,7 +116,7 @@ def optplot(filenames=None, prefix=None, directory=None, code='vasp',
         dielectrics = [vr.dielectric for vr in vrs]
 
     elif code == 'questaal':
-        dielectrics = [questaal.dielectric_from_opt(filename)
+        dielectrics = [questaal.dielectric_from_file(filename)
                        for filename in filenames]
 
     if gaussian:

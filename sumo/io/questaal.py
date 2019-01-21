@@ -17,66 +17,6 @@ _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009
 
 
-def dielectric_from_opt(filename, cshift=1e-6):
-    """Read a Questaal opt.ext file and return dielectric function
-
-    opt.ext files only provide x, y, z components so the off-diagonal terms are
-    set to zero.
-
-    Args:
-        filename (:obj:`float`):
-            Path to ``opt.ext`` output of LMF optics calculation. If this is
-            split into spin channels, the values will be recombined to a single
-            (observable) channel.
-        cshift (:obj:`float`, optional):
-            A small imaginary element used in Kramers-Kronig integration.
-
-    Returns:
-        :obj:`tuple`
-            The format imitates the ``dielectric`` attribute of
-            :obj:`pymatgen.io.vasp.outputs.Vasprun`: a tuple of the form::
-
-                ([energy1, energy2, ...],
-                 [[real_xx_1, real_yy_1, real_zz_1,
-                   real_xy_1, real_yz_1, real_xz_1],
-                  [real_xx_2, real_yy_2, real_zz_2,
-                   real_xy_2, real_yz_2, real_xz_2], ...],
-                 [[imag_xx_1, imag_yy_1, imag_zz_1,
-                   imag_xy_1, imag_yz_1, imag_xz_1],
-                  [imag_xx_2, imag_yy_2, imag_zz_2,
-                   imag_xy_2, imag_yz_2, imag_xz_2], ...])
-
-            The off-diagonal (xy, yz, xz) terms are not given in ``opt.ext``
-            and are set to zero. Only the imaginary part is provided so the
-            real part is constructed by a Kramers-Kronig trasformation.
-            Energy units are converted from Ry to eV.
-    """
-
-    data = np.genfromtxt(filename, skip_header=1)
-    if data.shape[1] == 4:
-        pass
-    elif data.shape[1] == 7:
-        data = np.hstack(data[:, :1], data[1:4] + data[4:7])
-    else:
-        raise ValueError("Not sure how to interpret {}; expected "
-                         "4 or 7 columns.".format(filename))
-
-    data[:, 0] *= _ry_to_ev
-    de = data[1, 0] - data[0, 0]
-    eps_imag = [[[row[1], 0, 0], [0, row[2], 0], [0, 0, row[3]]]
-                for row in data]
-    eps_real = kkr(de, eps_imag)
-
-    # Re-shape to XX YY ZZ XY YZ XZ format
-    eps_imag = np.array(eps_imag).reshape(len(eps_imag), 9)
-    eps_imag = eps_imag[:, [0, 4, 7, 1, 5, 2]]
-
-    eps_real = eps_real.reshape(len(eps_real), 9)
-    eps_real = eps_real[:, [0, 4, 7, 1, 5, 2]]
-
-    return (data[:, 0].flatten(), eps_real, eps_imag)
-
-
 class QuestaalInit(object):
     """Structure information: Questaal init.ext file
 
@@ -672,3 +612,119 @@ def band_structure(bnds_file, lattice, labels={},
                                  lattice.reciprocal_lattice_crystallographic,
                                  efermi, labels,
                                  coords_are_cartesian=True)
+
+
+def dielectric_from_file(filename):
+    """Detect Questaal optics file type and dispatch to appropriate reader"""
+    if 'eps_BSE' in filename:
+        return dielectric_from_BSE(filename)
+    else:
+        return dielectric_from_opt(filename)
+
+
+def dielectric_from_BSE(filename):
+    """Read a Questaal eps_BSE.out file and return dielectric function
+
+    eps_BSE files only provide a scalar complex number; this is converted to a
+    diagonal matrix for compatibility with other routines. Unlike the opt.exe
+    however the real part is provided so we do not need to make a
+    Kramers-Kronig transformation.
+
+    Args:
+        filename (:obj:`float`):
+            Path to ``eps_BSE.out`` output of bethesalpeter calculation.
+
+    Returns:
+        :obj:`tuple`
+            The format imitates the ``dielectric`` attribute of
+            :obj:`pymatgen.io.vasp.outputs.Vasprun`: a tuple of the form::
+
+                ([energy1, energy2, ...],
+                 [[real_xx_1, real_yy_1, real_zz_1,
+                   real_xy_1, real_yz_1, real_xz_1],
+                  [real_xx_2, real_yy_2, real_zz_2,
+                   real_xy_2, real_yz_2, real_xz_2], ...],
+                 [[imag_xx_1, imag_yy_1, imag_zz_1,
+                   imag_xy_1, imag_yz_1, imag_xz_1],
+                  [imag_xx_2, imag_yy_2, imag_zz_2,
+                   imag_xy_2, imag_yz_2, imag_xz_2], ...])
+
+            As only a scalar is given in eps_BSE, the vectors will in fact
+            be e.g.::
+
+            [real_1, real_1, real_1, 0, 0, 0]
+    """
+    data = np.genfromtxt(filename, comments='#')
+    if data.shape[1] == 3:
+        pass
+    else:
+        raise ValueError("Not sure how to interpret {}; expected "
+                         "3 columns. "
+                         "If this isn't an eps_BSE file, please don't put"
+                         "eps_BSE in the filename!".format(filename))
+
+    energy = list(data[:, 0].T)
+    real = [[r, r, r, 0, 0, 0] for r in data[:, 1]]
+    imag = [[i, i, i, 0, 0, 0] for i in data[:, 2]]
+
+    return(energy, real, imag)
+
+
+def dielectric_from_opt(filename, cshift=1e-6):
+    """Read a Questaal opt.ext file and return dielectric function
+
+    opt.ext files only provide x, y, z components so the off-diagonal terms are
+    set to zero.
+
+    Args:
+        filename (:obj:`float`):
+            Path to ``opt.ext`` output of LMF optics calculation. If this is
+            split into spin channels, the values will be recombined to a single
+            (observable) channel.
+        cshift (:obj:`float`, optional):
+            A small imaginary element used in Kramers-Kronig integration.
+
+    Returns:
+        :obj:`tuple`
+            The format imitates the ``dielectric`` attribute of
+            :obj:`pymatgen.io.vasp.outputs.Vasprun`: a tuple of the form::
+
+                ([energy1, energy2, ...],
+                 [[real_xx_1, real_yy_1, real_zz_1,
+                   real_xy_1, real_yz_1, real_xz_1],
+                  [real_xx_2, real_yy_2, real_zz_2,
+                   real_xy_2, real_yz_2, real_xz_2], ...],
+                 [[imag_xx_1, imag_yy_1, imag_zz_1,
+                   imag_xy_1, imag_yz_1, imag_xz_1],
+                  [imag_xx_2, imag_yy_2, imag_zz_2,
+                   imag_xy_2, imag_yz_2, imag_xz_2], ...])
+
+            The off-diagonal (xy, yz, xz) terms are not given in ``opt.ext``
+            and are set to zero. Only the imaginary part is provided so the
+            real part is constructed by a Kramers-Kronig trasformation.
+            Energy units are converted from Ry to eV.
+    """
+
+    data = np.genfromtxt(filename, skip_header=1)
+    if data.shape[1] == 4:
+        pass
+    elif data.shape[1] == 7:
+        data = np.hstack(data[:, :1], data[1:4] + data[4:7])
+    else:
+        raise ValueError("Not sure how to interpret {}; expected "
+                         "4 or 7 columns.".format(filename))
+
+    data[:, 0] *= _ry_to_ev
+    de = data[1, 0] - data[0, 0]
+    eps_imag = [[[row[1], 0, 0], [0, row[2], 0], [0, 0, row[3]]]
+                for row in data]
+    eps_real = kkr(de, eps_imag)
+
+    # Re-shape to XX YY ZZ XY YZ XZ format
+    eps_imag = np.array(eps_imag).reshape(len(eps_imag), 9)
+    eps_imag = eps_imag[:, [0, 4, 7, 1, 5, 2]]
+
+    eps_real = eps_real.reshape(len(eps_real), 9)
+    eps_real = eps_real[:, [0, 4, 7, 1, 5, 2]]
+
+    return (data[:, 0].flatten(), eps_real, eps_imag)
