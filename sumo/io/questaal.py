@@ -614,12 +614,24 @@ def band_structure(bnds_file, lattice, labels={},
                                  coords_are_cartesian=True)
 
 
-def dielectric_from_file(filename):
-    """Detect Questaal optics file type and dispatch to appropriate reader"""
+def dielectric_from_file(filename, out_filename=None):
+    """Detect Questaal optics file type and dispatch to appropriate reader
+
+    Args:
+        filename (:obj:`str`):
+            Path to *opt.ext* or *eps_BSE.out* data file from Questaal. If the
+            filename contains "eps_BSE" the *eps_BSE.out* format is assumed,
+            otherwise the file is treated as an *opt.ext*.
+        out_filename (:obj:`str`, optional):
+            Filename for writing out the calculated dielectric data. This is
+            only used for *opt.ext* inputs; energy values are converted to eV
+            and a Real component is obtained by the Kramers-Kronig relation.
+    """
+
     if 'eps_BSE' in filename:
         return dielectric_from_BSE(filename)
     else:
-        return dielectric_from_opt(filename)
+        return dielectric_from_opt(filename, out_filename=out_filename)
 
 
 def dielectric_from_BSE(filename):
@@ -670,7 +682,7 @@ def dielectric_from_BSE(filename):
     return(energy, real, imag)
 
 
-def dielectric_from_opt(filename, cshift=1e-6):
+def dielectric_from_opt(filename, cshift=1e-6, out_filename=None):
     """Read a Questaal opt.ext file and return dielectric function
 
     opt.ext files only provide x, y, z components so the off-diagonal terms are
@@ -683,6 +695,12 @@ def dielectric_from_opt(filename, cshift=1e-6):
             (observable) channel.
         cshift (:obj:`float`, optional):
             A small imaginary element used in Kramers-Kronig integration.
+        out_filename (:obj:`float`, optional):
+            Path to write tabulated dielectric data with columns::
+
+                energy(eV) real_xx real_yy real_zz imag_xx imag_yy imag_zz
+
+            If None, no file is written.
 
     Returns:
         :obj:`tuple`
@@ -722,9 +740,14 @@ def dielectric_from_opt(filename, cshift=1e-6):
 
     # Re-shape to XX YY ZZ XY YZ XZ format
     eps_imag = np.array(eps_imag).reshape(len(eps_imag), 9)
-    eps_imag = eps_imag[:, [0, 4, 7, 1, 5, 2]]
-
+    eps_imag = eps_imag[:, [0, 4, 8, 1, 5, 2]]
     eps_real = eps_real.reshape(len(eps_real), 9)
-    eps_real = eps_real[:, [0, 4, 7, 1, 5, 2]]
+    eps_real = eps_real[:, [0, 4, 8, 1, 5, 2]]
+
+    if out_filename is not None:
+        with open(out_filename, 'wt') as f:
+            for e, r, i in zip(data[:, 0].flatten(), eps_real, eps_imag):
+                f.write((' '.join(['{:10.8f}'] * 7)).format(e, *r[:3], *i[:3]))
+                f.write('\n')
 
     return (data[:, 0].flatten(), eps_real, eps_imag)
