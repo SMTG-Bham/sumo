@@ -10,6 +10,7 @@ os:
 # command to install dependencies
 install:
   - pip install numpy
+  - travis_wait pip install --no-binary pymatgen
   - travis_wait pip install .
 # command to run tests
 script:
