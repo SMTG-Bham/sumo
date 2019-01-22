@@ -13,12 +13,13 @@ def load_test_suite():
     test_suite = test_loader.discover('tests', pattern='test*.py')
     return test_suite
 
+
 with open('README.rst', 'r') as file:
     long_description = file.read()
 
 setup(
     name='sumo',
-    version='1.1.1',
+    version='1.1.3',
     description=('Heavy weight plotting tools for ab initio '
                  'solid-state calculations'),
     url='https://github.com/smtg-ucl/sumo',
