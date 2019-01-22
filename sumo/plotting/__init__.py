@@ -141,7 +141,10 @@ def power_tick(val, pos):
     """Custom power ticker function. """
     if val == 0:
         return r'$\mathregular{0}$'
-    exponent = int(np.log10(val))
+    elif val < 0:
+        exponent = int(np.log10(-val))
+    else:
+        exponent = int(np.log10(val))
     coeff = val / 10**exponent
     return r'$\mathregular{{{:.1f} x 10^{:2d}}}$'.format(coeff, exponent)
 
