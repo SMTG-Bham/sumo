@@ -5,7 +5,21 @@ from pkg_resources import resource_filename
 import numpy as np
 
 from pymatgen.core.lattice import Lattice
-from sumo.io.questaal import QuestaalInit
+from sumo.io.questaal import QuestaalInit, dielectric_from_file
+
+class QuestaalOpticsTestCase(unittest.TestCase):
+    def setUp(self):
+        self.bse_path = resource_filename(
+            __name__,
+            path_join('..', 'data', 'SnO2', 'eps_BSE.out'))
+
+    def test_optics_from_bethesalpeter(self):
+        energy, real, imag = dielectric_from_file(self.bse_path)
+        self.assertEqual(len(energy), 8000)
+        self.assertAlmostEqual(energy[1], 3.401875234404301e-003)
+        self.assertAlmostEqual(real[2][0], 1.94823351685956)
+        self.assertAlmostEqual(imag[3][2], 1.084598600094848e-002)
+
 
 class QuestaalInitTestCase(unittest.TestCase):
     def setUp(self):
