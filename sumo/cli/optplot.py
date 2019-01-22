@@ -119,6 +119,9 @@ def optplot(filenames=None, prefix=None, directory=None, code='vasp',
         dielectrics = [questaal.dielectric_from_file(filename)
                        for filename in filenames]
 
+    else:
+        raise Exception('Code selection "{}" not recognised'.format(code))
+
     if gaussian:
         dielectrics = [broaden_eps(d, gaussian)
                        for d in dielectrics]
@@ -177,7 +180,7 @@ def _get_parser():
                         help='prefix for the files generated')
     parser.add_argument('-d', '--directory', metavar='D',
                         help='output directory for files')
-    parser.add_argument('-c', '--code', metavar='C',
+    parser.add_argument('-c', '--code', metavar='C', default='vasp',
                         help=('Original calculator. Accepted values are '
                               '"vasp" and "questaal".'))
     parser.add_argument('-g', '--gaussian', type=float, metavar='G',
