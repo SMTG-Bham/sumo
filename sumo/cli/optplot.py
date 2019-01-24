@@ -89,6 +89,9 @@ def optplot(filenames=None, prefix=None, directory=None, code='vasp',
         A matplotlib pyplot object.
     """
 
+    # Don't write files if this is being done to manipulate existing plt
+    save_files = False if plt else True
+
     if code == 'vasp':
         if not filenames:
             if os.path.exists('vasprun.xml'):
@@ -115,9 +118,21 @@ def optplot(filenames=None, prefix=None, directory=None, code='vasp',
         vrs = [Vasprun(f) for f in filenames]
         dielectrics = [vr.dielectric for vr in vrs]
 
+        if len(vrs) > 1 and not labels:
+            labels = [latexify(vr.final_structure.composition.reduced_formula).
+                      replace('$_', '$_\mathregular') for vr in vrs]
+
     elif code == 'questaal':
-        dielectrics = [questaal.dielectric_from_file(filename)
-                       for filename in filenames]
+        if not save_files:
+            out_filenames = [None] * len(filenames)
+        elif len(filenames) == 1:
+            out_filenames = ['dielectric.dat']
+        else:
+            out_filenames = ['dielectric_{0}.dat'.format(i + 1)
+                             for i, _ in enumerate(filenames)]
+        dielectrics = [questaal.dielectric_from_file(filename, out_filename)
+                       for filename, out_filename in zip(filenames,
+                                                         out_filenames)]
 
     else:
         raise Exception('Code selection "{}" not recognised'.format(code))
@@ -141,12 +156,6 @@ def optplot(filenames=None, prefix=None, directory=None, code='vasp',
     elif isinstance(band_gaps, list):
         # band_gaps is non empty list w. no vaspruns; presume floats
         band_gaps = [float(i) for i in band_gaps]
-
-    save_files = False if plt else True
-
-    if len(abs_data) > 1 and not labels:
-        labels = [latexify(vr.final_structure.composition.reduced_formula).
-                  replace('$_', '$_\mathregular') for vr in vrs]
 
     plotter = SOpticsPlotter(abs_data, band_gap=band_gaps, label=labels)
     plt = plotter.get_plot(width=width, height=height, xmin=xmin,

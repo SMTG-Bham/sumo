@@ -194,3 +194,4 @@ def kkr(de, eps_imag, cshift=1e-6):
         return total * (2/np.pi) * de + np.diag([1, 1, 1])
 
     return np.real([integration_element(w_r) for w_r in w_i[:, 0, 0]])
+
