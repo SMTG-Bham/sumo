@@ -36,7 +36,8 @@ class SOpticsPlotter(object):
             absorption spectra can be plotted simultaneously.
         band_gap (:obj:`float` or :obj:`list`, optional): The band gap as a
             :obj:`float`, plotted as a dashed line. If plotting multiple
-            spectra then a :obj:`list` of band gaps can be provided.
+            spectra then a :obj:`list` of band gaps can be provided. If an item
+            in the list is :obj:`None` no corresponding line is plotted.
         label (:obj:`str` or :obj:`list`): A label to identify the spectra.
             If plotting multiple spectra then a :obj:`list` of labels can
             be provided.
