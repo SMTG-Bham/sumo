@@ -158,6 +158,8 @@ class SDOSPlotter(object):
             ymax = dmax if dmax > ymax else ymax
         elif not subplot:
             lines = [[]]  # need a blank list to add lines into
+        else:
+            lines = []
 
         # TODO: Fix broken behaviour if plot_total is off
         cutoff = (legend_cutoff / 100.) * (ymax / 1.05)
