@@ -533,6 +533,22 @@ class SBSPlotter(BSPlotter):
             unique_d.append(temp_ticks[0][0])
             unique_l.append(temp_ticks[0][1])
             for i in range(1, len(temp_ticks)):
+                # Hide labels marked with @
+                if '@' in temp_ticks[i][1]:
+                    # If a branch connection, check all parts of label
+                    if r'$\mid$' in temp_ticks[i][1]:
+                        label_components = temp_ticks[i][1].split(r'$\mid$')
+                        good_labels = [l for l in label_components
+                                       if l[0] != '@']
+                        if len(good_labels) == 0:
+                            continue
+                        else:
+                            temp_ticks[i] = (temp_ticks[i][0],
+                                         r'$\mid$'.join(good_labels))
+                    # If a single label, check first character
+                    elif temp_ticks[i][1][0] == '@':
+                        continue
+
                 if unique_l[-1] != temp_ticks[i][1]:
                     unique_d.append(temp_ticks[i][0])
                     unique_l.append(temp_ticks[i][1])
