@@ -105,7 +105,8 @@ def kgen(filename='POSCAR', code='vasp',
 
             combined with the above example for ``kpt_list`` would indicate the
             path: Gamma -> Z | X -> M. If no labels are provided, letters from
-            A -> Z will be used instead.
+            A -> Z will be used instead. If a label begins with '@' it will be
+            concealed when plotting with sumo-bandplot.
     """
     if code.lower() == 'vasp':
         structure = Poscar.from_file(filename).structure
