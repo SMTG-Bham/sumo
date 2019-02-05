@@ -3,6 +3,8 @@ from itertools import chain, product
 import errno
 import os.path
 from os import makedirs
+from subprocess import Popen, PIPE
+from shutil import which
 import re
 import logging
 import numpy as np
@@ -310,13 +312,15 @@ class QuestaalInit(object):
         return QuestaalInit(lattice, sites)
 
     @staticmethod
-    def from_file(filename, preprocessor=True, tol=1e-5, ignore_units=False):
+    def from_file(filename, preprocessor=None, tol=1e-5, ignore_units=False):
         """Read QuestaalInit object from init.ext file
 
         Args:
             filename (:obj:`str`): Path to init.ext file
             preprocessor (:obj:`bool`): Process file with ``rdfile`` (must be
-                available on shell PATH).
+                available on shell PATH). If None, use preprocessor where
+                available. If True, an error will be raised if ``rdfile`` is
+                unavailable.
             tol (:obj:`float`, optional): tolerance for symmetry operations
             ignore_units (:obj:`bool`, optional): If True, no unit conversions
                 will be applied when converting to other formats (e.g. Pymatgen
@@ -327,8 +331,13 @@ class QuestaalInit(object):
         Returns:
             :obj:`~sumo.io.questaal.QuestaalInit`"""
 
+        if preprocessor is None:
+            if which('rdfile') is not None:
+                preprocessor = True
+            else:
+                preprocessor = False
+
         if preprocessor:
-            from subprocess import Popen, PIPE
             process = Popen(['rdfile', filename], stdout=PIPE)
             lines = process.stdout.readlines()
             #  Need to decode from bytes. Hard-coding ASCII here - it doesn't
@@ -794,6 +803,8 @@ def band_structure(bnds_file, lattice, labels={},
             is generally obtained from a syml.ext file using
             :obj:`sumo.io.questaal.labels_from_syml`.
         lattice (:obj:`pymatgen.core.lattice.Lattice`)
+        coords_are_cartesian (:obj:`bool`): bnds.ext file is in Cartesian
+            coordinates.
 
     Returns:
         :obj:`pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`
@@ -888,6 +899,7 @@ def band_structure(bnds_file, lattice, labels={},
     # [a, b, c] [ax, ay, az] = [a.ax + b.bx + x.cx, a.ay + b.by,...] = [x y z]
     #           |bx, by, bz|
     #           [cx, cy, cz]
+
     if not coords_are_cartesian:
         for label, coords in labels.items():
             labels[label] = np.dot(
