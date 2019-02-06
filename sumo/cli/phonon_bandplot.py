@@ -172,6 +172,9 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             # round due to numerical noise error
             dim = np.around(dim, 5)
 
+        elif len(dim) == 9:
+            dim = np.array(dim).reshape(3, 3)
+
         elif np.array(dim).shape != (3, 3):
             dim = np.diagflat(dim)
 
