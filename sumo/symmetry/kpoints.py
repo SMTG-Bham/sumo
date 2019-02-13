@@ -111,9 +111,8 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
 
                     ['\Gamma', 'X', 'Y']
     """
-    import logging
     from sumo.symmetry import (BradCrackKpath, SeekpathKpath, PymatgenKpath,
-                                CustomKpath)
+                               CustomKpath)
     spg = _get_space_group_object(spg, mode)
 
     if kpt_list:
@@ -130,7 +129,7 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
     path_str = kpath.path_string
     kpt_dict = kpath.kpoints
 
-    logging.info('Structure information:'.format(structure.num_sites))
+    logging.info('Structure information:')
     logging.info('\tSpace group number: {}'.format(kpath._spg_data['number']))
 
     logging.info('\tInternational symbol: {}'.format(kpath.spg_symbol))
@@ -253,7 +252,6 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
 
 
 def _get_space_group_object(spg, mode):
-    import sys
     from pymatgen.symmetry.groups import SpaceGroup
     if spg and mode != 'bradcrack':
         logging.error("ERROR: Specifying symmetry only supported using "
@@ -261,7 +259,7 @@ def _get_space_group_object(spg, mode):
         sys.exit()
     elif spg:
         try:
-            if type(spg) is int:
+            if isinstance(spg, int):
                 spg = SpaceGroup.from_int_number(spg)
             else:
                 spg = SpaceGroup(spg)

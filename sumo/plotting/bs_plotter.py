@@ -12,18 +12,20 @@ import numpy as np
 import itertools as it
 
 from scipy.interpolate import interp1d
+from matplotlib import rcParams, cycler
+from matplotlib.style import context
 from matplotlib.ticker import MaxNLocator, AutoMinorLocator
+from matplotlib.transforms import blended_transform_factory
 
-from sumo.plotting import pretty_plot, pretty_subplot, rgbline, default_colours
+from sumo.plotting import (pretty_plot, pretty_subplot, rgbline,
+                           styled_plot, sumo_base_style, sumo_bs_style)
 from sumo.electronic_structure.bandstructure import \
-        get_projections_by_branches
+    get_projections_by_branches
 
 from pymatgen.electronic_structure.plotter import BSPlotter
 from pymatgen.electronic_structure.core import Spin
 
-line_width = 1.5
 label_size = 22
-band_linewidth = 2
 
 
 class SBSPlotter(BSPlotter):
@@ -44,18 +46,20 @@ class SBSPlotter(BSPlotter):
     def __init__(self, bs):
         BSPlotter.__init__(self, bs)
 
+    @styled_plot(sumo_base_style, sumo_bs_style)
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
-                 width=6., height=6., vbm_cbm_marker=False,
+                 width=None, height=None, vbm_cbm_marker=False,
                  ylabel='Energy (eV)',
-                 dpi=400, plt=None,
+                 dpi=None, plt=None,
                  dos_plotter=None, dos_options=None, dos_label=None,
-                 dos_aspect=3, fonts=None):
+                 dos_aspect=3, fonts=None, style=None,
+                 no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
-        If the system is spin polarised, blue lines are spin up, red lines are
-        spin down. For metals, all bands are coloured blue. For semiconductors,
-        blue lines indicate valence bands and orange lines indicates conduction
-        bands.
+        If the system is spin polarised, orange lines are spin up, dashed
+        blue lines are spin down. For metals, all bands are coloured blue. For
+        semiconductors, blue lines indicate valence bands and orange lines
+        indicates conduction bands.
 
         Args:
             zero_to_efermi (:obj:`bool`): Normalise the plot such that the
@@ -120,18 +124,26 @@ class SBSPlotter(BSPlotter):
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
                 a single font, specified as a :obj:`str`, or several fonts,
                 specified as a :obj:`list` of :obj:`str`.
+            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+                style specifications, to be composed on top of Sumo base
+                style.
+            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                style. This can make alternative styles behave more
+                predictably.
 
         Returns:
             :obj:`matplotlib.pyplot`: The electronic band structure plot.
         """
         if dos_plotter:
-            plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
-                                 plt=plt, fonts=fonts,
+            plt = pretty_subplot(1, 2, width=width, height=height,
+                                 sharex=False, dpi=dpi,
+                                 plt=plt,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
                                               'wspace': 0})
             ax = plt.gcf().axes[0]
         else:
-            plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
+            plt = pretty_plot(width=width, height=height,
+                              dpi=dpi, plt=plt)
             ax = plt.gca()
 
         data = self.bs_plot_data(zero_to_efermi)
@@ -139,7 +151,7 @@ class SBSPlotter(BSPlotter):
         eners = data['energy']
 
         if self._bs.is_spin_polarized or self._bs.is_metal():
-            is_vb = True
+            is_vb = [True]
         else:
             is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
 
@@ -148,19 +160,30 @@ class SBSPlotter(BSPlotter):
                                  range(self._nb_bands)):
             e = eners[nd][str(Spin.up)][nb]
 
-            # this check is very slow but works for now
-            # colour valence bands blue and conduction bands orange
-            if (self._bs.is_spin_polarized or self._bs.is_metal() or
-                    np.all(is_vb[nb])):
-                c = '#3953A4'
+            # For closed-shell calculations with a bandgap, colour valence
+            # bands blue (C0) and conduction bands orange (C1)
+            #
+            # For closed-shell calculations with no bandgap, colour with C0
+            #
+            # For spin-polarized calculations, colour spin up channel with C1
+            # and overlay with C0 (dashed) spin down channel
+
+            if self._bs.is_spin_polarized:
+                c = 'C1'
+            elif self._bs.is_metal() or np.all(is_vb[nb]):
+                c = 'C0'
             else:
-                c = '#FAA316'
+                c = 'C1'
 
             # plot band data
-            ax.plot(dists[nd], e, ls='-', c=c, linewidth=band_linewidth)
-            if self._bs.is_spin_polarized:
+            ax.plot(dists[nd], e, ls='-', c=c, zorder=1)
+
+        # Plot second spin channel if it exists
+        if self._bs.is_spin_polarized:
+            for nd, nb in it.product(range(len(data['distances'])),
+                                     range(self._nb_bands)):
                 e = eners[nd][str(Spin.down)][nb]
-                ax.plot(dists[nd], e, 'r--', linewidth=band_linewidth)
+                ax.plot(dists[nd], e, c='C0', linestyle='--', zorder=2)
 
         self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
@@ -170,14 +193,16 @@ class SBSPlotter(BSPlotter):
                        dos_label=dos_label)
         return plt
 
+    @styled_plot(sumo_base_style, sumo_bs_style)
     def get_projected_plot(self, selection, mode='rgb', interpolate_factor=4,
                            circle_size=150, projection_cutoff=0.001,
-                           zero_to_efermi=True, ymin=-6., ymax=6., width=6.,
-                           height=6., vbm_cbm_marker=False,
+                           zero_to_efermi=True, ymin=-6., ymax=6., width=None,
+                           height=None, vbm_cbm_marker=False,
                            ylabel='Energy (eV)',
                            dpi=400, plt=None,
                            dos_plotter=None, dos_options=None, dos_label=None,
-                           dos_aspect=3, fonts=None):
+                           dos_aspect=3, fonts=None, style=None,
+                           no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` of the projected band structure.
 
         If the system is spin polarised and ``mode = 'rgb'`` spin up and spin
@@ -292,6 +317,12 @@ class SBSPlotter(BSPlotter):
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
                 a single font, specified as a :obj:`str`, or several fonts,
                 specified as a :obj:`list` of :obj:`str`.
+            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+                style specifications, to be composed on top of Sumo base
+                style.
+            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                style. This can make alternative styles behave more
+                predictably.
 
         Returns:
             :obj:`matplotlib.pyplot`: The projected electronic band structure
@@ -304,19 +335,19 @@ class SBSPlotter(BSPlotter):
 
         if dos_plotter:
             plt = pretty_subplot(1, 2, width, height, sharex=False, dpi=dpi,
-                                 plt=plt, fonts=fonts,
+                                 plt=plt,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
                                               'wspace': 0})
             ax = plt.gcf().axes[0]
         else:
-            plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
+            plt = pretty_plot(width, height, dpi=dpi, plt=plt)
             ax = plt.gca()
 
         data = self.bs_plot_data(zero_to_efermi)
         nbranches = len(data['distances'])
 
         # Ensure we do spin up first, then spin down
-        spins = sorted(self._bs.bands.keys(), key=lambda spin: -spin.value)
+        spins = sorted(self._bs.bands.keys(), key=lambda s: -s.value)
 
         proj = get_projections_by_branches(self._bs, selection,
                                            normalise='select')
@@ -356,7 +387,7 @@ class SBSPlotter(BSPlotter):
                 ls = '-' if spin == Spin.up else '--'
                 lc = rgbline(distances, bands, weights[0], weights[1],
                              weights[2], alpha=1, linestyles=ls,
-                             linewidth=2.5)
+                             linewidth=(rcParams['lines.linewidth'] * 1.25))
                 ax.add_collection(lc)
 
             elif mode == 'stacked':
@@ -365,7 +396,8 @@ class SBSPlotter(BSPlotter):
                 # use some nice custom colours first, then default colours
                 colours = ['#3952A3', '#FAA41A', '#67BC47', '#6ECCDD',
                            '#ED2025']
-                colours.extend(np.array(default_colours)/255)
+                colour_series = rcParams['axes.prop_cycle'].by_key()['color']
+                colours.extend(colour_series)
 
                 # very small circles look crap
                 weights[weights < projection_cutoff] = 0
@@ -379,7 +411,7 @@ class SBSPlotter(BSPlotter):
 
         # plot the legend
         for c, spec in zip(colours, selection):
-            if type(spec) == str:
+            if isinstance(spec, str):
                 label = spec
             else:
                 label = '{} ({})'.format(spec[0], " + ".join(spec[1]))
@@ -394,8 +426,7 @@ class SBSPlotter(BSPlotter):
             anchor_point = (0.95, 1)
 
         ax.legend(bbox_to_anchor=anchor_point, loc=loc, frameon=False,
-                  prop={'size': label_size-2}, handletextpad=0.1,
-                  scatterpoints=1)
+                  handletextpad=0.1, scatterpoints=1)
 
         # finish and tidy plot
         self._maketicks(ax, ylabel=ylabel)
@@ -407,13 +438,15 @@ class SBSPlotter(BSPlotter):
         return plt
 
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,
-                  vbm_cbm_marker=False, ymin=-6., ymax=6., height=6., width=6.,
+                  vbm_cbm_marker=False, ymin=-6., ymax=6.,
+                  height=None, width=None,
                   dos_plotter=None, dos_options=None, dos_label=None):
         """Tidy the band structure & add the density of states if required."""
         # draw line at Fermi level if not zeroing to e-Fermi
         if not zero_to_efermi:
+            ytick_color = rcParams['ytick.color']
             ef = self._bs.efermi
-            ax.axhline(ef, linewidth=2, color='k')
+            ax.axhline(ef, color=ytick_color)
 
         # set x and y limits
         ax.set_xlim(0, data['distances'][-1][-1])
@@ -424,9 +457,9 @@ class SBSPlotter(BSPlotter):
 
         if vbm_cbm_marker:
             for cbm in data['cbm']:
-                ax.scatter(cbm[0], cbm[1], color='#D93B2B', marker='o', s=100)
+                ax.scatter(cbm[0], cbm[1], color='C2', marker='o', s=100)
             for vbm in data['vbm']:
-                ax.scatter(vbm[0], vbm[1], color='#0DB14B', marker='o', s=100)
+                ax.scatter(vbm[0], vbm[1], color='C3', marker='o', s=100)
 
         if dos_plotter:
             ax = fig.axes[1]
@@ -437,15 +470,23 @@ class SBSPlotter(BSPlotter):
             dos_options.update({'xmin': ymin, 'xmax': ymax})
             self._makedos(ax, dos_plotter, dos_options, dos_label=dos_label)
         else:
-            # keep correct aspect ratio square
+            # keep correct aspect ratio for axes based on canvas size
             x0, x1 = ax.get_xlim()
             y0, y1 = ax.get_ylim()
+            if width is None:
+                width = rcParams['figure.figsize'][0]
+            if height is None:
+                height = rcParams['figure.figsize'][1]
             ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
 
     def _makedos(self, ax, dos_plotter, dos_options, dos_label=None):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
-        plot_data = dos_plotter.dos_plot_data(**dos_options)
+        # don't use first 4 colours; these are the band structure line colours
+        cycle = cycler(
+            'color', rcParams['axes.prop_cycle'].by_key()['color'][4:])
+        with context({'axes.prop_cycle': cycle}):
+            plot_data = dos_plotter.dos_plot_data(**dos_options)
 
         mask = plot_data['mask']
         energies = plot_data['energies'][mask]
@@ -453,34 +494,59 @@ class SBSPlotter(BSPlotter):
         spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else \
             [Spin.up, Spin.down]
 
-        for i, line_set in enumerate(plot_data['lines']):
+        for line_set in plot_data['lines']:
             for line, spin in it.product(line_set, spins):
                 if spin == Spin.up:
                     label = line['label']
                     densities = line['dens'][spin][mask]
-                elif spin == Spin.down:
+                else:
                     label = ""
                     densities = -line['dens'][spin][mask]
                 ax.fill_betweenx(energies, densities, 0, lw=0,
                                  facecolor=line['colour'],
                                  alpha=line['alpha'])
                 ax.plot(densities, energies, label=label,
-                        color=line['colour'], lw=line_width)
+                        color=line['colour'])
 
             # x and y axis reversed versus normal dos plotting
             ax.set_ylim(dos_options['xmin'], dos_options['xmax'])
             ax.set_xlim(plot_data['ymin'], plot_data['ymax'])
 
-            ax.tick_params(axis='y', which='both', top='off')
-            ax.tick_params(axis='x', which='both', labelbottom='off',
-                           labeltop='off', bottom='off', top='off')
-
             if dos_label is not None:
                 ax.set_xlabel(dos_label)
 
-            ax.legend(loc=2, frameon=False, ncol=1,
-                      prop={'size': label_size - 3},
-                      bbox_to_anchor=(1., 1.))
+        ax.set_xticklabels([])
+        ax.legend(loc=2, frameon=False, ncol=1, bbox_to_anchor=(1., 1.))
+
+    @staticmethod
+    def _sanitise_label(label):
+        """Implement label hacks: Hide trailing @, remove label with leading @
+        """
+
+        import re
+        if re.match('^@.*$', label):
+            return None
+        else:
+            return re.sub('@+$', '', label)
+
+    @classmethod
+    def _sanitise_label_group(cls, labelgroup):
+        """Implement label hacks: Hide trailing @, remove label with leading @
+
+        Labels split with $\mid$ symbol will be treated for each part.
+        """
+
+        if r'$\mid$' in labelgroup:
+            label_components = labelgroup.split(r'$\mid$')
+            good_labels = [l for l in
+                           map(cls._sanitise_label, label_components)
+                           if l is not None]
+            if len(good_labels) == 0:
+                return None
+            else:
+                return (r'$\mid$'.join(good_labels))
+        else:
+            return cls._sanitise_label(labelgroup)
 
     def _maketicks(self, ax, ylabel='Energy (eV)'):
         """Utility method to add tick marks to a band structure."""
@@ -497,6 +563,13 @@ class SBSPlotter(BSPlotter):
             unique_d.append(temp_ticks[0][0])
             unique_l.append(temp_ticks[0][1])
             for i in range(1, len(temp_ticks)):
+                good_label = self._sanitise_label_group(temp_ticks[i][1])
+                if good_label is None:
+                    continue
+                else:
+                    temp_ticks[i] = (temp_ticks[i][0], good_label)
+
+                # Append label to sequence if it is not same as predecessor
                 if unique_l[-1] != temp_ticks[i][1]:
                     unique_d.append(temp_ticks[i][0])
                     unique_l.append(temp_ticks[i][1])
@@ -507,5 +580,13 @@ class SBSPlotter(BSPlotter):
 
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
-        ax.xaxis.grid(True, c='k', ls='-', lw=line_width)
+        ax.xaxis.grid(True, ls='-')
         ax.set_ylabel(ylabel)
+
+        trans_xdata_yaxes = blended_transform_factory(ax.transData,
+                                                      ax.transAxes)
+        ax.vlines(unique_d, 0, 1,
+                  transform=trans_xdata_yaxes,
+                  colors=rcParams['grid.color'],
+                  linewidth=rcParams['grid.linewidth'],
+                  zorder=3)

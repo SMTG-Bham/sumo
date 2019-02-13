@@ -8,15 +8,11 @@ This module provides a class for plotting optical absorption spectra.
 
 import numpy as np
 
-from matplotlib.ticker import MaxNLocator, FuncFormatter
+from matplotlib import rcParams
+from matplotlib.ticker import MaxNLocator, FuncFormatter, AutoMinorLocator
 
-from sumo.plotting import pretty_plot, default_colours, power_tick
-
-line_width = 1.5
-label_size = 22
-optics_colours = np.array([[23, 71, 158], [217, 59, 43],
-                           [13, 177, 75], [247, 148, 51],
-                           [13, 177, 75]] + default_colours) / 255.
+from sumo.plotting import (pretty_plot, power_tick, styled_plot,
+                           sumo_base_style, sumo_optics_style)
 
 
 class SOpticsPlotter(object):
@@ -47,15 +43,15 @@ class SOpticsPlotter(object):
     """
 
     def __init__(self, abs_data, band_gap=None, label=None):
-        if type(abs_data) is tuple:
+        if isinstance(abs_data, tuple):
             abs_data = [abs_data]
 
-        if type(band_gap) is float:
+        if isinstance(band_gap, float):
             band_gap = [band_gap]
         elif not band_gap:
             band_gap = [None] * len(abs_data)
 
-        if type(label) is str:
+        if isinstance(label, str):
             label = [label]
         elif not label and len(abs_data) > 1:
             label = [str(i) for i in range(1, len(abs_data) + 1)]
@@ -80,8 +76,10 @@ class SOpticsPlotter(object):
         self._label = label
         self._xmax = xmax + 1.
 
-    def get_plot(self, width=6., height=6., xmin=0., xmax=None, ymin=0,
-                 ymax=1e5, colours=None, dpi=400, plt=None, fonts=None):
+    @styled_plot(sumo_base_style, sumo_optics_style)
+    def get_plot(self, width=None, height=None, xmin=0., xmax=None, ymin=0,
+                 ymax=1e5, colours=None, dpi=400, plt=None, fonts=None,
+                 style=None, no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the optical spectra.
 
         Args:
@@ -103,20 +101,30 @@ class SOpticsPlotter(object):
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
                 a single font, specified as a :obj:`str`, or several fonts,
                 specified as a :obj:`list` of :obj:`str`.
+            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+                style specifications, to be composed on top of Sumo base
+                style.
+            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                style. This can make alternative styles behave more
+                predictably.
 
         Returns:
             :obj:`matplotlib.pyplot`: The plot of optical spectra.
         """
-        plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt,
-                          fonts=fonts)
+        plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt)
         ax = plt.gca()
 
-        colours = colours + optics_colours if colours else optics_colours
-        for (ener, alpha), abs_label, bg, c in zip(self._abs_data, self._label,
-                                                   self._band_gap, colours):
+        optics_colours = rcParams['axes.prop_cycle'].by_key()['color']
+        if colours is not None:
+            optics_colours = colours + optics_colours
+
+        for (ener, alpha), abs_label, bg, c in zip(self._abs_data,
+                                                   self._label,
+                                                   self._band_gap,
+                                                   optics_colours):
             if len(alpha.shape) == 1:
                 # if averaged optics only plot one line
-                ax.plot(ener, alpha, lw=line_width, label=abs_label, c=c)
+                ax.plot(ener, alpha, label=abs_label, c=c)
 
             else:
                 data = zip(range(3), ['xx', 'yy', 'zz'], ['-', '--', '-.'])
@@ -128,32 +136,36 @@ class SOpticsPlotter(object):
                         label = r'{}$_\mathregular{{{}}}$'
                         label.format(direction_label, direction_id)
 
-                    ax.plot(ener, alpha[:, direction_id], lw=line_width, ls=ls,
+                    ax.plot(ener, alpha[:, direction_id], ls=ls,
                             label=label, c=c)
 
             if bg:
                 # plot band gap line
-                ax.plot([bg, bg], [ymin, ymax], lw=line_width, ls=':', c=c)
+                ax.plot([bg, bg], [ymin, ymax], ls=':', c=c)
 
         xmax = xmax if xmax else self._xmax
         ax.set_xlim(xmin, xmax)
         ax.set_ylim(ymin, ymax)
 
-        ax.tick_params(axis='x', which='both', top='off')
-        ax.tick_params(axis='x', which='both', right='off')
         ax.yaxis.set_major_formatter(FuncFormatter(power_tick))
-        ax.yaxis.set_major_locator(MaxNLocator(4))
+        ax.yaxis.set_major_locator(MaxNLocator(5))
+        ax.xaxis.set_major_locator(MaxNLocator(3))
+        ax.yaxis.set_minor_locator(AutoMinorLocator(2))
+        ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 
         ax.set_xlabel('Energy (eV)')
         ax.set_ylabel(r'Absorption (cm$^\mathregular{-1}$)')
 
         if (not np.all(np.array(self._label) == '')
                 or len(np.array(self._abs_data[0][1]).shape) > 1):
-            ax.legend(loc='best', frameon=False, ncol=1,
-                      prop={'size': label_size - 3})
+            ax.legend(loc='best', frameon=False, ncol=1)
 
         x0, x1 = ax.get_xlim()
         y0, y1 = ax.get_ylim()
+        if width is None:
+            width = rcParams['figure.figsize'][0]
+        if height is None:
+            height = rcParams['figure.figsize'][1]
         ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
         plt.tight_layout()
 

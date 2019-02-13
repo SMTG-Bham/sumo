@@ -8,30 +8,63 @@ Subpackage providing helper functions for generating publication ready plots.
 
 import numpy as np
 
-from cycler import cycler
-from itertools import cycle
+import matplotlib.pyplot
 from matplotlib.collections import LineCollection
-
-default_colours = [[240, 163, 255], [0, 117, 220], [153, 63, 0], [76, 0, 92],
-                   [66, 102, 0], [255, 0, 16], [157, 204, 0], [194, 0, 136],
-                   [0, 51, 128], [255, 164, 5], [255, 255, 0], [255, 80, 5],
-                   [94, 241, 242], [116, 10, 255], [153, 0, 0], [0, 153, 143],
-                   [0, 92, 49], [43, 206, 72], [255, 204, 153],
-                   [148, 255, 181], [143, 124, 0], [255, 168, 187],
-                   [128, 128, 128]]
+from matplotlib import rc, rcParams
+from pkg_resources import resource_filename
 
 colour_cache = {}
 
-default_fonts = ['Whitney Book Extended', 'Arial', 'Whitney Book', 'Helvetica',
-                 'Liberation Sans', 'Andale Sans']
-
-_ticklabelsize = 22
-_labelsize = 22
-_ticksize = 15
-_linewidth = 1.3
+sumo_base_style = resource_filename('sumo.plotting', 'sumo_base.mplstyle')
+sumo_dos_style = resource_filename('sumo.plotting', 'sumo_dos.mplstyle')
+sumo_bs_style = resource_filename('sumo.plotting', 'sumo_bs.mplstyle')
+sumo_phonon_style = resource_filename('sumo.plotting', 'sumo_phonon.mplstyle')
+sumo_optics_style = resource_filename('sumo.plotting', 'sumo_optics.mplstyle')
 
 
-def pretty_plot(width=5, height=5, plt=None, dpi=None, fonts=None):
+def styled_plot(*style_sheets):
+    """Return a decorator that will apply matplotlib style sheets to a plot.
+
+    ``style_sheets`` is a base set of styles, which will be ignored if
+    ``no_base_style`` is set in the decorated function arguments.
+
+    The style will further be overwritten by any styles in the ``style``
+    optional argument of the decorated function.
+
+    Args:
+        style_sheets (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+            supported definition of a style sheet. Can be a list of style of
+            style sheets.
+    """
+
+    def decorator(get_plot):
+
+        def wrapper(*args, fonts=None, style=None, no_base_style=False,
+                    **kwargs):
+
+            if no_base_style:
+                list_style = []
+            else:
+                list_style = list(style_sheets)
+
+            if style is not None:
+                if isinstance(style, list):
+                    list_style += style
+                else:
+                    list_style += [style]
+
+            if fonts is not None:
+                list_style += [{'font.family': 'sans-serif',
+                               'font.sans-serif': fonts}]
+
+            matplotlib.pyplot.style.use(list_style)
+            return get_plot(*args, **kwargs)
+
+        return wrapper
+    return decorator
+
+
+def pretty_plot(width=None, height=None, plt=None, dpi=None):
     """Get a :obj:`matplotlib.pyplot` object with publication ready defaults.
 
     Args:
@@ -41,53 +74,30 @@ def pretty_plot(width=5, height=5, plt=None, dpi=None, fonts=None):
             object to use for plotting.
         dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
             the plot.
-        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
-            a single font, specified as a :obj:`str`, or several fonts,
-            specified as a :obj:`list` of :obj:`str`.
 
     Returns:
         :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` object with
         publication ready defaults set.
     """
-    from matplotlib import rc
 
     if plt is None:
-        import matplotlib.pyplot as plt
-        plt.figure(figsize=(width, height), facecolor="w", dpi=dpi)
-        ax = plt.gca()
-        ax.set_prop_cycle(colour_cycler())
+        plt = matplotlib.pyplot
+        if width is None:
+            width = matplotlib.rcParams['figure.figsize'][0]
+        if height is None:
+            height = matplotlib.rcParams['figure.figsize'][1]
 
-    ax = plt.gca()
+        if dpi is not None:
+            matplotlib.rcParams['figure.dpi'] = dpi
 
-    ax.tick_params(width=_linewidth, size=_ticksize)
-    ax.tick_params(which='major', size=_ticksize, width=_linewidth,
-                   labelsize=_ticklabelsize, pad=7, direction='in',
-                   right='off', top='off')
-    ax.tick_params(which='minor', size=_ticksize/2, width=_linewidth,
-                   direction='in', right='off', top='off')
+        fig = plt.figure(figsize=(width, height))
+        fig.add_subplot(1, 1, 1)
 
-    ax.set_title(ax.get_title(), size=20)
-    for axis in ['top', 'bottom', 'left', 'right']:
-        ax.spines[axis].set_linewidth(_linewidth)
-
-    ax.set_xlabel(ax.get_xlabel(), size=_labelsize)
-    ax.set_ylabel(ax.get_ylabel(), size=_labelsize)
-
-    if type(fonts) is str:
-        fonts = [fonts]
-    fonts = default_fonts if fonts is None else fonts + default_fonts
-
-    rc('font', **{'family': 'sans-serif', 'sans-serif': fonts})
-    rc('text', usetex=False)
-    rc('pdf', fonttype=42)
-    rc('mathtext', fontset='stixsans')
-    rc('legend', handlelength=2)
     return plt
 
 
-def pretty_subplot(nrows, ncols, width=5, height=5, sharex=True,
-                   sharey=True, dpi=None, fonts=None, plt=None,
-                   gridspec_kw=None):
+def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
+                   sharey=True, dpi=None, plt=None, gridspec_kw=None):
     """Get a :obj:`matplotlib.pyplot` subplot object with pretty defaults.
 
     Args:
@@ -103,9 +113,6 @@ def pretty_subplot(nrows, ncols, width=5, height=5, sharex=True,
             the plot.
         plt (:obj:`matplotlib.pyplot`, optional): A :obj:`matplotlib.pyplot`
             object to use for plotting.
-        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
-            a single font, specified as a :obj:`str`, or several fonts,
-            specified as a :obj:`list` of :obj:`str`.
         gridspec_kw (:obj:`dict`, optional): Gridspec parameters. Please see:
             :obj:`matplotlib.pyplot.subplot` for more information. Defaults
             to ``None``.
@@ -114,51 +121,20 @@ def pretty_subplot(nrows, ncols, width=5, height=5, sharex=True,
         :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` subplot object
         with publication ready defaults set.
     """
-    from matplotlib import rc
+
+    if width is None:
+        width = rcParams['figure.figsize'][0]
+    if height is None:
+        height = rcParams['figure.figsize'][1]
 
     # TODO: Make this work if plt is already set...
     if plt is None:
-        import matplotlib.pyplot as plt
-        f, axes = plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey,
-                               dpi=dpi, figsize=(width, height), facecolor='w',
-                               gridspec_kw=gridspec_kw)
+        plt = matplotlib.pyplot
+        plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey, dpi=dpi,
+                     figsize=(width, height), facecolor='w',
+                     gridspec_kw=gridspec_kw)
 
-    for ax in axes:
-        ax.set_prop_cycle(colour_cycler())
-        ax.tick_params(width=_linewidth, size=_ticksize)
-        ax.tick_params(which='major', size=_ticksize, width=_linewidth,
-                       labelsize=_ticklabelsize, pad=7, direction='in',
-                       right='off', top='off')
-        ax.tick_params(which='minor', size=_ticksize/2, width=_linewidth,
-                       direction='in', right='off', top='off')
-
-        ax.set_title(ax.get_title(), size=20)
-        for axis in ['top', 'bottom', 'left', 'right']:
-            ax.spines[axis].set_linewidth(_linewidth)
-
-        ax.set_xlabel(ax.get_xlabel(), size=_labelsize)
-        ax.set_ylabel(ax.get_ylabel(), size=_labelsize)
-
-    fonts = default_fonts if fonts is None else fonts + default_fonts
-
-    rc('font', **{'family': 'sans-serif', 'sans-serif': fonts})
-    rc('text', usetex=False)
-    rc('pdf', fonttype=42)
-    rc('mathtext', fontset='stixsans')
-    rc('legend', handlelength=1.5)
     return plt
-
-
-def colour_cycle():
-    """Return an :obj:`itertools.cycle` of the default sumo colours. """
-    rgb_colours = np.array(default_colours)/255.
-    return cycle(rgb_colours)
-
-
-def colour_cycler():
-    """Return an :obj:`cycler.cycler` of the default sumo colours. """
-    rgb_colours = np.array(default_colours)/255.
-    return cycler('color', rgb_colours)
 
 
 def power_tick(val, pos):
@@ -167,7 +143,7 @@ def power_tick(val, pos):
         return r'$\mathregular{0}$'
     exponent = int(np.log10(val))
     coeff = val / 10**exponent
-    return r'$\mathregular{{{:0.1f} x 10^{:2d}}}$'.format(coeff, exponent)
+    return r'$\mathregular{{{:.1g} x 10^{:2d}}}$'.format(coeff, exponent)
 
 
 def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",
@@ -192,7 +168,7 @@ def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",
         green = np.array([green])
         blue = np.array([blue])
         alpha = np.array([alpha])
-    elif type(alpha) == int:
+    elif isinstance(alpha, int):
         alpha = [alpha] * len(y)
 
     seg = []

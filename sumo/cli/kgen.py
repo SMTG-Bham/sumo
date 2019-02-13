@@ -100,7 +100,8 @@ def kgen(filename='POSCAR', directory=None, make_folders=False, symprec=0.01,
 
             combined with the above example for ``kpt_list`` would indicate the
             path: Gamma -> Z | X -> M. If no labels are provided, letters from
-            A -> Z will be used instead.
+            A -> Z will be used instead. If a label begins with '@' it will be
+            concealed when plotting with sumo-bandplot.
     """
     poscar = Poscar.from_file(filename)
     kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
@@ -221,8 +222,8 @@ def main():
 
     kpoints = None
     if args.kpoints:
-        kpoints = [[map(float, kpt.split()) for kpt in kpts.split(',')] for
-                   kpts in args.kpoints.split('|')]
+        kpoints = [[list(map(float, kpt.split())) for kpt in kpts.split(',')]
+                   for kpts in args.kpoints.split('|')]
     labels = None
     if args.labels:
         labels = [path.split(',') for path in args.labels.split('|')]

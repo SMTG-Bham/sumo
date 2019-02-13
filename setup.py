@@ -13,12 +13,13 @@ def load_test_suite():
     test_suite = test_loader.discover('tests', pattern='test*.py')
     return test_suite
 
+
 with open('README.rst', 'r') as file:
     long_description = file.read()
 
 setup(
     name='sumo',
-    version='1.0.9',
+    version='1.1.3',
     description=('Heavy weight plotting tools for ab initio '
                  'solid-state calculations'),
     url='https://github.com/smtg-ucl/sumo',
@@ -42,7 +43,12 @@ setup(
                       'h5py', 'phonopy', 'matplotlib', 'seekpath'],
     extras_require={'docs': ['sphinx', 'sphinx-argparse']},
     package_data={'sumo': ['symmetry/bradcrack.json',
-                           'plotting/orbital_colours.conf']},
+                           'plotting/orbital_colours.conf',
+                           'plotting/sumo_base.mplstyle',
+                           'plotting/sumo_bs.mplstyle',
+                           'plotting/sumo_dos.mplstyle',
+                           'plotting/sumo_optics.mplstyle',
+                           'plotting/sumo_phonon.mplstyle']},
     data_files=['examples/orbital_colours.conf', 'LICENSE',
                 'requirements_rtd.txt'],
     entry_points={'console_scripts': [

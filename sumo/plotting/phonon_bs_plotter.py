@@ -9,16 +9,17 @@ This module provides a class for plotting phonon band structure diagrams.
 import logging
 import itertools
 
-import numpy as np
-from matplotlib.ticker import MaxNLocator
+from matplotlib import rcParams
+from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 from matplotlib.cbook import flatten
+from matplotlib.transforms import blended_transform_factory
 
-from sumo.plotting import pretty_plot, pretty_subplot, default_colours
+from sumo.plotting import (pretty_plot, pretty_subplot, styled_plot,
+                           sumo_base_style, sumo_bs_style, sumo_phonon_style)
 
 from pymatgen.phonon.plotter import PhononBSPlotter
 
-line_width = 1.5
-band_linewidth = 2
+dashes = (5, 2)
 
 
 class SPhononBSPlotter(PhononBSPlotter):
@@ -36,11 +37,12 @@ class SPhononBSPlotter(PhononBSPlotter):
         PhononBSPlotter.__init__(self, bs)
         self.imag_tol = imag_tol
 
-    def _plot_phonon_dos(self, dos, ax=None, color=None):
+    @staticmethod
+    def _plot_phonon_dos(dos, ax=None, color=None, dashline=False):
         if ax is None:
             ax = plt.gca()
         if color is None:
-            color = 'C2'
+            color = 'C0'
         y, x = dos[:, 0], dos[:, 1]
         ax.plot(x, y, '-', color=color)
         ax.fill_betweenx(y, x, 0, color=color, alpha=0.5)
@@ -48,12 +50,21 @@ class SPhononBSPlotter(PhononBSPlotter):
         ax.set_xlim([0, max(x) * 1.1])
         ax.set_xlabel("DOS")
 
-    def get_plot(self, ymin=None, ymax=None, width=6., height=6., dpi=400,
-                 plt=None, fonts=None, dos=None, dos_aspect=3,
-                 color=None):
+        if dashline:
+            ax.axhline(0, color=rcParams['grid.color'], linestyle='--',
+                       dashes=dashes,
+                       zorder=0,
+                       linewidth=rcParams['ytick.major.width'])
+
+    @styled_plot(sumo_base_style, sumo_bs_style, sumo_phonon_style)
+    def get_plot(self, units='THz', ymin=None, ymax=None, width=None,
+                 height=None, dpi=None, plt=None, fonts=None, dos=None,
+                 dos_aspect=3, color=None, style=None, no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the phonon band structure.
 
         Args:
+            units (:obj:`str`, optional): Units of phonon frequency. Accepted
+                (case-insensitive) values are Thz, cm-1, eV, meV.
             ymin (:obj:`float`, optional): The minimum energy on the y-axis.
             ymax (:obj:`float`, optional): The maximum energy on the y-axis.
             width (:obj:`float`, optional): The width of the plot.
@@ -69,22 +80,27 @@ class SPhononBSPlotter(PhononBSPlotter):
             dos_aspect (float): Width division for vertical DOS
             color (:obj:`str` or :obj:`tuple`, optional): Line/fill colour in
                 any matplotlib-accepted format
+            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
+                style specifications, to be composed on top of Sumo base
+                style.
+            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                style. This can make alternative styles behave more
+                predictably.
 
         Returns:
             :obj:`matplotlib.pyplot`: The phonon band structure plot.
         """
-
         if color is None:
-            color = 'C2'  # Default to first colour in matplotlib series
+            color = 'C0'  # Default to first colour in matplotlib series
 
         if dos is not None:
-            plt = pretty_subplot(1, 2, width, height, sharex=False,
-                                 sharey=True, dpi=dpi, plt=plt, fonts=fonts,
+            plt = pretty_subplot(1, 2, width=width, height=height,
+                                 sharex=False, sharey=True, dpi=dpi, plt=plt,
                                  gridspec_kw={'width_ratios': [dos_aspect, 1],
                                               'wspace': 0})
             ax = plt.gcf().axes[0]
         else:
-            plt = pretty_plot(width, height, dpi=dpi, plt=plt, fonts=fonts)
+            plt = pretty_plot(width, height, dpi=dpi, plt=plt)
             ax = plt.gca()
 
         data = self.bs_plot_data()
@@ -97,10 +113,9 @@ class SPhononBSPlotter(PhononBSPlotter):
             f = freqs[nd][nb]
 
             # plot band data
-            ax.plot(dists[nd], f, ls='-', c=color,
-                    linewidth=band_linewidth)
+            ax.plot(dists[nd], f, ls='-', c=color, zorder=1)
 
-        self._maketicks(ax)
+        self._maketicks(ax, units=units)
         self._makeplot(ax, plt.gcf(), data, width=width, height=height,
                        ymin=ymin, ymax=ymax, dos=dos, color=color)
         plt.tight_layout()
@@ -111,38 +126,52 @@ class SPhononBSPlotter(PhononBSPlotter):
     def _makeplot(self, ax, fig, data, ymin=None, ymax=None, height=6,
                   width=6, dos=None, color=None):
         """Utility method to tidy phonon band structure diagrams. """
-
         # Define colours
-        grey = (0.5, 0.5, 0.5)
         if color is None:
             color = 'C0'  # Default to first colour in matplotlib series
 
         # set x and y limits
-        tymax = ymax if ymax else max(flatten(data['frequency']))
-        tymin = ymin if ymin else min(flatten(data['frequency']))
+        tymax = ymax if (ymax is not None) else max(flatten(data['frequency']))
+        tymin = ymin if (ymin is not None) else min(flatten(data['frequency']))
         pad = (tymax - tymin) * 0.05
 
-        if not ymin:
+        if ymin is None:
             ymin = 0 if tymin >= self.imag_tol else tymin - pad
         ymax = ymax if ymax else tymax + pad
 
         ax.set_ylim(ymin, ymax)
         ax.set_xlim(0, data['distances'][-1][-1])
-        ax.axhline(0, color=grey, linestyle='--')
+
+        if ymin < 0:
+            dashline = True
+            ax.axhline(0, color=rcParams['grid.color'], linestyle='--',
+                       dashes=dashes,
+                       zorder=0,
+                       linewidth=rcParams['ytick.major.width'])
+        else:
+            dashline = False
 
         if dos is not None:
-            self._plot_phonon_dos(dos, ax=fig.axes[1], color=color)
+            self._plot_phonon_dos(dos, ax=fig.axes[1], color=color,
+                                  dashline=dashline)
         else:
 
-            # keep correct aspect ratio square
+            # keep correct aspect ratio; match axis to canvas
             x0, x1 = ax.get_xlim()
             y0, y1 = ax.get_ylim()
+
+            if width is None:
+                width = rcParams['figure.figsize'][0]
+            if height is None:
+                height = rcParams['figure.figsize'][1]
             ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
 
-    def _maketicks(self, ax):
+    def _maketicks(self, ax, units='THz'):
         """Utility method to add tick marks to a band structure."""
         # set y-ticks
         ax.yaxis.set_major_locator(MaxNLocator(6))
+        ax.yaxis.set_minor_locator(AutoMinorLocator(2))
+        ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 
         # set x-ticks; only plot the unique tick labels
         ticks = self.get_ticks()
@@ -163,5 +192,17 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
-        ax.xaxis.grid(True, c='k', ls='-', lw=line_width)
-        ax.set_ylabel('Frequency (THz)')
+        ax.xaxis.grid(True, ls='-')
+
+        trans_xdata_yaxes = blended_transform_factory(ax.transData,
+                                                      ax.transAxes)
+        ax.vlines(unique_d, 0, 1,
+                  transform=trans_xdata_yaxes,
+                  colors=rcParams['grid.color'],
+                  linewidth=rcParams['grid.linewidth'])
+
+        # Use a text hyphen instead of a minus sign because some nice fonts
+        # like Whitney don't come with a real minus
+        labels = {'thz': 'THz', 'cm-1': r'cm$^{\mathrm{-}\mathregular{1}}$',
+                  'ev': 'eV', 'mev': 'meV'}
+        ax.set_ylabel('Frequency ({0})'.format(labels[units.lower()]))

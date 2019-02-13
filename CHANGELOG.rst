@@ -4,9 +4,51 @@ Change Log
 [Unreleased]
 ------------
 
+v1.1.3
+-------
+
+Update Manifest.in
+
+v1.1.2
+-------
+
+Various bugfixes and enhancements:
+
+- Fix manual k-point selection in kgen.
+- Band indicies in bandstats now 1-based.
+- Fix colour cycler issue in band structures with DOS.
+- Allow overriding y-axis DOS ticks.
+- Fermi level now set to 0 eV in dosplot .dat files (@frssp).
+- Add ``--units`` option for phonon band structures (@ajjackson).
+- Remove numbers from x-axis in band structures with DOS.
+
+v1.1.1
+-------
+
+Fix bug when installing from Pypi.
+
+
+v1.1.0
+-------
+
+Use matplotlib style sheets for styling plots (@ajjackson & @utf).
+Enables plots to be customised based on user settings.
+
+Various bug fixes:
+
+- Fix bug when normalising DOS to Fermi level.
+- Fix codacy style issues.
+- Plotting style standardised across all plots.
+
+v1.0.10
+-------
+
+Add option to align DOS to Fermi level (@shyamd)
+
 Various bug fixes:
 
 - Fix many typos.
+- Updates to paper and documentation.
 
 v1.0.9
 ------

@@ -1,12 +1,26 @@
 Sumo
 ====
 
-.. image:: https://travis-ci.org/SMTG-UCL/sumo.svg?branch=master
-    :target: https://travis-ci.org/SMTG-UCL/sumo
-
 .. image:: https://readthedocs.org/projects/sumo/badge/?version=latest
     :target: http://sumo.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
+
+.. image:: https://badge.fury.io/py/sumo.svg
+    :target: https://badge.fury.io/py/sumo
+    :alt: Pypi Repository
+
+.. image:: https://travis-ci.org/SMTG-UCL/sumo.svg?branch=master
+    :target: https://travis-ci.org/SMTG-UCL/sumo
+    :alt: Build Status
+
+.. image:: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d/status.svg
+    :target: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d
+    :alt: JOSS Paper
+
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1338124.svg
+    :target: https://doi.org/10.5281/zenodo.1338124
+    :alt: Zenodo Repository
+
 
 Sumo is a Python toolkit for plotting and analysis of ab initio
 solid-state calculation data,
@@ -18,21 +32,21 @@ publication-ready plotting (powered by Matplotlib_.)
 
 The main features include:
 
-1. An extensive framework for generating high-symmetry k-point paths.
+1. **An extensive framework for generating high-symmetry k-point paths.**
 
    - Crystallographic spacegroups are determined using Spglib_.
    - Conventional crystallographic paths are built in as well as interfaces to
      the SeeK-path_ and
      Pymatgen_ implementations.
 
-2. Plotting scripts for electronic and phonon band structures, density
-   of states, and optical absorption diagrams.
+2. **Plotting scripts for electronic and phonon band structures, density
+   of states, and optical absorption diagrams.**
 
    - VASP calculations are imported using Pymatgen_.
    - The Phonopy_ framework is supported for phonon band structures.
 
-3. Analysis scripts to calculate parabolic and non-parabolic band
-   effective masses.
+3. **Analysis scripts to calculate parabolic and non-parabolic band
+   effective masses.**
 
    - Curve fitting is performed using `Scipy <https://www.scipy.org>`_.
 
@@ -76,6 +90,10 @@ Currently, the scripts provided are:
 - ``sumo-bandstats``: For calculating electron and hole effective masses
   from a band structure.
 
+Information on how to tweak the style of sumo plots is provided on the
+`Customising Sumo Plots page
+<http://sumo.readthedocs.io/en/latest/customising-plots.html>`_.
+
 
 Installation
 ------------
@@ -97,8 +115,48 @@ If this is your first entry to the scientific Python ecosystem, be
 aware that the full stack including Scipy with need several hundred MB
 of disk space.
 
-To build the documentation, download the package source and install with
-extra dependencies from the package directory:
+
+Developer installation
+~~~~~~~~~~~~~~~~~~~~~~
+
+*Regular users can skip this section!*
+
+Sumo can also be installed from a copy of the source repository
+(https://github.com/smtg-ucl/sumo); this will be preferred for development
+work or if using experimental code branches.
+
+To clone the project from Github and make a local installation:
+
+.. code-block:: bash
+
+    git clone https://github.com/smtg-ucl/sumo.git
+    cd sumo
+    pip3 install --user -e .
+
+The ``-e`` and ``--user`` options are recommended:
+Instead of copying files, with ``-e`` pip will create links to the
+source folder so that that tweaks to the code will be immediately
+reflected on the PATH.
+The ``--user`` flag installs to a directory in your home folder
+(usually under the hidden directory *~/.local*),
+preventing interference with your root Python installation.
+
+Tests
+^^^^^
+
+From a developer installation, the unit tests can be
+run (from the root directory of the project) using::
+
+  python3 -m unittest discover tests
+
+Automatic testing is run on the master branch of Sumo and proposed
+features at https://travis-ci.org/SMTG-UCL/sumo .
+
+Documentation
+^^^^^^^^^^^^^
+
+To build the documentation from the project files, install
+sumo with extra Sphinx dependencies before compiling with ``make``:
 
 .. code-block:: bash
 
@@ -106,31 +164,21 @@ extra dependencies from the package directory:
     cd docs
     make html
 
+The user guide can then be explored from *docs/build/html/index.html*.
 
-Developer installation
-~~~~~~~~~~~~~~~~~~~~~~
+How to cite sumo
+----------------
 
-Developers may prefer to install using ``pip3 install --user -e .``
-which creates an "editable" local installation. Instead of copying files,
-this creates links to the source folder so that that tweaks to the
-code in your source folder will be immediately reflected on the PATH.
+If you use sumo in your research, please consider citing the following work:
 
-
-Tests
-~~~~~
-
-To ensure the code has been installed correctly, the unittests can be
-run (from the root directory of the project) using::
-
-  python3 -m unittest discover tests
-
+    Alex M. Ganose, Adam J. Jackson, David O. Scanlon. *sumo: Command-line tools for plotting and analysis of periodic ab initio calculations.* Journal of Open Source Software, 2018 3 (28), 717, `doi:10.21105/joss.00717 <https://doi.org/10.21105/joss.00717>`_.
 
 License
 -------
 
 Sumo is made available under the MIT License.
 
-  
+
 Detailed requirements
 ---------------------
 
@@ -147,7 +195,7 @@ open-source python packages, specifically:
 - `H5py <https://www.h5py.org>`_
 
 .. _matplotlib: https://matplotlib.org
-.. _numpy: http://www.numpy.org 
+.. _numpy: http://www.numpy.org
 .. _phonopy: https://atztogo.github.io/phonopy
 .. _pymatgen: http://pymatgen.org
 .. _scipy: https://www.scipy.org

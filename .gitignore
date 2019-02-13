@@ -5,6 +5,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Output data files
+*.dat
+
 # Distribution / packaging
 .Python
 env/
@@ -58,3 +61,6 @@ target/
 
 # Rope project settings
 .ropeproject
+
+# Pycharm settings
+.idea
