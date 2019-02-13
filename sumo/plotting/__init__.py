@@ -137,7 +137,12 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
     return plt
 
 
-def power_tick(val, pos):
+def curry_power_tick(times_sign=r'\times'):
+    def f(val, pos):
+        return power_tick(val, pos, times_sign=times_sign)
+    return f
+
+def power_tick(val, pos, times_sign=r'\times'):
     """Custom power ticker function. """
     if val == 0:
         return r'$\mathregular{0}$'
@@ -146,8 +151,10 @@ def power_tick(val, pos):
     else:
         exponent = int(np.log10(val))
     coeff = val / 10**exponent
-    return r'$\mathregular{{{:.1f} x 10^{:2d}}}$'.format(coeff, exponent)
 
+    return r'$\mathregular{{{:.1f} {} 10^{:2d}}}$'.format(coeff,
+                                                          times_sign,
+                                                          exponent)
 
 def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",
             linewidth=2.5):
