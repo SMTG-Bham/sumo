@@ -29,9 +29,12 @@ class QuestaalSite(object):
     """
 
     def __init__(self, nbas, vn=3., io=15, alat=1., xpos=True, read='fast',
-                 sites=[], plat=[1, 0, 0, 0, 1, 0, 0, 0, 1]):
-        assert nbas == len(sites)
-        assert len(plat) == 9
+                 sites=None, plat=[1, 0, 0, 0, 1, 0, 0, 0, 1]):
+        sites = sites or []
+        if nbas != len(sites):
+            raise AssertionError()
+        if len(plat) != 9:
+            raise AssertionError()
 
         if read != 'fast':
             raise Exception("Algebraic expressions not supported, use 'fast'")
@@ -72,8 +75,8 @@ class QuestaalSite(object):
 
         # Some of the header info does not use '=' so handle separately
         header_items = header.strip().split()
-        assert header_items[0] == '%'
-        assert header_items[1] == 'site-data'
+        if header_items[0] != '%' or header_items[1] != 'site-data':
+            raise AssertionError()
 
         xpos = True if 'xpos' in header_items else False
         read = 'fast' if 'fast' in header_items else False
@@ -191,7 +194,8 @@ class QuestaalInit(object):
         return species, coords
 
     def _get_structure_from_spcgrp(self):
-        assert('A' in self.lattice)
+        if 'A' not in self.lattice:
+            raise AssertionError()
         if 'B' not in self.lattice:
             logging.info('Lattice vector B not given, assume equal to A')
             self.lattice['B'] = self.lattice['A']
@@ -229,7 +233,8 @@ class QuestaalInit(object):
                 for length in ('A', 'B', 'C'):
                     self.lattice[length] *= _bohr_to_angstrom
 
-        assert('ALAT' in self.lattice)
+        if 'ALAT' not in self.lattice:
+            raise AssertionError()
         for length in ('A', 'B', 'C'):
             self.lattice[length] *= self.lattice['ALAT']
 
@@ -420,7 +425,8 @@ class QuestaalInit(object):
 
                 if 'PLAT' in tag_dict:
                     lattice = tuple(map(float, tag_dict['PLAT'].split()))
-                    assert len(lattice) == 9
+                    if len(lattice) != 9:
+                        raise AssertionError()
                     tag_dict['PLAT'] = [[lattice[0], lattice[1], lattice[2]],
                                         [lattice[3], lattice[4], lattice[5]],
                                         [lattice[6], lattice[7], lattice[8]]]
@@ -783,7 +789,7 @@ def read_dos(pdos_file=None, tdos_file=None, site_file=None,
     return (tdos, pdos)
 
 
-def band_structure(bnds_file, lattice, labels={},
+def band_structure(bnds_file, lattice, labels=None,
                    coords_are_cartesian=False):
     """Read band structure data
 
@@ -830,8 +836,9 @@ def band_structure(bnds_file, lattice, labels={},
         for line in range(eig_lines):      # Skip over the eigenvalues
             _ = f.readline()                     # for now: re-read file later
         kpt2 = list(map(float, f.readline().split()))
-        assert(len(kpt1) == 3)
-        assert(len(kpt2) == 3)
+        if len(kpt1) != 3 or len(kpt2) != 3:
+            raise AssertionError()
+
         if kpt1 == kpt2:
             spin_pol = True
         else:
@@ -888,6 +895,8 @@ def band_structure(bnds_file, lattice, labels={},
     # [a, b, c] [ax, ay, az] = [a.ax + b.bx + x.cx, a.ay + b.by,...] = [x y z]
     #           |bx, by, bz|
     #           [cx, cy, cz]
+    labels = labels or {} # Initialise a dict if null value
+                          # (Avoids oddness with mutable option defaults)
     if not coords_are_cartesian:
         for label, coords in labels.items():
             labels[label] = np.dot(
