@@ -470,7 +470,7 @@ class QuestaalInit(object):
                             tol=tol)
 
 
-def write_kpoint_files(filename, kpoints, labels,
+def write_kpoint_files(filename, kpoints, labels, alat=1,
                        make_folders=False, directory=None, cart_coords=False,
                        **kwargs):
     """Write syml file for Questaal kpoints
@@ -782,7 +782,7 @@ def read_dos(pdos_file=None, tdos_file=None, site_file=None,
             cdos = None
         else:
             tdos = None
-            cdos = _get_pdos(pdos_file, site_file)
+            cdos = _get_cdos(pdos_file, site_file)
 
     else:
         tdos = _get_tdos(tdos_file)
@@ -833,7 +833,7 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
     # We will first build a nested list [[bnd1_kpt1, bnd2_kpt1, ...],
     #                                    [bnd1_kpt2, bnd2_kpt2, ...], ...]
     # then convert to a numpy array (i.e. with each row for a kpoint)
-    # and then transpose the array to obtain desired format
+    # and then transpose the array to obtain desired formats
 
     with zopen(bnds_file, 'r') as f:
         kpoints = []
@@ -891,7 +891,7 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
         while block_nkpts > 0:  # File should be terminated with a 0
             for i in range(block_nkpts):
                 kpoint = list(map(float, f.readline().split()))
-                kpoints.append(np.array(kpoint) / alat)
+                kpoints.append(np.array(kpoint) / (alat * _bohr_to_angstrom))
 
                 eigenvals[Spin.up].append(_read_eigenvals(f, eig_lines))
 
@@ -919,7 +919,11 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
 
     labels = labels or {} # Initialise a dict if null value
                           # (Avoids oddness with mutable option defaults)
-    if not coords_are_cartesian:
+    if coords_are_cartesian:
+        logging.info("Cartesian coordinates, scaling by ALAT = {}".format(alat))
+        for label, coords in labels.items():
+            labels[label] = np.array(coords) / (alat * _bohr_to_angstrom)
+    else:
         for label, coords in labels.items():
             labels[label] = np.dot(
                 coords, lattice.reciprocal_lattice_crystallographic.matrix)

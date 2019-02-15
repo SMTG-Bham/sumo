@@ -23,7 +23,7 @@ import numpy as np
 from sumo.symmetry.kpoints import get_path_data, write_kpoint_files
 from pymatgen.io.vasp.inputs import Poscar, Kpoints
 import sumo.io.questaal
-from sumo.io.questaal import QuestaalInit
+from sumo.io.questaal import QuestaalInit, QuestaalSite
 
 
 __author__ = "Alex Ganose"
@@ -111,10 +111,13 @@ def kgen(filename='POSCAR', code='vasp',
     if code.lower() == 'vasp':
         structure = Poscar.from_file(filename).structure
     elif code.lower() == 'questaal':
-        if '.'.split(filename)[0] == 'site':
-            structure = QuestaalSite.from_file(filename).structure
+        if filename.split('.')[0] == 'site':
+            site = QuestaalSite.from_file(filename)
+            structure = site.structure
+            alat = site.alat
         else:
             structure = QuestaalInit.from_file(filename).structure
+            alat = None
     else:
         raise ValueError('Code "{0}" not recognized.'.format(code))
 
@@ -160,6 +163,10 @@ def kgen(filename='POSCAR', code='vasp',
     elif code.lower() == 'questaal':
         if cart_coords:
             kpoints = [kpoint / (2 * np.pi) for kpoint in kpoints]
+            if alat is not None:
+                logging.info("Multiplying kpoint values by ALAT = {} Bohr".format(alat))
+                _bohr_to_angstrom = 0.5291772
+                kpoints = [kpoint * alat * _bohr_to_angstrom for kpoint in kpoints]
         sumo.io.questaal.write_kpoint_files(filename, kpoints, labels,
                                             make_folders=make_folders,
                                             directory=directory,
