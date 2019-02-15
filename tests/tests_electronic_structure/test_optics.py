@@ -1,5 +1,4 @@
 import unittest
-from os.path import abspath
 from os.path import join as path_join
 from pkg_resources import resource_filename
 import numpy as np

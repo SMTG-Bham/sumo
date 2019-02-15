@@ -1,5 +1,4 @@
 import unittest
-from os.path import abspath
 from os.path import join as path_join
 from pkg_resources import resource_filename
 import numpy as np
@@ -39,7 +38,7 @@ class QuestaalInitTestCase(unittest.TestCase):
 
         init_sym = QuestaalInit(lattice, site)
 
-        structure = init_sym.structure
+        init_sym.structure
         self.assertFalse(init_sym.cartesian)
 
         # Check ALAT ok
@@ -112,12 +111,12 @@ class QuestaalInitTestCase(unittest.TestCase):
                 {'ATOM': 'O', 'POS': (0.6666670, 0.3333330, 0.8803100)}]
 
         with self.assertRaises(ValueError):
-            init = QuestaalInit(lattice, site)
+            QuestaalInit(lattice, site)
 
         site = [{'ATOM': 'Zn', 'C': (0.6666670, 0.3333330, 0.5000000)},
                 {'ATOM': 'O', 'C': (0.6666670, 0.3333330, 0.8803100)}]
         with self.assertRaises(NotImplementedError):
-            init = QuestaalInit(lattice, site)
+            QuestaalInit(lattice, site)
 
     def test_init_from_file(self):
         zno_path = resource_filename(__name__, path_join('..', 'data', 'ZnO'))
