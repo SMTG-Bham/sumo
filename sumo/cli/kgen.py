@@ -111,7 +111,10 @@ def kgen(filename='POSCAR', code='vasp',
     if code.lower() == 'vasp':
         structure = Poscar.from_file(filename).structure
     elif code.lower() == 'questaal':
-        structure = QuestaalInit.from_file(filename).structure
+        if '.'.split(filename)[0] == 'site':
+            structure = QuestaalSite.from_file(filename).structure
+        else:
+            structure = QuestaalInit.from_file(filename).structure
     else:
         raise ValueError('Code "{0}" not recognized.'.format(code))
 

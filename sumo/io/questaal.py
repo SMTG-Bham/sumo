@@ -42,8 +42,6 @@ class QuestaalSite(object):
             raise Exception("Algebraic expressions not supported, use 'fast'")
         if io != 15:
             raise Exception("Only site.ext format 15 supported at present")
-        if not xpos:
-            raise Exception("site.ext must use fractional coordinates (xpos)")
 
         self.nbas, self.vn, self.io, self.alat = nbas, vn, io, alat
         self.xpos, self.read, self.sites, self.plat = xpos, read, sites, plat
@@ -61,11 +59,22 @@ class QuestaalSite(object):
 
         # Get corresponding lists of species and positions by making a list of
         # pairs and unpacking with zip
-        species_coords = [(site['species'], site['pos'])
-                          for site in self.sites]
-        species, coords = zip(*species_coords)
+        if self.xpos:
+            species_coords = [(site['species'], site['pos'])
+                              for site in self.sites]
+            species, coords = zip(*species_coords)
 
-        return Structure(lattice, species, coords, coords_are_cartesian=False)
+            return Structure(lattice, species, coords,
+                             coords_are_cartesian=False)
+        else:
+            species_coords = [(site['species'],
+                               [x * self.alat * _bohr_to_angstrom
+                                for x in site['pos']])
+                              for site in self.sites]
+            species, coords = zip(*species_coords)
+
+            return Structure(lattice, species, coords,
+                             coords_are_cartesian=True)
 
     @classmethod
     def from_file(cls, filename):
@@ -798,7 +807,7 @@ def read_dos(pdos_file=None, tdos_file=None, site_file=None,
     return (tdos, pdos)
 
 
-def band_structure(bnds_file, lattice, labels=None,
+def band_structure(bnds_file, lattice, labels=None, alat=1,
                    coords_are_cartesian=False):
     """Read band structure data
 
@@ -808,6 +817,7 @@ def band_structure(bnds_file, lattice, labels=None,
         labels (:obj:`dict`): Dict of special point locations and labels. This
             is generally obtained from a syml.ext file using
             :obj:`sumo.io.questaal.labels_from_syml`.
+        alat (:obj:`float`): Lattice scaling parameter defined in site.ext
         lattice (:obj:`pymatgen.core.lattice.Lattice`)
         coords_are_cartesian (:obj:`bool`): bnds.ext file is in Cartesian
             coordinates.
@@ -881,7 +891,7 @@ def band_structure(bnds_file, lattice, labels=None,
         while block_nkpts > 0:  # File should be terminated with a 0
             for i in range(block_nkpts):
                 kpoint = list(map(float, f.readline().split()))
-                kpoints.append(np.array(kpoint))
+                kpoints.append(np.array(kpoint) / alat)
 
                 eigenvals[Spin.up].append(_read_eigenvals(f, eig_lines))
 

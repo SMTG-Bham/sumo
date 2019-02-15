@@ -27,7 +27,7 @@ from pymatgen.electronic_structure.bandstructure import \
 import matplotlib as mpl
 mpl.use('Agg')
 
-from sumo.io.questaal import QuestaalInit, labels_from_syml
+from sumo.io.questaal import QuestaalInit, QuestaalSite, labels_from_syml
 from sumo.io.questaal import band_structure as questaal_band_structure
 from sumo.plotting.bs_plotter import SBSPlotter
 from sumo.plotting.dos_plotter import SDOSPlotter
@@ -64,7 +64,7 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
                 Use vasprun.xml or vasprun.xml.gz file.
             Questaal:
                 Path to a bnds.ext file. The extension will also be used to
-                find init.ext and syml.ext files in the same directory.
+                find site.ext and syml.ext files in the same directory.
 
             If no filenames are provided, sumo
             will search for vasprun.xml or vasprun.xml.gz files in folders
@@ -232,15 +232,18 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
         ext = bnds_file.split('.')[-1]
         bnds_folder = os.path.join(bnds_file, os.path.pardir)
 
-        init_file = os.path.abspath(
-            os.path.join(bnds_folder, 'init.{}'.format(ext)))
+        site_file = os.path.abspath(
+            os.path.join(bnds_folder, 'site.{}'.format(ext)))
 
-        if os.path.isfile(init_file):
-            logging.info('init file found, reading lattice...')
-            bnds_lattice = QuestaalInit.from_file(init_file).structure.lattice
+        if os.path.isfile(site_file):
+            logging.info('site file found, reading lattice...')
+            site_data = QuestaalSite.from_file(site_file)
+            #bnds_lattice = QuestaalInit.from_file(init_file).structure.lattice
+            bnds_lattice = site_data.structure.lattice
+            alat = site_data.alat
         else:
-            raise IOError('Init file {} not found: '
-                          'needed to determine lattice'.format(init_file))
+            raise IOError('Site file {} not found: '
+                          'needed to determine lattice'.format(site_file))
 
         syml_file = os.path.abspath(
             os.path.join(bnds_folder, 'syml.{}'.format(ext)))
@@ -251,7 +254,7 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
             logging.info('syml file not found, band structure lacks labels')
             bnds_labels = {}
 
-        bs = questaal_band_structure(bnds_file, bnds_lattice,
+        bs = questaal_band_structure(bnds_file, bnds_lattice, alat=alat,
                                      labels=bnds_labels,
                                      coords_are_cartesian=cart_coords)
 
