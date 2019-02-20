@@ -57,6 +57,111 @@ def broaden_eps(dielectric, sigma):
     return (e, np.array(real).T, np.array(imag).T)
 
 
+def calculate_dielectric_properties(dielectric, properties,
+                                    average=True):
+    r"""Calculate optical properties from the dielectric function
+
+    Supported properties:
+
+    Absorption
+    ~~~~~~~~~~
+
+    The unit of alpha is :math:`\mathrm{cm}^{-1}`.
+
+    Refractive index :math:`n` has real and imaginary parts:
+
+    .. math::
+
+        n = [(e^\prime + ie^{\prime\prime} / e_0]^{1/2}
+          = n^\prime + in^{\prime\prime}
+
+    Relationship between :math:`a` and imaginary :math:`n^{\prime\prime}`:
+
+    .. math::
+
+        a = 4 \pi n^{\prime\prime} / \lambda
+
+    Where:
+
+    .. math:: \lambda = hc/E
+
+    Args:
+        dielectric_data (tuple): The high-frequency dielectric data, following
+            the same format as :obj:`pymatgen.io.vasp.Vasprun.dielectric`.
+            This is a :obj:`tuple` containing the energy, the real part of the
+            dielectric tensor, and the imaginary part of the tensor, as a
+            :obj:`list` of :obj:`floats`. E.g.::
+
+                (
+                    [energies],
+                    [[real_xx, real_yy, real_zz, real_xy, real_yz, real_xz]],
+                    [[imag_xx, imag_yy, imag_zz, imag_xy, imag_yz, imag_xz]]
+                )
+
+        properties (set):
+            The set of properties to return. Intermediate properties will be
+            calculated as needed. Accepted values: 'eps_real', 'eps_im',
+            'absorption', 'loss', 'n_real', 'n_imag'
+
+        average (:obj:`bool`, optional): Average the dielectric response across
+            the xx, yy, zz directions and calculate properties with scalar
+            maths. Defaults to ``True``. If False, solve dielectric matrix to
+            obtain directional properties, returning xx, yy, zz components.
+            This may be significantly slower!
+
+    Returns:
+        :obj:`tuple` of :obj:`list` of :obj:`float`: The optical absorption in
+        :math:`\mathrm{cm}^{-1}`. If ``average`` is ``True``, the data will be
+        returned as::
+
+            ([energies], [property]).
+
+        If ``average`` is ``False``, the data will be returned as::
+
+            ([energies], [property_xx, property_yy, property_zz]).
+    """
+
+    results = {}
+    def _update_results(keys_vals):
+        """Update results dict with selected properties only"""
+        results.update({prop: (energies, data)
+                        for prop, data in keys_vals.items()
+                        if (prop in properties)})
+        return results
+
+    if average:
+        real_eps = np.array(dielectric[1])[:, :3]
+        imag_eps = np.array(dielectric[2])[:, :3]
+        energies = np.array(dielectric[0])
+
+        real_eps = np.average(real_eps, axis=1)
+        imag_eps = np.average(imag_eps, axis=1)
+
+        results = _update_results({'eps_real': real_eps,
+                                   'eps_imag': imag_eps})        
+        
+        eps = real_eps + 1j * imag_eps
+
+        if 'loss' in properties:
+            loss = -np.imag(1/eps)
+            _update_results({'loss': loss})
+        
+        if properties.intersection({'n_real', 'n_imag', 'absorption'}):
+            n = np.sqrt(eps)
+            _update_results({'n_real': n.real,
+                             'n_imag': n.imag})
+
+            if 'absorption' in properties:
+                alpha = n.imag * energies * 4 * np.pi / 1.23984212E-4
+                _update_results({'absorption': alpha})
+
+    else:
+        raise NotImplementedError()
+        #alpha = imag_ref_index * energies[:, None] * 4 * np.pi / 1.23984212E-4
+
+    return results
+
+
 def calculate_alpha(dielectric, average=True):
     r"""Calculate the optical absorption from the high-frequency dielectric.
 

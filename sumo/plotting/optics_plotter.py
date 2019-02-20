@@ -149,7 +149,12 @@ class SOpticsPlotter(object):
             optics_colours = colours + optics_colours
 
         standard_ylabels = {
-            'absorption': r'Absorption (cm$^\mathregular{-1}$)'}
+            'absorption': r'Absorption (cm$^\mathregular{-1}$)',
+            'loss': r'Energy-loss function',
+            'eps_real': r'Re($\epsilon$)',
+            'eps_imag': r'Im($\epsilon$)',
+            'n_real': r'Re(n)',
+            'n_imag': r'$\kappa$ = Im(n)'}
 
         if ymax is None:
             ymax_series = [None] * n_plots

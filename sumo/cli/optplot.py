@@ -23,6 +23,7 @@ from sumo.plotting.optics_plotter import SOpticsPlotter
 from sumo.electronic_structure.optics import (broaden_eps,
                                               calculate_alpha,
                                               calculate_loss,
+                                              calculate_dielectric_properties,
                                               write_files)
 
 __author__ = "Alex Ganose"
@@ -107,14 +108,15 @@ def optplot(modes=['absorption'], filenames=None, prefix=None, directory=None,
         dielectrics = [broaden_eps(d, gaussian)
                        for d in dielectrics]
 
+    # initialize spectrum data ready to append from each dataset
     abs_data = OrderedDict()
-    for mode in modes:
-        if mode == 'absorption':
-            abs_data['absorption'] = [calculate_alpha(d, average=average)
-                               for d in dielectrics]
-        elif mode == 'loss':
-            abs_data['loss'] = [calculate_loss(d, average=average)
-                                for d in dielectrics]
+    abs_data.update({mode: [] for mode in modes})
+
+    # for each calculation, get all required properties and append to data
+    for d in dielectrics:
+        for mode, spectrum in calculate_dielectric_properties(
+                d, set(modes), average=average).items():
+            abs_data[mode].append(spectrum)
 
     if isinstance(band_gaps, list) and not band_gaps:
         # empty list therefore get bandgap from vasprun files
