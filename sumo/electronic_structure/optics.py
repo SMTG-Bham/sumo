@@ -124,6 +124,7 @@ def calculate_alpha(dielectric, average=True):
 
     return (energies, alpha)
 
+
 def calculate_loss(dielectric, average=True):
     r"""Calculate the optical loss from the high-frequency dielectric (:math:`\epsilon`).
 
@@ -168,7 +169,7 @@ def calculate_loss(dielectric, average=True):
 
     return (energies, loss)
 
-def write_files(abs_data, prefix=None, directory=None):
+def write_files(abs_data, basename='absorption', prefix=None, directory=None):
     """Write the absorption or loss spectra to a file.
 
     Note that this function expects to receive an iterable series of spectra.
@@ -190,7 +191,7 @@ def write_files(abs_data, prefix=None, directory=None):
     """
     for i, absorption in enumerate(abs_data):
         num = '_{}'.format(i) if len(abs_data) > 1 else ''
-        basename = 'absorption{}.dat'.format(num)
+        basename = '{}{}.dat'.format(basename, num)
         filename = '{}_{}'.format(prefix, basename) if prefix else basename
         if directory:
             filename = os.path.join(directory, filename)
