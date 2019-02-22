@@ -122,6 +122,7 @@ def calculate_dielectric_properties(dielectric, properties,
     """
 
     results = {}
+
     def _update_results(keys_vals):
         """Update results dict with selected properties only"""
         results.update({prop: (energies, data)
@@ -129,150 +130,76 @@ def calculate_dielectric_properties(dielectric, properties,
                         if (prop in properties)})
         return results
 
-    if average:
-        real_eps = np.array(dielectric[1])[:, :3]
-        imag_eps = np.array(dielectric[2])[:, :3]
-        energies = np.array(dielectric[0])
+    energies = np.array(dielectric[0])
+    real_eps = np.array(dielectric[1])
+    imag_eps = np.array(dielectric[2])
 
-        real_eps = np.average(real_eps, axis=1)
-        imag_eps = np.average(imag_eps, axis=1)
+    if average:
+        real_eps = np.average(real_eps[:, :3], axis=1)
+        imag_eps = np.average(imag_eps[:, :3], axis=1)
 
         results = _update_results({'eps_real': real_eps,
-                                   'eps_imag': imag_eps})        
-        
+                                   'eps_imag': imag_eps})
+
         eps = real_eps + 1j * imag_eps
 
         if 'loss' in properties:
             loss = -np.imag(1/eps)
             _update_results({'loss': loss})
-        
+
         if properties.intersection({'n_real', 'n_imag', 'absorption'}):
             n = np.sqrt(eps)
             _update_results({'n_real': n.real,
                              'n_imag': n.imag})
 
-            if 'absorption' in properties:
-                alpha = n.imag * energies * 4 * np.pi / 1.23984212E-4
-                _update_results({'absorption': alpha})
+        if 'absorption' in properties:
+            alpha = n.imag * energies * 4 * np.pi / 1.23984212E-4
+            _update_results({'absorption': alpha})
 
     else:
-        raise NotImplementedError()
-        #alpha = imag_ref_index * energies[:, None] * 4 * np.pi / 1.23984212E-4
+        # Work with eps as complex numbers in 9-column 'flattened' matrix
+        # First interpret 6-column data as symmetric matrix
+        # Input form xx yy zz xy yz xz
+        # Indices     0  1  2  3  4  5
+        n_rows = real_eps.shape[0]
+        eps = real_eps + 1j * imag_eps
+        eps = np.array([eps[:, 0], eps[:, 3], eps[:, 5],
+                        eps[:, 3], eps[:, 1], eps[:, 4],
+                        eps[:, 5], eps[:, 4], eps[:, 2]]).T
+
+        _update_results(
+            {'eps_real': eps.real[:, [0, 4, 8]],
+             'eps_imag': eps.imag[:, [0, 4, 8]]})
+        # Invert epsilon to obtain energy-loss function
+        if 'loss' in properties:
+            def matrix_loss_func(eps_row):
+                eps_matrix = eps_row.reshape(3, 3)
+                return -np.linalg.inv(eps_matrix).imag.flatten()
+
+            loss = np.array([matrix_loss_func(row) for row in eps])
+
+            _update_results({'loss': loss[:, [0, 4, 8]]})
+
+        if properties.intersection({'n_real', 'n_imag', 'absorption'}):
+            def matrix_n(eps_row):
+                eps_matrix = eps_row.reshape(3, 3)
+                eigenvals, v = np.linalg.eig(eps_matrix)
+                d = np.diag(eigenvals)
+                n = v @ np.sqrt(d) @ np.linalg.inv(v)  # Py3.5 matrix mult @ =D
+                return n.flatten()
+
+            n = np.array([matrix_n(row) for row in eps])
+
+            _update_results({'n_real': n.real[:, [0, 4, 8]],
+                             'n_imag': n.imag[:, [0, 4, 8]]})
+
+        if 'absorption' in properties:
+            alpha = (n.imag * energies.reshape(n_rows, 1) *
+                     4 * np.pi / 1.23984212E-4)
+            _update_results({'absorption': alpha[:, [0, 4, 8]]})
 
     return results
 
-
-def calculate_alpha(dielectric, average=True):
-    r"""Calculate the optical absorption from the high-frequency dielectric.
-
-    The unit of alpha is :math:`\mathrm{cm}^{-1}`.
-
-    Refractive index :math:`n` has real and imaginary parts:
-
-    .. math::
-
-        n = [(e^\prime + ie^{\prime\prime} / e_0]^{1/2}
-          = n^\prime + in^{\prime\prime}
-
-    Relationship between :math:`a` and imaginary :math:`n^{\prime\prime}`:
-
-    .. math::
-
-        a = 4 \pi n^{\prime\prime} / \lambda
-
-    Where:
-
-    .. math:: \lambda = hc/E
-
-    Args:
-        dielectric_data (tuple): The high-frequency dielectric data, following
-            the same format as :obj:`pymatgen.io.vasp.Vasprun.dielectric`.
-            This is a :obj:`tuple` containing the energy, the real part of the
-            dielectric tensor, and the imaginary part of the tensor, as a
-            :obj:`list` of :obj:`floats`. E.g.::
-
-                (
-                    [energies],
-                    [[real_xx, real_yy, real_zz, real_xy, real_yz, real_xz]],
-                    [[imag_xx, imag_yy, imag_zz, imag_xy, imag_yz, imag_xz]]
-                )
-
-        average (:obj:`bool`, optional): Average the dielectric response across
-            all lattice directions. Defaults to ``True``.
-
-    Returns:
-        :obj:`tuple` of :obj:`list` of :obj:`float`: The optical absorption in
-        :math:`\mathrm{cm}^{-1}`. If ``average`` is ``True``, the data will be
-        returned as::
-
-            ([energies], [alpha]).
-
-        If ``average`` is ``False``, the data will be returned as::
-
-            ([energies], [alpha_xx, alpha_yy, alpha_zz]).
-    """
-    real_eps = np.array(dielectric[1])[:, :3]
-    imag_eps = np.array(dielectric[2])[:, :3]
-    energies = np.array(dielectric[0])
-
-    if average:
-        real_eps = np.average(real_eps, axis=1)
-        imag_eps = np.average(imag_eps, axis=1)
-
-    eps = real_eps + 1j * imag_eps
-    imag_ref_index = np.sqrt(eps).imag
-
-    if average:
-        alpha = imag_ref_index * energies * 4 * np.pi / 1.23984212E-4
-    else:
-        alpha = imag_ref_index * energies[:, None] * 4 * np.pi / 1.23984212E-4
-
-    return (energies, alpha)
-
-
-def calculate_loss(dielectric, average=True):
-    r"""Calculate the optical loss from the high-frequency dielectric (:math:`\epsilon`).
-
-    .. math::
-
-        a = -\mathrm{Im}(1 / \epsilon)
-
-    Args:
-        dielectric_data (tuple): The high-frequency dielectric data, following
-            the same format as :obj:`pymatgen.io.vasp.Vasprun.dielectric`.
-            This is a :obj:`tuple` containing the energy, the real part of the
-            dielectric tensor, and the imaginary part of the tensor, as a
-            :obj:`list` of :obj:`floats`. E.g.::
-
-                (
-                    [energies],
-                    [[real_xx, real_yy, real_zz, real_xy, real_yz, real_xz]],
-                    [[imag_xx, imag_yy, imag_zz, imag_xy, imag_yz, imag_xz]]
-                )
-
-        average (:obj:`bool`, optional): Average the dielectric response across
-            all lattice directions. Defaults to ``True``.
-
-    Returns:
-        :obj:`tuple` of :obj:`list` of :obj:`float`: The optical loss.
-        Returned as::
-
-            ([energies], [loss]).
-
-    """
-    real_eps = np.array(dielectric[1])[:, :3]
-    imag_eps = np.array(dielectric[2])[:, :3]
-    energies = np.array(dielectric[0])
-
-    if average:
-        real_eps = np.average(real_eps, axis=1)
-        imag_eps = np.average(imag_eps, axis=1)
-
-    eps = real_eps + 1j * imag_eps
-
-    loss = -np.imag(1/eps)
-
-    return (energies, loss)
 
 def write_files(abs_data, basename='absorption', prefix=None, directory=None):
     """Write the absorption or loss spectra to a file.
@@ -281,9 +208,9 @@ def write_files(abs_data, basename='absorption', prefix=None, directory=None):
 
     Args:
         abs_data (tuple): Series (either :obj:`list` or :obj:`tuple`) of
-            optical absorption or loss spectra. Each spectrum should be formatted as a
-            :obj:`tuple` of :obj:`list` of :obj:`float`. If the data
-            has been averaged, each spectrum should be::
+            optical absorption or loss spectra. Each spectrum should be
+            formatted as a :obj:`tuple` of :obj:`list` of :obj:`float`. If the
+            data has been averaged, each spectrum should be::
 
                 ([energies], [alpha])
 

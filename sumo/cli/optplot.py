@@ -21,8 +21,6 @@ from pymatgen.util.string import latexify
 
 from sumo.plotting.optics_plotter import SOpticsPlotter
 from sumo.electronic_structure.optics import (broaden_eps,
-                                              calculate_alpha,
-                                              calculate_loss,
                                               calculate_dielectric_properties,
                                               write_files)
 

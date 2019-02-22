@@ -36,10 +36,10 @@ class SOpticsPlotter(object):
             If a :obj:`list` of :obj:`tuple` is provided, then multiple
             absorption spectra can be plotted simultaneously.
 
-            The *property* keys set the type of spectrum being
-            plotted (and determine the y-axis label). Recognised values are
-            'absorption', 'loss', 'eps-real', 'eps-im'. Other values will be plotted
-            and used as the y-axis label.
+            The *property* keys set the type of spectrum being plotted (and
+            determine the y-axis label). Recognised values are 'absorption',
+            'loss', 'eps-real', 'eps-im'. Other values will be plotted and used
+            as the y-axis label.
 
             It is recommended to use an OrderedDict to get a predictable
             sequence of plotting axes (from top to bottom).
@@ -150,11 +150,11 @@ class SOpticsPlotter(object):
 
         standard_ylabels = {
             'absorption': r'Absorption (cm$^\mathregular{-1}$)',
-            'loss': r'Energy-loss function',
+            'loss': r'Energy-loss',
             'eps_real': r'Re($\epsilon$)',
             'eps_imag': r'Im($\epsilon$)',
             'n_real': r'Re(n)',
-            'n_imag': r'$\kappa$ = Im(n)'}
+            'n_imag': r'Im(n)'}
 
         if ymax is None:
             ymax_series = [None] * n_plots
@@ -178,7 +178,6 @@ class SOpticsPlotter(object):
                                                        self._spec_data.items(),
                                                        ymin_series,
                                                        ymax_series):
-            #ax = fig.add_subplot(n_plots, 1, i + 1)
             ax = fig.axes[i]
             _plot_spectrum(data, self._label, self._band_gap,
                            ax, optics_colours)
@@ -186,7 +185,8 @@ class SOpticsPlotter(object):
             xmax = xmax if xmax else self._xmax
             ax.set_xlim(xmin, xmax)
 
-            if ymin is None and spectrum_key in ('absorption', 'loss'):
+            if ymin is None and spectrum_key in ('absorption', 'loss',
+                                                 'eps_imag', 'n_imag'):
                 ymin = 0
             elif ymin is None:
                 ymin = ax.get_ylim()[0]
@@ -207,14 +207,13 @@ class SOpticsPlotter(object):
 
             ax.set_ylabel(standard_ylabels.get(spectrum_key, spectrum_key))
 
+            if i == 0:
+                if (not np.all(np.array(self._label) == '') or
+                        len(np.array(next(iter(
+                            self._spec_data.items()))[1][0][1]).shape) > 1):
+                    ax.legend(loc='best', frameon=False, ncol=1)
+
         ax.set_xlabel('Energy (eV)')
-
-       #raise Exception(next(iter(self._spec_data.items()))[1])
-
-        if (not np.all(np.array(self._label) == '')
-                or len(np.array(next(iter(
-                    self._spec_data.items()))[1][0][1]).shape) > 1):
-            ax.legend(loc='best', frameon=False, ncol=1)
 
         # If only one plot, fix aspect ratio to match canvas
         if len(self._spec_data) == 1:
@@ -229,6 +228,7 @@ class SOpticsPlotter(object):
         # Otherwise, rely only on tight_layout and hope for the best
         plt.tight_layout()
         return plt
+
 
 def _plot_spectrum(data, label, band_gap, ax, optics_colours):
     for (ener, alpha), abs_label, bg, c in zip(data,
