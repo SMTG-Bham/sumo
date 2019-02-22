@@ -10,8 +10,9 @@ import numpy as np
 
 from matplotlib import rcParams
 from matplotlib.ticker import MaxNLocator, FuncFormatter, AutoMinorLocator
+from matplotlib.font_manager import findfont, FontProperties
 
-from sumo.plotting import (pretty_subplot, power_tick, styled_plot,
+from sumo.plotting import (pretty_subplot, curry_power_tick, styled_plot,
                            sumo_base_style, sumo_optics_style)
 
 
@@ -199,7 +200,14 @@ class SOpticsPlotter(object):
             ax.set_ylim(ymin, ymax)
 
             if spectrum_key == 'absorption':
-                ax.yaxis.set_major_formatter(FuncFormatter(power_tick))
+                font = findfont(FontProperties(family=['sans-serif']))
+                if 'Whitney' in font:
+                    times_sign = 'x'
+                else:
+                    times_sign = r'\times'
+                ax.yaxis.set_major_formatter(
+                    FuncFormatter(curry_power_tick(times_sign=times_sign)))
+                
             ax.yaxis.set_major_locator(MaxNLocator(5))
             ax.xaxis.set_major_locator(MaxNLocator(3))
             ax.yaxis.set_minor_locator(AutoMinorLocator(2))
@@ -251,7 +259,6 @@ def _plot_spectrum(data, label, band_gap, ax, optics_colours):
 
                 ax.plot(ener, alpha[:, direction_id], ls=ls,
                         label=label, c=c)
-
         if bg:
             # plot band gap line
             ax.plot([bg, bg], [ymin, ymax], ls=':', c=c)
