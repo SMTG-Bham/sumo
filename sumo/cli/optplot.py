@@ -162,7 +162,19 @@ def _get_parser():
     Version: {}
     Last updated: {}""".format(__author__, __version__, __date__))
 
-    parser.add_argument('mode', nargs='*', default=['absorption'])
+    parser.add_argument('mode', type=str, nargs='*', default=['absorption'],
+                        metavar='M',
+                        choices={'absorption', 'loss', 'eps_real', 'eps_imag',
+                                 'n_real', 'n_imag'},
+                        help='Optical properties to plot. Multiple choices '
+                             ' will be displayed as subplots. Accepted values:'
+                             ' "absorption" (optical absorption over distance)'
+                             ', "loss" (energy-loss function -Im(1/eps)), '
+                             '"eps_real" and "eps_imag" (real and imaginary '
+                             'parts of the dielectric function), '
+                             '"n_real" (real part of complex refractive index)'
+                             '"n_imag" (imaginary part of RI, also known as '
+                             'the extinction coefficient kappa.)')
     parser.add_argument('-f', '--filenames', metavar='F',
                         help='path to one or more vasprun.xml files',
                         default=None, nargs='+')
