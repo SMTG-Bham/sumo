@@ -31,7 +31,7 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "Jan 10, 2018"
 
 
-def optplot(modes=['absorption'], filenames=None, prefix=None, directory=None,
+def optplot(modes=('absorption',), filenames=None, prefix=None, directory=None,
             gaussian=None, band_gaps=None, labels=None, average=True, height=6,
             width=6, xmin=0, xmax=None, ymin=0, ymax=1e5, colours=None,
             style=None, no_base_style=None,
@@ -39,7 +39,7 @@ def optplot(modes=['absorption'], filenames=None, prefix=None, directory=None,
     """A script to plot optical absorption spectra from VASP calculations.
 
     Args:
-        modes (:obj:`list`):
+        modes (:obj:`list` or :obj:`tuple`):
             Ordered list of :obj:`str` determining properties to plot.
             Accepted options are 'absorption' (default), 'eps', 'eps-real',
                 'eps-im', 'n', 'n-real', 'n-im', 'loss' (equivalent to n-im).
