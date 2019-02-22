@@ -207,7 +207,7 @@ class SOpticsPlotter(object):
                     times_sign = r'\times'
                 ax.yaxis.set_major_formatter(
                     FuncFormatter(curry_power_tick(times_sign=times_sign)))
-                
+
             ax.yaxis.set_major_locator(MaxNLocator(5))
             ax.xaxis.set_major_locator(MaxNLocator(3))
             ax.yaxis.set_minor_locator(AutoMinorLocator(2))
