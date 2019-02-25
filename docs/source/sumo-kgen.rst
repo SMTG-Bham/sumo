@@ -131,10 +131,14 @@ Questaal
 
 To perform LMTO band structure calculations the ``lmf`` program can be
 given a file defining the band structure path. The crystal structure
-is defined with an *init.ext* file (where *ext*) is an identifier for
-your system. To read the crystal structure and create a band path::
+is defined with an *init.ext* file (where *ext* is an identifier for
+your system) or a *site.ext* file.
+Questaal band structures will use the scale factor ALAT set in
+*site.ext* which may have been modified from the initial setting,
+so it is usually best to read from *site.ext*.
+To read the crystal structure and create a band path::
 
-    sumo-kgen --code questaal -p init.ext
+    sumo-kgen --code questaal -p site.ext
 
 will write a file named *syml.ext* ("symmetry lines"); by default this
 will use lattice coordinates. To perform the band structure

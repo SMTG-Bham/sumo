@@ -194,7 +194,7 @@ Questaal
 Basic band structure plotting is supported for LMTO calculations with
 Questaal using ``lmf``. (Orbital projection is not currently included.)
 
-A structure file (*init.ext*), symmetry lines file (*syml.ext*) and
+A structure file (*site.ext*), symmetry lines file (*syml.ext*) and
 band structure output file (*bnds.ext*) should be present in the same
 directory with the same *ext* identifier. You can then plot with Sumo::
 
