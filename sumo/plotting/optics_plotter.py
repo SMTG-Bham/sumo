@@ -62,8 +62,8 @@ class SOpticsPlotter(object):
             spec_data = {'absorption': [spec_data]}
         elif isinstance(spec_data, list):
             spec_data = {'absorption': spec_data}
-        spec_data = {k: (v if isinstance(v, list) else [v])
-                     for k, v in spec_data.items()}
+        for k, v in spec_data.items():
+            spec_data[k] = (v if isinstance(v, list) else [v])
 
         n_datasets = len(next(iter(spec_data.items()))[1])
 

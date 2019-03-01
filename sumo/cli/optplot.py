@@ -108,7 +108,9 @@ def optplot(modes=('absorption',), filenames=None, prefix=None, directory=None,
 
     # initialize spectrum data ready to append from each dataset
     abs_data = OrderedDict()
-    abs_data.update({mode: [] for mode in modes})
+
+    for mode in modes:
+        abs_data.update({mode: []})
 
     # for each calculation, get all required properties and append to data
     for d in dielectrics:
