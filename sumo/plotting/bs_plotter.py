@@ -491,15 +491,15 @@ class SBSPlotter(BSPlotter):
             if height is None:
                 height = rcParams['figure.figsize'][1]
 
-            if not bs_aspect:
-                bs_aspect = height / width
+            if not aspect:
+                aspect = height / width
 
-            ax.set_aspect(bs_aspect * ((x1 - x0) / (y1 - y0)))
+            ax.set_aspect(aspect * ((x1 - x0) / (y1 - y0)))
 
     def _makedos(self, ax, dos_plotter, dos_options, dos_label=None):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
-        # don't use first 4 colours as these are the band structure line colours
+        # don't use first 4 colours; these are the band structure line colours
         cycle = cycler(
             'color', rcParams['axes.prop_cycle'].by_key()['color'][4:])
         with context({'axes.prop_cycle': cycle}):
@@ -535,6 +535,36 @@ class SBSPlotter(BSPlotter):
         ax.set_xticklabels([])
         ax.legend(loc=2, frameon=False, ncol=1, bbox_to_anchor=(1., 1.))
 
+    @staticmethod
+    def _sanitise_label(label):
+        """Implement label hacks: Hide trailing @, remove label with leading @
+        """
+
+        import re
+        if re.match('^@.*$', label):
+            return None
+        else:
+            return re.sub('@+$', '', label)
+
+    @classmethod
+    def _sanitise_label_group(cls, labelgroup):
+        """Implement label hacks: Hide trailing @, remove label with leading @
+
+        Labels split with $\mid$ symbol will be treated for each part.
+        """
+
+        if r'$\mid$' in labelgroup:
+            label_components = labelgroup.split(r'$\mid$')
+            good_labels = [l for l in
+                           map(cls._sanitise_label, label_components)
+                           if l is not None]
+            if len(good_labels) == 0:
+                return None
+            else:
+                return r'$\mid$'.join(good_labels)
+        else:
+            return cls._sanitise_label(labelgroup)
+
     def _maketicks(self, ax, ylabel='Energy (eV)'):
         """Utility method to add tick marks to a band structure."""
         # set y-ticks
@@ -566,6 +596,7 @@ class SBSPlotter(BSPlotter):
                     elif temp_ticks[i][1][0] == '@':
                         continue
 
+                # Append label to sequence if it is not same as predecessor
                 if unique_l[-1] != temp_ticks[i][1]:
                     unique_d.append(temp_ticks[i][0])
                     unique_l.append(temp_ticks[i][1])

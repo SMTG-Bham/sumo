@@ -11,6 +11,7 @@ import sys
 import logging
 import warnings
 import argparse
+from collections import OrderedDict
 
 import matplotlib as mpl
 mpl.use('Agg')
@@ -19,7 +20,8 @@ from pymatgen.io.vasp import Vasprun
 from pymatgen.util.string import latexify
 
 from sumo.plotting.optics_plotter import SOpticsPlotter
-from sumo.electronic_structure.optics import (broaden_eps, calculate_alpha,
+from sumo.electronic_structure.optics import (broaden_eps,
+                                              calculate_dielectric_properties,
                                               write_files)
 
 __author__ = "Alex Ganose"
@@ -29,7 +31,7 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "Jan 10, 2018"
 
 
-def optplot(filenames=None, prefix=None, directory=None,
+def optplot(modes=('absorption',), filenames=None, prefix=None, directory=None,
             gaussian=None, band_gaps=None, labels=None, average=True, height=6,
             width=6, xmin=0, xmax=None, ymin=0, ymax=1e5, colours=None,
             style=None, no_base_style=None,
@@ -37,6 +39,10 @@ def optplot(filenames=None, prefix=None, directory=None,
     """A script to plot optical absorption spectra from VASP calculations.
 
     Args:
+        modes (:obj:`list` or :obj:`tuple`):
+            Ordered list of :obj:`str` determining properties to plot.
+            Accepted options are 'absorption' (default), 'eps', 'eps-real',
+                'eps-im', 'n', 'n-real', 'n-im', 'loss' (equivalent to n-im).
         filenames (:obj:`str` or :obj:`list`, optional): Path to vasprun.xml
             file (can be gzipped). Alternatively, a list of paths can be
             provided, in which case the absorption spectra for each will be
@@ -100,8 +106,17 @@ def optplot(filenames=None, prefix=None, directory=None,
         dielectrics = [broaden_eps(d, gaussian)
                        for d in dielectrics]
 
-    abs_data = [calculate_alpha(d, average=average)
-                for d in dielectrics]
+    # initialize spectrum data ready to append from each dataset
+    abs_data = OrderedDict()
+
+    for mode in modes:
+        abs_data.update({mode: []})
+
+    # for each calculation, get all required properties and append to data
+    for d in dielectrics:
+        for mode, spectrum in calculate_dielectric_properties(
+                d, set(modes), average=average).items():
+            abs_data[mode].append(spectrum)
 
     if isinstance(band_gaps, list) and not band_gaps:
         # empty list therefore get bandgap from vasprun files
@@ -134,10 +149,12 @@ def optplot(filenames=None, prefix=None, directory=None,
         if directory:
             filename = os.path.join(directory, filename)
         plt.savefig(filename, format=image_format, dpi=dpi)
-        write_files(abs_data, prefix=prefix, directory=directory)
+        for mode, data in abs_data.items():
+            basename = 'absorption' if mode == 'abs' else mode
+            write_files(data, basename=basename,
+                        prefix=prefix, directory=directory)
     else:
         return plt
-
 
 def _get_parser():
     parser = argparse.ArgumentParser(description="""
@@ -147,6 +164,19 @@ def _get_parser():
     Version: {}
     Last updated: {}""".format(__author__, __version__, __date__))
 
+    parser.add_argument('mode', type=str, nargs='*', default=['absorption'],
+                        metavar='M',
+                        choices={'absorption', 'loss', 'eps_real', 'eps_imag',
+                                 'n_real', 'n_imag'},
+                        help='Optical properties to plot. Multiple choices '
+                             ' will be displayed as subplots. Accepted values:'
+                             ' "absorption" (optical absorption over distance)'
+                             ', "loss" (energy-loss function -Im(1/eps)), '
+                             '"eps_real" and "eps_imag" (real and imaginary '
+                             'parts of the dielectric function), '
+                             '"n_real" (real part of complex refractive index)'
+                             '"n_imag" (imaginary part of RI, also known as '
+                             'the extinction coefficient kappa.)')
     parser.add_argument('-f', '--filenames', metavar='F',
                         help='path to one or more vasprun.xml files',
                         default=None, nargs='+')
@@ -171,10 +201,14 @@ def _get_parser():
                         help='minimum energy on the x-axis')
     parser.add_argument('--xmax', type=float, default=None,
                         help='maximum energy on the x-axis')
-    parser.add_argument('--ymin', type=float, default=0.,
-                        help='minimum intensity on the y-axis')
-    parser.add_argument('--ymax', type=float, default=1e5,
-                        help='maximum intensity on the y-axis')
+    parser.add_argument('--ymin', type=str, default=['auto'], nargs='+',
+                        help='minimum intensity on the y-axis; may specify '
+                             'multiple values if plotting more than one axis. '
+                             'Use "auto" or "_" for automatic value.')
+    parser.add_argument('--ymax', type=str, default=['auto'], nargs='+',
+                        help='maximum intensity on the y-axis; may specify'
+                             'multiple values if plotting more than one axis. '
+                             'Use "auto" or "_" for automatic value.')
     parser.add_argument('--style', type=str, nargs='+', default=None,
                         help='matplotlib style specifications')
     parser.add_argument('--no-base-style', action='store_true',
@@ -205,11 +239,21 @@ def main():
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="pymatgen")
 
-    optplot(filenames=args.filenames, prefix=args.prefix,
+    # Replace text placeholders with preferred Python representation: None
+    ymin = [None if (x.lower() in ('auto', '_')) else float(x)
+            for x in args.ymin]
+    ymax = [None if (x.lower() in ('auto', '_')) else float(x)
+            for x in args.ymax]
+
+    # Settings should be list corresponding to n_plots, or value for all
+    ymin = ymin[0] if len(ymin) == 1 else ymin
+    ymax = ymax[0] if len(ymax) == 1 else ymax
+
+    optplot(modes=args.mode, filenames=args.filenames, prefix=args.prefix,
             directory=args.directory, gaussian=args.gaussian,
             band_gaps=args.bandgaps, labels=args.labels,
             average=args.anisotropic, height=args.height, width=args.width,
-            xmin=args.xmin, xmax=args.xmax, ymin=args.ymin, ymax=args.ymax,
+            xmin=args.xmin, xmax=args.xmax, ymin=ymin, ymax=ymax,
             colours=None, image_format=args.image_format, dpi=args.dpi,
             style=args.style, no_base_style=args.no_base_style,
             fonts=args.font)
