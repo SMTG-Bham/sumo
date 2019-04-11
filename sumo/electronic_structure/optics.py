@@ -57,8 +57,14 @@ def broaden_eps(dielectric, sigma):
     return (e, np.array(real).T, np.array(imag).T)
 
 
-def calculate_alpha(dielectric, average=True):
-    r"""Calculate the optical absorption from the high-frequency dielectric.
+def calculate_dielectric_properties(dielectric, properties,
+                                    average=True):
+    r"""Calculate optical properties from the dielectric function
+
+    Supported properties:
+
+    Absorption
+    ~~~~~~~~~~
 
     The unit of alpha is :math:`\mathrm{cm}^{-1}`.
 
@@ -92,53 +98,123 @@ def calculate_alpha(dielectric, average=True):
                     [[imag_xx, imag_yy, imag_zz, imag_xy, imag_yz, imag_xz]]
                 )
 
+        properties (set):
+            The set of properties to return. Intermediate properties will be
+            calculated as needed. Accepted values: 'eps_real', 'eps_im',
+            'absorption', 'loss', 'n_real', 'n_imag'
+
         average (:obj:`bool`, optional): Average the dielectric response across
-            all lattice directions. Defaults to ``True``.
+            the xx, yy, zz directions and calculate properties with scalar
+            maths. Defaults to ``True``. If False, solve dielectric matrix to
+            obtain directional properties, returning xx, yy, zz components.
+            This may be significantly slower!
 
     Returns:
         :obj:`tuple` of :obj:`list` of :obj:`float`: The optical absorption in
         :math:`\mathrm{cm}^{-1}`. If ``average`` is ``True``, the data will be
         returned as::
 
-            ([energies], [alpha]).
+            ([energies], [property]).
 
         If ``average`` is ``False``, the data will be returned as::
 
-            ([energies], [alpha_xx, alpha_yy, alpha_zz]).
+            ([energies], [property_xx, property_yy, property_zz]).
     """
-    real_eps = np.array(dielectric[1])[:, :3]
-    imag_eps = np.array(dielectric[2])[:, :3]
+
+    results = {}
+
+    def _update_results(keys_vals):
+        """Update results dict with selected properties only"""
+        results.update({prop: (energies, data)
+                        for prop, data in keys_vals.items()
+                        if (prop in properties)})
+        return results
+
     energies = np.array(dielectric[0])
+    real_eps = np.array(dielectric[1])
+    imag_eps = np.array(dielectric[2])
 
     if average:
-        real_eps = np.average(real_eps, axis=1)
-        imag_eps = np.average(imag_eps, axis=1)
+        real_eps = np.average(real_eps[:, :3], axis=1)
+        imag_eps = np.average(imag_eps[:, :3], axis=1)
 
-    eps = real_eps + 1j * imag_eps
-    imag_ref_index = np.sqrt(eps).imag
+        results = _update_results({'eps_real': real_eps,
+                                   'eps_imag': imag_eps})
 
-    if average:
-        alpha = imag_ref_index * energies * 4 * np.pi / 1.23984212E-4
+        eps = real_eps + 1j * imag_eps
+
+        if 'loss' in properties:
+            loss = -np.imag(1/eps)
+            _update_results({'loss': loss})
+
+        if properties.intersection({'n_real', 'n_imag', 'absorption'}):
+            n = np.sqrt(eps)
+            _update_results({'n_real': n.real,
+                             'n_imag': n.imag})
+
+        if 'absorption' in properties:
+            alpha = n.imag * energies * 4 * np.pi / 1.23984212E-4
+            _update_results({'absorption': alpha})
+
     else:
-        alpha = imag_ref_index * energies[:, None] * 4 * np.pi / 1.23984212E-4
+        # Work with eps as complex numbers in 9-column 'flattened' matrix
+        # First interpret 6-column data as symmetric matrix
+        # Input form xx yy zz xy yz xz
+        # Indices     0  1  2  3  4  5
+        n_rows = real_eps.shape[0]
+        eps = real_eps + 1j * imag_eps
+        eps = np.array([eps[:, 0], eps[:, 3], eps[:, 5],
+                        eps[:, 3], eps[:, 1], eps[:, 4],
+                        eps[:, 5], eps[:, 4], eps[:, 2]]).T
 
-    return (energies, alpha)
+        _update_results(
+            {'eps_real': eps.real[:, [0, 4, 8]],
+             'eps_imag': eps.imag[:, [0, 4, 8]]})
+        # Invert epsilon to obtain energy-loss function
+        if 'loss' in properties:
+            def matrix_loss_func(eps_row):
+                eps_matrix = eps_row.reshape(3, 3)
+                return -np.linalg.inv(eps_matrix).imag.flatten()
+
+            loss = np.array([matrix_loss_func(row) for row in eps])
+
+            _update_results({'loss': loss[:, [0, 4, 8]]})
+
+        if properties.intersection({'n_real', 'n_imag', 'absorption'}):
+            def matrix_n(eps_row):
+                eps_matrix = eps_row.reshape(3, 3)
+                eigenvals, v = np.linalg.eig(eps_matrix)
+                d = np.diag(eigenvals)
+                n = v @ np.sqrt(d) @ np.linalg.inv(v)  # Py3.5 matrix mult @ =D
+                return n.flatten()
+
+            n = np.array([matrix_n(row) for row in eps])
+
+            _update_results({'n_real': n.real[:, [0, 4, 8]],
+                             'n_imag': n.imag[:, [0, 4, 8]]})
+
+        if 'absorption' in properties:
+            alpha = (n.imag * energies.reshape(n_rows, 1) *
+                     4 * np.pi / 1.23984212E-4)
+            _update_results({'absorption': alpha[:, [0, 4, 8]]})
+
+    return results
 
 
-def write_files(abs_data, prefix=None, directory=None):
-    """Write the absorption spectra to a file.
+def write_files(abs_data, basename='absorption', prefix=None, directory=None):
+    """Write the absorption or loss spectra to a file.
 
     Note that this function expects to receive an iterable series of spectra.
 
     Args:
         abs_data (tuple): Series (either :obj:`list` or :obj:`tuple`) of
-            optical absorption spectra. Each spectra should be formatted as a
-            :obj:`tuple` of :obj:`list` of :obj:`float`. If the absorption data
-            has been averaged, each spectra should be::
+            optical absorption or loss spectra. Each spectrum should be
+            formatted as a :obj:`tuple` of :obj:`list` of :obj:`float`. If the
+            data has been averaged, each spectrum should be::
 
                 ([energies], [alpha])
 
-            Else, if the data has not been averaged, each spectra should be::
+            Else, if the data has not been averaged, each spectrum should be::
 
                 ([energies], [alpha_xx, alpha_yy, alpha_zz]).
 
@@ -147,7 +223,7 @@ def write_files(abs_data, prefix=None, directory=None):
     """
     for i, absorption in enumerate(abs_data):
         num = '_{}'.format(i) if len(abs_data) > 1 else ''
-        basename = 'absorption{}.dat'.format(num)
+        basename = '{}{}.dat'.format(basename, num)
         filename = '{}_{}'.format(prefix, basename) if prefix else basename
         if directory:
             filename = os.path.join(directory, filename)

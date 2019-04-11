@@ -52,7 +52,7 @@ class SBSPlotter(BSPlotter):
                  ylabel='Energy (eV)',
                  dpi=None, plt=None,
                  dos_plotter=None, dos_options=None, dos_label=None,
-                 dos_aspect=3, fonts=None, style=None,
+                 dos_aspect=3, aspect=None, fonts=None, style=None,
                  no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
@@ -121,6 +121,10 @@ class SBSPlotter(BSPlotter):
                 structure and density of states subplot. For example,
                 ``dos_aspect = 3``, results in a ratio of 3:1, for the band
                 structure:dos plots.
+            aspect (:obj:`float`, optional): The aspect ratio of the band
+                structure plot. By default the dimensions of the figure size
+                are used to determine the aspect ratio. Set to ``1`` to force
+                the plot to be square.
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
                 a single font, specified as a :obj:`str`, or several fonts,
                 specified as a :obj:`list` of :obj:`str`.
@@ -190,7 +194,7 @@ class SBSPlotter(BSPlotter):
                        vbm_cbm_marker=vbm_cbm_marker, width=width,
                        height=height, ymin=ymin, ymax=ymax,
                        dos_plotter=dos_plotter, dos_options=dos_options,
-                       dos_label=dos_label)
+                       dos_label=dos_label, aspect=aspect)
         return plt
 
     @styled_plot(sumo_base_style, sumo_bs_style)
@@ -201,7 +205,7 @@ class SBSPlotter(BSPlotter):
                            ylabel='Energy (eV)',
                            dpi=400, plt=None,
                            dos_plotter=None, dos_options=None, dos_label=None,
-                           dos_aspect=3, fonts=None, style=None,
+                           dos_aspect=3, aspect=None, fonts=None, style=None,
                            no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` of the projected band structure.
 
@@ -314,6 +318,14 @@ class SBSPlotter(BSPlotter):
                         subplots. Defaults to ``False``.
 
             dos_label (:obj:`str`, optional): DOS axis label/units
+            dos_aspect (:obj:`float`, optional): Aspect ratio for the band
+                structure and density of states subplot. For example,
+                ``dos_aspect = 3``, results in a ratio of 3:1, for the band
+                structure:dos plots.
+            aspect (:obj:`float`, optional): The aspect ratio of the band
+                structure plot. By default the dimensions of the figure size
+                are used to determine the aspect ratio. Set to ``1`` to force
+                the plot to be square.
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
                 a single font, specified as a :obj:`str`, or several fonts,
                 specified as a :obj:`list` of :obj:`str`.
@@ -406,7 +418,7 @@ class SBSPlotter(BSPlotter):
                 bands = bands.flatten()
                 zorders = range(-len(weights), 0)
                 for w, c, z in zip(weights, colours, zorders):
-                    ax.scatter(distances, bands, c=c, s=circle_size*w**2,
+                    ax.scatter(distances, bands, c=c, s=circle_size * w ** 2,
                                zorder=z, rasterized=True)
 
         # plot the legend
@@ -434,13 +446,14 @@ class SBSPlotter(BSPlotter):
                        vbm_cbm_marker=vbm_cbm_marker, width=width,
                        height=height, ymin=ymin, ymax=ymax,
                        dos_plotter=dos_plotter, dos_options=dos_options,
-                       dos_label=dos_label)
+                       dos_label=dos_label, aspect=aspect)
         return plt
 
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,
                   vbm_cbm_marker=False, ymin=-6., ymax=6.,
                   height=None, width=None,
-                  dos_plotter=None, dos_options=None, dos_label=None):
+                  dos_plotter=None, dos_options=None, dos_label=None,
+                  aspect=None):
         """Tidy the band structure & add the density of states if required."""
         # draw line at Fermi level if not zeroing to e-Fermi
         if not zero_to_efermi:
@@ -477,7 +490,11 @@ class SBSPlotter(BSPlotter):
                 width = rcParams['figure.figsize'][0]
             if height is None:
                 height = rcParams['figure.figsize'][1]
-            ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
+
+            if not aspect:
+                aspect = height / width
+
+            ax.set_aspect(aspect * ((x1 - x0) / (y1 - y0)))
 
     def _makedos(self, ax, dos_plotter, dos_options, dos_label=None):
         """This is basically the same as the SDOSPlotter get_plot function."""
@@ -544,7 +561,7 @@ class SBSPlotter(BSPlotter):
             if len(good_labels) == 0:
                 return None
             else:
-                return (r'$\mid$'.join(good_labels))
+                return r'$\mid$'.join(good_labels)
         else:
             return cls._sanitise_label(labelgroup)
 
@@ -563,11 +580,21 @@ class SBSPlotter(BSPlotter):
             unique_d.append(temp_ticks[0][0])
             unique_l.append(temp_ticks[0][1])
             for i in range(1, len(temp_ticks)):
-                good_label = self._sanitise_label_group(temp_ticks[i][1])
-                if good_label is None:
-                    continue
-                else:
-                    temp_ticks[i] = (temp_ticks[i][0], good_label)
+                # Hide labels marked with @
+                if '@' in temp_ticks[i][1]:
+                    # If a branch connection, check all parts of label
+                    if r'$\mid$' in temp_ticks[i][1]:
+                        label_components = temp_ticks[i][1].split(r'$\mid$')
+                        good_labels = [l for l in label_components
+                                       if l[0] != '@']
+                        if len(good_labels) == 0:
+                            continue
+                        else:
+                            temp_ticks[i] = (temp_ticks[i][0],
+                                             r'$\mid$'.join(good_labels))
+                    # If a single label, check first character
+                    elif temp_ticks[i][1][0] == '@':
+                        continue
 
                 # Append label to sequence if it is not same as predecessor
                 if unique_l[-1] != temp_ticks[i][1]:
