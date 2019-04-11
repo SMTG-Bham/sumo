@@ -110,15 +110,21 @@ def calculate_dielectric_properties(dielectric, properties,
             This may be significantly slower!
 
     Returns:
-        :obj:`tuple` of :obj:`list` of :obj:`float`: The optical absorption in
-        :math:`\mathrm{cm}^{-1}`. If ``average`` is ``True``, the data will be
-        returned as::
+        dict of :obj:`tuple` of :obj:`list` of :obj:`float`: The optical
+        absorption in :math:`\mathrm{cm}^{-1}`. If ``average`` is ``True``, the
+        data will be returned as::
 
             ([energies], [property]).
 
         If ``average`` is ``False``, the data will be returned as::
 
             ([energies], [property_xx, property_yy, property_zz]).
+
+        In both cases these are collected in a results dictionary with keys
+        corresponding to the selected properties, e.g.::
+
+            {'absorption': ([energies], [absorption]),
+             'eps_real': ([energies], [eps_real])}
     """
 
     results = {}

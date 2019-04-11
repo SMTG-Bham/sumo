@@ -6,7 +6,8 @@ from numpy.testing import assert_almost_equal
 import json
 
 from pymatgen.io.vasp import Vasprun
-from sumo.electronic_structure.optics import kkr, calculate_alpha
+from sumo.electronic_structure.optics import (kkr,
+                                              calculate_dielectric_properties)
 
 
 class AbsorptionTestCase(unittest.TestCase):
@@ -24,7 +25,8 @@ class AbsorptionTestCase(unittest.TestCase):
             self.ge_abs = json.load(f)
 
     def test_absorption(self):
-        energy, alpha = calculate_alpha(self.ge_diel)
+        energy, alpha = calculate_dielectric_properties(
+            self.ge_diel, {'absorption',})['absorption']
         self.assertIsNone(assert_almost_equal(alpha, self.ge_abs))
 
 
