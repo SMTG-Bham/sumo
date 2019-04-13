@@ -29,6 +29,7 @@ mpl.use('Agg')
 
 from sumo.io.questaal import QuestaalInit, QuestaalSite, labels_from_syml
 from sumo.io.questaal import band_structure as questaal_band_structure
+from sumo.io.castep import band_structure as castep_band_structure
 from sumo.plotting.bs_plotter import SBSPlotter
 from sumo.plotting.dos_plotter import SDOSPlotter
 from sumo.electronic_structure.dos import load_dos
@@ -66,6 +67,10 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
             Questaal:
                 Path to a bnds.ext file. The extension will also be used to
                 find site.ext and syml.ext files in the same directory.
+            Castep:
+                Path to a seedname.bands file. The prefix ("seedname") is used
+                to locate a seedname.cell file in the same directory and read
+                in the positions of high-symmetry points.
 
             If no filenames are provided, sumo
             will search for vasprun.xml or vasprun.xml.gz files in folders
@@ -74,7 +79,8 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
             provided, these will be combined into a single band structure.
 
         code (:obj:`str`, optional): Calculation type. Default is 'vasp';
-            'questaal' also supported (with a reduced feature-set).
+            'questaal' and 'castep' also supported (with a reduced
+            feature-set).
         prefix (:obj:`str`, optional): Prefix for file names.
         directory (:obj:`str`, optional): The directory in which to save files.
         vbm_cbm_marker (:obj:`bool`, optional): Plot markers to indicate the
@@ -233,6 +239,15 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
             bs = vr.get_band_structure(line_mode=True)
             bandstructures.append(bs)
         bs = get_reconstructed_band_structure(bandstructures)
+    elif code == 'castep':
+        bands_file = filenames[0]
+        cell_file = bands_file.replace('bands', 'cell')
+        if os.path.isfile(cell_file):
+            logging.info('found cell file {}...'.format(cell_file))
+        else:
+            logging.info('did not find cell file {}...'.format(cell_file))
+            cell_file = None
+        bs = castep_band_structure(bands_file, cell_file=cell_file)
     elif code == 'questaal':
         bnds_file = filenames[0]
         ext = bnds_file.split('.')[-1]
@@ -240,6 +255,8 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
 
         site_file = os.path.abspath(
             os.path.join(bnds_folder, 'site.{}'.format(ext)))
+        init_file = os.path.abspath(
+            os.path.join(bnds_folder, 'init.{}'.format(ext)))
 
         if os.path.isfile(site_file):
             logging.info('site file found, reading lattice...')

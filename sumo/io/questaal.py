@@ -584,6 +584,9 @@ def labels_from_syml(syml_file):
         syml_file (:obj:`str`): Path to questaal syml.ext input file. The
             locations and labels of special points are read from this file.
 
+    Returns:
+        {:obj:`str`: :obj:`tuple`, ...}
+
     """
     labels = {}
 
@@ -928,6 +931,7 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
             labels[label] = np.dot(
                 coords, lattice.reciprocal_lattice_crystallographic.matrix)
 
+    raise Exception(eigenvals)
     # Data in bnds file seems to always be Cartesian
     return BandStructureSymmLine(kpoints, eigenvals,
                                  lattice.reciprocal_lattice_crystallographic,
