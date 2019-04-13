@@ -57,7 +57,7 @@ def band_structure(bands_file, cell_file=None):
 
     return BandStructureSymmLine(kpoints, eigenvalues,
                                  lattice.reciprocal_lattice_crystallographic,
-                                 header['e_fermi'][0] * _ry_to_ev,
+                                 header['e_fermi'][0] * _ry_to_ev * 2,
                                  labels,
                                  coords_are_cartesian=False)
 
@@ -218,8 +218,8 @@ def read_bands_eigenvalues(bands_file, header):
     for key, data in eigenvals.items():
         data = np.array(data)
         eigenvals[key] = data[data[:, 0].argsort(), 1:]
-    # Transpose matrix to arrange by band and convert to eV from Ry
-    eigenvals = {key: data.T * _ry_to_ev
+    # Transpose matrix to arrange by band and convert to eV from Ha
+    eigenvals = {key: data.T * _ry_to_ev * 2
                  for key, data in eigenvals.items()}
                 
     return kpoints, eigenvals
