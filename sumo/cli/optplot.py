@@ -164,7 +164,7 @@ def _get_parser():
     Version: {}
     Last updated: {}""".format(__author__, __version__, __date__))
 
-    parser.add_argument('mode', type=str, nargs='*', default=['absorption'],
+    parser.add_argument('mode', type=str, nargs='*', default='absorption',
                         metavar='M',
                         choices={'absorption', 'loss', 'eps_real', 'eps_imag',
                                  'n_real', 'n_imag'},
@@ -238,6 +238,10 @@ def main():
                             module="matplotlib")
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="pymatgen")
+
+    # Wrap mode into list if necessary
+    if not isinstance(args.mode, list):
+        args.mode = [args.mode]
 
     # Replace text placeholders with preferred Python representation: None
     ymin = [None if (x.lower() in ('auto', '_')) else float(x)
