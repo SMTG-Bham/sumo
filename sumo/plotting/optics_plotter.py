@@ -262,4 +262,4 @@ def _plot_spectrum(data, label, band_gap, ax, optics_colours):
                         label=label, c=c)
         if bg:
             # plot band gap line
-            ax.plot([bg, bg], [ymin, ymax], ls=':', c=c)
+            ax.axvline(bg, ls=':', c=c)
