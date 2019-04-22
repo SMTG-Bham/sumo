@@ -144,11 +144,14 @@ def optplot(modes=('absorption',), filenames=None, prefix=None, directory=None,
                            style=style, no_base_style=no_base_style)
 
     if save_files:
-        basename = 'absorption.{}'.format(image_format)
-        filename = '{}_{}'.format(prefix, basename) if prefix else basename
+        basename = 'absorption'
+        if prefix:
+            basename = '{}_{}'.format(prefix, basename)
+        image_filename = '{}.{}'.format(basename, image_format)
+
         if directory:
-            filename = os.path.join(directory, filename)
-        plt.savefig(filename, format=image_format, dpi=dpi)
+            image_filename = os.path.join(directory, image_filename)
+        plt.savefig(image_filename, format=image_format, dpi=dpi)
         for mode, data in abs_data.items():
             basename = 'absorption' if mode == 'abs' else mode
             write_files(data, basename=basename,

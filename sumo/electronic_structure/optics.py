@@ -221,10 +221,12 @@ def write_files(abs_data, basename='absorption', prefix=None, directory=None):
         prefix (:obj:`str`, optional): Prefix for file names.
         directory (:obj:`str`, optional): The directory in which to save files.
     """
+
     for i, absorption in enumerate(abs_data):
-        num = '_{}'.format(i) if len(abs_data) > 1 else ''
-        basename = '{}{}.dat'.format(basename, num)
-        filename = '{}_{}'.format(prefix, basename) if prefix else basename
+        num_txt = '_{}'.format(i + 1) if len(abs_data) > 1 else ''
+        prefix_txt = '{}_'.format(prefix) if prefix else ''
+        filename = prefix_txt + basename + num_txt + '.dat'
+
         if directory:
             filename = os.path.join(directory, filename)
 
