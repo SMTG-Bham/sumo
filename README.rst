@@ -50,10 +50,12 @@ The main features include:
 
    - Curve fitting is performed using `Scipy <https://www.scipy.org>`_.
 
-The code currently only supports VASP calculations, however, we would
-like to add support for additional solid-state codes in future
-releases. Code contributions to interface with these packages are
-welcome.
+The code currently primarily supports VASP calculations, and has
+partial support for LMTO calculations with
+`Questaal <https://www.questaal.org>`_.
+We would like to add support for additional solid-state codes in
+future releases. Code contributions to interface with these packages
+are welcome.
 
 Sumo is free to use, however, we ask that you cite the code if you use
 it in your research. See the "contributing" section for information

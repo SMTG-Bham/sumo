@@ -3,10 +3,11 @@
 # Distributed under the terms of the MIT License.
 
 """
-A script to calculate and plot optical spectra from a VASP calculation.
+A script to calculate and plot optical spectra from ab initio calculations.
 """
 
 import os
+from glob import glob
 import sys
 import logging
 import warnings
@@ -18,6 +19,7 @@ mpl.use('Agg')
 
 from pymatgen.io.vasp import Vasprun
 from pymatgen.util.string import latexify
+from sumo.io import questaal
 
 from sumo.plotting.optics_plotter import SOpticsPlotter
 from sumo.electronic_structure.optics import (broaden_eps,
@@ -31,7 +33,8 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "Jan 10, 2018"
 
 
-def optplot(modes=('absorption',), filenames=None, prefix=None, directory=None,
+def optplot(modes=('absorption',), filenames=None, codes='vasp',
+            prefix=None, directory=None,
             gaussian=None, band_gaps=None, labels=None, average=True, height=6,
             width=6, xmin=0, xmax=None, ymin=0, ymax=1e5, colours=None,
             style=None, no_base_style=None,
@@ -43,16 +46,25 @@ def optplot(modes=('absorption',), filenames=None, prefix=None, directory=None,
             Ordered list of :obj:`str` determining properties to plot.
             Accepted options are 'absorption' (default), 'eps', 'eps-real',
                 'eps-im', 'n', 'n-real', 'n-im', 'loss' (equivalent to n-im).
-        filenames (:obj:`str` or :obj:`list`, optional): Path to vasprun.xml
-            file (can be gzipped). Alternatively, a list of paths can be
+        filenames (:obj:`str` or :obj:`list`, optional): Path to data file.
+            For VASP this is a *vasprun.xml* file (can be gzipped); for
+            Questaal the *opt.ext* file from *lmf* or *eps_BSE.out* from
+            *bethesalpeter* may be used.
+            Alternatively, a list of paths can be
             provided, in which case the absorption spectra for each will be
             plotted concurrently.
+        codes (:obj:`str` or :obj:`list`, optional): Original
+            calculator. Accepted values are 'vasp' and 'questaal'. Items should
+            correspond to filenames.
         prefix (:obj:`str`, optional): Prefix for file names.
         directory (:obj:`str`, optional): The directory in which to save files.
         gaussian (:obj:`float`): Standard deviation for gaussian broadening.
-        band_gaps (:obj:`float` or :obj:`list`, optional): The band gap as a
-            :obj:`float`, plotted as a dashed line. If plotting multiple
-            spectra then a :obj:`list` of band gaps can be provided.
+        band_gaps (:obj:`float`, :obj:`str` or :obj:`list`, optional): The band
+            gap as a :obj:`float`, plotted as a dashed line. If plotting
+            multiple spectra then a :obj:`list` of band gaps can be provided.
+            Band gaps can be provided as a floating-point number or as a path
+            to a *vasprun.xml* file. To skip over a line, set its bandgap to
+            zero or a negative number to place it outside the visible range.
         labels (:obj:`str` or :obj:`list`): A label to identify the spectra.
             If plotting multiple spectra then a :obj:`list` of labels can
             be provided.
@@ -87,20 +99,84 @@ def optplot(modes=('absorption',), filenames=None, prefix=None, directory=None,
     Returns:
         A matplotlib pyplot object.
     """
-    if not filenames:
-        if os.path.exists('vasprun.xml'):
-            filenames = ['vasprun.xml']
-        elif os.path.exists('vasprun.xml.gz'):
-            filenames = ['vasprun.xml.gz']
-        else:
-            logging.error('ERROR: No vasprun.xml found!')
-            sys.exit()
 
-    elif isinstance(filenames, str):
+    # Don't write files if this is being done to manipulate existing plt
+    save_files = False if plt else True
+
+    ##### BUILD LIST OF FILES AUTOMATICALLY IF NECESSARY #####
+
+    if codes == 'vasp':
+        if not filenames:
+            if os.path.exists('vasprun.xml'):
+                filenames = ['vasprun.xml']
+            elif os.path.exists('vasprun.xml.gz'):
+                filenames = ['vasprun.xml.gz']
+            else:
+                logging.error('ERROR: No vasprun.xml found!')
+                sys.exit()
+
+    elif codes == 'questaal':
+        if not filenames:
+            if len(glob('opt.*')) > 0:
+                filenames = glob('opt.*')
+                if len(filenames) == 1:
+                    logging.info("Found optics file: " + filenames[0])
+                else:
+                    logging.info("Found optics files: " + ", ".join(filenames))
+
+    if isinstance(filenames, str):
         filenames = [filenames]
 
-    vrs = [Vasprun(f) for f in filenames]
-    dielectrics = [vr.dielectric for vr in vrs]
+    if isinstance(codes, str):
+        codes = [codes] * len(filenames)
+    elif len(codes) == 1:
+        codes = list(codes) * len(filenames)
+
+    #### ITERATE OVER FILES READING DIELECTRIC DATA ####
+
+    dielectrics = []
+    auto_labels = []
+    auto_band_gaps = []
+    for i, (filename, code) in enumerate(zip(filenames, codes)):
+        if code == 'vasp':
+            vr = Vasprun(filename)
+            dielectrics.append(vr.dielectric)
+
+            auto_labels.append(
+                latexify(vr.final_structure.composition.reduced_formula).
+                replace('$_', '$_\mathregular'))
+
+            if isinstance(band_gaps, list) and not band_gaps:
+                # band_gaps = [], auto band gap requested
+                auto_band_gaps.append(
+                    vr.get_band_structure().get_band_gap()['energy'])
+            else:
+                auto_band_gaps.append(None)
+
+        elif code == 'questaal':
+            if not save_files:
+                out_filename = None
+            elif len(filenames) == 1:
+                out_filename = 'dielectric.dat'
+            else:
+                out_filename = 'dielectric_{0}.dat'.format(i + 1)
+
+            dielectrics.append(
+                questaal.dielectric_from_file(filename, out_filename))
+
+            auto_band_gaps.append(None)
+            auto_labels.append(filename.split('.')[-1])
+            if isinstance(band_gaps, list) and not band_gaps:
+                logging.info('Bandgap requested but not supported for Questaal'
+                             ' file {}: skipping...'.format(filename))
+
+        else:
+            raise Exception('Code selection "{}" not recognised'.format(code))
+
+    if not labels and len(filenames) > 1:
+        labels = auto_labels
+
+    #### PROCESS DIELECTRIC DATA: BROADENING AND DERIVED PROPERTIES ####
 
     if gaussian:
         dielectrics = [broaden_eps(d, gaussian)
@@ -119,23 +195,22 @@ def optplot(modes=('absorption',), filenames=None, prefix=None, directory=None,
             abs_data[mode].append(spectrum)
 
     if isinstance(band_gaps, list) and not band_gaps:
-        # empty list therefore get bandgap from vasprun files
-        band_gaps = [vr.get_band_structure().get_band_gap()['energy']
-                     for vr in vrs]
-    elif isinstance(band_gaps, list) and 'vasprun' in band_gaps[0]:
-        # band_gaps contains list of vasprun files
-        bg_vrs = [Vasprun(f) for f in band_gaps]
-        band_gaps = [vr.get_band_structure().get_band_gap()['energy']
-                     for vr in bg_vrs]
+        # empty list therefore use bandgaps collected from vasprun files
+        band_gaps = auto_band_gaps
     elif isinstance(band_gaps, list):
-        # band_gaps is non empty list w. no vaspruns; presume floats
-        band_gaps = [float(i) for i in band_gaps]
-
-    save_files = False if plt else True
-
-    if len(abs_data) > 1 and not labels:
-        labels = [latexify(vr.final_structure.composition.reduced_formula).
-                  replace('$_', '$_\mathregular') for vr in vrs]
+        # list containing filenames and/or values: mutate the list in-place
+        for i, item in enumerate(band_gaps):
+            if item is None:
+                pass
+            elif _floatable(item):
+                band_gaps[i] = float(item)
+            elif 'vasprun' in item:
+                band_gaps[i] = (
+                    Vasprun(item).get_band_structure().get_band_gap()['energy']
+                    )
+            else:
+                raise ValueError('Format not recognised for auto bandgap: '
+                                 '{}.'.format(item))
 
     plotter = SOpticsPlotter(abs_data, band_gap=band_gaps, label=labels)
     plt = plotter.get_plot(width=width, height=height, xmin=xmin,
@@ -158,6 +233,14 @@ def optplot(modes=('absorption',), filenames=None, prefix=None, directory=None,
                         prefix=prefix, directory=directory)
     else:
         return plt
+
+def _floatable(item):
+    """Check if an item can be intepreted with float()"""
+    try:
+        float(item)
+        return True
+    except ValueError:
+        return False
 
 def _get_parser():
     parser = argparse.ArgumentParser(description="""
@@ -187,11 +270,18 @@ def _get_parser():
                         help='prefix for the files generated')
     parser.add_argument('-d', '--directory', metavar='D',
                         help='output directory for files')
+    parser.add_argument('-c', '--code', metavar='C', default='vasp', nargs='+',
+                        help=('Original calculator. Accepted values are '
+                              '"vasp" and "questaal".'))
     parser.add_argument('-g', '--gaussian', type=float, metavar='G',
                         help='standard deviation of gaussian broadening')
     parser.add_argument('-b', '--bandgaps', nargs='*', metavar='E',
                         help=('indicate the fundamental band gap (options: '
-                              'nothing, vasprun.xml file, or float)'))
+                              'nothing, vasprun.xml file, or float). A '
+                              'sequence of files and values may be provided, '
+                              'corresponding to the optical data files. '
+                              'To skip a line, set a value outside the plot '
+                              'range (e.g. -1).'))
     parser.add_argument('-l', '--labels', nargs='+', metavar='L',
                         help='labels for the absorption specta')
     parser.add_argument('-a', '--anisotropic', action='store_false',
@@ -256,13 +346,13 @@ def main():
     ymin = ymin[0] if len(ymin) == 1 else ymin
     ymax = ymax[0] if len(ymax) == 1 else ymax
 
-    optplot(modes=args.mode, filenames=args.filenames, prefix=args.prefix,
-            directory=args.directory, gaussian=args.gaussian,
-            band_gaps=args.bandgaps, labels=args.labels,
-            average=args.anisotropic, height=args.height, width=args.width,
-            xmin=args.xmin, xmax=args.xmax, ymin=ymin, ymax=ymax,
-            colours=None, image_format=args.image_format, dpi=args.dpi,
-            style=args.style, no_base_style=args.no_base_style,
+    optplot(modes=args.mode, filenames=args.filenames, codes=args.code,
+            prefix=args.prefix, directory=args.directory,
+            gaussian=args.gaussian, band_gaps=args.bandgaps,
+            labels=args.labels, average=args.anisotropic, height=args.height,
+            width=args.width, xmin=args.xmin, xmax=args.xmax, ymin=ymin,
+            ymax=ymax, colours=None, image_format=args.image_format,
+            dpi=args.dpi, style=args.style, no_base_style=args.no_base_style,
             fonts=args.font)
 
 

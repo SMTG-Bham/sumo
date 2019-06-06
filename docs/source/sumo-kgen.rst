@@ -126,6 +126,31 @@ Custom labels can also be provided using the ``--labels`` option. The syntax is 
 Note: in all cases the arguments are surrounded in parentheses.
 
 
+Questaal
+~~~~~~~~
+
+To perform LMTO band structure calculations the ``lmf`` program can be
+given a file defining the band structure path. The crystal structure
+is defined with an *init.ext* file (where *ext* is an identifier for
+your system) or a *site.ext* file.
+Questaal band structures will use the scale factor ALAT set in
+*site.ext* which may have been modified from the initial setting,
+so it is usually best to read from *site.ext*.
+To read the crystal structure and create a band path::
+
+    sumo-kgen --code questaal -p site.ext
+
+will write a file named *syml.ext* ("symmetry lines"); by default this
+will use lattice coordinates. To perform the band structure
+calculation, specify this file with e.g.::
+
+    lmf -vnit=1 --rs=1,0 --band~mq~fn=syml ext
+
+where the ``~mq`` switch indicates that *syml.ext* is in fractional
+coordinates. We recommend avoiding Cartesian coordinates for Questaal
+band structures; it is tested and should work but between ALAT scaling
+and Bohr units it can get a bit confusing.
+
 Command-Line Interface
 ----------------------
 

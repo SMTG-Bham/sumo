@@ -110,15 +110,21 @@ def calculate_dielectric_properties(dielectric, properties,
             This may be significantly slower!
 
     Returns:
-        :obj:`tuple` of :obj:`list` of :obj:`float`: The optical absorption in
-        :math:`\mathrm{cm}^{-1}`. If ``average`` is ``True``, the data will be
-        returned as::
+        dict of :obj:`tuple` of :obj:`list` of :obj:`float`: The optical
+        absorption in :math:`\mathrm{cm}^{-1}`. If ``average`` is ``True``, the
+        data will be returned as::
 
             ([energies], [property]).
 
         If ``average`` is ``False``, the data will be returned as::
 
             ([energies], [property_xx, property_yy, property_zz]).
+
+        In both cases these are collected in a results dictionary with keys
+        corresponding to the selected properties, e.g.::
+
+            {'absorption': ([energies], [absorption]),
+             'eps_real': ([energies], [eps_real])}
     """
 
     results = {}
@@ -240,3 +246,36 @@ def write_files(abs_data, basename='absorption', prefix=None, directory=None):
             data = np.stack((absorption[0], absorption[1]), axis=1)
 
         np.savetxt(filename, data, header=header)
+
+
+def kkr(de, eps_imag, cshift=1e-6):
+    """Kramers Kronig transformation of imaginary dielectric function
+
+    Args:
+        de (:obj:`float`): Energy difference between evenly-spaced energy
+            values corresponding to dielectric data
+        eps_imag (:obj:`list` or :obj:`np.array`): Evenly-spaced sequence of
+            frequency-dependent 3x3 dielectric matrices (imaginary component
+            only)
+        cshift (:obj:`float`, optional): imaginary finite shift used in
+            integration; this should be small (and results should not be very
+            sensitive)
+
+        returns:
+            :obj:`numpy.array`
+                Real part of frequency-dependent dielectric function
+                corresponding to eps_imag. Array shape (NEDOS, 3, 3)
+    """
+    eps_imag = np.array(eps_imag)
+    nedos = eps_imag.shape[0]
+    cshift = complex(0, cshift)
+    w_i = np.arange(0, (nedos - 0.5)*de, de, dtype=np.complex_)
+    w_i = np.reshape(w_i, (nedos, 1, 1))
+
+    def integration_element(w_r):
+        factor = w_i / (w_i**2 - w_r**2 + cshift)
+        total = np.sum(eps_imag * factor, axis=0)
+        return total * (2/np.pi) * de + np.diag([1, 1, 1])
+
+    return np.real([integration_element(w_r) for w_r in w_i[:, 0, 0]])
+

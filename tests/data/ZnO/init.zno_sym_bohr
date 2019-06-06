@@ -1,0 +1,8 @@
+LATTICE
+        SPCGRP=186
+            A=6.01707615832958   C=9.74172715130195
+	ALAT=1
+# 2-atom basis should be expanded using spacegroup
+SITE
+     ATOM=Zn   X=     0.6666670    0.3333330    0.5000000
+     ATOM=O    X=     0.6666670    0.3333330    0.8803100

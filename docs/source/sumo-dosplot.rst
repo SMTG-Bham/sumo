@@ -187,6 +187,48 @@ To use your own custom colours, simply create your own config file in the curren
 
     sumo-dosplot --config my_colours.conf
 
+Questaal
+~~~~~~~~
+
+A typical workflow for plotting the DOS in Questaal is to first
+converge a density with LMF, then run a non-self-consistent step to
+output DOS files with a command such as::
+
+  lmf ctrl.ext --dos:npts=2001:window=-1,1 --pdos --quit=rho
+
+Setting `--pdos` defaults to mode 2, decomposing the DOS contributions
+by l, m and each structure site. However, that decomposed data is
+written in a binary format to *moms.ext* while *dos.ext* contains a
+total-DOS. This will be overwritten in the next step, so for usage with Sumo please rename this file to "tdos.ext"::
+
+  mv dos.ext tdos.ext
+
+Part of Questaal, the *lmdos* program converts from *moms.ext* to a
+plottable PDOS. It needs to run with the same `--dos` and `--pdos`
+flags as the previous step, i.e. in this case::
+
+  lmdos --dos:npts=2001:window=-1,1 --pdos ext
+
+This generates a new *dos.ext* containing pdos data and replacing the
+existing file if present.
+
+To plot with Sumo, provide either file. If a single-channel file is
+provided, Sumo will plot a TDOS, e.g.::
+  
+  sumo-dosplot --code questaal -f tdos.ext
+
+If a multichannel PDOS file is provided, this will be interpreted as
+if decomposed by site, l, and m. The *site.ext* file is read in, and
+if present a file named *tdos.ext* will also be used to add the total
+DOS.::
+  
+  sumo-dosplot --code questaal -f dos.ext
+
+The `--elements` and `--orbitals` options may be used to specify which
+channels are grouped and/or shown. Note that empty sites may be
+included in the output if they have a non-negligible contribution to
+the DOS. The `--elements` switch may be useful for hiding these if
+desired.
 
 Command-Line Interface
 ----------------------

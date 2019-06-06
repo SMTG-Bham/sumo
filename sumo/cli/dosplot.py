@@ -17,11 +17,13 @@ import sys
 import logging
 import argparse
 import warnings
+from glob import glob
 
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 
+import sumo.io.questaal
 from sumo.electronic_structure.dos import load_dos, write_files
 from sumo.plotting.dos_plotter import SDOSPlotter
 
@@ -37,9 +39,9 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "April 9, 2018"
 
 
-def dosplot(filename=None, prefix=None, directory=None, elements=None,
-            lm_orbitals=None, atoms=None, subplot=False, shift=True,
-            total_only=False, plot_total=True, legend_on=True,
+def dosplot(filename=None, code='vasp', prefix=None, directory=None,
+            elements=None, lm_orbitals=None, atoms=None, subplot=False,
+            shift=True, total_only=False, plot_total=True, legend_on=True,
             legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6.,
             width=8., xmin=-6., xmax=6., num_columns=2, colours=None, yscale=1,
             xlabel='Energy (eV)', ylabel='Arb. units',
@@ -50,6 +52,8 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
     Args:
         filename (:obj:`str`, optional): Path to a vasprun.xml file (can be
             gzipped).
+        code (:obj:`str`, optional): Electronic structure code used ('vasp' or
+            'questaal')
         prefix (:obj:`str`, optional): Prefix for file names.
         directory (:obj:`str`, optional): The directory in which to save files.
         elements (:obj:`dict`, optional): The elements and orbitals to extract
@@ -147,17 +151,57 @@ def dosplot(filename=None, prefix=None, directory=None, elements=None,
     Returns:
         A matplotlib pyplot object.
     """
-    if not filename:
-        if os.path.exists('vasprun.xml'):
-            filename = 'vasprun.xml'
-        elif os.path.exists('vasprun.xml.gz'):
-            filename = 'vasprun.xml.gz'
-        else:
-            logging.error('ERROR: No vasprun.xml found!')
-            sys.exit()
 
-    dos, pdos = load_dos(filename, elements, lm_orbitals, atoms, gaussian,
-                         total_only)
+    if code.lower() == 'vasp':
+        if not filename:
+            if os.path.exists('vasprun.xml'):
+                filename = 'vasprun.xml'
+            elif os.path.exists('vasprun.xml.gz'):
+                filename = 'vasprun.xml.gz'
+            else:
+                logging.error('ERROR: No vasprun.xml found!')
+                sys.exit()
+
+        dos, pdos = load_dos(filename, elements, lm_orbitals, atoms, gaussian,
+                             total_only)
+    elif code.lower() == 'questaal':
+        if filename:
+            pdos_file = filename
+            ext = pdos_file.split('.')[-1]
+        else:
+            pdos_candidates = glob('dos.*')
+            for candidate in pdos_candidates:
+                if candidate.split('.')[-1] in ('pdf', 'png', 'svg',
+                                                'jpg', 'jpeg'):
+                    continue
+                elif candidate.split('.')[-1].lower() in ('gz', 'z', 'bz2'):
+                    pdos_file = candidate
+                    ext = candidate.split('.')[-2]
+                    break
+                else:
+                    pdos_file = candidate
+                    ext = candidate.split('.')[-1]
+                    break
+            else:
+                raise ValueError("No questaal dos file found")
+
+        if os.path.exists('tdos.{}'.format(ext)):
+            tdos_file = 'tdos.{}'.format(ext)
+        else:
+            tdos_file = None
+        if os.path.exists('site.{}'.format(ext)):
+            site_file = 'site.{}'.format(ext)
+        else:
+            site_file = None
+
+        if shift:
+            logging.warning("Fermi level shift requested, but not implemented "
+                            "for Questaal DOS.")
+
+        dos, pdos = sumo.io.questaal.read_dos(
+            pdos_file=pdos_file, tdos_file=tdos_file, site_file=site_file,
+            ry=True, gaussian=gaussian, total_only=total_only,
+            elements=elements, lm_orbitals=lm_orbitals, atoms=atoms)
 
     save_files = False if plt else True  # don't save if pyplot object provided
 
@@ -245,6 +289,9 @@ def _get_parser():
 
     parser.add_argument('-f', '--filename', help='vasprun.xml file to plot',
                         default=None, metavar='F')
+    parser.add_argument('-c', '--code', default='vasp', metavar='C',
+                        help=('Input file format: "vasp" (vasprun.xml) or '
+                              '"questaal" (opt.ext)'))
     parser.add_argument('-p', '--prefix', metavar='P',
                         help='prefix for the files generated')
     parser.add_argument('-d', '--directory', metavar='D',
@@ -260,7 +307,7 @@ def _get_parser():
                         help='plot each element on separate subplots')
     parser.add_argument('-g', '--gaussian', type=float, metavar='G',
                         help='standard deviation of gaussian broadening')
-    parser.add_argument('-c', '--columns', type=int, default=2, metavar='N',
+    parser.add_argument('--columns', type=int, default=2, metavar='N',
                         help='number of columns in the legend')
     parser.add_argument('--legend-cutoff', type=float, default=3,
                         dest='legend_cutoff', metavar='C',
@@ -330,7 +377,7 @@ def main():
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="pymatgen")
 
-    dosplot(filename=args.filename, prefix=args.prefix,
+    dosplot(filename=args.filename, code=args.code, prefix=args.prefix,
             directory=args.directory, elements=args.elements,
             lm_orbitals=args.orbitals, atoms=args.atoms,
             subplot=args.subplot, shift=args.shift, total_only=args.total_only,

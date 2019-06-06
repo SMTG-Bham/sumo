@@ -7,20 +7,48 @@ Change Log
 This is the most contributers to a release so far!
 
 - Bug fixes
-  - Fix error in P monoclinic (b unique) "Bradcrack" high-symmetry path (C. N. Savory)
+  - Fix error in P monoclinic (*b*-unique) "Bradcrack" high-symmetry path (C. N. Savory)
   - Fix appearance of y-axis formatter for optics plots (E. Rubinstein & Adam J. Jackson)
   - Prevent an error when requesting DOS subplots with no total DOS (Z. Xing)
 
 - New features
+
   - Additional properties from dielectric function (AJJ & K. T. Butler)
-    - any combination of absorption, loss, dielectric and complexx refractive index components can be requested as a set of subplots
+
+    - any combination of absorption, loss, dielectric and complex refractive index components can be requested as a set of subplots
+
   - Allow full 3x3 supercell matrix to be specified for phonon band structures (AJJ)
+
   - Band structure label manipulation with '@' (AJJ)
 
     - place @ before a label to make it invisible in plot     
     - place @ at end to make unique point that avoids confusing pymatgen; the label will be displayed without any trailing @ characters
       
   - Aspect ratio control for band structures (A. M. Ganose)
+
+- New interfaces
+
+  - Questaal is now supported. Pretty much everything works except
+    orbital-decomposed band structures and phonons. (AJJ)
+
+    - Generate a *syml.ext* band path file using **sumo-kgen** reading from a
+      site.ext or init.ext file. (The site file is generally the correct
+      choice.)
+
+    - Plot electronic band structure generated with **lmf** using
+      **sumo-bandplot** reading from *bnds.ext* and *syml.ext* files.
+
+    - Plot a total DOS from **lmf** with **sumo-dosplot** reading *ext.dos*
+
+    - Plot a PDOS from **lmf** by moving the total dos to *tdos.ext*
+      and using Questaal tools to generate a *dos.ext* with orbital
+      information before running **sumo-dosplot**.
+
+    - Plot optical properties with **sumo-optplot** from dielectric
+      function written by **lmf** (*opt.ext*) or **bethesalpeter**
+      (*ext.eps_BSE*). Optical spectra from multiple sources
+      (e.g. VASP and bethesalpeter) may be plotted alongside one
+      another.
     
 `[v1.1.3] <https://github.com/smtg-ucl/sumo/compare/v1.1.2...v1.1.3>`_ - 2018-12-24
 -----------------------------------------------------------------------------------
