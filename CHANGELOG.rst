@@ -10,6 +10,8 @@ This is the most contributers to a release so far!
   - Fix error in P monoclinic (*b*-unique) "Bradcrack" high-symmetry path (C. N. Savory)
   - Fix appearance of y-axis formatter for optics plots (E. Rubinstein & Adam J. Jackson)
   - Prevent an error when requesting DOS subplots with no total DOS (Z. Xing)
+  - Fix missing f0 orbitals in orbital projected DOS plots (@utf)
+  - Update phonon-bandplot to use latest phonopy API (@utf)
 
 - New features
 
@@ -21,9 +23,9 @@ This is the most contributers to a release so far!
 
   - Band structure label manipulation with '@' (AJJ)
 
-    - place @ before a label to make it invisible in plot     
+    - place @ before a label to make it invisible in plot
     - place @ at end to make unique point that avoids confusing pymatgen; the label will be displayed without any trailing @ characters
-      
+
   - Aspect ratio control for band structures (A. M. Ganose)
 
 - New interfaces
@@ -49,7 +51,7 @@ This is the most contributers to a release so far!
       (*ext.eps_BSE*). Optical spectra from multiple sources
       (e.g. VASP and bethesalpeter) may be plotted alongside one
       another.
-    
+
 `[v1.1.3] <https://github.com/smtg-ucl/sumo/compare/v1.1.2...v1.1.3>`_ - 2018-12-24
 -----------------------------------------------------------------------------------
 
