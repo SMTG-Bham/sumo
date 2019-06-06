@@ -345,7 +345,7 @@ def sort_orbitals(element_pdos):
     """
     sorted_orbitals = ['s', 'p', 'py', 'pz', 'px',
                        'd', 'dxy', 'dyz', 'dz2', 'dxz', 'dx2',
-                       'f', 'f_3', 'f_2', 'f_1', 'f_0', 'f1', 'f2', 'f3']
+                       'f', 'f_3', 'f_2', 'f_1', 'f0', 'f1', 'f2', 'f3']
     unsorted_keys = element_pdos.keys()
 
     sorted_keys = []
