@@ -40,7 +40,7 @@ setup(
     test_suite='setup.load_test_suite',
     packages=find_packages(),
     install_requires=['spglib', 'numpy', 'scipy', 'pymatgen>=2017.12.30',
-                      'h5py', 'phonopy', 'matplotlib', 'seekpath'],
+                      'h5py', 'phonopy>=2.1.3', 'matplotlib', 'seekpath'],
     extras_require={'docs': ['sphinx', 'sphinx-argparse']},
     package_data={'sumo': ['symmetry/bradcrack.json',
                            'plotting/orbital_colours.conf',

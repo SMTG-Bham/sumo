@@ -201,9 +201,10 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
         #                 is_mesh_symmetry=False)
         # phonon.set_partial_DOS()
 
-        phonon.set_band_structure(kpoints, is_eigenvectors=eigenvectors)
+        phonon.set_band_structure(
+            kpoints, is_eigenvectors=eigenvectors, labels=labels)
         yaml_file = 'sumo_band.yaml'
-        phonon._band_structure.write_yaml(labels=labels, filename=yaml_file)
+        phonon._band_structure.write_yaml(filename=yaml_file)
 
     else:
         msg = "Do not recognise file type of {}".format(filename)
