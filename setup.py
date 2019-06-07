@@ -2,8 +2,8 @@
 sumo: Heavy weight plotting tools.
 """
 
-
 from setuptools import setup, find_packages
+from sumo import __version__
 
 import unittest
 
@@ -19,7 +19,7 @@ with open('README.rst', 'r') as file:
 
 setup(
     name='sumo',
-    version='1.1.3',
+    version=__version__,
     description=('Heavy weight plotting tools for ab initio '
                  'solid-state calculations'),
     url='https://github.com/smtg-ucl/sumo',

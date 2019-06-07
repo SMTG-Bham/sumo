@@ -4,6 +4,9 @@ Change Log
 `[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.1.3...HEAD>`_
 ------------------------------------------------------------------------
 
+v1.2.0
+------
+
 This is the most contributers to a release so far!
 
 - Bug fixes
