@@ -290,7 +290,7 @@ class SDOSPlotter(object):
             ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
             ax.set_xlim(xmin, xmax)
 
-            ax.tick_params(axis='y', labelleft='off')
+            ax.tick_params(axis='y', labelleft=False)
             ax.yaxis.set_minor_locator(AutoMinorLocator(2))
             ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 
@@ -305,7 +305,6 @@ class SDOSPlotter(object):
             fig.subplots_adjust(hspace=0)
             plt.setp([a.get_xticklabels() for a in fig.axes[:-1]],
                      visible=False)
-
             if 'axes.labelcolor' in matplotlib.rcParams:
                 ylabelcolor = matplotlib.rcParams['axes.labelcolor']
             else:
