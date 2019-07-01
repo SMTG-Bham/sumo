@@ -79,10 +79,12 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             number or symbol to override the symmetry determined by spglib.
             This is not recommended and only provided for testing purposes.
             This option will only take effect when ``mode = 'bradcrack'``.
-        primitive_matrix (:obj:`list`, optional): The transformation matrix
-            from the conventional to primitive cell. Only required when the
-            conventional cell was used as the starting structure. Should be
-            provided as a 3x3 :obj:`list` of :obj:`float`.
+        primitive_matrix (:obj:`list` or :obj:`str`, optional): The
+            transformation matrix from the conventional to primitive cell. Only
+            required when the conventional cell was used as the starting
+            structure. Should be provided as a 3x3 :obj:`list` of
+            :obj:`float`. Alternatively the string 'auto' may be used to
+            request that a primitive matrix is determined automatically.
         line_density (:obj:`int`, optional): Density of k-points along the
             path.
         units (:obj:`str`, optional): Units of phonon frequency. Accepted
@@ -304,10 +306,16 @@ def _get_parser():
                         help='supercell matrix dimensions')
     parser.add_argument('--poscar', default=None, metavar='POS',
                         help="path to POSCAR file (if FORCE_SETS used)")
-    parser.add_argument('--primitive-axis', type=float, nargs=9,
-                        metavar='M',
-                        dest='primitive_axis', default=None,
-                        help='conventional to primitive cell transformation')
+    prim_axis = parser.add_mutually_exclusive_group()
+    prim_axis.add_argument('--primitive-axis', type=float, nargs=9,
+                           metavar='M',
+                           dest='primitive_axis', default=None,
+                           help='conventional to primitive cell '
+                                'transformation matrix')
+    prim_axis.add_argument('--primitive-auto', action='store_const',
+                           dest='primitive_axis', const='auto',
+                           help='Let phonopy automatically determine primitive'
+                                ' cell transformation')
     parser.add_argument('--symprec', default=0.01, type=float,
                         help='tolerance for finding symmetry (default: 0.01)')
     parser.add_argument('--units', '-u', metavar='UNITS', default='THz',
@@ -397,7 +405,9 @@ def main():
     warnings.filterwarnings("ignore", category=UserWarning,
                             module="pymatgen")
 
-    if args.primitive_axis:
+    if args.primitive_axis == 'auto':
+        pa = args.primitive_axis
+    elif args.primitive_axis:
         pa = np.reshape(args.primitive_axis, (3, 3))
     else:
         pa = None

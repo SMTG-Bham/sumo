@@ -28,10 +28,11 @@ def load_phonopy(filename, structure, dim, symprec=0.01, primitive_matrix=None,
         dim (list): The supercell size, as a :obj:`list` of :obj:`float`.
         symprec (:obj:`float`, optional): The tolerance for determining the
             crystal symmetry.
-        primitive_matrix (:obj:`list`, optional): The transformation matrix
-            from the conventional to primitive cell. Only required when the
-            conventional cell was used as the starting structure. Should be
-            provided as a 3x3 :obj:`list` of :obj:`float`.
+        primitive_matrix (:obj:`list` or :obj:`str`, optional): The
+            transformation matrix from the conventional to primitive cell. Only
+            required when the conventional cell was used as the starting
+            structure. Should be provided as a 3x3 :obj:`list` of :obj:`float`.
+            Alternatively the str 'auto' may be provided.
         factor (:obj:`float`, optional): The conversion factor for phonon
             frequency. Defaults to :obj:`phonopy.units.VaspToTHz`.
         symmetrise (:obj:`bool`, optional): Symmetrise the force constants.
