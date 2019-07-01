@@ -87,7 +87,9 @@ def load_phonopy(filename, structure, dim, symprec=0.01, primitive_matrix=None,
 
     if born:
         # load born parameters from a file
-        nac_params = file_IO.parse_BORN(unitcell, filename=born)
+        nac_params = file_IO.parse_BORN(unitcell,
+                                        symprec=symprec,
+                                        filename=born)
 
         # set the nac unit conversion factor manual,  specific to VASP
         nac_params['factor'] = Hartree * Bohr
