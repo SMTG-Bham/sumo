@@ -137,7 +137,11 @@ class SDOSPlotter(object):
         mask = (eners >= xmin - 0.05) & (eners <= xmax + 0.05)
         plot_data = {'mask': mask, 'energies': eners}
         spins = dos.densities.keys()
-        ymax = 0
+
+        # Visibility cutoff based on scale of total plot even if it is hidden
+        dmax = max([max(d[mask]) for d in dos.densities.values()])
+        ymax = dmax if dmax > 0 else 0
+        cutoff = (legend_cutoff / 100.) * (ymax / 1.05)
 
         if plot_total:
             if 'text.color' in matplotlib.rcParams:
@@ -154,15 +158,11 @@ class SDOSPlotter(object):
             # list of dicts being plotted on a separate graph, if only one list
             # then solo plot
             lines.append([tdos])
-            dmax = max([max(d[mask]) for d in dos.densities.values()])
-            ymax = dmax if dmax > ymax else ymax
+
         elif not subplot:
             lines = [[]]  # need a blank list to add lines into
         else:
             lines = []
-
-        # TODO: Fix broken behaviour if plot_total is off
-        cutoff = (legend_cutoff / 100.) * (ymax / 1.05)
 
         for el, el_pdos in pdos.items():
             el_lines = []
