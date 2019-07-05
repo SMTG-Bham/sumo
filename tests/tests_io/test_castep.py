@@ -43,13 +43,13 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
             self.assertAlmostEqual(kpoints[4][i], k)
 
         self.assertAlmostEqual(eigenvals[Spin.up][2, 4],
-                               0.09500443 * _ry_to_ev)
+                               0.09500443 * _ry_to_ev * 2)
 
     def test_castep_cell_read_labels(self):
         labels = labels_from_cell(self.si_cell)
 
         self.assertEquals(labels,
-                          {'Gamma': (0.0, 0.0,  0.0),
+                          {'\Gamma': (0.0, 0.0, 0.0),
                            'W': (0.5, 0.25, 0.75),
                            'L': (0.5, 0.5, 0.5),
                            'X': (0.5, 0.0, 0.5),

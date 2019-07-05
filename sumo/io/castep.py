@@ -21,14 +21,14 @@ def band_structure(bands_file, cell_file=None):
             the ``bs_kpoint_path`` block in this file.
 
     Returns:
-        :obj:`pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`    
+        :obj:`pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`
 
     """
 
     logging.info("Reading CASTEP band structure header...")
     header = read_bands_header(bands_file)
 
-    if header['n_spins'] == 1:       
+    if header['n_spins'] == 1:
         logging.info("nbands: {}, efermi / Ry: {}, spin channels: 1".format(
             header['n_bands'][0],
             header['e_fermi'][0]))
@@ -43,7 +43,7 @@ def band_structure(bands_file, cell_file=None):
         if abs(header['e_fermi'][1] - header['e_fermi'][1]) > 1e-8:
             raise NotImplementedError("Different Fermi energy in each channel."
                                       " I have no idea how to handle that.")
-    
+
     lattice = Lattice(header['lattice_vectors'])
     lattice = Lattice(lattice.matrix * _bohr_to_angstrom)
 
@@ -89,25 +89,26 @@ def labels_from_cell(cell_file):
 
     labels = {}
 
-    blockstart = re.compile('^%block\s+bs_kpoint_path')
-    blockend = re.compile('^%endblock\s+bs_kpoint_path')
-
-
+    blockstart = re.compile('^%block\s+bs_kpoint_(path|list)')
+    blockend = re.compile('^%endblock\s+bs_kpoint_(path|list)')
 
     with zopen(cell_file, 'r') as f:
         line = ''
-        while blockstart.match(line) is None:
+        while blockstart.match(line.lower()) is None:
             line = f.readline()
 
         line = f.readline()  # Skip past block start line
-        while blockend.match(line) is None:        
+        while blockend.match(line.lower()) is None:
             kpt = tuple(map(float, line.split()[:3]))
-            label = line.split()[-1]
-            labels[label] = kpt
+            if len(line.split()) > 3:
+                label = line.split()[-1]
+                if label.lower() in ('g', 'gamma'):
+                    label = '\Gamma'
+                labels[label] = kpt
             line = f.readline()
 
     return labels
-            
+
 def read_bands_header(bands_file):
     """Read CASTEP bands file header, get lattice vectors and metadata
 
@@ -124,7 +125,7 @@ def read_bands_header(bands_file):
              'n_electrons': [n_spin1, n_spin2],
              'n_bands': [n_bands_spin1, n_bands_spin2],
              'e_fermi': [e_fermi_spin1, e_fermi_spin2]}
-        
+
     """
 
     header = {}
@@ -188,11 +189,11 @@ def read_bands_eigenvalues(bands_file, header):
         eigenvals = {Spin.up: []}
     else:
         eigenvals = {Spin.up: [], Spin.down: []}
-    
+
     with zopen(bands_file, 'r') as f:
         for i in range(9):
             _ = f.readline()  # Skip header
-       
+
         for i_kpt in range(header['n_kpoints']):
             # The first "k-point" column is actually the sorting index
             kpoints.append(np.array(
@@ -221,5 +222,5 @@ def read_bands_eigenvalues(bands_file, header):
     # Transpose matrix to arrange by band and convert to eV from Ha
     eigenvals = {key: data.T * _ry_to_ev * 2
                  for key, data in eigenvals.items()}
-                
+
     return kpoints, eigenvals
