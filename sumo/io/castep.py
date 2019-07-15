@@ -1,4 +1,6 @@
+import collections
 import logging
+import os
 import re
 from monty.io import zopen
 import numpy as np
@@ -8,6 +10,109 @@ from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
 
 _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009
+
+Tag = collections.namedtuple('Tag', 'value comment')
+Block = collections.namedtuple('Block', 'values comments')
+
+class CastepCell(object):
+    """Structure information and more: CASTEP seedname.cell file
+
+    Usually this will be instantiated with the
+    :obj:`sumo.io.castep.CastepCell.from_file()` method
+
+    Tags are stored as a dict, where each key is a tag and each value is a
+    Tag NamedTuple with the attributes 'value' and 'comment'.
+
+    Blocks are also stored as a dict, where each key is the block name
+    (e.g. 'bs_kpoint_list') and the value is a Block NamedTuple with attributes
+    'values' (a list of lists) and 'comments' (a commensurate list of str).
+
+    """
+
+    def __init__(self, blocks={}, tags={}):
+        self.blocks = blocks
+        self.tags = tags
+
+    @classmethod
+    def from_file(cls, filename):
+
+        with zopen(filename, 'rt') as f:
+            lines = [line.strip() for line in f]
+
+        # Remove lines which are entirely commented or empty
+        def _is_not_empty_line(line):
+            if len(line) == 0:
+                return False
+            elif line[0] in '#;!':
+                return False
+            elif len(line) > 6 and line[:7] == 'COMMENT':
+                return False
+            else:
+                return True
+
+        lines = list(filter(_is_not_empty_line, lines))
+
+        tags, blocks = {}, {}
+        current_block_values, current_block_comments = [], []
+        in_block = False
+        current_block_label = ''
+
+        for line in lines:
+            if len(line.split()) == 0:
+                continue
+            elif line[:6].lower() == '%block':
+                if in_block:
+                    raise IOError('Cell file contains nested blocks. '
+                                  'This possibility was not anticipated.')
+                else:
+                    current_block_label = line.split()[1].lower()
+                    in_block = True
+                    continue
+            elif line[:9].lower() == '%endblock':
+                if line.split()[1].lower() != current_block_label:
+                    raise IOError('Endblock {} does not match current block '
+                                  '{}: cannot interpret cell file.'.format(
+                                      line.split()[1], current_block_label))
+                if in_block:
+                    blocks[current_block_label] = Block(current_block_values,
+                                                        current_block_comments)
+
+                    current_block_values, current_block_comments = [], []
+                    in_block = False
+                else:
+                    raise IOError('Cannot cope with line {}: not currently in '
+                                  'a block.'.format(line))
+            elif in_block:
+                comment_split_line = re.split('[#;!]', line)
+                if len(comment_split_line) == 1:
+                    current_block_values.append(line.split())
+                    current_block_comments.append('')
+                else:
+                    values = comment_split_line[0]
+                    current_block_values.append(values.split())
+                    current_block_comments.append(line[len(values):])
+            else:
+                comment_split_line = re.split('[#;!]', line)
+                if len(comment_split_line) == 1:
+                    comment = ''
+                    line = line.split()
+                else:
+                    comment = line[len(comment_split_line[0]):]
+                    line = comment_split_line[0].split()
+                    line = [item for item in line if item not in ':=']
+
+                if len(line) == 1:
+                    data = ''
+                else: data = line[1:]
+
+                tag = line[0].lower()
+                if tag[-1] in ':=':
+                    tag = tag[:-1]
+
+                tags[tag] = Tag(data, comment)
+
+        return cls(tags=tags, blocks=blocks)
+
 
 def band_structure(bands_file, cell_file=None):
     """Convert band structure data from CASTEP to Pymatgen/Sumo format
@@ -224,3 +329,121 @@ def read_bands_eigenvalues(bands_file, header):
                  for key, data in eigenvals.items()}
 
     return kpoints, eigenvals
+
+def write_kpoint_files(filename, kpoints, labels, make_folders=False,
+                       kpts_per_split=None, directory=None):
+    r"""Write the k-points data to files.
+
+    Folders are named as 'split-01', 'split-02', etc ...
+    .cell files are named band_split_01.cell etc ...
+
+    Cartesian coordinates are not supported by CASTEP for band paths.
+
+    Unlike VASP, CASTEP band structure calculations can deal with two
+    separate k-point meshes: a mesh for the SCF convergence and a series of
+    points (or path segments) for the band structure calculation. It is assumed
+    that the existing .cell file contains a specification of the SCF k-point
+    mesh, and Sumo will append the band path information.
+
+    Args:
+        filename (:obj:`str`): Path to CASTEP structure (.cell) file.
+        kpoints (:obj:`numpy.ndarray`): The k-point coordinates along the
+            high-symmetry path. For example::
+
+                [[0, 0, 0], [0.25, 0, 0], [0.5, 0, 0], [0.5, 0, 0.25],
+                [0.5, 0, 0.5]]
+
+        labels (:obj:`list`) The high symmetry labels for each k-point (will be
+            an empty :obj:`str` if the k-point has no label). For example::
+
+                ['\Gamma', '', 'X', '', 'Y']
+
+        make_folders (:obj:`bool`, optional): Generate folders and copy in
+            param file from the current directory, setting task=BandStructure.
+
+        kpts_per_split (:obj:`int`, optional): If set, the k-points are split
+            into separate k-point files (or folders) each containing the number
+            of k-points specified. This is useful for hybrid band structure
+            calculations where it is often intractable to calculate all
+            k-points in the same calculation.
+
+        directory (:obj:`str`, optional): The output file directory.
+        """
+
+    if kpts_per_split:
+        kpt_splits = [kpoints[i:i+kpts_per_split] for
+                      i in range(0, len(kpoints), kpts_per_split)]
+        label_splits = [labels[i:i+kpts_per_split] for
+                        i in range(0, len(labels), kpts_per_split)]
+    else:
+        kpt_splits = [kpoints]
+        label_splits = [labels]
+
+    kpt_txt_blocks = []
+    for kpt_split, label_split in zip(kpt_splits, label_splits):
+        # kpt weights don't actually matter for Castep band structure;
+        # Create an array of zeroes so Pymatgen has something to work with
+        kpt_weights = np.zeros(len(kpt_split))
+
+        txt_block = '\n'.join(
+            ['%block bs_kpoint_list']
+            + ['{10.8f} {10.8f} {10.8f} ! {}'.format(k[0], k[1], k[2], l)
+               for k, l in zip(kpt_split, label_split)]
+            + '%endblock bs_kpoint_list\n\n')
+
+        kpt_txt_blocks.append(kpt_txt_blocks)
+
+    pad = int(math.floor(math.log10(len(kpt_files)))) + 2
+    if make_folders:
+        # Derive param file name by changing extension from cell file
+        param_file = '.'.join(filename.split('.')[:-1] + ['param'])
+
+        with open(filename, 'r') as f:
+            cell_file_txt = f.readlines()
+
+        for i, kpt_txt_block in enumerate(kpt_txt_blocks):
+            split_folder = 'split-{}'.format(str(i + 1).zfill(pad))
+            if directory:
+                split_folder = os.path.join(directory, split_folder)
+
+            copy_param(param_file, split_folder, task='BandStructure')
+
+            with open(os.path.join(split_folder,
+                                   os.path.basename(filename)), 'w') as f:
+                f.write(cell_file_txt)
+                f.write('\n')
+                f.write(kpt_txt_block)
+
+    else:
+        for i, kpt_txt_block in enumerate(kpt_txt_blocks):
+            if len(kpt_txt_blocks) > 1:
+                cell_filename = 'band_split_{:0d}.cell'.format(i + 1)
+            else:
+                cell_filename = 'band.cell'
+            if directory:
+                cell_filename = os.path.join(directory, cell_filename)
+            with open(cell_filename, 'w') as f:
+                f.write(kpt_txt_block)
+
+def copy_param(filename, folder, task=None):
+    """Copy CASTEP .param file, modifying Task if needed
+
+    Args:
+        filename (:obj:`str`): Path to CASTEP .param file
+
+    """
+
+    output_filename = os.path.join(folder, os.path.basename)
+    if os.path.isfile(filename) and task is None:
+        shutil.copyfile(filename, os.path.join(folder, filename))
+
+    elif os.path.isfile(filename):
+        with open(filename, 'r')  as infile:
+            with open(os.path.join(folder, output_filename), 'w') as outfile:
+                for line in infile:
+                    if line.strip().lower()[:4] == 'task':
+                        outfile.write('Task : BandStructure\n')
+                    else:
+                        outfile.write(line)
+    else:
+        logging.warning("Cannot find param file {}, skipping".format(filename))

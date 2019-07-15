@@ -3,7 +3,7 @@
 # Distributed under the terms of the MIT License.
 
 """
-A script to generate KPOINTS files for band structure calculations in VASP
+A script to generate input files for band structure calculations
 
 TODO:
   * Add support for CDML labels
@@ -20,11 +20,11 @@ import argparse
 
 import numpy as np
 
-from sumo.symmetry.kpoints import get_path_data, write_kpoint_files
+from sumo.symmetry.kpoints import get_path_data
 from pymatgen.io.vasp.inputs import Poscar, Kpoints
 import sumo.io.questaal
 from sumo.io.questaal import QuestaalInit, QuestaalSite
-
+import sumo.io.vasp
 
 __author__ = "Alex Ganose"
 __version__ = "1.0"
@@ -118,6 +118,12 @@ def kgen(filename='POSCAR', code='vasp',
         else:
             structure = QuestaalInit.from_file(filename).structure
             alat = None
+    elif code.lower() == 'castep':
+        if cart_coords:
+            logging.warning("Ignoring request for Cartesian coordinates: "
+                            "not applicable to CASTEP band structure format.")
+            cart_coords = False
+        structure = CastepCell.from_file(filename).structure
     else:
         raise ValueError('Code "{0}" not recognized.'.format(code))
 
@@ -156,9 +162,18 @@ def kgen(filename='POSCAR', code='vasp',
             kpts_per_split = int(input())
 
     if code.lower() == 'vasp':
-        write_kpoint_files(filename, kpoints, labels, make_folders=make_folders,
-                           ibzkpt=ibz, kpts_per_split=kpts_per_split,
-                           directory=directory, cart_coords=cart_coords)
+        sumo.io.vasp.write_kpoint_files(filename, kpoints, labels,
+                                        make_folders=make_folders,
+                                        ibzkpt=ibz,
+                                        kpts_per_split=kpts_per_split,
+                                        directory=directory,
+                                        cart_coords=cart_coords)
+
+    elif code.lower() == 'castep':
+        sumo.io.castep.write_kpoint_files(filename, kpoints, labels,
+                                          make_folders=make_folders,
+                                          kpts_per_split=kpts_per_split,
+                                          directory_directory)
 
     elif code.lower() == 'questaal':
         if cart_coords:
