@@ -1,15 +1,24 @@
 import collections
 import logging
+import math
 import os
 import re
 from monty.io import zopen
 import numpy as np
 from pymatgen.core.lattice import Lattice
+from pymatgen.core.structure import Structure
 from pymatgen.electronic_structure.core import Spin
 from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
 
 _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009
+
+# From 2002 CODATA values
+to_angstrom = {'ang': 1,
+               'bohr': 0.5291772108,
+               'm': 1e10,
+               'cm': 1e8,
+               'nm': 10}
 
 Tag = collections.namedtuple('Tag', 'value comment')
 Block = collections.namedtuple('Block', 'values comments')
@@ -19,6 +28,8 @@ class CastepCell(object):
 
     Usually this will be instantiated with the
     :obj:`sumo.io.castep.CastepCell.from_file()` method
+
+    Keys should always be lower-case; values will retain their case.
 
     Tags are stored as a dict, where each key is a tag and each value is a
     Tag NamedTuple with the attributes 'value' and 'comment'.
@@ -32,6 +43,86 @@ class CastepCell(object):
     def __init__(self, blocks={}, tags={}):
         self.blocks = blocks
         self.tags = tags
+
+    @property
+    def structure(self):
+        # Get lattice vectors
+        if 'lattice_cart' in self.blocks:
+            lattice_cart = self.blocks['lattice_cart'].values
+            if lattice_cart[0][0].lower() in ('ang', 'nm', 'cm',
+                                              'm', 'bohr', 'a0'):
+                unit = lattice_cart[0][0].lower()
+                vectors = lattice_cart[1:]
+            else:
+                unit = 'ang'
+                vectors = lattice_cart
+            vectors = np.array([list(map(float, row)) for row in vectors])
+            if vectors.shape != (3, 3):
+                raise ValueError('lattice_cart should contain a 3x3 matrix')
+
+            vectors *= to_angstrom[unit]
+            lattice = Lattice(vectors)
+        elif 'lattice_abc' in self.blocks:
+            lattice_abc = self.blocks['lattice_abc'].values
+            if lattice_abc[0][0].lower() in ('ang', 'nm', 'cm', 'm', 'bohr', 'a0'):
+                unit = lattice_abc[0][0].lower()
+                lengths_and_angles = lattice_abc[1:]
+            else:
+                unit = 'ang'
+                lengths_and_angles = lattice_abc[1:]
+            if len(lengths_and_angles) != 2:
+                raise ValueError('lattice_abc should have two rows')
+            lengths_and_angles = [list(map(float, row))
+                                  for row in lengths_and_angles]
+            lengths_and_angles[0] = [x * to_angstrom[unit]
+                                     for x in lengths_and_angles[0]]
+            lattice = Lattice.from_lengths_and_angles(*lengths_and_angles)
+        else:
+            raise ValueError("Couldn't find a lattice in cell file")
+
+        if 'positions_frac' in self.blocks:
+            elements_coords = [(row[0], list(map(float, row[1:4])))
+                                for row in self.blocks['positions_frac']]
+            elements, coords = zip(*elements_coords)
+            return Structure(lattice, elements, coords,
+                             coords_are_cartesian=False)
+        elif 'positions_abs' in self.blocks:
+            positions_abs = self.blocks['positions_abs'].values
+            if positions_abs[0][0].lower() in ('ang', 'nm', 'cm', 'm', 'bohr', 'a0'):
+                unit = positions_abs[0][0].lower()
+                positions_abs = positions_abs[1:]
+            else:
+                unit = 'ang'
+            elements_coords = [(row[0], list(map(float, row[1:4])))
+                               for row in positions_abs]
+            elements, coords = zip(*elements_coords)
+            return Structure(lattice, elements, coords,
+                             coords_are_cartesian=True)
+
+    def to_file(self, filename):
+        with open(filename, 'wt') as f:
+            for tag, content in self.tags.items():
+                if content.comment in (None, ''):
+                    f.write('{0: <24}: {1}\n'.format(tag,
+                                                     ' '.join(content.value)))
+                else:
+                    f.write('{0: <24}: {1: <16} ! {2}\n'.format(
+                        tag, ' '.join(content.value), content.comment))
+            for block, content in self.blocks.items():
+                f.write('\n%block {}\n'.format(block))
+                if content.comments is None:
+                    comments = [''] * len(content.values)
+                else:
+                    comments = content.comments
+
+                for row, comment in zip(content.values, content.comments):
+                    line = ' '.join(map(str, row))
+                    if comment != '':
+                        line = '{0: <30} ! {1}'.format(line, comment)
+                    line = line + '\n'
+                    f.write(line)
+
+                f.write('%endblock {}\n'.format(block))
 
     @classmethod
     def from_file(cls, filename):
@@ -360,6 +451,7 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
 
         make_folders (:obj:`bool`, optional): Generate folders and copy in
             param file from the current directory, setting task=BandStructure.
+            Cell file filename will be copies with the new band path block.
 
         kpts_per_split (:obj:`int`, optional): If set, the k-points are split
             into separate k-point files (or folders) each containing the number
@@ -379,51 +471,43 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
         kpt_splits = [kpoints]
         label_splits = [labels]
 
-    kpt_txt_blocks = []
+    kpt_cell_files = []
     for kpt_split, label_split in zip(kpt_splits, label_splits):
-        # kpt weights don't actually matter for Castep band structure;
-        # Create an array of zeroes so Pymatgen has something to work with
-        kpt_weights = np.zeros(len(kpt_split))
+        cellfile = CastepCell.from_file(filename)
+        cellfile.blocks['bs_kpoint_list'] = Block(kpt_split, label_split)
+        # Remove any other band structure blocks which may have been loaded
+        for key in 'bs_kpoints_list', 'bs_kpoint_path', 'bs_kpoints_path':
+            try:
+                del cellfile.blocks[key]
+            except KeyError:
+                pass
 
-        txt_block = '\n'.join(
-            ['%block bs_kpoint_list']
-            + ['{10.8f} {10.8f} {10.8f} ! {}'.format(k[0], k[1], k[2], l)
-               for k, l in zip(kpt_split, label_split)]
-            + '%endblock bs_kpoint_list\n\n')
+        kpt_cell_files.append(cellfile)
 
-        kpt_txt_blocks.append(kpt_txt_blocks)
-
-    pad = int(math.floor(math.log10(len(kpt_files)))) + 2
+    pad = int(math.floor(math.log10(len(kpt_cell_files)))) + 2
     if make_folders:
         # Derive param file name by changing extension from cell file
         param_file = '.'.join(filename.split('.')[:-1] + ['param'])
 
-        with open(filename, 'r') as f:
-            cell_file_txt = f.readlines()
-
-        for i, kpt_txt_block in enumerate(kpt_txt_blocks):
+        for i, cell_file in enumerate(kpt_cell_files):
             split_folder = 'split-{}'.format(str(i + 1).zfill(pad))
             if directory:
                 split_folder = os.path.join(directory, split_folder)
 
             copy_param(param_file, split_folder, task='BandStructure')
 
-            with open(os.path.join(split_folder,
-                                   os.path.basename(filename)), 'w') as f:
-                f.write(cell_file_txt)
-                f.write('\n')
-                f.write(kpt_txt_block)
+            cell_file.to_file(os.path.join(split_folder,
+                                            os.path.basename(filename)))
 
     else:
-        for i, kpt_txt_block in enumerate(kpt_txt_blocks):
-            if len(kpt_txt_blocks) > 1:
+        for i, cell_file in enumerate(kpt_cell_files):
+            if len(kpt_cell_files) > 1:
                 cell_filename = 'band_split_{:0d}.cell'.format(i + 1)
             else:
                 cell_filename = 'band.cell'
             if directory:
                 cell_filename = os.path.join(directory, cell_filename)
-            with open(cell_filename, 'w') as f:
-                f.write(kpt_txt_block)
+            cell_file.to_file(cell_filename)
 
 def copy_param(filename, folder, task=None):
     """Copy CASTEP .param file, modifying Task if needed
@@ -433,13 +517,15 @@ def copy_param(filename, folder, task=None):
 
     """
 
-    output_filename = os.path.join(folder, os.path.basename)
+    output_filename = os.path.join(folder, os.path.basename(filename))
+    if not os.path.isdir(folder):
+        os.mkdir(folder)
     if os.path.isfile(filename) and task is None:
-        shutil.copyfile(filename, os.path.join(folder, filename))
+        shutil.copyfile(filename, output_filename)
 
     elif os.path.isfile(filename):
         with open(filename, 'r')  as infile:
-            with open(os.path.join(folder, output_filename), 'w') as outfile:
+            with open(output_filename, 'w') as outfile:
                 for line in infile:
                     if line.strip().lower()[:4] == 'task':
                         outfile.write('Task : BandStructure\n')

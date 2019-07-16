@@ -22,9 +22,11 @@ import numpy as np
 
 from sumo.symmetry.kpoints import get_path_data
 from pymatgen.io.vasp.inputs import Poscar, Kpoints
+from sumo.io.castep import CastepCell
 import sumo.io.questaal
 from sumo.io.questaal import QuestaalInit, QuestaalSite
 import sumo.io.vasp
+
 
 __author__ = "Alex Ganose"
 __version__ = "1.0"
@@ -173,7 +175,7 @@ def kgen(filename='POSCAR', code='vasp',
         sumo.io.castep.write_kpoint_files(filename, kpoints, labels,
                                           make_folders=make_folders,
                                           kpts_per_split=kpts_per_split,
-                                          directory_directory)
+                                          directory=directory)
 
     elif code.lower() == 'questaal':
         if cart_coords:
