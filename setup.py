@@ -33,15 +33,20 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.5',                 
         'Topic :: Scientific/Engineering :: Chemistry',
         'Topic :: Scientific/Engineering :: Physics'
         ],
     keywords='chemistry pymatgen dft vasp dos band',
     test_suite='setup.load_test_suite',
     packages=find_packages(),
-    install_requires=['spglib', 'numpy', 'scipy', 'pymatgen>=2017.12.30',
+    install_requires=['spglib', 'numpy', 'scipy',
                       'h5py', 'phonopy>=2.1.3', 'matplotlib', 'seekpath'],
-    extras_require={'docs': ['sphinx', 'sphinx-argparse']},
+    extras_require={'docs': ['sphinx', 'sphinx-argparse'],
+                    ':python_version=="3.5"': [
+                        'pymatgen >=2016.12.30, <=2019.6.20'],
+                    ':python_version>="3.6"': ['pymatgen>=2017.12.30']
+                        },
     package_data={'sumo': ['symmetry/bradcrack.json',
                            'plotting/orbital_colours.conf',
                            'plotting/sumo_base.mplstyle',
