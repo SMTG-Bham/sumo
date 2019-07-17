@@ -40,9 +40,9 @@ class CastepCell(object):
 
     """
 
-    def __init__(self, blocks={}, tags={}):
-        self.blocks = blocks
-        self.tags = tags
+    def __init__(self, blocks=None, tags=None):
+        self.blocks = blocks if blocks else {}
+        self.tags = tags if tags else {}
 
     @property
     def structure(self):
@@ -115,7 +115,7 @@ class CastepCell(object):
                 else:
                     comments = content.comments
 
-                for row, comment in zip(content.values, content.comments):
+                for row, comment in zip(content.values, comments):
                     line = ' '.join(map(str, row))
                     if comment != '':
                         line = '{0: <30} ! {1}'.format(line, comment)
@@ -387,24 +387,24 @@ def read_bands_eigenvalues(bands_file, header):
         eigenvals = {Spin.up: [], Spin.down: []}
 
     with zopen(bands_file, 'r') as f:
-        for i in range(9):
-            _ = f.readline()  # Skip header
+        for _ in range(9):
+            __ = f.readline()  # Skip header
 
-        for i_kpt in range(header['n_kpoints']):
+        for _ in range(header['n_kpoints']):
             # The first "k-point" column is actually the sorting index
             kpoints.append(np.array(
                 [float(x) for x in f.readline().split()[1:5]]))
-            _ = f.readline() # Skip past "Spin component 1"
+            __ = f.readline() # Skip past "Spin component 1"
             spin1_bands = ([kpoints[-1][0]] +     # Sorting key goes in col 0
                            [float(f.readline())
                             for _ in range(header['n_bands'][0])])
             eigenvals[Spin.up].append(spin1_bands)
 
             if header['n_spins'] == 2:
-                _ = f.readline() # Skip past "Spin component 2"
+                __ = f.readline() # Skip past "Spin component 2"
                 spin2_bands = ([kpoints[-1][0]] + # Sorting key goes in col 0
                                [float(f.readline())
-                                for _ in range(header['n_bands'][0])])
+                                for __ in range(header['n_bands'][0])])
                 eigenvals[Spin.down].append(spin2_bands)
 
     # Sort kpoints and trim off sort keys

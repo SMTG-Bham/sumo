@@ -9,9 +9,6 @@ Module providing helper functions for generating k-points along a path.
 import sys
 import logging
 
-from pymatgen.io.vasp.inputs import Kpoints
-
-
 def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
                   line_density=60, cart_coords=False, kpt_list=None,
                   labels=None, phonopy=False):

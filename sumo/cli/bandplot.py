@@ -255,13 +255,10 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
 
         site_file = os.path.abspath(
             os.path.join(bnds_folder, 'site.{}'.format(ext)))
-        init_file = os.path.abspath(
-            os.path.join(bnds_folder, 'init.{}'.format(ext)))
 
         if os.path.isfile(site_file):
             logging.info('site file found, reading lattice...')
             site_data = QuestaalSite.from_file(site_file)
-            #bnds_lattice = QuestaalInit.from_file(init_file).structure.lattice
             bnds_lattice = site_data.structure.lattice
             alat = site_data.alat
         else:
