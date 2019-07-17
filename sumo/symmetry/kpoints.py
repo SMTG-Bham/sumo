@@ -6,11 +6,7 @@
 Module providing helper functions for generating k-points along a path.
 """
 
-import os
 import sys
-import math
-import errno
-import shutil
 import logging
 
 from pymatgen.io.vasp.inputs import Kpoints
