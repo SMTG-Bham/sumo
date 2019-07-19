@@ -58,7 +58,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
                     style=None, no_base_style=False,
                     ymin=None, ymax=None, image_format='pdf', dpi=400,
                     plt=None, fonts=None, dos=None,
-                    to_json=None, from_json=None):
+                    to_json=None, from_json=None, legend=None):
     """A script to plot phonon band structure diagrams.
 
     Args:
@@ -147,8 +147,12 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             specified as a :obj:`list` of :obj:`str`.
         to_json (:obj:`str`, optional): JSON file to dump the Pymatgen band
             path object.
-        from_json (:obj:`list` or :obj:`str`): (List of) JSON bandpath data
-            filename(s) to import and overlay.
+        from_json (:obj:`list` or :obj:`str`, optional): (List of) JSON
+            bandpath data filename(s) to import and overlay.
+        legend (:obj:`list` or :obj:`None`, optional): Legend labels. If None,
+            don't add a legend. With a list length equal to from_json, label
+            json inputs only. With one extra list entry, label all lines
+            beginning with new plot.
 
     Returns:
         A matplotlib pyplot object.
@@ -195,7 +199,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
     plotter = SPhononBSPlotter(bs)
     plt = plotter.get_plot(units=units, ymin=ymin, ymax=ymax, height=height,
                            width=width, plt=plt, fonts=fonts, dos=dos,
-                           from_json=from_json)
+                           from_json=from_json, legend=legend)
 
     if save_files:
         basename = 'phonon_band.{}'.format(image_format)
@@ -250,8 +254,8 @@ def _bs_from_filename(filename, poscar, dim, symprec, spg, kpt_list, labels,
     if '.yaml' in filename:
         yaml_file = filename
 
-    elif ('FORCE_SETS' == filename
-          or 'FORCE_CONSTANTS' == filename
+    elif ('FORCE_SETS' in filename
+          or 'FORCE_CONSTANTS' in filename
           or '.hdf5' in filename):
         try:
             poscar = poscar if poscar else 'POSCAR'
@@ -409,6 +413,11 @@ def _get_parser():
     parser.add_argument('--from-json', type=str, nargs='+', default=None,
                         dest='from_json',
                         help='Overlay band data from JSON files')
+    parser.add_argument('--legend', type=str, nargs='*', default=None,
+                        help=('Legend labels. With no args, label json inputs '
+                              'with filenames. With one arg per json file, '
+                              'label json inputs only. With one extra arg, '
+                              'label all lines beginning with new plot.'))
     return parser
 
 
@@ -458,6 +467,16 @@ def main():
     else:
         pa = None
 
+    # Detect 'const' option for --legend and set filenames as legend
+    legend = args.legend
+    if isinstance(legend, list):
+        if len(legend) == 0:
+            if args.from_json:
+                legend = args.from_json.copy()
+            else:
+                raise ValueError("Can't generate automatic legend without"
+                                 "--from-json; nothing to plot!")
+
     phonon_bandplot(args.filename, poscar=args.poscar, prefix=args.prefix,
                     directory=args.directory, dim=dim, born=args.born,
                     qmesh=args.qmesh, primitive_axis=pa, symprec=args.symprec,
@@ -468,7 +487,8 @@ def main():
                     style=args.style, no_base_style=args.no_base_style,
                     dpi=args.dpi, fonts=args.font,
                     eigenvectors=args.eigenvectors, dos=args.dos,
-                    to_json=args.to_json, from_json=args.from_json)
+                    to_json=args.to_json, from_json=args.from_json,
+                    legend=legend)
 
 
 if __name__ == "__main__":

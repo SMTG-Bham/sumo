@@ -62,7 +62,7 @@ class SPhononBSPlotter(PhononBSPlotter):
     def get_plot(self, units='THz', ymin=None, ymax=None, width=None,
                  height=None, dpi=None, plt=None, fonts=None, dos=None,
                  dos_aspect=3, color=None, style=None, no_base_style=False,
-                 from_json=None):
+                 from_json=None, legend=None):
         """Get a :obj:`matplotlib.pyplot` object of the phonon band structure.
 
         Args:
@@ -103,6 +103,16 @@ class SPhononBSPlotter(PhononBSPlotter):
         if from_json is None:
             from_json = []
 
+        if legend is None:
+            legend = [''] * (len(from_json) + 1)
+        else:
+            if len(legend) == 1 + len(from_json):
+                pass
+            elif len(legend) == len(from_json):
+                legend = [''] + list(legend)
+            else:
+                raise ValueError('Inappropriate number of legend entries')
+
         if color is None:
             color = 'C0'  # Default to first colour in matplotlib series
 
@@ -127,7 +137,8 @@ class SPhononBSPlotter(PhononBSPlotter):
                 f = freqs[nd][nb]
 
                 # plot band data
-                ax.plot(dists[nd], f, ls='-', c=color, zorder=zorder)
+                ax.plot(dists[nd], f, ls='-', c=color,
+                        zorder=zorder)
 
         data = self.bs_plot_data()
         _plot_lines(data, ax, color=color)
@@ -141,10 +152,15 @@ class SPhononBSPlotter(PhononBSPlotter):
             if json_plotter._nb_bands != self._nb_bands:
                 raise Exception('Number of bands in {} does not match '
                                 'main plot'.format(bs_json))
-            alpha = (i + 1)/(len(from_json) + 1)
             _plot_lines(json_data, ax,
                         color='C{}'.format(i + 1),
                         zorder=0.5)
+
+        if any(legend):  # Don't show legend if all entries are empty string
+            from matplotlib.lines import Line2D
+            ax.legend([Line2D([0], [0], color='C{}'.format(i))
+                       for i in range(len(legend))],
+                       legend)
 
         self._maketicks(ax, units=units)
         self._makeplot(ax, plt.gcf(), data, width=width, height=height,
