@@ -6,18 +6,20 @@
 This module provides a class for plotting phonon band structure diagrams.
 """
 
-import logging
 import itertools
+import json
+import logging
 
 from matplotlib import rcParams
 from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 from matplotlib.cbook import flatten
 from matplotlib.transforms import blended_transform_factory
 
+from pymatgen.phonon.plotter import PhononBSPlotter
+from pymatgen.phonon.bandstructure import PhononBandStructureSymmLine
+
 from sumo.plotting import (pretty_plot, pretty_subplot, styled_plot,
                            sumo_base_style, sumo_bs_style, sumo_phonon_style)
-
-from pymatgen.phonon.plotter import PhononBSPlotter
 
 dashes = (5, 2)
 
@@ -59,7 +61,8 @@ class SPhononBSPlotter(PhononBSPlotter):
     @styled_plot(sumo_base_style, sumo_bs_style, sumo_phonon_style)
     def get_plot(self, units='THz', ymin=None, ymax=None, width=None,
                  height=None, dpi=None, plt=None, fonts=None, dos=None,
-                 dos_aspect=3, color=None, style=None, no_base_style=False):
+                 dos_aspect=3, color=None, style=None, no_base_style=False,
+                 from_json=None):
         """Get a :obj:`matplotlib.pyplot` object of the phonon band structure.
 
         Args:
@@ -86,10 +89,20 @@ class SPhononBSPlotter(PhononBSPlotter):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
+            from_json (:obj:`list` or :obj:`None`, optional): List of paths to
+                :obj:`pymatgen.phonon.bandstructure.PhononBandStructureSymmline`
+                JSON dump files. These are used to generate additional plots
+                displayed under the data attached to this plotter.
+                The k-point path should be the same as the main plot; the
+                reciprocal lattice is adjusted to fit the scaling of the main
+                data input.
 
         Returns:
             :obj:`matplotlib.pyplot`: The phonon band structure plot.
         """
+        if from_json is None:
+            from_json = []
+
         if color is None:
             color = 'C0'  # Default to first colour in matplotlib series
 
@@ -103,17 +116,35 @@ class SPhononBSPlotter(PhononBSPlotter):
             plt = pretty_plot(width, height, dpi=dpi, plt=plt)
             ax = plt.gca()
 
+        def _plot_lines(data, ax, color=None, alpha=1, zorder=1):
+            """Pull data from any PhononBSPlotter and add to axis"""
+            dists = data['distances']
+            freqs = data['frequency']
+
+            # nd is branch index, nb is band index, nk is kpoint index
+            for nd, nb in itertools.product(range(len(data['distances'])),
+                                            range(self._nb_bands)):
+                f = freqs[nd][nb]
+
+                # plot band data
+                ax.plot(dists[nd], f, ls='-', c=color, zorder=zorder)
+
         data = self.bs_plot_data()
-        dists = data['distances']
-        freqs = data['frequency']
+        _plot_lines(data, ax, color=color)
 
-        # nd is branch index, nb is band index, nk is kpoint index
-        for nd, nb in itertools.product(range(len(data['distances'])),
-                                        range(self._nb_bands)):
-            f = freqs[nd][nb]
-
-            # plot band data
-            ax.plot(dists[nd], f, ls='-', c=color, zorder=1)
+        for i, bs_json in enumerate(from_json):
+            with open(bs_json, 'rt') as f:
+                bs = PhononBandStructureSymmLine.from_dict(json.load(f))
+                bs.lattice_rec = self._bs.lattice_rec
+            json_plotter = PhononBSPlotter(bs)
+            json_data = json_plotter.bs_plot_data()
+            if json_plotter._nb_bands != self._nb_bands:
+                raise Exception('Number of bands in {} does not match '
+                                'main plot'.format(bs_json))
+            alpha = (i + 1)/(len(from_json) + 1)
+            _plot_lines(json_data, ax,
+                        color='C{}'.format(i + 1),
+                        zorder=0.5)
 
         self._maketicks(ax, units=units)
         self._makeplot(ax, plt.gcf(), data, width=width, height=height,
