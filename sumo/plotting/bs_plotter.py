@@ -455,14 +455,14 @@ class SBSPlotter(BSPlotter):
                   dos_plotter=None, dos_options=None, dos_label=None,
                   aspect=None):
         """Tidy the band structure & add the density of states if required."""
-        # draw line at Fermi level if not zeroing to e-Fermi
+        # draw line at Fermi level
         if not zero_to_efermi:
             ytick_color = rcParams['ytick.color']
             ef = self._bs.efermi
-            ax.axhline(ef, color=ytick_color)
+            ax.axhline(ef, color=ytick_color, linestyle='-.', alpha=0.3)
         else:
             ytick_color = rcParams['ytick.color']
-            ax.axhline(y=0, color=ytick_color)
+            ax.axhline(y=0, color=ytick_color, linestyle='-.', alpha=0.3)
 
         # set x and y limits
         ax.set_xlim(0, data['distances'][-1][-1])
@@ -499,7 +499,7 @@ class SBSPlotter(BSPlotter):
 
             ax.set_aspect(aspect * ((x1 - x0) / (y1 - y0)))
 
-    def _makedos(self, ax, dos_plotter, dos_options, dos_label=None):
+    def _makedos(self, ax, dos_plotter, dos_options, dos_label=None, zero_to_efermi=True):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
         # don't use first 4 colours; these are the band structure line colours
@@ -531,6 +531,15 @@ class SBSPlotter(BSPlotter):
             # x and y axis reversed versus normal dos plotting
             ax.set_ylim(dos_options['xmin'], dos_options['xmax'])
             ax.set_xlim(plot_data['ymin'], plot_data['ymax'])
+
+            # draw line at Fermi level
+            if not zero_to_efermi:
+                ytick_color = rcParams['ytick.color']
+                ef = self._dos.efermi
+                ax.axhline(ef, color=ytick_color, linestyle='-.', alpha=0.3)
+            else:
+                ytick_color = rcParams['ytick.color']
+                ax.axhline(y=0, color=ytick_color, linestyle='-.', alpha=0.3)
 
             if dos_label is not None:
                 ax.set_xlabel(dos_label)
