@@ -287,6 +287,15 @@ class SDOSPlotter(object):
                 ax.plot(energies, densities, label=label,
                         color=line['colour'])
 
+            # draw line at Fermi level
+            if not zero_to_efermi:
+                xtick_color = matplotlib.rcParams['xtick.color']
+                ef = self._dos.efermi
+                ax.axvline(ef, color=xtick_color, linestyle='-.', alpha=0.3)
+            else:
+                xtick_color = matplotlib.rcParams['xtick.color']
+                ax.axvline(x=0, color=xtick_color, linestyle='-.', alpha=0.3)
+
             ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
             ax.set_xlim(xmin, xmax)
 
