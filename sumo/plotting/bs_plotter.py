@@ -460,6 +460,9 @@ class SBSPlotter(BSPlotter):
             ytick_color = rcParams['ytick.color']
             ef = self._bs.efermi
             ax.axhline(ef, color=ytick_color)
+        else:
+            ytick_color = rcParams['ytick.color']
+            ax.axhline(y=0, color=ytick_color)
 
         # set x and y limits
         ax.set_xlim(0, data['distances'][-1][-1])
