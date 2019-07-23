@@ -232,7 +232,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
 
     plotter = SPhononBSPlotter(bs)
     plt = plotter.get_plot(units=units, ymin=ymin, ymax=ymax, height=height,
-                           width=width, plt=plt, fonts=fonts, dos=dos)
+                           width=width, plt=plt, fonts=fonts, dos=dos,
+                           style=style, no_base_style=no_base_style)
 
     if save_files:
         basename = 'phonon_band.{}'.format(image_format)
