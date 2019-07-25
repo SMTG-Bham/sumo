@@ -145,8 +145,13 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         for i, bs_json in enumerate(from_json):
             with open(bs_json, 'rt') as f:
-                bs = PhononBandStructureSymmLine.from_dict(json.load(f))
-                bs.lattice_rec = self._bs.lattice_rec
+                json_data = json.load(f)
+                json_data['lattice_rec'] = json.loads(
+                    self._bs.lattice_rec.to_json())
+                bs = PhononBandStructureSymmLine.from_dict(json_data)
+
+                # bs.lattice_rec = self._bs.lattice_rec
+                # raise Exception(bs.qpoints)
             json_plotter = PhononBSPlotter(bs)
             json_data = json_plotter.bs_plot_data()
             if json_plotter._nb_bands != self._nb_bands:
