@@ -199,9 +199,9 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
     plotter = SPhononBSPlotter(bs)
     plt = plotter.get_plot(units=units, ymin=ymin, ymax=ymax, height=height,
                            width=width, plt=plt, fonts=fonts, dos=dos,
-                           from_json=from_json, legend=legend,
-                           style=style, no_base_style=no_base_style)
-
+                           style=style, no_base_style=no_base_style,
+                           from_json=from_json, legend=legend)
+    
     if save_files:
         basename = 'phonon_band.{}'.format(image_format)
         filename = '{}_{}'.format(prefix, basename) if prefix else basename
