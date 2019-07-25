@@ -42,7 +42,6 @@ from sumo.phonon.phonopy import load_phonopy
 from sumo.symmetry.kpoints import get_path_data
 from sumo.plotting.phonon_bs_plotter import SPhononBSPlotter
 
-
 __author__ = "Alex Ganose"
 __version__ = "1.0"
 __maintainer__ = "Alex Ganose"
@@ -164,9 +163,9 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
     if filename is None:
         if from_json is None:
             filename = 'FORCE_SETS'
-            bs = _bs_from_filename(filename, poscar, dim, symprec, spg,
-                                   kpt_list, labels, primitive_axis, units,
-                                   born, mode, eigenvectors)
+            bs, phonon = _bs_from_filename(filename, poscar, dim, symprec, spg,
+                                           kpt_list, labels, primitive_axis,
+                                           units, born, mode, eigenvectors)
 
         else:
             logging.info("No input data, using file {} "
@@ -175,9 +174,9 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
                 bs = PhononBandStructureSymmLine.from_dict(json.load(f))
             from_json = from_json[1:]
     else:
-        bs = _bs_from_filename(filename, poscar, dim, symprec, spg, kpt_list,
-                               labels, primitive_axis, units, born, mode,
-                               eigenvectors)
+        bs, phonon = _bs_from_filename(filename, poscar, dim, symprec, spg,
+                                       kpt_list, labels, primitive_axis, units,
+                                       born, mode, eigenvectors)
 
     if to_json is not None:
         logging.info("Writing symmetry lines to {}".format(to_json))
@@ -201,7 +200,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
                            width=width, plt=plt, fonts=fonts, dos=dos,
                            style=style, no_base_style=no_base_style,
                            from_json=from_json, legend=legend)
-    
+
     if save_files:
         basename = 'phonon_band.{}'.format(image_format)
         filename = '{}_{}'.format(prefix, basename) if prefix else basename
@@ -323,7 +322,7 @@ def _bs_from_filename(filename, poscar, dim, symprec, spg, kpt_list, labels,
 
     bs = get_ph_bs_symm_line(yaml_file, has_nac=False,
                              labels_dict=kpath.kpoints)
-    return bs
+    return bs, phonon
 
 
 def _get_parser():
