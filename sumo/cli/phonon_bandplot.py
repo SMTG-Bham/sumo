@@ -7,12 +7,9 @@ A script to plot phonon band structure diagrams.
 
 TODO:
  * automatically plot dos if present in band.yaml
- * primitive axis determination (try symmetrise->spglib->PA then apply
-   transform on original cell and see if it works.
  * make band structure from vasprun displacement/DFPT files
  * deal with magnetic moments
- * Read FORCE_CONSANTS or force_constants.hdf5
- * change frequency unit
+ * Read force_constants.hdf5
  * read settings from phonopy config file
  * prefix file names
 """
