@@ -89,7 +89,13 @@ def find_vasprun_files():
     return filenames
 
 def _get_parser():
-    parser.add_argument(
+    parser = argparse.ArgumentParser(description="""
+    bandplot is a script to produce publication-ready band
+    structure diagrams""",
+                                     epilog="""
+    Author: {}
+    Version: {}
+    Last updated: {}""".format(__author__, __version__, __date__))    parser.add_argument(
         "-f",
         "--filenames",
         default=None,
