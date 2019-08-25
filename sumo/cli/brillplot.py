@@ -95,7 +95,8 @@ def _get_parser():
                                      epilog="""
     Author: {}
     Version: {}
-    Last updated: {}""".format(__author__, __version__, __date__))    parser.add_argument(
+    Last updated: {}""".format(__author__, __version__, __date__))    
+    parser.add_argument(
         "-f",
         "--filenames",
         default=None,
