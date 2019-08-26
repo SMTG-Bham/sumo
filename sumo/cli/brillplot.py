@@ -2,12 +2,15 @@
 # Distributed under the terms of the MIT License.
 
 """
-A script to plot the high symmetry points on the Brillouin Zone from the output of a band structure calculation
+Plot high symmetry points on the Brillouin Zone from calculated band structure
+
 TODO:
-    Connect the high symmetry points to make a path as it appears on the band structure
-    Incorporate an option to open a gui to inspect bz by eye
-    Various aesthetic personisation schemes
-    Modify the matplotlib backend such that both figures can be saved and a gui can be used
+    - Connect the high symmetry points to make a path as it appears on the band
+      structure
+    - Incorporate an option to open a gui to inspect bz by eye
+    - Apply user styles / appearance options
+    - Modify the matplotlib backend such that both figures can be saved and a
+      gui can be used
 
 """
 
@@ -23,7 +26,7 @@ from pymatgen.electronic_structure.bandstructure import get_reconstructed_band_s
 from pymatgen.electronic_structure.plotter import BSPlotter
 import matplotlib as mpl
 
-mpl.use("TkAgg")
+mpl.use("Agg")
 __author__ = "Arthur Youd"
 __version__ = "1.0"
 __maintainer__ = "Alex Ganose"
@@ -31,18 +34,19 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "August 21, 2019"
 
 
-def brillplot(filenames=None, prefix=None, directory=None, image_format="pdf", dpi=400):
-    """Generat plot of first brillouin zone from a band-structure calculation.
-	Args:
-		filenames (:obj:`str` or :obj:`list`, optional): Path to input files.
-            		Vasp:
-                		Use vasprun.xml or vasprun.xml.gz file.
-		image_format (:obj:`str`, optional): The image file format. Can be any
-            		format supported by matplotlib, including: png, jpg, pdf, and svg.
-            		Defaults to pdf.
-        	dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
-            		the image.
-	"""
+def brillplot(filenames=None, prefix=None, directory=None,
+              image_format="pdf", dpi=400):
+    """Generate plot of first brillouin zone from a band-structure calculation.
+    Args:
+        filenames (:obj:`str` or :obj:`list`, optional): Path to input files.
+            Vasp:
+                Use vasprun.xml or vasprun.xml.gz file.
+        image_format (:obj:`str`, optional): The image file format. Can be any
+            format supported by matplotlib, including: png, jpg, pdf, and svg.
+            Defaults to pdf.
+        dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for the
+            image.
+    """
     if not filenames:
         filenames = find_vasprun_files()
     elif isinstance(filenames, str):
@@ -66,12 +70,16 @@ def brillplot(filenames=None, prefix=None, directory=None, image_format="pdf", d
 
 def find_vasprun_files():
     """Search for vasprun files from the current directory.
-	The precedence order for file locations is:
-	1. First search for folders named: 'split-0*'
-	2. Else, look in the current directory.
-	The split folder names should always be zero based, therefore easily
-	sortable.
-	"""
+
+    The precedence order for file locations is:
+    1. First search for folders named: 'split-0*'
+    2. Else, look in the current directory.
+    The split folder names should always be zero based, therefore easily
+    sortable.
+
+    Returns: list of str
+
+    """
     folders = glob.glob("split-*")
     folders = sorted(folders) if folders else ["."]
 
@@ -88,6 +96,7 @@ def find_vasprun_files():
             sys.exit()
     return filenames
 
+
 def _get_parser():
     parser = argparse.ArgumentParser(description="""
     bandplot is a script to produce publication-ready band
@@ -95,7 +104,7 @@ def _get_parser():
                                      epilog="""
     Author: {}
     Version: {}
-    Last updated: {}""".format(__author__, __version__, __date__))    
+    Last updated: {}""".format(__author__, __version__, __date__))
     parser.add_argument(
         "-f",
         "--filenames",
@@ -132,12 +141,14 @@ def main():
     console = logging.StreamHandler()
     logging.info(" ".join(sys.argv[:]))
     logging.getLogger("").addHandler(console)
-    warnings.filterwarnings("ignore", category=UserWarning, module="matplotlib")
-    warnings.filterwarnings("ignore", category=UnicodeWarning, module="matplotlib")
+    warnings.filterwarnings("ignore",
+                            category=UserWarning, module="matplotlib")
+    warnings.filterwarnings("ignore",
+                            category=UnicodeWarning, module="matplotlib")
     warnings.filterwarnings("ignore", category=UserWarning, module="pymatgen")
 
     brillplot(
-        filenames=arg.filenames,
+        filenames=args.filenames,
         directory=args.directory,
         image_format=args.image_format,
         dpi=args.dpi,
