@@ -23,10 +23,11 @@ import warnings
 
 from pymatgen.io.vasp.outputs import BSVasprun
 from pymatgen.electronic_structure.bandstructure import get_reconstructed_band_structure
-from pymatgen.electronic_structure.plotter import BSPlotter
+from pymatgen.electronic_structure.plotter import plot_brillouin_zone
 import matplotlib as mpl
-
 mpl.use("Agg")
+from sumo.plotting import pretty_plot_3d
+
 __author__ = "Arthur Youd"
 __version__ = "1.0"
 __maintainer__ = "Alex Ganose"
@@ -35,6 +36,7 @@ __date__ = "August 21, 2019"
 
 
 def brillplot(filenames=None, prefix=None, directory=None,
+              width=6, height=6, fonts=None,
               image_format="pdf", dpi=400):
     """Generate plot of first brillouin zone from a band-structure calculation.
     Args:
@@ -57,16 +59,27 @@ def brillplot(filenames=None, prefix=None, directory=None,
         bs = vr.get_band_structure(line_mode=True)
         bandstructures.append(bs)
     bs = get_reconstructed_band_structure(bandstructures)
-    plotter = BSPlotter(bs)
-    plt = plotter.plot_brillouin()
+
+    labels = {}
+    for k in bs.kpoints:
+        if k.label:
+            labels[k.label] = k.frac_coords
+
+    lines = []
+    for b in bs.branches:
+        lines.append([bs.kpoints[b['start_index']].frac_coords,
+                      bs.kpoints[b['end_index']].frac_coords])
+
+    plt = pretty_plot_3d(width, height, dpi=dpi, fonts=fonts)
+    fig = plot_brillouin_zone(bs.lattice_rec, lines=lines, labels=labels,
+                              ax=plt.gca())
 
     basename = "brillouin.{}".format(image_format)
     filename = "{}_{}".format(prefix, basename) if prefix else basename
     if directory:
         filename = os.path.join(directory, filename)
-    plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches="tight")
+    fig.savefig(filename, format=image_format, dpi=dpi, bbox_inches="tight")
     return plt
-
 
 def find_vasprun_files():
     """Search for vasprun files from the current directory.
@@ -99,7 +112,7 @@ def find_vasprun_files():
 
 def _get_parser():
     parser = argparse.ArgumentParser(description="""
-    brillplot is a script to produce publication-ready 
+    brillplot is a script to produce publication-ready
     brillouin zone diagrams""",
                                      epilog="""
     Author: {}
