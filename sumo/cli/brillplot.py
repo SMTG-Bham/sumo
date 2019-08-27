@@ -99,8 +99,8 @@ def find_vasprun_files():
 
 def _get_parser():
     parser = argparse.ArgumentParser(description="""
-    bandplot is a script to produce publication-ready band
-    structure diagrams""",
+    brillplot is a script to produce publication-ready 
+    brillouin zone diagrams""",
                                      epilog="""
     Author: {}
     Version: {}
