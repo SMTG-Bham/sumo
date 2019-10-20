@@ -53,12 +53,12 @@ def load_phonopy(filename, structure, dim, symprec=0.01, primitive_matrix=None,
     phonon = Phonopy(unitcell, dim, primitive_matrix=primitive_matrix,
                      factor=factor, symprec=symprec)
 
-    if 'FORCE_CONSTANTS' == filename or '.hdf5' in filename:
+    if 'FORCE_CONSTANTS' in filename or '.hdf5' in filename:
         # if force constants exist, use these to avoid recalculating them
         if '.hdf5' in filename:
             fc = file_IO.read_force_constants_hdf5(filename)
 
-        elif 'FORCE_CONSTANTS' == filename:
+        elif 'FORCE_CONSTANTS' in filename:
             fc = file_IO.parse_FORCE_CONSTANTS(filename=filename)
 
         if fc.shape[0] != num_satom:
@@ -70,9 +70,9 @@ def load_phonopy(filename, structure, dim, symprec=0.01, primitive_matrix=None,
 
         phonon.set_force_constants(fc)
 
-    elif 'FORCE_SETS' == filename:
+    elif 'FORCE_SETS' in filename:
         # load the force sets from file and calculate force constants
-        fs = file_IO.parse_FORCE_SETS()
+        fs = file_IO.parse_FORCE_SETS(filename=filename)
 
         if fs['natom'] != num_satom:
             msg = ("\nNumber of atoms in supercell is not consistent with the "
