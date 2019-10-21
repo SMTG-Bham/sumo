@@ -4,6 +4,24 @@ Change Log
 `[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.1.3...HEAD>`_
 ------------------------------------------------------------------------
 
+v1.3.0
+------
+
+This is the last supported version for Python 3.5, due to changes in pymatgen.
+
+New features:
+
+- Ability to plot multiple phonon band structures on top of each other. (AJJ)
+- Added primitive-auto option to ``sumo-phonon-bandplot``. AJJ
+
+Bug fixes:
+
+- Added compatability with matplotlib 3.1. (AJJ)
+- Use primitive cell when reading BORN. (AJJ)
+- Set DOS cutoff when using ``--no-total``. (AJJ)
+- Fix custom styling for phonon bandplotting from the CLI. (AJJ)
+- Fix rare interpolation issues for projected band structure plots. (@utf)
+
 v1.2.0
 ------
 
