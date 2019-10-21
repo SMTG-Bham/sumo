@@ -376,10 +376,12 @@ class SBSPlotter(BSPlotter):
             weights = [proj[nd][i][spin][mask] for i in range(len(selection))]
 
             # interpolate band structure to improve smoothness
-            dx = (distances[1] - distances[0]) / interpolate_factor
-            temp_dists = np.arange(distances[0], distances[-1], dx)
-            bands = interp1d(distances, bands, axis=1)(temp_dists)
-            weights = interp1d(distances, weights, axis=2)(temp_dists)
+            temp_dists = np.linspace(distances[0], distances[-1],
+                                     len(distances) * interpolate_factor)
+            bands = interp1d(distances, bands, axis=1, bounds_error=False,
+                             fill_value="extrapolate")(temp_dists)
+            weights = interp1d(distances, weights, axis=2, bounds_error=False,
+                               fill_value="extrapolate")(temp_dists)
             distances = temp_dists
 
             # sometimes VASP produces very small negative weights
