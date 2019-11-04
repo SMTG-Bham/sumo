@@ -288,7 +288,7 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
                     'colours': colours, 'yscale': yscale}
 
     if scissor:
-        bs.apply_scissor(scissor)
+        bs = bs.apply_scissor(scissor)
 
     plotter = SBSPlotter(bs)
     if projection_selection:
