@@ -49,7 +49,7 @@ __date__ = "July 18, 2017"
 def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
              vbm_cbm_marker=False, projection_selection=None, mode='rgb',
              interpolate_factor=4, circle_size=150, dos_file=None,
-             cart_coords=False,
+             cart_coords=False, scissor=None,
              ylabel='Energy (eV)', dos_label=None,
              elements=None, lm_orbitals=None, atoms=None,
              total_only=False, plot_total=True, legend_cutoff=3, gaussian=None,
@@ -124,6 +124,8 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
             cartesian or reciprocal coordinates. This is only required for
             Questaal output; Vasp output is less ambiguous. Defaults to
             ``False`` (fractional coordinates).
+        scissor (:obj:`float`, optional): Apply a scissor operator (rigid shift
+            of the CBM), use with caution if applying to metals.
         dos_file (:obj:'str', optional): Path to vasprun.xml file from which to
             read the density of states information. If set, the density of
             states will be plotted alongside the bandstructure.
@@ -284,6 +286,9 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
         dos_plotter = SDOSPlotter(dos, pdos)
         dos_opts = {'plot_total': plot_total, 'legend_cutoff': legend_cutoff,
                     'colours': colours, 'yscale': yscale}
+
+    if scissor:
+        bs = bs.apply_scissor(scissor)
 
     plotter = SBSPlotter(bs)
     if projection_selection:
@@ -472,6 +477,8 @@ def _get_parser():
                               'contributions (e.g. "Ru.d")'))
     parser.add_argument('--atoms', type=_atoms, metavar='A',
                         help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'))
+    parser.add_argument('--scissor', type=float, default=None, dest='scissor',
+                        help='apply scissor operator')
     parser.add_argument('--total-only', action='store_true', dest='total_only',
                         help='only plot the total density of states')
     parser.add_argument('--no-total', action='store_false', dest='total',
@@ -535,7 +542,7 @@ def main():
              directory=args.directory, vbm_cbm_marker=args.band_edges,
              projection_selection=args.projection_selection, mode=args.mode,
              interpolate_factor=args.interpolate_factor,
-             cart_coords=args.cartesian,
+             cart_coords=args.cartesian, scissor=args.scissor,
              circle_size=args.circle_size, yscale=args.scale,
              ylabel=args.ylabel, dos_label=args.dos_label,
              dos_file=args.dos, elements=args.elements,
