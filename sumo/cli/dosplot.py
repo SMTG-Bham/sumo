@@ -40,11 +40,11 @@ __date__ = "April 9, 2018"
 
 
 def dosplot(filename=None, code='vasp', prefix=None, directory=None,
-            elements=None, lm_orbitals=None, atoms=None, subplot=False,
-            shift=True, total_only=False, plot_total=True, legend_on=True,
-            legend_frame_on=False, legend_cutoff=3., gaussian=None, height=6.,
-            width=8., xmin=-6., xmax=6., num_columns=2, colours=None, yscale=1,
-            xlabel='Energy (eV)', ylabel='Arb. units',
+            elements=None, lm_orbitals=None, atoms=None, spin=None,
+            subplot=False, shift=True, total_only=False, plot_total=True, 
+            legend_on=True, legend_frame_on=False, legend_cutoff=3., gaussian=None, 
+            height=6., width=8., xmin=-6., xmax=6., num_columns=2, colours=None, 
+            yscale=1, xlabel='Energy (eV)', ylabel='Arb. units',
             style=None, no_base_style=False,
             image_format='pdf', dpi=400, plt=None, fonts=None):
     """A script to plot the density of states from a vasprun.xml file.
@@ -92,6 +92,8 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
 
             If ``atoms`` is not set or set to ``None`` then all atomic sites
             for all elements will be considered.
+        spin (:obj:`bool`, optional): Plot a spin-polarised density of states,
+            spin up or spin down only. Defaults to ``None``.
         subplot (:obj:`bool`, optional): Plot the density of states for each
             element on separate subplots. Defaults to ``False``.
         shift (:obj:`bool`, optional): Shift the energies such that the valence
@@ -214,7 +216,7 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
                            xlabel=xlabel, ylabel=ylabel,
                            legend_cutoff=legend_cutoff, dpi=dpi, plt=plt,
                            fonts=fonts, style=style,
-                           no_base_style=no_base_style)
+                           no_base_style=no_base_style, spin=spin)
 
     if save_files:
         basename = 'dos.{}'.format(image_format)
@@ -303,6 +305,8 @@ def _get_parser():
                               'contributions (e.g. "Ru.d")'))
     parser.add_argument('-a', '--atoms', type=_atoms, metavar='A',
                         help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'))
+    parser.add_argument('--spin', type=str, default=None 
+                        help=('select spin for spin-polarised DOS'))
     parser.add_argument('-s', '--subplot', action='store_true',
                         help='plot each element on separate subplots')
     parser.add_argument('-g', '--gaussian', type=float, metavar='G',
@@ -379,7 +383,7 @@ def main():
 
     dosplot(filename=args.filename, code=args.code, prefix=args.prefix,
             directory=args.directory, elements=args.elements,
-            lm_orbitals=args.orbitals, atoms=args.atoms,
+            lm_orbitals=args.orbitals, atoms=args.atoms, spin=args.spin
             subplot=args.subplot, shift=args.shift, total_only=args.total_only,
             plot_total=args.total, legend_on=args.legend,
             legend_frame_on=args.legend_frame,
