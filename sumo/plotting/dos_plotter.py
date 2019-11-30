@@ -192,7 +192,7 @@ class SDOSPlotter(object):
                  legend_on=True, num_columns=2, legend_frame_on=False,
                  legend_cutoff=3, xlabel='Energy (eV)', ylabel='Arb. units',
                  zero_to_efermi=True, dpi=400, fonts=None, plt=None,
-                 style=None, no_base_style=False):
+                 style=None, no_base_style=False, spin=None):
         """Get a :obj:`matplotlib.pyplot` object of the density of states.
 
         Args:
@@ -244,6 +244,8 @@ class SDOSPlotter(object):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
+            spin (:obj:`str`, optional): Plot a spin-polarised density of states,
+            "up" for spin up only, "down" for spin down only. Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The density of states plot.
@@ -265,8 +267,14 @@ class SDOSPlotter(object):
         energies = plot_data['energies'][mask]
         fig = plt.gcf()
         lines = plot_data['lines']
-        spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else \
-            [Spin.up, Spin.down]
+        if len(lines[0][0]['dens']) == 1:
+            spins = [Spin.up] 
+        elif spin = 'up':
+            spins = [Spin.up]
+        elif spin = 'down':
+            spins = [Spin.down]
+        else:
+            spins = [Spin.up, Spin.down]
 
         for i, line_set in enumerate(plot_data['lines']):
             if subplot:
