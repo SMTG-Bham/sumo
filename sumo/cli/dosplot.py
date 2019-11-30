@@ -305,7 +305,7 @@ def _get_parser():
                               'contributions (e.g. "Ru.d")'))
     parser.add_argument('-a', '--atoms', type=_atoms, metavar='A',
                         help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'))
-    parser.add_argument('--spin', type=str, default=None 
+    parser.add_argument('--spin', type=str, default=None,
                         help=('select spin for spin-polarised DOS (options: up, down)'))
     parser.add_argument('-s', '--subplot', action='store_true',
                         help='plot each element on separate subplots')
