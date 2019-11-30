@@ -383,7 +383,7 @@ def main():
 
     dosplot(filename=args.filename, code=args.code, prefix=args.prefix,
             directory=args.directory, elements=args.elements,
-            lm_orbitals=args.orbitals, atoms=args.atoms, spin=args.spin
+            lm_orbitals=args.orbitals, atoms=args.atoms, spin=args.spin,
             subplot=args.subplot, shift=args.shift, total_only=args.total_only,
             plot_total=args.total, legend_on=args.legend,
             legend_frame_on=args.legend_frame,
