@@ -269,9 +269,9 @@ class SDOSPlotter(object):
         lines = plot_data['lines']
         if len(lines[0][0]['dens']) == 1:
             spins = [Spin.up] 
-        elif spin = 'up':
+        elif spin == 'up':
             spins = [Spin.up]
-        elif spin = 'down':
+        elif spin == 'down':
             spins = [Spin.down]
         else:
             spins = [Spin.up, Spin.down]
