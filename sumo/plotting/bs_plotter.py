@@ -56,10 +56,10 @@ class SBSPlotter(BSPlotter):
                  no_base_style=False, spin=None):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
-        If the system is spin polarised, orange lines are spin up, dashed
-        blue lines are spin down. For metals, all bands are coloured blue. For
-        semiconductors, blue lines indicate valence bands and orange lines
-        indicates conduction bands.
+        If the system is spin polarised, and no spin has been specified, orange 
+        lines are spin up, dashed blue lines are spin down. For metals, all 
+        bands are coloured blue. For semiconductors, blue lines indicate 
+        valence bands and orange lines indicates conduction bands.
 
         Args:
             zero_to_efermi (:obj:`bool`): Normalise the plot such that the
@@ -225,11 +225,12 @@ class SBSPlotter(BSPlotter):
                            dpi=400, plt=None,
                            dos_plotter=None, dos_options=None, dos_label=None,
                            dos_aspect=3, aspect=None, fonts=None, style=None,
-                           no_base_style=False):
+                           no_base_style=False, spin=None):
         """Get a :obj:`matplotlib.pyplot` of the projected band structure.
 
-        If the system is spin polarised and ``mode = 'rgb'`` spin up and spin
-        down bands are differentiated by solid and dashed lines, respectively.
+        If the system is spin polarised, no spin has been specified and 
+        ``mode = 'rgb'`` spin up and spin down bands are differentiated by 
+        solid and dashed lines, respectively.
         For the other modes, spin up and spin down are plotted separately.
 
         Args:
@@ -354,7 +355,9 @@ class SBSPlotter(BSPlotter):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
-
+            spin (:obj:`str`, optional): Plot a spin-polarised band structure,
+                "up" for spin up only, "down" for spin down only. Defaults to ``None``.
+                
         Returns:
             :obj:`matplotlib.pyplot`: The projected electronic band structure
             plot.
@@ -379,6 +382,10 @@ class SBSPlotter(BSPlotter):
 
         # Ensure we do spin up first, then spin down
         spins = sorted(self._bs.bands.keys(), key=lambda s: -s.value)
+        if spin == 'up':
+            spins = spins[0]
+        elif spin == 'down':
+            spins = spins[1]
 
         proj = get_projections_by_branches(self._bs, selection,
                                            normalise='select')
