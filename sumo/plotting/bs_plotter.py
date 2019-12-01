@@ -53,7 +53,7 @@ class SBSPlotter(BSPlotter):
                  dpi=None, plt=None,
                  dos_plotter=None, dos_options=None, dos_label=None,
                  dos_aspect=3, aspect=None, fonts=None, style=None,
-                 no_base_style=False):
+                 no_base_style=False, spin=None):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
         If the system is spin polarised, orange lines are spin up, dashed
@@ -134,6 +134,8 @@ class SBSPlotter(BSPlotter):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
+            spin (:obj:`str`, optional): Plot a spin-polarised band structure,
+                "up" for spin up only, "down" for spin down only. Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The electronic band structure plot.
@@ -154,7 +156,11 @@ class SBSPlotter(BSPlotter):
         dists = data['distances']
         eners = data['energy']
 
-        if self._bs.is_spin_polarized or self._bs.is_metal():
+        if spin == 'up':
+            is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
+        elif spin == 'down':
+            is_vb = self._bs.bands[Spin.down] <= self._bs.get_vbm()['energy']
+        elif self._bs.is_spin_polarized or self._bs.is_metal():
             is_vb = [True]
         else:
             is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
@@ -172,22 +178,35 @@ class SBSPlotter(BSPlotter):
             # For spin-polarized calculations, colour spin up channel with C1
             # and overlay with C0 (dashed) spin down channel
 
-            if self._bs.is_spin_polarized:
+            if self._bs.is_spin_polarized and spin == None:
                 c = 'C1'
             elif self._bs.is_metal() or np.all(is_vb[nb]):
                 c = 'C0'
             else:
                 c = 'C1'
 
-            # plot band data
-            ax.plot(dists[nd], e, ls='-', c=c, zorder=1)
+            # plot spin-up band data if spin-down not selected
+            if spin != 'down':
+                ax.plot(dists[nd], e, ls='-', c=c, zorder=1)
 
-        # Plot second spin channel if it exists
-        if self._bs.is_spin_polarized:
+        # Plot second spin channel if it exists and no spin selected
+        if self._bs.is_spin_polarized and spin == None:
             for nd, nb in it.product(range(len(data['distances'])),
                                      range(self._nb_bands)):
                 e = eners[nd][str(Spin.down)][nb]
                 ax.plot(dists[nd], e, c='C0', linestyle='--', zorder=2)
+                
+        # Plot spin-down if selected
+        if self._bs.is_spin_polarized and spin == 'down':
+            for nd, nb in it.product(range(len(data['distances'])),
+                                     range(self._nb_bands)):
+                e = eners[nd][str(Spin.down)][nb]
+                # Same colour scheme as above
+                if self._bs.is_metal() or np.all(is_vb[nb]):
+                    c = 'C0'
+                else:
+                    c = 'C1'
+                ax.plot(dists[nd], e, c=c, linestyle='--', zorder=2)
 
         self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
