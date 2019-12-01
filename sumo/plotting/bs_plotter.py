@@ -383,9 +383,9 @@ class SBSPlotter(BSPlotter):
         # Ensure we do spin up first, then spin down
         spins = sorted(self._bs.bands.keys(), key=lambda s: -s.value)
         if spin == 'up':
-            spins = spins[0]
+            spins = [spins[0]]
         elif spin == 'down':
-            spins = spins[1]
+            spins = [spins[1]]
 
         proj = get_projections_by_branches(self._bs, selection,
                                            normalise='select')
