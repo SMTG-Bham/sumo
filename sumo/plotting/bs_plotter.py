@@ -206,7 +206,7 @@ class SBSPlotter(BSPlotter):
                     c = 'C0'
                 else:
                     c = 'C1'
-                ax.plot(dists[nd], e, c=c, linestyle='--', zorder=2)
+                ax.plot(dists[nd], e, c=c, ls='-', zorder=2)
 
         self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
