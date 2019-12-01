@@ -382,6 +382,9 @@ class SBSPlotter(BSPlotter):
 
         # Ensure we do spin up first, then spin down
         spins = sorted(self._bs.bands.keys(), key=lambda s: -s.value)
+        if spin is not None and len(spins) == 1:
+            raise ValueError('Spin-selection only possible with spin-polarised \
+                             calculation results')
         if spin == 'up':
             spins = [spins[0]]
         elif spin == 'down':
