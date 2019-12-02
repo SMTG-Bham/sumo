@@ -268,7 +268,7 @@ class SDOSPlotter(object):
         fig = plt.gcf()
         lines = plot_data['lines']
         if len(lines[0][0]['dens']) == 1:
-            spins = [Spin.up] 
+            spins = [Spin.up]
         elif spin == 'up':
             spins = [Spin.up]
         elif spin == 'down':
@@ -284,7 +284,7 @@ class SDOSPlotter(object):
 
             ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
             ax.set_xlim(xmin, xmax)
-            
+
             for line, spin in itertools.product(line_set, spins):
                 if len(spins) == 1:
                     label = line['label']
