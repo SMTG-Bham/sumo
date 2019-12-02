@@ -140,8 +140,8 @@ class SDOSPlotter(object):
         plot_data = {'mask': mask, 'energies': eners}
         spins = dos.densities.keys()
         if spin is not None and len(spins) == 1:
-            raise ValueError('Spin-selection only possible with spin-polarised \
-                             calculation results')
+            raise ValueError('Spin-selection only possible with spin-polarised'
+                             'calculation results')
 
         # Visibility cutoff based on scale of total plot even if it is hidden
         dmax = max([max(d[mask]) for d in dos.densities.values()])
