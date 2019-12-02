@@ -41,9 +41,9 @@ __date__ = "April 9, 2018"
 
 def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             elements=None, lm_orbitals=None, atoms=None, spin=None,
-            subplot=False, shift=True, total_only=False, plot_total=True, 
-            legend_on=True, legend_frame_on=False, legend_cutoff=3., gaussian=None, 
-            height=6., width=8., xmin=-6., xmax=6., num_columns=2, colours=None, 
+            subplot=False, shift=True, total_only=False, plot_total=True,
+            legend_on=True, legend_frame_on=False, legend_cutoff=3., gaussian=None,
+            height=6., width=8., xmin=-6., xmax=6., num_columns=2, colours=None,
             yscale=1, xlabel='Energy (eV)', ylabel='Arb. units',
             style=None, no_base_style=False,
             image_format='pdf', dpi=400, plt=None, fonts=None):
