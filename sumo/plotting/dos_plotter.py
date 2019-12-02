@@ -58,7 +58,7 @@ class SDOSPlotter(object):
 
     def dos_plot_data(self, yscale=1, xmin=-6., xmax=6., colours=None,
                       plot_total=True, legend_cutoff=3, subplot=False,
-                      zero_to_efermi=True, cache=None):
+                      zero_to_efermi=True, cache=None, spin=None):
         """Get the plotting data.
 
         Args:
@@ -94,6 +94,8 @@ class SDOSPlotter(object):
                 "colours" dict. This defaults to the module-level
                 sumo.plotting.colour_cache object, but an empty dict can be
                 used as a fresh cache. This object will be modified in-place.
+            spin (:obj:`str`, optional): Check that spin-selection has not
+                been called for a closed-shell calculation.
 
         Returns:
             dict: The plotting data. Formatted with the following keys:
@@ -137,6 +139,9 @@ class SDOSPlotter(object):
         mask = (eners >= xmin - 0.05) & (eners <= xmax + 0.05)
         plot_data = {'mask': mask, 'energies': eners}
         spins = dos.densities.keys()
+        if spin is not None and len(spins) == 1:
+            raise ValueError('Spin-selection only possible with spin-polarised \
+                             calculation results')
 
         # Visibility cutoff based on scale of total plot even if it is hidden
         dmax = max([max(d[mask]) for d in dos.densities.values()])
@@ -254,7 +259,7 @@ class SDOSPlotter(object):
                                        colours=colours, plot_total=plot_total,
                                        legend_cutoff=legend_cutoff,
                                        subplot=subplot,
-                                       zero_to_efermi=zero_to_efermi)
+                                       zero_to_efermi=zero_to_efermi, spin=spin)
 
         if subplot:
             nplots = len(plot_data['lines'])
