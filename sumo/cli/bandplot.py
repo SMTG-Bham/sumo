@@ -165,8 +165,9 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
 
             If ``atoms`` is not set or set to ``None`` then all atomic sites
             for all elements will be considered.
-        spin (:obj:`str`, optional): Plot a spin-polarised band structure,
-            "up" for spin up only, "down" for spin down only. Defaults to ``None``.
+        spin (:obj:`str`, optional): Plot only one spin channel from a
+            spin-polarised calculation; "up" for spin up only, "down" for
+            spin down only. Defaults to ``None``.
         total_only (:obj:`bool`, optional): Only extract the total density of
             states. Defaults to ``False``.
         plot_total (:obj:`bool`, optional): Plot the total density of states.
@@ -480,7 +481,8 @@ def _get_parser():
     parser.add_argument('--atoms', type=_atoms, metavar='A',
                         help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'))
     parser.add_argument('--spin', type=str, default=None,
-                        help=('select spin for spin-polarised BS (options: up, down)'))
+                        help=('select only one spin channel for a spin-polarised '
+                              'calculation (options: up, down)'))
     parser.add_argument('--scissor', type=float, default=None, dest='scissor',
                         help='apply scissor operator')
     parser.add_argument('--total-only', action='store_true', dest='total_only',
