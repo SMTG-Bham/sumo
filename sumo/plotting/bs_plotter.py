@@ -56,9 +56,9 @@ class SBSPlotter(BSPlotter):
                  no_base_style=False, spin=None):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
-        If the system is spin polarised, and no spin has been specified, orange 
-        lines are spin up, dashed blue lines are spin down. For metals, all 
-        bands are coloured blue. For semiconductors, blue lines indicate 
+        If the system is spin polarised, and no spin has been specified, orange
+        lines are spin up, dashed blue lines are spin down. For metals, all
+        bands are coloured blue. For semiconductors, blue lines indicate
         valence bands and orange lines indicates conduction bands.
 
         Args:
@@ -178,7 +178,7 @@ class SBSPlotter(BSPlotter):
             # For spin-polarized calculations, colour spin up channel with C1
             # and overlay with C0 (dashed) spin down channel
 
-            if self._bs.is_spin_polarized and spin == None:
+            if self._bs.is_spin_polarized and spin is None:
                 c = 'C1'
             elif self._bs.is_metal() or np.all(is_vb[nb]):
                 c = 'C0'
@@ -228,8 +228,8 @@ class SBSPlotter(BSPlotter):
                            no_base_style=False, spin=None):
         """Get a :obj:`matplotlib.pyplot` of the projected band structure.
 
-        If the system is spin polarised, no spin has been specified and 
-        ``mode = 'rgb'`` spin up and spin down bands are differentiated by 
+        If the system is spin polarised, no spin has been specified and
+        ``mode = 'rgb'`` spin up and spin down bands are differentiated by
         solid and dashed lines, respectively.
         For the other modes, spin up and spin down are plotted separately.
 
@@ -357,7 +357,7 @@ class SBSPlotter(BSPlotter):
                 predictably.
             spin (:obj:`str`, optional): Plot a spin-polarised band structure,
                 "up" for spin up only, "down" for spin down only. Defaults to ``None``.
-                
+
         Returns:
             :obj:`matplotlib.pyplot`: The projected electronic band structure
             plot.
