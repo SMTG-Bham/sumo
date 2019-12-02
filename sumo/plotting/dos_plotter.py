@@ -287,14 +287,10 @@ class SDOSPlotter(object):
             else:
                 ax = plt.gca()
 
-            ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
-            ax.set_xlim(xmin, xmax)
-
             for line, spin in itertools.product(line_set, spins):
                 if len(spins) == 1:
                     label = line['label']
                     densities = line['dens'][spin][mask]
-                    ax.set_ylim(0, plot_data['ymax'])
                 elif spin == Spin.up:
                     label = line['label']
                     densities = line['dens'][spin][mask]
@@ -306,6 +302,12 @@ class SDOSPlotter(object):
                                 alpha=line['alpha'])
                 ax.plot(energies, densities, label=label,
                         color=line['colour'])
+
+            ax.set_xlim(xmin, xmax)
+            if len(spins) == 1:
+                ax.set_ylim(0, plot_data['ymax'])
+            else:
+                ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
 
             ax.tick_params(axis='y', labelleft=False)
             ax.yaxis.set_minor_locator(AutoMinorLocator(2))
