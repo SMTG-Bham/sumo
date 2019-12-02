@@ -190,12 +190,12 @@ class SBSPlotter(BSPlotter):
                 ax.plot(dists[nd], e, ls='-', c=c, zorder=1)
 
         # Plot second spin channel if it exists and no spin selected
-        if self._bs.is_spin_polarized and spin == None:
+        if self._bs.is_spin_polarized and spin is None:
             for nd, nb in it.product(range(len(data['distances'])),
                                      range(self._nb_bands)):
                 e = eners[nd][str(Spin.down)][nb]
                 ax.plot(dists[nd], e, c='C0', linestyle='--', zorder=2)
-                
+
         # Plot spin-down if selected
         if self._bs.is_spin_polarized and spin == 'down':
             for nd, nb in it.product(range(len(data['distances'])),
