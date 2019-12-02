@@ -156,6 +156,10 @@ class SBSPlotter(BSPlotter):
         dists = data['distances']
         eners = data['energy']
 
+        if spin is not None and not self._bs.is_spin_polarized:
+            raise ValueError('Spin-selection only possible with spin-polarised '
+                             'calculation results')
+
         if spin == 'up':
             is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
         elif spin == 'down':
@@ -383,8 +387,8 @@ class SBSPlotter(BSPlotter):
         # Ensure we do spin up first, then spin down
         spins = sorted(self._bs.bands.keys(), key=lambda s: -s.value)
         if spin is not None and len(spins) == 1:
-            raise ValueError('Spin-selection only possible with spin-polarised \
-                             calculation results')
+            raise ValueError('Spin-selection only possible with spin-polarised '
+                             'calculation results')
         if spin == 'up':
             spins = [spins[0]]
         elif spin == 'down':
