@@ -32,6 +32,7 @@ from sumo.io.questaal import band_structure as questaal_band_structure
 from sumo.plotting.bs_plotter import SBSPlotter
 from sumo.plotting.dos_plotter import SDOSPlotter
 from sumo.electronic_structure.dos import load_dos
+from sumo.electronic_structure.bandstructure import string_to_spin
 from sumo.cli.dosplot import _atoms, _el_orb
 
 try:
@@ -165,9 +166,9 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
 
             If ``atoms`` is not set or set to ``None`` then all atomic sites
             for all elements will be considered.
-        spin (:obj:`str`, optional): Plot only one spin channel from a
-            spin-polarised calculation; "up" for spin up only, "down" for
-            spin down only. Defaults to ``None``.
+        spin (:obj:`Spin`, optional): Plot only one spin channel from a
+            spin-polarised calculation; "up" or "1" for spin up only, "down" or
+            "-1" for spin down only. Defaults to ``None``.
         total_only (:obj:`bool`, optional): Only extract the total density of
             states. Defaults to ``False``.
         plot_total (:obj:`bool`, optional): Plot the total density of states.
@@ -480,9 +481,9 @@ def _get_parser():
                               'contributions (e.g. "Ru.d")'))
     parser.add_argument('--atoms', type=_atoms, metavar='A',
                         help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'))
-    parser.add_argument('--spin', type=str, default=None,
+    parser.add_argument('--spin', type=string_to_spin, default=None,
                         help=('select only one spin channel for a spin-polarised '
-                              'calculation (options: up, down)'))
+                              'calculation (options: up, 1; down, -1)'))
     parser.add_argument('--scissor', type=float, default=None, dest='scissor',
                         help='apply scissor operator')
     parser.add_argument('--total-only', action='store_true', dest='total_only',
