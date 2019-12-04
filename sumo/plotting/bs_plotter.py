@@ -134,8 +134,9 @@ class SBSPlotter(BSPlotter):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
-            spin (:obj:`str`, optional): Plot a spin-polarised band structure,
-                "up" for spin up only, "down" for spin down only. Defaults to ``None``.
+            spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,
+                "up" or "1" for spin up only, "down" or "-1" for spin down only.
+                Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The electronic band structure plot.
@@ -160,10 +161,8 @@ class SBSPlotter(BSPlotter):
             raise ValueError('Spin-selection only possible with spin-polarised '
                              'calculation results')
 
-        if spin == 'up':
-            is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
-        elif spin == 'down':
-            is_vb = self._bs.bands[Spin.down] <= self._bs.get_vbm()['energy']
+        elif spin is not None:
+            is_vb = self._bs.bands[spin] <= self._bs.get_vbm()['energy']
         elif self._bs.is_spin_polarized or self._bs.is_metal():
             is_vb = [True]
         else:
@@ -172,7 +171,8 @@ class SBSPlotter(BSPlotter):
         # nd is branch index, nb is band index, nk is kpoint index
         for nd, nb in it.product(range(len(data['distances'])),
                                  range(self._nb_bands)):
-            e = eners[nd][str(Spin.up)][nb]
+            e = eners[nd][str(spin)][nb] if spin is not None \
+            else eners[nd][str(Spin.up)][nb]
 
             # For closed-shell calculations with a bandgap, colour valence
             # bands blue (C0) and conduction bands orange (C1)
@@ -189,9 +189,7 @@ class SBSPlotter(BSPlotter):
             else:
                 c = 'C1'
 
-            # plot spin-up band data if spin-down not selected
-            if spin != 'down':
-                ax.plot(dists[nd], e, ls='-', c=c, zorder=1)
+            ax.plot(dists[nd], e, ls='-', c=c, zorder=1)
 
         # Plot second spin channel if it exists and no spin selected
         if self._bs.is_spin_polarized and spin is None:
@@ -199,18 +197,6 @@ class SBSPlotter(BSPlotter):
                                      range(self._nb_bands)):
                 e = eners[nd][str(Spin.down)][nb]
                 ax.plot(dists[nd], e, c='C0', linestyle='--', zorder=2)
-
-        # Plot spin-down if selected
-        if self._bs.is_spin_polarized and spin == 'down':
-            for nd, nb in it.product(range(len(data['distances'])),
-                                     range(self._nb_bands)):
-                e = eners[nd][str(Spin.down)][nb]
-                # Same colour scheme as above
-                if self._bs.is_metal() or np.all(is_vb[nb]):
-                    c = 'C0'
-                else:
-                    c = 'C1'
-                ax.plot(dists[nd], e, c=c, ls='-', zorder=2)
 
         self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
@@ -359,8 +345,9 @@ class SBSPlotter(BSPlotter):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
-            spin (:obj:`str`, optional): Plot a spin-polarised band structure,
-                "up" for spin up only, "down" for spin down only. Defaults to ``None``.
+            spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,
+                "up" or "1" for spin up only, "down" or "-1" for spin down only.
+                Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The projected electronic band structure
@@ -389,9 +376,9 @@ class SBSPlotter(BSPlotter):
         if spin is not None and len(spins) == 1:
             raise ValueError('Spin-selection only possible with spin-polarised '
                              'calculation results')
-        if spin == 'up':
+        if spin is Spin.up:
             spins = [spins[0]]
-        elif spin == 'down':
+        elif spin is Spin.down:
             spins = [spins[1]]
 
         proj = get_projections_by_branches(self._bs, selection,
