@@ -94,7 +94,7 @@ class SDOSPlotter(object):
                 "colours" dict. This defaults to the module-level
                 sumo.plotting.colour_cache object, but an empty dict can be
                 used as a fresh cache. This object will be modified in-place.
-            spin (:obj:`str`, optional): Check that spin-selection has not
+            spin (:obj:`Spin`, optional): Check that spin-selection has not
                 been called for a closed-shell calculation.
 
         Returns:
@@ -249,8 +249,9 @@ class SDOSPlotter(object):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
-            spin (:obj:`str`, optional): Plot a spin-polarised density of states,
-            "up" for spin up only, "down" for spin down only. Defaults to ``None``.
+            spin (:obj:`Spin`, optional): Plot a spin-polarised density of states,
+            "up" or "1" for spin up only, "down" or "-1" for spin down only.
+            Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The density of states plot.
@@ -274,10 +275,8 @@ class SDOSPlotter(object):
         lines = plot_data['lines']
         if len(lines[0][0]['dens']) == 1:
             spins = [Spin.up]
-        elif spin == 'up':
-            spins = [Spin.up]
-        elif spin == 'down':
-            spins = [Spin.down]
+        elif spin is not None:
+            spins = [spin]
         else:
             spins = [Spin.up, Spin.down]
 
@@ -291,10 +290,10 @@ class SDOSPlotter(object):
                 if len(spins) == 1:
                     label = line['label']
                     densities = line['dens'][spin][mask]
-                elif spin == Spin.up:
+                elif spin is Spin.up:
                     label = line['label']
                     densities = line['dens'][spin][mask]
-                elif spin == Spin.down:
+                elif spin is Spin.down:
                     label = ""
                     densities = -line['dens'][spin][mask]
                 ax.fill_between(energies, densities, lw=0,
