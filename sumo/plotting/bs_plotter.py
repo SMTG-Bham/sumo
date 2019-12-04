@@ -53,13 +53,13 @@ class SBSPlotter(BSPlotter):
                  dpi=None, plt=None,
                  dos_plotter=None, dos_options=None, dos_label=None,
                  dos_aspect=3, aspect=None, fonts=None, style=None,
-                 no_base_style=False):
+                 no_base_style=False, spin=None):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
-        If the system is spin polarised, orange lines are spin up, dashed
-        blue lines are spin down. For metals, all bands are coloured blue. For
-        semiconductors, blue lines indicate valence bands and orange lines
-        indicates conduction bands.
+        If the system is spin polarised, and no spin has been specified, orange
+        lines are spin up, dashed blue lines are spin down. For metals, all
+        bands are coloured blue. For semiconductors, blue lines indicate
+        valence bands and orange lines indicates conduction bands.
 
         Args:
             zero_to_efermi (:obj:`bool`): Normalise the plot such that the
@@ -134,6 +134,9 @@ class SBSPlotter(BSPlotter):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
+            spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,
+                "up" or "1" for spin up only, "down" or "-1" for spin down only.
+                Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The electronic band structure plot.
@@ -154,7 +157,13 @@ class SBSPlotter(BSPlotter):
         dists = data['distances']
         eners = data['energy']
 
-        if self._bs.is_spin_polarized or self._bs.is_metal():
+        if spin is not None and not self._bs.is_spin_polarized:
+            raise ValueError('Spin-selection only possible with spin-polarised '
+                             'calculation results')
+
+        elif spin is not None:
+            is_vb = self._bs.bands[spin] <= self._bs.get_vbm()['energy']
+        elif self._bs.is_spin_polarized or self._bs.is_metal():
             is_vb = [True]
         else:
             is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
@@ -162,7 +171,8 @@ class SBSPlotter(BSPlotter):
         # nd is branch index, nb is band index, nk is kpoint index
         for nd, nb in it.product(range(len(data['distances'])),
                                  range(self._nb_bands)):
-            e = eners[nd][str(Spin.up)][nb]
+            e = eners[nd][str(spin)][nb] if spin is not None \
+            else eners[nd][str(Spin.up)][nb]
 
             # For closed-shell calculations with a bandgap, colour valence
             # bands blue (C0) and conduction bands orange (C1)
@@ -172,18 +182,17 @@ class SBSPlotter(BSPlotter):
             # For spin-polarized calculations, colour spin up channel with C1
             # and overlay with C0 (dashed) spin down channel
 
-            if self._bs.is_spin_polarized:
+            if self._bs.is_spin_polarized and spin is None:
                 c = 'C1'
             elif self._bs.is_metal() or np.all(is_vb[nb]):
                 c = 'C0'
             else:
                 c = 'C1'
 
-            # plot band data
             ax.plot(dists[nd], e, ls='-', c=c, zorder=1)
 
-        # Plot second spin channel if it exists
-        if self._bs.is_spin_polarized:
+        # Plot second spin channel if it exists and no spin selected
+        if self._bs.is_spin_polarized and spin is None:
             for nd, nb in it.product(range(len(data['distances'])),
                                      range(self._nb_bands)):
                 e = eners[nd][str(Spin.down)][nb]
@@ -206,11 +215,12 @@ class SBSPlotter(BSPlotter):
                            dpi=400, plt=None,
                            dos_plotter=None, dos_options=None, dos_label=None,
                            dos_aspect=3, aspect=None, fonts=None, style=None,
-                           no_base_style=False):
+                           no_base_style=False, spin=None):
         """Get a :obj:`matplotlib.pyplot` of the projected band structure.
 
-        If the system is spin polarised and ``mode = 'rgb'`` spin up and spin
-        down bands are differentiated by solid and dashed lines, respectively.
+        If the system is spin polarised, no spin has been specified and
+        ``mode = 'rgb'`` spin up and spin down bands are differentiated by
+        solid and dashed lines, respectively.
         For the other modes, spin up and spin down are plotted separately.
 
         Args:
@@ -335,6 +345,9 @@ class SBSPlotter(BSPlotter):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
+            spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,
+                "up" or "1" for spin up only, "down" or "-1" for spin down only.
+                Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The projected electronic band structure
@@ -360,6 +373,13 @@ class SBSPlotter(BSPlotter):
 
         # Ensure we do spin up first, then spin down
         spins = sorted(self._bs.bands.keys(), key=lambda s: -s.value)
+        if spin is not None and len(spins) == 1:
+            raise ValueError('Spin-selection only possible with spin-polarised '
+                             'calculation results')
+        if spin is Spin.up:
+            spins = [spins[0]]
+        elif spin is Spin.down:
+            spins = [spins[1]]
 
         proj = get_projections_by_branches(self._bs, selection,
                                            normalise='select')

@@ -32,6 +32,7 @@ from sumo.io.questaal import band_structure as questaal_band_structure
 from sumo.plotting.bs_plotter import SBSPlotter
 from sumo.plotting.dos_plotter import SDOSPlotter
 from sumo.electronic_structure.dos import load_dos
+from sumo.electronic_structure.bandstructure import string_to_spin
 from sumo.cli.dosplot import _atoms, _el_orb
 
 try:
@@ -51,7 +52,7 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
              interpolate_factor=4, circle_size=150, dos_file=None,
              cart_coords=False, scissor=None,
              ylabel='Energy (eV)', dos_label=None,
-             elements=None, lm_orbitals=None, atoms=None,
+             elements=None, lm_orbitals=None, atoms=None, spin=None,
              total_only=False, plot_total=True, legend_cutoff=3, gaussian=None,
              height=None, width=None, ymin=-6., ymax=6., colours=None,
              yscale=1, style=None, no_base_style=False,
@@ -165,6 +166,9 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
 
             If ``atoms`` is not set or set to ``None`` then all atomic sites
             for all elements will be considered.
+        spin (:obj:`Spin`, optional): Plot only one spin channel from a
+            spin-polarised calculation; "up" or "1" for spin up only, "down" or
+            "-1" for spin down only. Defaults to ``None``.
         total_only (:obj:`bool`, optional): Only extract the total density of
             states. Defaults to ``False``.
         plot_total (:obj:`bool`, optional): Plot the total density of states.
@@ -299,14 +303,14 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
             width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
             plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
             dos_label=dos_label, fonts=fonts, style=style,
-            no_base_style=no_base_style)
+            no_base_style=no_base_style, spin=spin)
     else:
         plt = plotter.get_plot(
             zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
             width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
             plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
             dos_label=dos_label, fonts=fonts, style=style,
-            no_base_style=no_base_style)
+            no_base_style=no_base_style, spin=spin)
 
     if save_files:
         basename = 'band.{}'.format(image_format)
@@ -477,6 +481,9 @@ def _get_parser():
                               'contributions (e.g. "Ru.d")'))
     parser.add_argument('--atoms', type=_atoms, metavar='A',
                         help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'))
+    parser.add_argument('--spin', type=string_to_spin, default=None,
+                        help=('select only one spin channel for a spin-polarised '
+                              'calculation (options: up, 1; down, -1)'))
     parser.add_argument('--scissor', type=float, default=None, dest='scissor',
                         help='apply scissor operator')
     parser.add_argument('--total-only', action='store_true', dest='total_only',
@@ -546,7 +553,7 @@ def main():
              circle_size=args.circle_size, yscale=args.scale,
              ylabel=args.ylabel, dos_label=args.dos_label,
              dos_file=args.dos, elements=args.elements,
-             lm_orbitals=args.orbitals, atoms=args.atoms,
+             lm_orbitals=args.orbitals, atoms=args.atoms, spin=args.spin,
              total_only=args.total_only, plot_total=args.total,
              legend_cutoff=args.legend_cutoff, gaussian=args.gaussian,
              height=args.height, width=args.width, ymin=args.ymin,
