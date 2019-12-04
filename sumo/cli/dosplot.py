@@ -25,6 +25,7 @@ mpl.use('Agg')
 
 import sumo.io.questaal
 from sumo.electronic_structure.dos import load_dos, write_files
+from sumo.electronic_structure.bandstructure import string_to_spin
 from sumo.plotting.dos_plotter import SDOSPlotter
 
 try:
@@ -92,9 +93,9 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
 
             If ``atoms`` is not set or set to ``None`` then all atomic sites
             for all elements will be considered.
-        spin (:obj:`str`, optional): Plot only one spin channel from a
-            spin-polarised calculation; "up" for spin up only, "down" for
-            spin down only. Defaults to ``None``.
+        spin (:obj:`Spin`, optional): Plot only one spin channel from a
+            spin-polarised calculation; "up" or "1" for spin up only, "down" or
+            "-1" for spin down only. Defaults to ``None``.
         subplot (:obj:`bool`, optional): Plot the density of states for each
             element on separate subplots. Defaults to ``False``.
         shift (:obj:`bool`, optional): Shift the energies such that the valence
@@ -306,9 +307,9 @@ def _get_parser():
                               'contributions (e.g. "Ru.d")'))
     parser.add_argument('-a', '--atoms', type=_atoms, metavar='A',
                         help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'))
-    parser.add_argument('--spin', type=str, default=None,
+    parser.add_argument('--spin', type=string_to_spin, default=None,
                         help=('select one spin channel only for a spin-polarised '
-                              'calculation (options: up, down)'))
+                              'calculation (options: up, 1; down, -1)'))
     parser.add_argument('-s', '--subplot', action='store_true',
                         help='plot each element on separate subplots')
     parser.add_argument('-g', '--gaussian', type=float, metavar='G',
