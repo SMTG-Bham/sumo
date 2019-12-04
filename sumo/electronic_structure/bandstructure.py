@@ -281,7 +281,7 @@ def get_reconstructed_band_structure(list_bs, efermi=None):
 
 def string_to_spin(spin_string):
     """Function to convert 'spin' cli argument to pymatgen Spin object"""
-    if spin_string in ['up','Up','1']:
+    if spin_string in ['up','Up','1','+1']:
         return Spin.up
     elif spin_string in ['down','Down','-1']:
         return Spin.down
