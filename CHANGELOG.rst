@@ -4,6 +4,19 @@ Change Log
 `[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.3.0...HEAD>`_
 ------------------------------------------------------------------------
 
+Major changes:
+
+- DOS energies are no longer shifted by SIGMA in smeared calculations;
+  this will cause the DOS line to extend slightly beyond the VBM, but
+  will ensure peaks are in the right positions. (@yw-fang & @ajjackson)
+
+New features:
+
+- When plotting spin-polarised DOS, can choose to plot one channel only by specifying spin (@kavanase)
+- Fermi level may be chosen as energy zero in DOS or band structure (YWF, AJJ)
+- Horizontal line may be requested at energy zero in DOS or band structure (YWF, AJJ)
+
+
 `[v1.3.0] <https://github.com/smtg-ucl/sumo/compare/v1.2.0...v1.3.0>`_ - 2019-10-20
 ------
 

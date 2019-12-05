@@ -14,7 +14,8 @@ from matplotlib.ticker import AutoMinorLocator
 
 from sumo.electronic_structure.dos import sort_orbitals
 from sumo.plotting import (pretty_plot, pretty_subplot, colour_cache,
-                           styled_plot, sumo_base_style, sumo_dos_style)
+                           styled_plot, sumo_base_style, sumo_dos_style,
+                           draw_themed_line)
 
 from pymatgen.electronic_structure.core import Spin
 
@@ -197,7 +198,7 @@ class SDOSPlotter(object):
                  legend_on=True, num_columns=2, legend_frame_on=False,
                  legend_cutoff=3, xlabel='Energy (eV)', ylabel='Arb. units',
                  zero_to_efermi=True, dpi=400, fonts=None, plt=None,
-                 style=None, no_base_style=False, spin=None):
+                 style=None, no_base_style=False, spin=None, zero_line=False):
         """Get a :obj:`matplotlib.pyplot` object of the density of states.
 
         Args:
@@ -304,14 +305,8 @@ class SDOSPlotter(object):
                 ax.plot(energies, densities, label=label,
                         color=line['colour'])
 
-            # draw line at Fermi level
-            if not zero_to_efermi:
-                xtick_color = matplotlib.rcParams['xtick.color']
-                ef = self._dos.efermi
-                ax.axvline(ef, color=xtick_color, linestyle='-.', alpha=0.3)
-            else:
-                xtick_color = matplotlib.rcParams['xtick.color']
-                ax.axvline(x=0, color=xtick_color, linestyle='-.', alpha=0.3)
+            if zero_line:
+                draw_themed_line(0, ax, orientation='vertical')
 
             ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
             ax.set_xlim(xmin, xmax)

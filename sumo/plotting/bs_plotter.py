@@ -18,7 +18,8 @@ from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 from matplotlib.transforms import blended_transform_factory
 
 from sumo.plotting import (pretty_plot, pretty_subplot, rgbline,
-                           styled_plot, sumo_base_style, sumo_bs_style)
+                           styled_plot, sumo_base_style, sumo_bs_style,
+                           draw_themed_line)
 from sumo.electronic_structure.bandstructure import \
     get_projections_by_branches
 
@@ -49,7 +50,7 @@ class SBSPlotter(BSPlotter):
     @styled_plot(sumo_base_style, sumo_bs_style)
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
                  width=None, height=None, vbm_cbm_marker=False,
-                 ylabel='Energy (eV)',
+                 ylabel='Energy (eV)', zero_line=False,
                  dpi=None, plt=None,
                  dos_plotter=None, dos_options=None, dos_label=None,
                  dos_aspect=3, aspect=None, fonts=None, style=None,
@@ -62,8 +63,11 @@ class SBSPlotter(BSPlotter):
         valence bands and orange lines indicates conduction bands.
 
         Args:
-            zero_to_efermi (:obj:`bool`): Normalise the plot such that the
-                valence band maximum is set as 0 eV.
+            zero_to_efermi (:obj:`bool`): Shift the plot such that the
+                Fermi energy of the band structure data is plotted at 0 eV.
+                Note that this "efermi" is for the benefit of Pymatgen and may
+                not reflect the actual Fermi level; in Sumo it has usually
+                already been shifted to the VBM.
             ymin (:obj:`float`, optional): The minimum energy on the y-axis.
             ymax (:obj:`float`, optional): The maximum energy on the y-axis.
             width (:obj:`float`, optional): The width of the plot.
@@ -71,6 +75,7 @@ class SBSPlotter(BSPlotter):
             vbm_cbm_marker (:obj:`bool`, optional): Plot markers to indicate
                 the VBM and CBM locations.
             ylabel (:obj:`str`, optional): y-axis (i.e. energy) label/units
+            zero_line (:obj:`bool`, optional): Draw a horizontal line at zero
             dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
                 the image.
             plt (:obj:`matplotlib.pyplot`, optional): A
@@ -200,8 +205,8 @@ class SBSPlotter(BSPlotter):
 
         self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
-                       vbm_cbm_marker=vbm_cbm_marker, width=width,
-                       height=height, ymin=ymin, ymax=ymax,
+                       vbm_cbm_marker=vbm_cbm_marker, zero_line=zero_line,
+                       width=width, height=height, ymin=ymin, ymax=ymax,
                        dos_plotter=dos_plotter, dos_options=dos_options,
                        dos_label=dos_label, aspect=aspect)
         return plt
@@ -211,7 +216,7 @@ class SBSPlotter(BSPlotter):
                            circle_size=150, projection_cutoff=0.001,
                            zero_to_efermi=True, ymin=-6., ymax=6., width=None,
                            height=None, vbm_cbm_marker=False,
-                           ylabel='Energy (eV)',
+                           ylabel='Energy (eV)', zero_line=False,
                            dpi=400, plt=None,
                            dos_plotter=None, dos_options=None, dos_label=None,
                            dos_aspect=3, aspect=None, fonts=None, style=None,
@@ -374,8 +379,8 @@ class SBSPlotter(BSPlotter):
         # Ensure we do spin up first, then spin down
         spins = sorted(self._bs.bands.keys(), key=lambda s: -s.value)
         if spin is not None and len(spins) == 1:
-            raise ValueError('Spin-selection only possible with spin-polarised '
-                             'calculation results')
+            raise ValueError('Spin-selection only possible with spin-polarised'
+                             ' calculation results')
         if spin is Spin.up:
             spins = [spins[0]]
         elif spin is Spin.down:
@@ -465,26 +470,21 @@ class SBSPlotter(BSPlotter):
         # finish and tidy plot
         self._maketicks(ax, ylabel=ylabel)
         self._makeplot(ax, plt.gcf(), data, zero_to_efermi=zero_to_efermi,
-                       vbm_cbm_marker=vbm_cbm_marker, width=width,
-                       height=height, ymin=ymin, ymax=ymax,
+                       vbm_cbm_marker=vbm_cbm_marker, zero_line=zero_line,
+                       width=width, height=height, ymin=ymin, ymax=ymax,
                        dos_plotter=dos_plotter, dos_options=dos_options,
                        dos_label=dos_label, aspect=aspect)
         return plt
 
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,
-                  vbm_cbm_marker=False, ymin=-6., ymax=6.,
+                  vbm_cbm_marker=False, zero_line=False, ymin=-6., ymax=6.,
                   height=None, width=None,
                   dos_plotter=None, dos_options=None, dos_label=None,
                   aspect=None):
         """Tidy the band structure & add the density of states if required."""
-        # draw line at Fermi level
-        if not zero_to_efermi:
-            ytick_color = rcParams['ytick.color']
-            ef = self._bs.efermi
-            ax.axhline(ef, color=ytick_color, linestyle='-.', alpha=0.3)
-        else:
-            ytick_color = rcParams['ytick.color']
-            ax.axhline(y=0, color=ytick_color, linestyle='-.', alpha=0.3)
+
+        if zero_line:
+            draw_themed_line(0, ax)
 
         # set x and y limits
         ax.set_xlim(0, data['distances'][-1][-1])
@@ -506,7 +506,9 @@ class SBSPlotter(BSPlotter):
                 dos_options = {}
 
             dos_options.update({'xmin': ymin, 'xmax': ymax})
-            self._makedos(ax, dos_plotter, dos_options, dos_label=dos_label)
+            self._makedos(ax, dos_plotter, dos_options, dos_label=dos_label,
+                          zero_line=zero_line)
+            # TODO: SHOULD THIS ALSO SET ZERO_TO_EFERMI? WHY DOESN'T IT?
         else:
             # keep correct aspect ratio for axes based on canvas size
             x0, x1 = ax.get_xlim()
@@ -521,7 +523,8 @@ class SBSPlotter(BSPlotter):
 
             ax.set_aspect(aspect * ((x1 - x0) / (y1 - y0)))
 
-    def _makedos(self, ax, dos_plotter, dos_options, dos_label=None, zero_to_efermi=True):
+    def _makedos(self, ax, dos_plotter, dos_options, dos_label=None,
+                 zero_to_efermi=True, zero_line=False):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
         # don't use first 4 colours; these are the band structure line colours
@@ -554,14 +557,8 @@ class SBSPlotter(BSPlotter):
             ax.set_ylim(dos_options['xmin'], dos_options['xmax'])
             ax.set_xlim(plot_data['ymin'], plot_data['ymax'])
 
-            # draw line at Fermi level
-            if not zero_to_efermi:
-                ytick_color = rcParams['ytick.color']
-                ef = self._dos.efermi
-                ax.axhline(ef, color=ytick_color, linestyle='-.', alpha=0.3)
-            else:
-                ytick_color = rcParams['ytick.color']
-                ax.axhline(y=0, color=ytick_color, linestyle='-.', alpha=0.3)
+            if zero_line:
+                draw_themed_line(0, ax)
 
             if dos_label is not None:
                 ax.set_xlabel(dos_label)

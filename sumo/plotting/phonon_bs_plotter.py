@@ -19,9 +19,8 @@ from pymatgen.phonon.plotter import PhononBSPlotter
 from pymatgen.phonon.bandstructure import PhononBandStructureSymmLine
 
 from sumo.plotting import (pretty_plot, pretty_subplot, styled_plot,
-                           sumo_base_style, sumo_bs_style, sumo_phonon_style)
-
-dashes = (5, 2)
+                           sumo_base_style, sumo_bs_style, sumo_phonon_style,
+                           draw_themed_line)
 
 
 class SPhononBSPlotter(PhononBSPlotter):
@@ -54,10 +53,7 @@ class SPhononBSPlotter(PhononBSPlotter):
         ax.set_xlabel("DOS")
 
         if dashline:
-            ax.axhline(0, color=rcParams['grid.color'], linestyle='--',
-                       dashes=dashes,
-                       zorder=0,
-                       linewidth=rcParams['ytick.major.width'])
+            draw_themed_line(0, ax)
 
     @styled_plot(sumo_base_style, sumo_bs_style, sumo_phonon_style)
     def get_plot(self, units='THz', ymin=None, ymax=None, width=None,
@@ -197,10 +193,8 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         if ymin < 0:
             dashline = True
-            ax.axhline(0, color=rcParams['grid.color'], linestyle='--',
-                       dashes=dashes,
-                       zorder=0,
-                       linewidth=rcParams['ytick.major.width'])
+            draw_themed_line(0, ax)
+
         else:
             dashline = False
 

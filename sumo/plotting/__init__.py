@@ -199,3 +199,29 @@ def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",
     lc = LineCollection(seg, colors=colours, rasterized=True,
                         linewidth=linewidth, linestyles=linestyles)
     return lc
+
+
+def draw_themed_line(y, ax, orientation='horizontal'):
+    """Draw a horizontal line using the theme settings
+
+    Args:
+        y (float): Position of line in data coordinates
+        ax (Axes): Matplotlib Axes on which line is drawn
+
+    """
+
+    # Note to future developers: feel free to add plenty more optional
+    # arguments to this to mess with linestyle, zorder etc.
+    # Just .update() the options dict
+
+    themed_line_options = dict(color=rcParams['grid.color'],
+                               linestyle='--', dashes=(5, 2), zorder=0,
+                               linewidth=rcParams['ytick.major.width'])
+
+    if orientation == 'horizontal':
+        ax.axhline(0, **themed_line_options)
+    elif orientation == 'vertical':
+        ax.axvline(0, **themed_line_options)
+    else:
+        raise ValueError(
+            'Line orientation "{}" not supported'.format(orientation))
