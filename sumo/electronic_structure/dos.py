@@ -107,7 +107,7 @@ def load_dos(vasprun, elements=None, lm_orbitals=None, atoms=None,
     if adjust_fermi:
         dos.efermi -= dos.efermi - zero_point
 
-    # See discussions: https://github.com/SMTG-UCL/sumo/issues/90
+    # See the issue "DOS energies are shifted by SIGMA": https://github.com/SMTG-UCL/sumo/issues/90
     # if vr.parameters['ISMEAR'] in [-1, 0, 1]:
     #     dos.energies -= vr.parameters['SIGMA']
 
