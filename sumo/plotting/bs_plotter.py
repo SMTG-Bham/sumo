@@ -523,7 +523,8 @@ class SBSPlotter(BSPlotter):
 
             ax.set_aspect(aspect * ((x1 - x0) / (y1 - y0)))
 
-    def _makedos(self, ax, dos_plotter, dos_options, dos_label=None,
+    @staticmethod
+    def _makedos(ax, dos_plotter, dos_options, dos_label=None,
                  zero_to_efermi=True, zero_line=False):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
