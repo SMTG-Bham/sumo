@@ -302,7 +302,6 @@ class SDOSPlotter(object):
                 ax.plot(energies, densities, label=label,
                         color=line['colour'])
 
-<<<<<<< HEAD
             # draw line at Fermi level
             if not zero_to_efermi:
                 xtick_color = matplotlib.rcParams['xtick.color']
@@ -313,8 +312,6 @@ class SDOSPlotter(object):
                 ax.axvline(x=0, color=xtick_color, linestyle='-.', alpha=0.3)
 
             ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
-=======
->>>>>>> upstream/master
             ax.set_xlim(xmin, xmax)
             if len(spins) == 1:
                 ax.set_ylim(0, plot_data['ymax'])
