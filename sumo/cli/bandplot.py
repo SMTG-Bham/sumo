@@ -51,7 +51,7 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
              vbm_cbm_marker=False, projection_selection=None, mode='rgb',
              interpolate_factor=4, circle_size=150, dos_file=None,
              cart_coords=False, scissor=None,
-             ylabel='Energy (eV)', dos_label=None,
+             ylabel='Energy (eV)', dos_label=None, zero_line=False,
              elements=None, lm_orbitals=None, atoms=None, spin=None,
              total_only=False, plot_total=True, legend_cutoff=3, gaussian=None,
              height=None, width=None, ymin=-6., ymax=6., colours=None,
@@ -301,16 +301,16 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
             interpolate_factor=interpolate_factor, circle_size=circle_size,
             zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
             width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
-            plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
-            dos_label=dos_label, fonts=fonts, style=style,
-            no_base_style=no_base_style, spin=spin)
+            zero_line=zero_line, plt=plt, dos_plotter=dos_plotter,
+            dos_options=dos_opts, dos_label=dos_label, fonts=fonts,
+            style=style, no_base_style=no_base_style, spin=spin)
     else:
         plt = plotter.get_plot(
             zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
             width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
-            plt=plt, dos_plotter=dos_plotter, dos_options=dos_opts,
-            dos_label=dos_label, fonts=fonts, style=style,
-            no_base_style=no_base_style, spin=spin)
+            zero_line=zero_line, plt=plt, dos_plotter=dos_plotter,
+            dos_options=dos_opts, dos_label=dos_label, fonts=fonts,
+            style=style, no_base_style=no_base_style, spin=spin)
 
     if save_files:
         basename = 'band.{}'.format(image_format)
@@ -472,6 +472,8 @@ def _get_parser():
     parser.add_argument('--dos-label', type=str, dest='dos_label',
                         default=None,
                         help='Axis label for DOS if included')
+    parser.add_argument('--zero-line', action='store_true', dest='zero_line',
+                       help='Plot horizontal line at energy zero')
     parser.add_argument('--dos', default=None,
                         help='path to density of states vasprun.xml')
     parser.add_argument('--elements', type=_el_orb, metavar='E',
@@ -552,6 +554,7 @@ def main():
              cart_coords=args.cartesian, scissor=args.scissor,
              circle_size=args.circle_size, yscale=args.scale,
              ylabel=args.ylabel, dos_label=args.dos_label,
+             zero_line=args.zero_line,
              dos_file=args.dos, elements=args.elements,
              lm_orbitals=args.orbitals, atoms=args.atoms, spin=args.spin,
              total_only=args.total_only, plot_total=args.total,

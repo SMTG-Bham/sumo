@@ -43,9 +43,10 @@ __date__ = "April 9, 2018"
 def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             elements=None, lm_orbitals=None, atoms=None, spin=None,
             subplot=False, shift=True, total_only=False, plot_total=True,
-            legend_on=True, legend_frame_on=False, legend_cutoff=3., gaussian=None,
-            height=6., width=8., xmin=-6., xmax=6., num_columns=2, colours=None,
-            yscale=1, xlabel='Energy (eV)', ylabel='Arb. units',
+            legend_on=True, legend_frame_on=False, legend_cutoff=3.,
+            gaussian=None, height=6., width=8., xmin=-6., xmax=6.,
+            num_columns=2, colours=None, yscale=1,
+            xlabel='Energy (eV)', ylabel='Arb. units', zero_line=False,
             style=None, no_base_style=False,
             image_format='pdf', dpi=400, plt=None, fonts=None):
     """A script to plot the density of states from a vasprun.xml file.
@@ -136,6 +137,7 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             format supported by matplotlib.
         xlabel (:obj:`str`, optional): Label/units for x-axis (i.e. energy)
         ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)
+        zero_line (:obj:`bool`, optional): Plot vertical line at energy zero.
         yscale (:obj:`float`, optional): Scaling factor for the y-axis.
         style (:obj:`list` or :obj:`str`, optional): (List of) matplotlib style
             specifications, to be composed on top of Sumo base style.
@@ -215,7 +217,7 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
                            colours=colours, plot_total=plot_total,
                            legend_on=legend_on, num_columns=num_columns,
                            legend_frame_on=legend_frame_on,
-                           xlabel=xlabel, ylabel=ylabel,
+                           xlabel=xlabel, ylabel=ylabel, zero_line=zero_line,
                            legend_cutoff=legend_cutoff, dpi=dpi, plt=plt,
                            fonts=fonts, style=style,
                            no_base_style=no_base_style, spin=spin)
@@ -350,6 +352,8 @@ def _get_parser():
                         help='x-axis (i.e. energy) label/units')
     parser.add_argument('--ylabel', type=str, default='Arb. units',
                         help='y-axis (i.e. DOS) label/units')
+    parser.add_argument('--zero-line', action='store_true', dest='zero_line',
+                        help='Plot vertical line at energy zero')
     parser.add_argument('--yscale', type=float, default=1,
                         help='scaling factor for the y-axis')
     parser.add_argument('--format', type=str, default='pdf',
@@ -394,7 +398,7 @@ def main():
             height=args.height, width=args.width, xmin=args.xmin,
             xmax=args.xmax, num_columns=args.columns, colours=colours,
             style=args.style, no_base_style=args.no_base_style,
-            xlabel=args.xlabel, ylabel=args.ylabel,
+            xlabel=args.xlabel, ylabel=args.ylabel, zero_line=args.zero_line,
             yscale=args.yscale, image_format=args.image_format, dpi=args.dpi,
             fonts=args.font)
 
