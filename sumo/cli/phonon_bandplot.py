@@ -7,27 +7,24 @@ A script to plot phonon band structure diagrams.
 
 TODO:
  * automatically plot dos if present in band.yaml
- * primitive axis determination (try symmetrise->spglib->PA then apply
-   transform on original cell and see if it works.
  * make band structure from vasprun displacement/DFPT files
  * deal with magnetic moments
- * Read FORCE_CONSANTS or force_constants.hdf5
- * change frequency unit
+ * Read force_constants.hdf5
  * read settings from phonopy config file
  * prefix file names
 """
 
+import argparse
+import json
 import os
 from os.path import isfile
 import sys
 import logging
-import argparse
-import numpy as np
 
+import numpy as np
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning,
                         module="h5py")
-
 import matplotlib as mpl
 mpl.use('Agg')
 from matplotlib import rcParams
@@ -36,11 +33,11 @@ from phonopy.units import VaspToTHz, VaspToEv, VaspToCm
 
 from pymatgen.io.vasp.inputs import Poscar
 from pymatgen.io.phonopy import get_ph_bs_symm_line
+from pymatgen.phonon.bandstructure import PhononBandStructureSymmLine
 
 from sumo.phonon.phonopy import load_phonopy
 from sumo.symmetry.kpoints import get_path_data
 from sumo.plotting.phonon_bs_plotter import SPhononBSPlotter
-
 
 __author__ = "Alex Ganose"
 __version__ = "1.0"
@@ -56,7 +53,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
                     eigenvectors=False, labels=None, height=6., width=6.,
                     style=None, no_base_style=False,
                     ymin=None, ymax=None, image_format='pdf', dpi=400,
-                    plt=None, fonts=None, dos=None):
+                    plt=None, fonts=None, dos=None,
+                    to_json=None, from_json=None, legend=None):
     """A script to plot phonon band structure diagrams.
 
     Args:
@@ -69,6 +67,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             current directory.
         prefix (:obj:`str`, optional): Prefix for file names.
         directory (:obj:`str`, optional): The directory in which to save files.
+        dim (:obj:`list`, optional): supercell matrix
         born (:obj:`str`, optional): Path to file containing Born effective
             charges. Should be in the same format as the file produced by the
             ``phonopy-vasp-born`` script provided by phonopy.
@@ -142,81 +141,44 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
         fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
             a single font, specified as a :obj:`str`, or several fonts,
             specified as a :obj:`list` of :obj:`str`.
+        to_json (:obj:`str`, optional): JSON file to dump the Pymatgen band
+            path object.
+        from_json (:obj:`list` or :obj:`str`, optional): (List of) JSON
+            bandpath data filename(s) to import and overlay.
+        legend (:obj:`list` or :obj:`None`, optional): Legend labels. If None,
+            don't add a legend. With a list length equal to from_json, label
+            json inputs only. With one extra list entry, label all lines
+            beginning with new plot.
 
     Returns:
         A matplotlib pyplot object.
     """
-    if '.yaml' in filename:
-        yaml_file = filename
-    elif ('FORCE_SETS' == filename or 'FORCE_CONSTANTS' == filename or
-            '.hdf5' in filename):
-        try:
-            poscar = poscar if poscar else 'POSCAR'
-            poscar = Poscar.from_file(poscar)
-        except IOError:
-            msg = "Cannot find POSCAR file, cannot generate symmetry path."
-            logging.error("\n {}".format(msg))
-            sys.exit()
-
-        if not dim:
-            logging.info("Supercell size (--dim option) not provided.\n"
-                         "Attempting to guess supercell dimensions.\n")
-            try:
-                sposcar = Poscar.from_file("SPOSCAR")
-            except IOError:
-                msg = "Could not determine supercell size (use --dim flag)."
-                logging.error("\n {}".format(msg))
-                sys.exit()
-
-            dim = (sposcar.structure.lattice.matrix *
-                   poscar.structure.lattice.inv_matrix)
-
-            # round due to numerical noise error
-            dim = np.around(dim, 5)
-
-        elif len(dim) == 9:
-            dim = np.array(dim).reshape(3, 3)
-
-        elif np.array(dim).shape != (3, 3):
-            dim = np.diagflat(dim)
-
-        logging.info("Using supercell with dimensions:")
-        logging.info('\t' + str(dim).replace('\n', '\n\t')+'\n')
-
-        factors = {'ev': VaspToEv, 'thz': VaspToTHz, 'mev': VaspToEv * 1000,
-                   'cm-1': VaspToCm}
-
-        phonon = load_phonopy(filename, poscar.structure, dim, symprec=symprec,
-                              primitive_matrix=primitive_axis,
-                              factor=factors[units.lower()],
-                              symmetrise=True, born=born,
-                              write_fc=False)
-
-        # calculate band structure
-        kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
-                                               symprec=symprec, spg=spg,
-                                               kpt_list=kpt_list,
-                                               labels=labels, phonopy=True)
-
-        # todo: calculate dos and plot also
-        # phonon.set_mesh(mesh, is_gamma_center=False, is_eigenvectors=True,
-        #                 is_mesh_symmetry=False)
-        # phonon.set_partial_DOS()
-
-        phonon.set_band_structure(
-            kpoints, is_eigenvectors=eigenvectors, labels=labels)
-        yaml_file = 'sumo_band.yaml'
-        phonon._band_structure.write_yaml(filename=yaml_file)
-
-    else:
-        msg = "Do not recognise file type of {}".format(filename)
-        logging.error("\n {}".format(msg))
-        sys.exit()
-
     save_files = False if plt else True  # don't save if pyplot object provided
+    if isinstance(from_json, str):
+        from_json = [from_json]
 
-    bs = get_ph_bs_symm_line(yaml_file, has_nac=False,
-                             labels_dict=kpath.kpoints)
+    if filename is None:
+        if from_json is None:
+            filename = 'FORCE_SETS'
+            bs, phonon = _bs_from_filename(filename, poscar, dim, symprec, spg,
+                                           kpt_list, labels, primitive_axis,
+                                           units, born, mode, eigenvectors)
+
+        else:
+            logging.info("No input data, using file {} "
+                         "to construct plot".format(from_json[0]))
+            with open(from_json[0], 'r') as f:
+                bs = PhononBandStructureSymmLine.from_dict(json.load(f))
+            from_json = from_json[1:]
+    else:
+        bs, phonon = _bs_from_filename(filename, poscar, dim, symprec, spg,
+                                       kpt_list, labels, primitive_axis, units,
+                                       born, mode, eigenvectors)
+
+    if to_json is not None:
+        logging.info("Writing symmetry lines to {}".format(to_json))
+        with open(to_json, 'wt') as f:
+            f.write(bs.to_json())
 
     # Replace dos filename with data array
     if dos is not None:
@@ -232,7 +194,9 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
 
     plotter = SPhononBSPlotter(bs)
     plt = plotter.get_plot(units=units, ymin=ymin, ymax=ymax, height=height,
-                           width=width, plt=plt, fonts=fonts, dos=dos)
+                           width=width, plt=plt, fonts=fonts, dos=dos,
+                           style=style, no_base_style=no_base_style,
+                           from_json=from_json, legend=legend)
 
     if save_files:
         basename = 'phonon_band.{}'.format(image_format)
@@ -280,6 +244,84 @@ def save_data_files(bs, prefix=None, directory=None):
     return filename
 
 
+def _bs_from_filename(filename, poscar, dim, symprec, spg, kpt_list, labels,
+                      primitive_axis, units, born, mode, eigenvectors):
+    """Analyse input files to create band structure"""
+
+    if '.yaml' in filename:
+        yaml_file = filename
+
+    elif ('FORCE_SETS' in filename
+          or 'FORCE_CONSTANTS' in filename
+          or '.hdf5' in filename):
+        try:
+            poscar = poscar if poscar else 'POSCAR'
+            poscar = Poscar.from_file(poscar)
+        except IOError:
+            msg = "Cannot find POSCAR file, cannot generate symmetry path."
+            logging.error("\n {}".format(msg))
+            sys.exit()
+
+        if not dim:
+            logging.info("Supercell size (--dim option) not provided.\n"
+                         "Attempting to guess supercell dimensions.\n")
+            try:
+                sposcar = Poscar.from_file("SPOSCAR")
+            except IOError:
+                msg = "Could not determine supercell size (use --dim flag)."
+                logging.error("\n {}".format(msg))
+                sys.exit()
+
+            dim = (sposcar.structure.lattice.matrix *
+                   poscar.structure.lattice.inv_matrix)
+
+            # round due to numerical noise error
+            dim = np.around(dim, 5)
+
+        elif len(dim) == 9:
+            dim = np.array(dim).reshape(3, 3)
+
+        elif np.array(dim).shape != (3, 3):
+            dim = np.diagflat(dim)
+
+        logging.info("Using supercell with dimensions:")
+        logging.info('\t' + str(dim).replace('\n', '\n\t')+'\n')
+
+        factors = {'ev': VaspToEv, 'thz': VaspToTHz, 'mev': VaspToEv * 1000,
+                   'cm-1': VaspToCm}
+
+        phonon = load_phonopy(filename, poscar.structure, dim, symprec=symprec,
+                              primitive_matrix=primitive_axis,
+                              factor=factors[units.lower()],
+                              symmetrise=True, born=born,
+                              write_fc=False)
+
+    else:
+        msg = "Do not recognise file type of {}".format(filename)
+        logging.error("\n {}".format(msg))
+        sys.exit()
+
+    # calculate band structure
+    kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
+                                           symprec=symprec, spg=spg,
+                                           kpt_list=kpt_list,
+                                           labels=labels, phonopy=True)
+
+    # todo: calculate dos and plot also
+    # phonon.set_mesh(mesh, is_gamma_center=False, is_eigenvectors=True,
+    #                 is_mesh_symmetry=False)
+    # phonon.set_partial_DOS()
+
+    phonon.set_band_structure(
+        kpoints, is_eigenvectors=eigenvectors, labels=labels)
+    yaml_file = 'sumo_band.yaml'
+    phonon._band_structure.write_yaml(filename=yaml_file)
+
+    bs = get_ph_bs_symm_line(yaml_file, has_nac=False,
+                             labels_dict=kpath.kpoints)
+    return bs, phonon
+
+
 def _get_parser():
     parser = argparse.ArgumentParser(description="""
     phonon-bandplot is a script to produce publication ready phonon band
@@ -289,7 +331,7 @@ def _get_parser():
     Version: {}
     Last updated: {}""".format(__author__, __version__, __date__))
 
-    parser.add_argument('-f', '--filename', default='FORCE_SETS', metavar='F',
+    parser.add_argument('-f', '--filename', default=None, metavar='F',
                         help="FORCE_SETS, FORCE_CONSTANTS or band.yaml file")
     parser.add_argument('-p', '--prefix', metavar='P',
                         help='prefix for the files generated.')
@@ -363,6 +405,16 @@ def _get_parser():
     parser.add_argument('--dos', nargs='?', type=str,
                         default=None, const=True,
                         help='Phonopy .dat file for phonon DOS')
+    parser.add_argument('--to-json', type=str, default=None,
+                        help='Output JSON file for band data')
+    parser.add_argument('--from-json', type=str, nargs='+', default=None,
+                        dest='from_json',
+                        help='Overlay band data from JSON files')
+    parser.add_argument('--legend', type=str, nargs='*', default=None,
+                        help=('Legend labels. With no args, label json inputs '
+                              'with filenames. With one arg per json file, '
+                              'label json inputs only. With one extra arg, '
+                              'label all lines beginning with new plot.'))
     return parser
 
 
@@ -412,6 +464,16 @@ def main():
     else:
         pa = None
 
+    # Detect 'const' option for --legend and set filenames as legend
+    legend = args.legend
+    if isinstance(legend, list):
+        if len(legend) == 0:
+            if args.from_json:
+                legend = args.from_json.copy()
+            else:
+                raise ValueError("Can't generate automatic legend without"
+                                 "--from-json; nothing to plot!")
+
     phonon_bandplot(args.filename, poscar=args.poscar, prefix=args.prefix,
                     directory=args.directory, dim=dim, born=args.born,
                     qmesh=args.qmesh, primitive_axis=pa, symprec=args.symprec,
@@ -421,7 +483,9 @@ def main():
                     ymax=args.ymax, image_format=args.image_format,
                     style=args.style, no_base_style=args.no_base_style,
                     dpi=args.dpi, fonts=args.font,
-                    eigenvectors=args.eigenvectors, dos=args.dos)
+                    eigenvectors=args.eigenvectors, dos=args.dos,
+                    to_json=args.to_json, from_json=args.from_json,
+                    legend=legend)
 
 
 if __name__ == "__main__":

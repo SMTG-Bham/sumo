@@ -58,7 +58,7 @@ class SDOSPlotter(object):
 
     def dos_plot_data(self, yscale=1, xmin=-6., xmax=6., colours=None,
                       plot_total=True, legend_cutoff=3, subplot=False,
-                      zero_to_efermi=True, cache=None):
+                      zero_to_efermi=True, cache=None, spin=None):
         """Get the plotting data.
 
         Args:
@@ -94,6 +94,8 @@ class SDOSPlotter(object):
                 "colours" dict. This defaults to the module-level
                 sumo.plotting.colour_cache object, but an empty dict can be
                 used as a fresh cache. This object will be modified in-place.
+            spin (:obj:`Spin`, optional): Check that spin-selection has not
+                been called for a closed-shell calculation.
 
         Returns:
             dict: The plotting data. Formatted with the following keys:
@@ -137,6 +139,9 @@ class SDOSPlotter(object):
         mask = (eners >= xmin - 0.05) & (eners <= xmax + 0.05)
         plot_data = {'mask': mask, 'energies': eners}
         spins = dos.densities.keys()
+        if spin is not None and len(spins) == 1:
+            raise ValueError('Spin-selection only possible with spin-polarised '
+                             'calculation results')
 
         # Visibility cutoff based on scale of total plot even if it is hidden
         dmax = max([max(d[mask]) for d in dos.densities.values()])
@@ -192,7 +197,7 @@ class SDOSPlotter(object):
                  legend_on=True, num_columns=2, legend_frame_on=False,
                  legend_cutoff=3, xlabel='Energy (eV)', ylabel='Arb. units',
                  zero_to_efermi=True, dpi=400, fonts=None, plt=None,
-                 style=None, no_base_style=False):
+                 style=None, no_base_style=False, spin=None):
         """Get a :obj:`matplotlib.pyplot` object of the density of states.
 
         Args:
@@ -244,6 +249,9 @@ class SDOSPlotter(object):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
+            spin (:obj:`Spin`, optional): Plot a spin-polarised density of states,
+            "up" or "1" for spin up only, "down" or "-1" for spin down only.
+            Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The density of states plot.
@@ -252,7 +260,7 @@ class SDOSPlotter(object):
                                        colours=colours, plot_total=plot_total,
                                        legend_cutoff=legend_cutoff,
                                        subplot=subplot,
-                                       zero_to_efermi=zero_to_efermi)
+                                       zero_to_efermi=zero_to_efermi, spin=spin)
 
         if subplot:
             nplots = len(plot_data['lines'])
@@ -265,8 +273,12 @@ class SDOSPlotter(object):
         energies = plot_data['energies'][mask]
         fig = plt.gcf()
         lines = plot_data['lines']
-        spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else \
-            [Spin.up, Spin.down]
+        if len(lines[0][0]['dens']) == 1:
+            spins = [Spin.up]
+        elif spin is not None:
+            spins = [spin]
+        else:
+            spins = [Spin.up, Spin.down]
 
         for i, line_set in enumerate(plot_data['lines']):
             if subplot:
@@ -275,10 +287,13 @@ class SDOSPlotter(object):
                 ax = plt.gca()
 
             for line, spin in itertools.product(line_set, spins):
-                if spin == Spin.up:
+                if len(spins) == 1:
                     label = line['label']
                     densities = line['dens'][spin][mask]
-                elif spin == Spin.down:
+                elif spin is Spin.up:
+                    label = line['label']
+                    densities = line['dens'][spin][mask]
+                elif spin is Spin.down:
                     label = ""
                     densities = -line['dens'][spin][mask]
                 ax.fill_between(energies, densities, lw=0,
@@ -287,6 +302,7 @@ class SDOSPlotter(object):
                 ax.plot(energies, densities, label=label,
                         color=line['colour'])
 
+<<<<<<< HEAD
             # draw line at Fermi level
             if not zero_to_efermi:
                 xtick_color = matplotlib.rcParams['xtick.color']
@@ -297,7 +313,13 @@ class SDOSPlotter(object):
                 ax.axvline(x=0, color=xtick_color, linestyle='-.', alpha=0.3)
 
             ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
+=======
+>>>>>>> upstream/master
             ax.set_xlim(xmin, xmax)
+            if len(spins) == 1:
+                ax.set_ylim(0, plot_data['ymax'])
+            else:
+                ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
 
             ax.tick_params(axis='y', labelleft=False)
             ax.yaxis.set_minor_locator(AutoMinorLocator(2))
