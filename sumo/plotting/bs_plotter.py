@@ -135,8 +135,8 @@ class SBSPlotter(BSPlotter):
                 style. This can make alternative styles behave more
                 predictably.
             spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,
-                "up" or "1" for spin up only, "down" or "-1" for spin down only.
-                Defaults to ``None``.
+                "up" or "1" for spin up only, "down" or "-1" for spin down
+                only. Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The electronic band structure plot.
@@ -158,8 +158,8 @@ class SBSPlotter(BSPlotter):
         eners = data['energy']
 
         if spin is not None and not self._bs.is_spin_polarized:
-            raise ValueError('Spin-selection only possible with spin-polarised '
-                             'calculation results')
+            raise ValueError('Spin-selection only possible with spin-polarised'
+                             ' calculation results')
 
         elif spin is not None:
             is_vb = self._bs.bands[spin] <= self._bs.get_vbm()['energy']
@@ -172,7 +172,7 @@ class SBSPlotter(BSPlotter):
         for nd, nb in it.product(range(len(data['distances'])),
                                  range(self._nb_bands)):
             e = eners[nd][str(spin)][nb] if spin is not None \
-            else eners[nd][str(Spin.up)][nb]
+                else eners[nd][str(Spin.up)][nb]
 
             # For closed-shell calculations with a bandgap, colour valence
             # bands blue (C0) and conduction bands orange (C1)
@@ -346,8 +346,8 @@ class SBSPlotter(BSPlotter):
                 style. This can make alternative styles behave more
                 predictably.
             spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,
-                "up" or "1" for spin up only, "down" or "-1" for spin down only.
-                Defaults to ``None``.
+                "up" or "1" for spin up only, "down" or "-1" for spin down
+                only. Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The projected electronic band structure
@@ -582,7 +582,7 @@ class SBSPlotter(BSPlotter):
 
     @classmethod
     def _sanitise_label_group(cls, labelgroup):
-        """Implement label hacks: Hide trailing @, remove label with leading @
+        r"""Implement label hacks: Hide trailing @, remove label with leading @
 
         Labels split with $\mid$ symbol will be treated for each part.
         """

@@ -42,6 +42,7 @@ class SPhononBSPlotter(PhononBSPlotter):
     @staticmethod
     def _plot_phonon_dos(dos, ax=None, color=None, dashline=False):
         if ax is None:
+            import matplotlib.pyplot as plt
             ax = plt.gca()
         if color is None:
             color = 'C0'
@@ -165,7 +166,7 @@ class SPhononBSPlotter(PhononBSPlotter):
             from matplotlib.lines import Line2D
             ax.legend([Line2D([0], [0], color='C{}'.format(i))
                        for i in range(len(legend))],
-                       legend)
+                      legend)
 
         self._maketicks(ax, units=units)
         self._makeplot(ax, plt.gcf(), data, width=width, height=height,

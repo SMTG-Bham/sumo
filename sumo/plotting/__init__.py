@@ -10,7 +10,7 @@ import numpy as np
 
 import matplotlib.pyplot
 from matplotlib.collections import LineCollection
-from matplotlib import rc, rcParams
+from matplotlib import rcParams
 from pkg_resources import resource_filename
 
 colour_cache = {}
@@ -142,6 +142,7 @@ def curry_power_tick(times_sign=r'\times'):
         return power_tick(val, pos, times_sign=times_sign)
     return f
 
+
 def power_tick(val, pos, times_sign=r'\times'):
     """Custom power ticker function. """
     if val == 0:
@@ -155,6 +156,7 @@ def power_tick(val, pos, times_sign=r'\times'):
     return r'$\mathregular{{{:.1f} {} 10^{:2d}}}$'.format(coeff,
                                                           times_sign,
                                                           exponent)
+
 
 def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",
             linewidth=2.5):

@@ -140,8 +140,8 @@ class SDOSPlotter(object):
         plot_data = {'mask': mask, 'energies': eners}
         spins = dos.densities.keys()
         if spin is not None and len(spins) == 1:
-            raise ValueError('Spin-selection only possible with spin-polarised '
-                             'calculation results')
+            raise ValueError('Spin-selection only possible with spin-polarised'
+                             ' calculation results')
 
         # Visibility cutoff based on scale of total plot even if it is hidden
         dmax = max([max(d[mask]) for d in dos.densities.values()])
@@ -249,18 +249,20 @@ class SDOSPlotter(object):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
-            spin (:obj:`Spin`, optional): Plot a spin-polarised density of states,
-            "up" or "1" for spin up only, "down" or "-1" for spin down only.
-            Defaults to ``None``.
+            spin (:obj:`Spin`, optional): Plot a spin-polarised density of
+                states, "up" or "1" for spin up only, "down" or "-1" for spin
+                down only.  Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The density of states plot.
         """
         plot_data = self.dos_plot_data(yscale=yscale, xmin=xmin, xmax=xmax,
-                                       colours=colours, plot_total=plot_total,
+                                       colours=colours,
+                                       plot_total=plot_total,
                                        legend_cutoff=legend_cutoff,
                                        subplot=subplot,
-                                       zero_to_efermi=zero_to_efermi, spin=spin)
+                                       zero_to_efermi=zero_to_efermi,
+                                       spin=spin)
 
         if subplot:
             nplots = len(plot_data['lines'])
