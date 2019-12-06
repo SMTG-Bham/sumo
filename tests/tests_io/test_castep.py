@@ -34,7 +34,7 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
     def test_castep_bands_read_eigenvalues(self):
         with open(self.si_header_ref, 'r') as f:
             ref_header = json.load(f)
-        kpoints, eigenvals = read_bands_eigenvalues(
+        kpoints, weights, eigenvals = read_bands_eigenvalues(
             self.si_bands, ref_header)
 
         for i, k in enumerate([0.5,
@@ -44,6 +44,9 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
 
         self.assertAlmostEqual(eigenvals[Spin.up][2, 4],
                                0.09500443 * _ry_to_ev * 2)
+
+        for weight in weights:
+            self.assertAlmostEqual(weight, 0.02272727)
 
     def test_castep_cell_read_labels(self):
         labels = labels_from_cell(self.si_cell)

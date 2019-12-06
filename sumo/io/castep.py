@@ -9,6 +9,7 @@ from pymatgen.core.lattice import Lattice
 from pymatgen.core.structure import Structure
 from pymatgen.electronic_structure.core import Spin
 from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
+from pymatgen.electronic_structure.dos import Dos
 
 _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009
@@ -205,6 +206,42 @@ class CastepCell(object):
         return cls(tags=tags, blocks=blocks)
 
 
+def read_tdos(bands_file, bin_width=0.01, padding=0.5):
+    """Convert DOS data from CASTEP .bands file to Pymatgen/Sumo format
+
+    The data is binned into a regular series using np.histogram
+
+    Args:
+        bands_file (:obj:`str`): Path to CASTEP prefix.bands output file. The
+            k-point positions, weights and eigenvalues are read from this file.
+        bin_width (:obj:`float`): Spacing for DOS energy axis
+        padding (:obj:`float`): Energy range above and below occupied region
+
+    Returns:
+    """
+
+    header = _read_bands_header_verbose(bands_file)
+
+    logging.info("Reading band eigenvalues...")
+    kpoints, weights, eigenvalues = read_bands_eigenvalues(bands_file, header)
+
+    emin = min(eigenvalues[Spin.up].flatten())
+    emax = max(eigenvalues[Spin.up].flatten())
+    if Spin.down in eigenvalues:
+        emin = min(emin, min(eigenvalues[Spin.down].flatten()))
+        emax = max(emax, max(eigenvalues[Spin.down].flatten()))
+
+    bins = np.arange(emin - padding, emax + padding, bin_width)
+    energies = (bins[1:] + bins[:-1]) / 2
+
+    # Add rows to weights for each band so they are aligned with eigenval data
+    weights = weights * np.ones([eigenvalues[Spin.up].shape[0], 1])
+
+    dos = {spin: np.histogram(eigenvalue_set, bins=bins, weights=weights)[0]
+           for spin, eigenvalue_set in eigenvalues.items()}
+
+    return Dos(header['e_fermi'][0], energies, dos)
+
 def band_structure(bands_file, cell_file=None):
     """Convert band structure data from CASTEP to Pymatgen/Sumo format
 
@@ -221,30 +258,13 @@ def band_structure(bands_file, cell_file=None):
 
     """
 
-    logging.info("Reading CASTEP band structure header...")
-    header = read_bands_header(bands_file)
-
-    if header['n_spins'] == 1:
-        logging.info("nbands: {}, efermi / Ry: {}, spin channels: 1".format(
-            header['n_bands'][0],
-            header['e_fermi'][0]))
-    elif header['n_spins'] == 2:
-        logging.info("nbands: {}, efermi / Ry: {}, spin channels: 2".format(
-            header['n_bands'],
-            header['e_fermi']))
-    else:
-        raise ValueError('Should only be 1 or 2 spin channels!')
-
-    if len(header['e_fermi']) == 2:
-        if abs(header['e_fermi'][1] - header['e_fermi'][1]) > 1e-8:
-            raise NotImplementedError("Different Fermi energy in each channel."
-                                      " I have no idea how to handle that.")
+    header = _read_bands_header_verbose(bands_file)
 
     lattice = Lattice(header['lattice_vectors'])
     lattice = Lattice(lattice.matrix * _bohr_to_angstrom)
 
     logging.info("Reading band structure eigenvalues...")
-    kpoints, eigenvalues = read_bands_eigenvalues(bands_file, header)
+    kpoints, _, eigenvalues = read_bands_eigenvalues(bands_file, header)
 
     if cell_file is  None:
         labels = {}
@@ -305,6 +325,29 @@ def labels_from_cell(cell_file):
 
     return labels
 
+
+def _read_bands_header_verbose(bands_file):
+    logging.info("Reading CASTEP .bands file header...")
+    header = read_bands_header(bands_file)
+
+    if header['n_spins'] == 1:
+        logging.info("nbands: {}, efermi / Ry: {}, spin channels: 1".format(
+            header['n_bands'][0],
+            header['e_fermi'][0]))
+    elif header['n_spins'] == 2:
+        logging.info("nbands: {}, efermi / Ry: {}, spin channels: 2".format(
+            header['n_bands'],
+            header['e_fermi']))
+    else:
+        raise ValueError('Should only be 1 or 2 spin channels!')
+
+    if len(header['e_fermi']) == 2:
+        if abs(header['e_fermi'][1] - header['e_fermi'][1]) > 1e-8:
+            raise NotImplementedError("Different Fermi energy in each channel."
+                                      " I have no idea how to handle that.")
+    return header
+
+
 def read_bands_header(bands_file):
     """Read CASTEP bands file header, get lattice vectors and metadata
 
@@ -361,10 +404,10 @@ def read_bands_eigenvalues(bands_file, header):
             file with :obj:`read_bands_header`.
 
     Returns:
-        (:obj:`list`, :obj:`np.ndarray`)
-            kpoints list and eigenvalue array ordered by [band][kpt]. Each
-            k-point is expressed as numpy array of length 3. Eigenvalues are
-            converted from Ry to eV.
+        (:obj:`list`, :obj:`list`, :obj:`np.ndarray`)
+            kpoints list, weights and eigenvalue array ordered by
+            [band][kpt]. Each k-point is expressed as numpy array of length
+            3. Eigenvalues are converted from Ry to eV.
 
     """
 
@@ -392,8 +435,9 @@ def read_bands_eigenvalues(bands_file, header):
 
         for _ in range(header['n_kpoints']):
             # The first "k-point" column is actually the sorting index
+            # and the last is the weighting
             kpoints.append(np.array(
-                [float(x) for x in f.readline().split()[1:5]]))
+                [float(x) for x in f.readline().split()[1:]]))
             __ = f.readline() # Skip past "Spin component 1"
             spin1_bands = ([kpoints[-1][0]] +     # Sorting key goes in col 0
                            [float(f.readline())
@@ -407,9 +451,10 @@ def read_bands_eigenvalues(bands_file, header):
                                 for __ in range(header['n_bands'][0])])
                 eigenvals[Spin.down].append(spin2_bands)
 
-    # Sort kpoints and trim off sort keys
-    kpoints = sorted(kpoints, key=(lambda k: k[0]))
-    kpoints = [k[1:] for k in kpoints]
+    # Sort kpoints and trim off sort keys, weights
+    kpoint_list = sorted(kpoints, key=(lambda k: k[0]))
+    kpoints = [k[1:4] for k in kpoint_list]
+    weights = [k[-1] for k in kpoint_list]
 
     # Sort eigenvalues and trim off sort keys
     for key, data in eigenvals.items():
@@ -419,7 +464,7 @@ def read_bands_eigenvalues(bands_file, header):
     eigenvals = {key: data.T * _ry_to_ev * 2
                  for key, data in eigenvals.items()}
 
-    return kpoints, eigenvals
+    return kpoints, weights, eigenvals
 
 def write_kpoint_files(filename, kpoints, labels, make_folders=False,
                        kpts_per_split=None, directory=None):
