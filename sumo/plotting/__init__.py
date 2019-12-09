@@ -219,9 +219,9 @@ def draw_themed_line(y, ax, orientation='horizontal'):
                                linewidth=rcParams['ytick.major.width'])
 
     if orientation == 'horizontal':
-        ax.axhline(0, **themed_line_options)
+        ax.axhline(y, **themed_line_options)
     elif orientation == 'vertical':
-        ax.axvline(0, **themed_line_options)
+        ax.axvline(y, **themed_line_options)
     else:
         raise ValueError(
             'Line orientation "{}" not supported'.format(orientation))
