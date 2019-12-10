@@ -27,6 +27,9 @@ from pymatgen.electronic_structure.plotter import plot_brillouin_zone
 import matplotlib as mpl
 mpl.use("Agg")
 from sumo.plotting import pretty_plot_3d
+from sumo.plotting import (colour_cache,
+                           styled_plot, sumo_base_style)
+
 
 __author__ = "Arthur Youd"
 __version__ = "1.0"
@@ -34,7 +37,7 @@ __maintainer__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"
 __date__ = "August 21, 2019"
 
-
+@styled_plot(sumo_base_style)
 def brillplot(filenames=None, prefix=None, directory=None,
               width=6, height=6, fonts=None,
               image_format="pdf", dpi=400):
