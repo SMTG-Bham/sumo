@@ -3,6 +3,7 @@ import logging
 import math
 import os
 import re
+import shutil
 import sys
 from monty.io import zopen
 import numpy as np
@@ -234,7 +235,7 @@ def read_tdos(bands_file, bin_width=0.01, gaussian=None,
     header = _read_bands_header_verbose(bands_file)
 
     logging.info("Reading band eigenvalues...")
-    kpoints, weights, eigenvalues = read_bands_eigenvalues(bands_file, header)
+    _, weights, eigenvalues = read_bands_eigenvalues(bands_file, header)
 
     emin_data = min(eigenvalues[Spin.up].flatten())
     emax_data = max(eigenvalues[Spin.up].flatten())
@@ -461,24 +462,24 @@ def read_bands_eigenvalues(bands_file, header):
 
     with zopen(bands_file, 'r') as f:
         for _ in range(9):
-            __ = f.readline()  # Skip header
+            _ = f.readline()  # Skip header
 
         for _ in range(header['n_kpoints']):
             # The first "k-point" column is actually the sorting index
             # and the last is the weighting
             kpoints.append(np.array(
                 [float(x) for x in f.readline().split()[1:]]))
-            __ = f.readline() # Skip past "Spin component 1"
+            _ = f.readline() # Skip past "Spin component 1"
             spin1_bands = ([kpoints[-1][0]] +     # Sorting key goes in col 0
                            [float(f.readline())
-                            for _ in range(header['n_bands'][0])])
+                            for _i in range(header['n_bands'][0])])
             eigenvals[Spin.up].append(spin1_bands)
 
             if header['n_spins'] == 2:
-                __ = f.readline() # Skip past "Spin component 2"
+                _ = f.readline() # Skip past "Spin component 2"
                 spin2_bands = ([kpoints[-1][0]] + # Sorting key goes in col 0
                                [float(f.readline())
-                                for __ in range(header['n_bands'][0])])
+                                for _i in range(header['n_bands'][0])])
                 eigenvals[Spin.down].append(spin2_bands)
 
     # Sort kpoints and trim off sort keys, weights
