@@ -30,6 +30,7 @@ mpl.use('Agg')
 from sumo.io.questaal import QuestaalInit, QuestaalSite, labels_from_syml
 from sumo.io.questaal import band_structure as questaal_band_structure
 from sumo.io.castep import band_structure as castep_band_structure
+from sumo.io.castep import read_tdos as read_castep_tdos
 from sumo.plotting.bs_plotter import SBSPlotter
 from sumo.plotting.dos_plotter import SDOSPlotter
 from sumo.electronic_structure.dos import load_dos
@@ -299,8 +300,12 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
     dos_plotter = None
     dos_opts = None
     if dos_file:
-        dos, pdos = load_dos(dos_file, elements, lm_orbitals, atoms, gaussian,
-                             total_only)
+        if code == 'vasp':
+            dos, pdos = load_dos(dos_file, elements, lm_orbitals, atoms, gaussian,
+                                 total_only)
+        elif code == 'castep':
+            dos = read_castep_tdos(dos_file, gaussian=gaussian)
+            pdos = {}
         dos_plotter = SDOSPlotter(dos, pdos)
         dos_opts = {'plot_total': plot_total, 'legend_cutoff': legend_cutoff,
                     'colours': colours, 'yscale': yscale}

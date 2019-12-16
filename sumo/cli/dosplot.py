@@ -24,6 +24,7 @@ import matplotlib as mpl
 mpl.use('Agg')
 
 import sumo.io.questaal
+import sumo.io.castep
 from sumo.electronic_structure.dos import load_dos, write_files
 from sumo.electronic_structure.bandstructure import string_to_spin
 from sumo.plotting.dos_plotter import SDOSPlotter
@@ -51,10 +52,13 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
     """A script to plot the density of states from a vasprun.xml file.
 
     Args:
-        filename (:obj:`str`, optional): Path to a vasprun.xml file (can be
-            gzipped).
-        code (:obj:`str`, optional): Electronic structure code used ('vasp' or
-            'questaal')
+        filename (:obj:`str`, optional): Path to a DOS data file (can be
+            gzipped). The preferred file type depends on the electronic
+            structure code: vasprun.xml (VASP); *.bands (CASTEP); dos.*
+            (Questaal).
+        code (:obj:`str`, optional): Electronic structure code used ('vasp',
+              'castep' or 'questaal'). Note that for Castep only a rough TDOS
+              is available, assembled by sampling the eigenvalues.
         prefix (:obj:`str`, optional): Prefix for file names.
         directory (:obj:`str`, optional): The directory in which to save files.
         elements (:obj:`dict`, optional): The elements and orbitals to extract
@@ -168,6 +172,30 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
 
         dos, pdos = load_dos(filename, elements, lm_orbitals, atoms, gaussian,
                              total_only)
+
+    elif code.lower() == 'castep':
+        for arg in sumo.io.castep.unsupported_dosplot_args:
+            if locals().get(arg, None) is not None:
+                logging.error('Cannot set "{}" for CASTEP DOS; only total DOS '
+                              'is available.'.format(arg))
+                sys.exit()
+
+        if filename:
+            bands_file = filename
+        else:
+            band_candidates = glob('*.bands')
+            if len(band_candidates) == 0:
+                logging.error('ERROR: No *.bands file found!')
+                sys.exit()
+            elif len(band_candidates) == 1:
+                bands_file = band_candidates[0]
+            else:
+                logging.error('ERROR: Too many *.bands files found!')
+                sys.exit()
+        dos = sumo.io.castep.read_tdos(bands_file, gaussian=gaussian,
+                                       emin=xmin, emax=xmax)
+        pdos = {}
+
     elif code.lower() == 'questaal':
         if filename:
             pdos_file = filename

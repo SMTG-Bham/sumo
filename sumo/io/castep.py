@@ -3,6 +3,7 @@ import logging
 import math
 import os
 import re
+import sys
 from monty.io import zopen
 import numpy as np
 from pymatgen.core.lattice import Lattice
@@ -23,6 +24,9 @@ to_angstrom = {'ang': 1,
 
 Tag = collections.namedtuple('Tag', 'value comment')
 Block = collections.namedtuple('Block', 'values comments')
+
+unsupported_dosplot_args = {'elements', 'lm_orbitals', 'atoms',}
+
 
 class CastepCell(object):
     """Structure information and more: CASTEP seedname.cell file
@@ -206,7 +210,8 @@ class CastepCell(object):
         return cls(tags=tags, blocks=blocks)
 
 
-def read_tdos(bands_file, bin_width=0.01, padding=0.5):
+def read_tdos(bands_file, bin_width=0.01, gaussian=None,
+              padding=0.5, emin=None, emax=None):
     """Convert DOS data from CASTEP .bands file to Pymatgen/Sumo format
 
     The data is binned into a regular series using np.histogram
@@ -214,10 +219,16 @@ def read_tdos(bands_file, bin_width=0.01, padding=0.5):
     Args:
         bands_file (:obj:`str`): Path to CASTEP prefix.bands output file. The
             k-point positions, weights and eigenvalues are read from this file.
-        bin_width (:obj:`float`): Spacing for DOS energy axis
-        padding (:obj:`float`): Energy range above and below occupied region
+        bin_width (:obj:`float`, optional): Spacing for DOS energy axis
+        gaussian (:obj:`float` or None, optional): Width of Gaussian broadening
+            function
+        padding (:obj:`float`, optional): Energy range above and below occupied
+            region. (This is not used if xmin and xmax are set.)
+        emin (:obj:`float`, optional): Minimum energy value for output DOS
+        emax (:obj:`float`, optional): Maximum energy value for output DOS
 
     Returns:
+        :obj:`pymatgen.electronic_structure.dos.Dos`
     """
 
     header = _read_bands_header_verbose(bands_file)
@@ -225,22 +236,33 @@ def read_tdos(bands_file, bin_width=0.01, padding=0.5):
     logging.info("Reading band eigenvalues...")
     kpoints, weights, eigenvalues = read_bands_eigenvalues(bands_file, header)
 
-    emin = min(eigenvalues[Spin.up].flatten())
-    emax = max(eigenvalues[Spin.up].flatten())
+    emin_data = min(eigenvalues[Spin.up].flatten())
+    emax_data = max(eigenvalues[Spin.up].flatten())
     if Spin.down in eigenvalues:
-        emin = min(emin, min(eigenvalues[Spin.down].flatten()))
-        emax = max(emax, max(eigenvalues[Spin.down].flatten()))
+        emin_data = min(emin_data, min(eigenvalues[Spin.down].flatten()))
+        emax_data = max(emax_data, max(eigenvalues[Spin.down].flatten()))
 
-    bins = np.arange(emin - padding, emax + padding, bin_width)
+    if emin is None:
+        emin = emin_data - padding
+    if emax is None:
+        emax = emax_data + padding
+
+    bins = np.arange(emin, emax + bin_width, bin_width)
     energies = (bins[1:] + bins[:-1]) / 2
 
     # Add rows to weights for each band so they are aligned with eigenval data
     weights = weights * np.ones([eigenvalues[Spin.up].shape[0], 1])
 
-    dos = {spin: np.histogram(eigenvalue_set, bins=bins, weights=weights)[0]
-           for spin, eigenvalue_set in eigenvalues.items()}
+    dos_data = {spin: np.histogram(eigenvalue_set, bins=bins,
+                                   weights=weights)[0]
+                for spin, eigenvalue_set in eigenvalues.items()}
 
-    return Dos(header['e_fermi'][0], energies, dos)
+    dos = Dos(header['e_fermi'][0], energies, dos_data)
+    if gaussian:
+        dos.densities = dos.get_smeared_densities(gaussian)
+
+    return dos
+
 
 def band_structure(bands_file, cell_file=None):
     """Convert band structure data from CASTEP to Pymatgen/Sumo format
@@ -312,6 +334,10 @@ def labels_from_cell(cell_file):
         line = ''
         while blockstart.match(line.lower()) is None:
             line = f.readline()
+            if line == '':
+                logging.error("Could not find start of k-point block in "
+                              "cell file.")
+                sys.exit()
 
         line = f.readline()  # Skip past block start line
         while blockend.match(line.lower()) is None:
@@ -322,6 +348,10 @@ def labels_from_cell(cell_file):
                     label = '\Gamma'
                 labels[label] = kpt
             line = f.readline()
+            if line == '':
+                logging.error("Could not find end of k-point block in "
+                              "cell file.")
+                sys.exit()
 
     return labels
 
