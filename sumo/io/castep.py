@@ -26,7 +26,7 @@ to_angstrom = {'ang': 1,
 Tag = collections.namedtuple('Tag', 'value comment')
 Block = collections.namedtuple('Block', 'values comments')
 
-unsupported_dosplot_args = {'elements', 'lm_orbitals', 'atoms',}
+unsupported_dosplot_args = {'elements', 'lm_orbitals', 'atoms'}
 
 
 class CastepCell(object):
@@ -70,7 +70,8 @@ class CastepCell(object):
             lattice = Lattice(vectors)
         elif 'lattice_abc' in self.blocks:
             lattice_abc = self.blocks['lattice_abc'].values
-            if lattice_abc[0][0].lower() in ('ang', 'nm', 'cm', 'm', 'bohr', 'a0'):
+            if lattice_abc[0][0].lower() in ('ang', 'nm', 'cm', 'm',
+                                             'bohr', 'a0'):
                 unit = lattice_abc[0][0].lower()
                 lengths_and_angles = lattice_abc[1:]
             else:
@@ -88,13 +89,14 @@ class CastepCell(object):
 
         if 'positions_frac' in self.blocks:
             elements_coords = [(row[0], list(map(float, row[1:4])))
-                                for row in self.blocks['positions_frac']]
+                               for row in self.blocks['positions_frac']]
             elements, coords = zip(*elements_coords)
             return Structure(lattice, elements, coords,
                              coords_are_cartesian=False)
         elif 'positions_abs' in self.blocks:
             positions_abs = self.blocks['positions_abs'].values
-            if positions_abs[0][0].lower() in ('ang', 'nm', 'cm', 'm', 'bohr', 'a0'):
+            if positions_abs[0][0].lower() in ('ang', 'nm', 'cm', 'm',
+                                               'bohr', 'a0'):
                 unit = positions_abs[0][0].lower()
                 positions_abs = positions_abs[1:]
             else:
@@ -180,33 +182,14 @@ class CastepCell(object):
                     raise IOError('Cannot cope with line {}: not currently in '
                                   'a block.'.format(line))
             elif in_block:
-                comment_split_line = re.split('[#;!]', line)
-                if len(comment_split_line) == 1:
-                    current_block_values.append(line.split())
-                    current_block_comments.append('')
-                else:
-                    values = comment_split_line[0]
-                    current_block_values.append(values.split())
-                    current_block_comments.append(line[len(values):])
+                _, data, comment = _data_comment_from_line(line, in_block=True)
+                current_block_values.append(data)
+                current_block_comments.append(comment)
+
             else:
-                comment_split_line = re.split('[#;!]', line)
-                if len(comment_split_line) == 1:
-                    comment = ''
-                    line = line.split()
-                else:
-                    comment = line[len(comment_split_line[0]):]
-                    line = comment_split_line[0].split()
-                    line = [item for item in line if item not in ':=']
 
-                if len(line) == 1:
-                    data = ''
-                else: data = line[1:]
-
-                tag = line[0].lower()
-                if tag[-1] in ':=':
-                    tag = tag[:-1]
-
-                tags[tag] = Tag(data, comment)
+                tag, data, comment = _data_comment_from_line(line)
+                tags[tag.lower()] = Tag(data, comment)
 
         return cls(tags=tags, blocks=blocks)
 
@@ -289,7 +272,7 @@ def band_structure(bands_file, cell_file=None):
     logging.info("Reading band structure eigenvalues...")
     kpoints, _, eigenvalues = read_bands_eigenvalues(bands_file, header)
 
-    if cell_file is  None:
+    if cell_file is None:
         labels = {}
     else:
         labels = labels_from_cell(cell_file)
@@ -346,7 +329,7 @@ def labels_from_cell(cell_file):
             if len(line.split()) > 3:
                 label = line.split()[-1]
                 if label.lower() in ('g', 'gamma'):
-                    label = '\Gamma'
+                    label = r'\Gamma'
                 labels[label] = kpt
             line = f.readline()
             if line == '':
@@ -414,7 +397,8 @@ def read_bands_header(bands_file):
 
         vectors_header = f.readline().strip()
         if vectors_header != 'Unit cell vectors':
-            raise AssertionError('CASTEP bands file not formatted as expected', vectors_header)
+            raise AssertionError('CASTEP bands file not formatted as expected',
+                                 vectors_header)
 
         lattice_vectors = [[float(x) for x in f.readline().split()]
                            for _ in range(3)]
@@ -469,15 +453,15 @@ def read_bands_eigenvalues(bands_file, header):
             # and the last is the weighting
             kpoints.append(np.array(
                 [float(x) for x in f.readline().split()[1:]]))
-            f.readline() # Skip past "Spin component 1"
+            f.readline()  # Skip past "Spin component 1"
             spin1_bands = ([kpoints[-1][0]] +     # Sorting key goes in col 0
                            [float(f.readline())
                             for _i in range(header['n_bands'][0])])
             eigenvals[Spin.up].append(spin1_bands)
 
             if header['n_spins'] == 2:
-                f.readline() # Skip past "Spin component 2"
-                spin2_bands = ([kpoints[-1][0]] + # Sorting key goes in col 0
+                f.readline()  # Skip past "Spin component 2"
+                spin2_bands = ([kpoints[-1][0]] +  # Sorting key goes in col 0
                                [float(f.readline())
                                 for _i in range(header['n_bands'][0])])
                 eigenvals[Spin.down].append(spin2_bands)
@@ -496,6 +480,7 @@ def read_bands_eigenvalues(bands_file, header):
                  for key, data in eigenvals.items()}
 
     return kpoints, weights, eigenvals
+
 
 def write_kpoint_files(filename, kpoints, labels, make_folders=False,
                        kpts_per_split=None, directory=None):
@@ -573,7 +558,7 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             copy_param(param_file, split_folder, task='BandStructure')
 
             cell_file.to_file(os.path.join(split_folder,
-                                            os.path.basename(filename)))
+                                           os.path.basename(filename)))
 
     else:
         for i, cell_file in enumerate(kpt_cell_files):
@@ -584,6 +569,7 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             if directory:
                 cell_filename = os.path.join(directory, cell_filename)
             cell_file.to_file(cell_filename)
+
 
 def copy_param(filename, folder, task=None):
     """Copy CASTEP .param file, modifying Task if needed
@@ -600,7 +586,7 @@ def copy_param(filename, folder, task=None):
         shutil.copyfile(filename, output_filename)
 
     elif os.path.isfile(filename):
-        with open(filename, 'r')  as infile:
+        with open(filename, 'r') as infile:
             with open(output_filename, 'w') as outfile:
                 for line in infile:
                     if line.strip().lower()[:4] == 'task':
@@ -609,3 +595,40 @@ def copy_param(filename, folder, task=None):
                         outfile.write(line)
     else:
         logging.warning("Cannot find param file {}, skipping".format(filename))
+
+
+def _data_comment_from_line(line, in_block=False):
+    """Parse a line from a CASTEP input file
+
+    Args:
+        line (str): line from CASTEP .cell or .param file
+        in_block (bool): Include all tokens before comment in
+            data and leave tag as None.
+
+    Returns:
+        (tag, data, comment) where tag is a str, data is a list
+        of str and comment is a str
+
+    """
+    comment_split_line = re.split('[#;!]', line)
+
+    line_content = comment_split_line[0]
+    if len(comment_split_line) == 1:
+        comment = ''
+    else:
+        comment = line[len(line_content):]
+
+    if in_block:
+        tag, data = None, line.split()
+    else:
+        tag, *data = line_content.split()
+        if len(data) == 0:
+            data = ['']
+
+        # Clean up delimiter: 'TAG DAT' 'TAG= DAT' 'TAG : DAT'
+        # are all possible so check both symbols in both places
+        data = [item for item in data if item not in ':=']
+        if tag[-1] in ':=':
+            tag = tag[:-1]
+
+    return tag, data, comment
