@@ -58,7 +58,6 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
             self.assertAlmostEqual(weight, 0.02272727)
 
     def test_castep_cell_read_labels(self):
-
         labels = labels_from_cell(self.si_cell)
         self.assertEquals(labels,
                           self.ref_labels)
@@ -69,6 +68,23 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
         labels = labels_from_cell(self.si_cell_alt)
         self.assertEquals(labels,
                           self.ref_labels)
+
+class CastepBandStructureTestCaseNickel(unittest.TestCase):
+    def setUp(self):
+        self.ni_cell = resource_filename(
+            __name__,
+            path_join('..', 'data', 'Ni', 'ni-band.cell'))
+
+        self.ref_labels = {'\Gamma': (0.0, 0.0, 0.0),
+                           'L': (0.5, 0.5, 0.5),
+                           'W': (0.5, 0.25, 0.75),
+                           'X': (0.5, 0.0, 0.5)}
+
+    def test_castep_cell_read_labels_from_list(self):
+        # The Si example uses handwritten .cell files in line-mode.
+        # This example using a kgen-written .cell file with all k-points listed
+        labels = labels_from_cell(self.ni_cell)
+        self.assertEquals(labels, self.ref_labels)
 
 class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
     def setUp(self):
@@ -87,5 +103,3 @@ class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
         with open(self.fe_header_ref, 'r') as f:
             ref_header = json.load(f)
         self.assertEquals(header, ref_header)
-
-    
