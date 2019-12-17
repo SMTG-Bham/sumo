@@ -106,6 +106,8 @@ class CastepCell(object):
             elements, coords = zip(*elements_coords)
             return Structure(lattice, elements, coords,
                              coords_are_cartesian=True)
+        else:
+            raise ValueError("Couldn't find any atom positions in cell file")
 
     def to_file(self, filename):
         with open(filename, 'wt') as f:
@@ -187,7 +189,6 @@ class CastepCell(object):
                 current_block_comments.append(comment)
 
             else:
-
                 tag, data, comment = _data_comment_from_line(line)
                 tags[tag.lower()] = Tag(data, comment)
 
