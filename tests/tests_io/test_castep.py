@@ -21,9 +21,18 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
         self.si_cell = resource_filename(
             __name__,
             path_join('..', 'data', 'Si', 'Si2.cell'))
+        self.si_cell_alt = resource_filename(
+            __name__,
+            path_join('..', 'data', 'Si', 'Si2-alt.cell'))        
         self.si_header_ref = resource_filename(
             __name__,
             path_join('..', 'data', 'Si', 'Si2.bands_header.json'))
+
+        self.ref_labels = {'\Gamma': (0.0, 0.0, 0.0),
+                           'W': (0.5, 0.25, 0.75),
+                           'L': (0.5, 0.5, 0.5),
+                           'X': (0.5, 0.0, 0.5),
+                           'K': (0.375, 0.375, 0.75)}
 
     def test_castep_bands_read_header(self):
         header = read_bands_header(self.si_bands)
@@ -49,14 +58,17 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
             self.assertAlmostEqual(weight, 0.02272727)
 
     def test_castep_cell_read_labels(self):
-        labels = labels_from_cell(self.si_cell)
 
+        labels = labels_from_cell(self.si_cell)
         self.assertEquals(labels,
-                          {'\Gamma': (0.0, 0.0, 0.0),
-                           'W': (0.5, 0.25, 0.75),
-                           'L': (0.5, 0.5, 0.5),
-                           'X': (0.5, 0.0, 0.5),
-                           'K': (0.375, 0.375, 0.75)})
+                          self.ref_labels)
+
+    def test_castep_cell_read_labels_alt_spelling(self):
+        # CASTEP input is case-insensitive anf allows BS_KPOINTS_LIST
+        # as well as BS_KPOINT_LIST                            ^
+        labels = labels_from_cell(self.si_cell_alt)
+        self.assertEquals(labels,
+                          self.ref_labels)
 
 class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
     def setUp(self):
@@ -75,3 +87,5 @@ class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
         with open(self.fe_header_ref, 'r') as f:
             ref_header = json.load(f)
         self.assertEquals(header, ref_header)
+
+    

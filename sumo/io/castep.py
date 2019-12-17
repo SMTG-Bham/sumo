@@ -328,8 +328,8 @@ def labels_from_cell(cell_file):
 
     labels = {}
 
-    blockstart = re.compile('^%block\s+bs_kpoint_(path|list)')
-    blockend = re.compile('^%endblock\s+bs_kpoint_(path|list)')
+    blockstart = re.compile(r'^%block\s+bs_kpoint(s)?_(path|list)')
+    blockend = re.compile(r'^%endblock\s+bs_kpoint(s)?_(path|list)')
 
     with zopen(cell_file, 'r') as f:
         line = ''
