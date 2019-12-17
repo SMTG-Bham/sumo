@@ -462,21 +462,21 @@ def read_bands_eigenvalues(bands_file, header):
 
     with zopen(bands_file, 'r') as f:
         for _ in range(9):
-            _ = f.readline()  # Skip header
+            f.readline()  # Skip header
 
         for _ in range(header['n_kpoints']):
             # The first "k-point" column is actually the sorting index
             # and the last is the weighting
             kpoints.append(np.array(
                 [float(x) for x in f.readline().split()[1:]]))
-            _ = f.readline() # Skip past "Spin component 1"
+            f.readline() # Skip past "Spin component 1"
             spin1_bands = ([kpoints[-1][0]] +     # Sorting key goes in col 0
                            [float(f.readline())
                             for _i in range(header['n_bands'][0])])
             eigenvals[Spin.up].append(spin1_bands)
 
             if header['n_spins'] == 2:
-                _ = f.readline() # Skip past "Spin component 2"
+                f.readline() # Skip past "Spin component 2"
                 spin2_bands = ([kpoints[-1][0]] + # Sorting key goes in col 0
                                [float(f.readline())
                                 for _i in range(header['n_bands'][0])])
