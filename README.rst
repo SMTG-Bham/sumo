@@ -51,7 +51,7 @@ The main features include:
    - Curve fitting is performed using `Scipy <https://www.scipy.org>`_.
 
 The code currently primarily supports VASP calculations, and has
-partial support for LMTO calculations with
+partial support for CASTEP and for LMTO calculations with
 `Questaal <https://www.questaal.org>`_.
 We would like to add support for additional solid-state codes in
 future releases. Code contributions to interface with these packages
@@ -96,6 +96,31 @@ Information on how to tweak the style of sumo plots is provided on the
 `Customising Sumo Plots page
 <http://sumo.readthedocs.io/en/latest/customising-plots.html>`_.
 
+Feature support for different codes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
++------------------+----------+--------+----------+
+| Features         |  VASP    | CASTEP | Questaal |
++==================+==========+========+==========+
+| k-point path     |  **Y**   | **Y**  |  **Y**   |
+| generation       |          | (1)    |          |
++------------------+----------+--------+----------+
+| band plotting    | **Y**    | **Y**  |  **Y**   |
++------------------+----------+--------+----------+
+| band projections | **Y**    |  *N*   |   *N*    |
++------------------+----------+--------+----------+
+| band analysis    | **Y**    |  *N*   |   *N*    |
++------------------+----------+--------+----------+
+| total DOS plot   | **Y**    | **Y**  |  **Y**   |
++------------------+----------+--------+----------+
+| projected DOS    | **Y**    |  *N*   |  **Y**   |
++------------------+----------+--------+----------+
+| phonon band plot | **Y** (2)| *N* (3)|   *N*    |
++------------------+----------+--------+----------+
+
+(1) Brillouin-zone path can also be written for CASTEP phonon calculation
+(2) VASP phonons are plotted from Phonopy output files
+(3) CASTEP phonons plotted from a pre-computed .phonon file
 
 Installation
 ------------

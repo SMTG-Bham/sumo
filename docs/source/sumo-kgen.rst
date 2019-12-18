@@ -1,8 +1,8 @@
 sumo-kgen
 ==========
 
-``sumo-kgen`` is a program for generating VASP ``KPOINTS`` files containing k-points along high-symmetry
-k-point paths, for electronic band structure calculations.
+``sumo-kgen`` is a program for generating input files containing k-points along high-symmetry
+k-point paths, for electronic band structure calculations (e.g. ``KPOINTS`` file for VASP).
 The path is unique for each of the 14 Bravais lattice types and, as such, will depend
 on the symmetry of the unitcell. As there are several definitions and nomenclatures used in the
 literature, ``sumo-kgen`` simplifies this process, allowing for multiple high-symmetry k-point schemes.
@@ -13,6 +13,8 @@ literature, ``sumo-kgen`` simplifies this process, allowing for multiple high-sy
 
 Usage
 -----
+
+*For simplicity, this tutorial will initially assume you are using VASP. Details for other codes are provided at the end.*
 
 The full range of options supported by ``sumo-kgen`` are detailed in the `Command-Line Interface`_ section,
 and be can be accessed using the command::
@@ -125,6 +127,28 @@ Custom labels can also be provided using the ``--labels`` option. The syntax is 
 
 Note: in all cases the arguments are surrounded in parentheses.
 
+Other codes
+-----------
+
+CASTEP
+~~~~~~
+
+In CASTEP, band structure calculations also include SCF convergence so
+two sets of k-points are set: a mesh for the SCF and a path for the
+band structure. It is safe to provide *kgen* with a .cell file that
+already contains e.g. a *KPOINTS_MP_GRID* tag::
+
+    sumo-kgen --code castep -p seedname.cell
+
+This will write a copy of the cell file to *band.cell*, including a
+*BS_KPOINT_LIST* block with the high-symmetry path and with the
+special-point labels included as comments. (These comments will help
+*bandplot* prettify the x-axis).
+
+Most *kgen* features will work as expected for CASTEP, but the
+``--hybrid`` and ``--cartesian`` options are not relevant.
+An extra feature is provided to aid phonon calculations with CASTEP: the
+``--phonon`` option will write a *PHONON_KPOINT_LIST* block instead.
 
 Questaal
 ~~~~~~~~
