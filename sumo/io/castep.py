@@ -12,6 +12,7 @@ from pymatgen.core.structure import Structure
 from pymatgen.electronic_structure.core import Spin
 from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
 from pymatgen.electronic_structure.dos import Dos
+from pymatgen.phonon.bandstructure import PhononBandStructure
 
 _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009
@@ -484,7 +485,7 @@ def read_bands_eigenvalues(bands_file, header):
 
 
 def write_kpoint_files(filename, kpoints, labels, make_folders=False,
-                       kpts_per_split=None, directory=None):
+                       kpts_per_split=None, phonon=False, directory=None):
     r"""Write the k-points data to files.
 
     Folders are named as 'split-01', 'split-02', etc ...
@@ -521,6 +522,10 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             calculations where it is often intractable to calculate all
             k-points in the same calculation.
 
+        phonon (:obj:`bool`, optional): Write the Brillouin-zone path as an
+            interpolated phonon q-point path (PHONON_FINE_KPOINTS_PATH) instead
+            of electronic band-structure k-points.
+
         directory (:obj:`str`, optional): The output file directory.
         """
 
@@ -534,11 +539,24 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
         label_splits = [labels]
 
     kpt_cell_files = []
+
+    if phonon:
+        task = 'Phonon'
+        kpoint_tag = 'phonon_fine_kpoint_list'
+        clash_tags = {'phonon_fine_kpoints_list',
+                      'phonon_fine_kpoint_path',
+                      'phonon_fine_kpoints_path'}
+    else:
+        task = 'BandStructure'
+        kpoint_tag = 'bs_kpoint_list'
+        clash_tags = {'bs_kpoints_list', 'bs_kpoint_path', 'bs_kpoints_path'}
+    
     for kpt_split, label_split in zip(kpt_splits, label_splits):
         cellfile = CastepCell.from_file(filename)
-        cellfile.blocks['bs_kpoint_list'] = Block(kpt_split, label_split)
+        cellfile.blocks[kpoint_tag] = Block(kpt_split, label_split)
         # Remove any other band structure blocks which may have been loaded
-        for key in 'bs_kpoints_list', 'bs_kpoint_path', 'bs_kpoints_path':
+
+        for key in clash_tags:
             try:
                 del cellfile.blocks[key]
             except KeyError:
@@ -556,7 +574,7 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             if directory:
                 split_folder = os.path.join(directory, split_folder)
 
-            copy_param(param_file, split_folder, task='BandStructure')
+            copy_param(param_file, split_folder, task=task)
 
             cell_file.to_file(os.path.join(split_folder,
                                            os.path.basename(filename)))
@@ -577,6 +595,8 @@ def copy_param(filename, folder, task=None):
 
     Args:
         filename (:obj:`str`): Path to CASTEP .param file
+        folder (:obj:`str`): Directory for output .param file
+        task (:obj:`str` or :obj:`None`): Replace value of existing Task tag
 
     """
 
@@ -591,7 +611,7 @@ def copy_param(filename, folder, task=None):
             with open(output_filename, 'w') as outfile:
                 for line in infile:
                     if line.strip().lower()[:4] == 'task':
-                        outfile.write('Task : BandStructure\n')
+                        outfile.write('Task : {}\n'.format(task))
                     else:
                         outfile.write(line)
     else:
@@ -633,3 +653,47 @@ def _data_comment_from_line(line, in_block=False):
             tag = tag[:-1]
 
     return tag, data, comment
+
+
+class CastepPhonon(object):
+    """Data from CASTEP phonon calculation: seedname.phonon file
+
+    Usually this will be instantiated with the
+    :obj:`sumo.io.castep.CastepPhonon.from_file()` method
+
+    """
+    def __init__(header, qpts, frequencies, eigenvectors=None):
+        """
+        Args:
+            header (dict):
+                Dict containing key metadata from header file. Positions are in
+                fractional coordinates.
+
+                  {nions: NIONS, nbranches: NBRANCHES, nqpts: NQPTS,
+                   frequency_unit: 'cm-1',
+                   cell: [[ax, ay, az], [bx, by, bz], [cx, cy, cz]],
+                   positions: [[a1, b1, c1], [a2, b2, c2], ...],
+                   symbols: [el1, el2, ...],
+                   masses: [m1, m2, ...]}
+
+            qpts (np.ndarray): 1-D array of q-points in fractional coordinates
+            frequencies (np.ndarray):
+                2-D array of frequencies arranged [qpt, mode]. (Frequencies are
+                in units of header['frequency_unit']).
+            eigenvectors (np.ndarray, optional):
+                4-D array of phonon eigenvectors arranged
+                [qpt, mode, atom, xyz]. Leave as None if unavailable/unused.
+                        
+        """
+        self.header = header
+        self.qpts = qpts
+        self.frequencies = frequencies
+        self.eigenvectors = eigenvectors
+
+    @classmethod
+    def from_file(cls, filename):
+        pass
+
+    def get_phonon_band_structure(self):
+        # return PhononBandStructure()
+        pass

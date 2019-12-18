@@ -120,7 +120,7 @@ Feature support for different codes
 
 (1) Brillouin-zone path can also be written for CASTEP phonon calculation
 (2) VASP phonons are plotted from Phonopy output files
-(3) CASTEP phonons plotted from a pre-computed .phonon file
+(3) Intend to support CASTEP phonons plotted from a pre-computed .phonon file
 
 Installation
 ------------

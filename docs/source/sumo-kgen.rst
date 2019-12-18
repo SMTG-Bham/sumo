@@ -148,7 +148,7 @@ special-point labels included as comments. (These comments will help
 Most *kgen* features will work as expected for CASTEP, but the
 ``--hybrid`` and ``--cartesian`` options are not relevant.
 An extra feature is provided to aid phonon calculations with CASTEP: the
-``--phonon`` option will write a *PHONON_KPOINT_LIST* block instead.
+``--phonon`` option will write a *PHONON_FINE_KPOINT_LIST* block instead.
 
 Questaal
 ~~~~~~~~
