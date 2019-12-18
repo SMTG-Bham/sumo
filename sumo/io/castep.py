@@ -550,7 +550,7 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
         task = 'BandStructure'
         kpoint_tag = 'bs_kpoint_list'
         clash_tags = {'bs_kpoints_list', 'bs_kpoint_path', 'bs_kpoints_path'}
-    
+
     for kpt_split, label_split in zip(kpt_splits, label_splits):
         cellfile = CastepCell.from_file(filename)
         cellfile.blocks[kpoint_tag] = Block(kpt_split, label_split)
@@ -662,10 +662,11 @@ class CastepPhonon(object):
     :obj:`sumo.io.castep.CastepPhonon.from_file()` method
 
     """
-    def __init__(header, qpts, frequencies, eigenvectors=None):
+    def __init__(self, header, qpts, frequencies,
+                 weights=None, eigenvectors=None):
         """
         Args:
-            header (dict):
+            header (:obj:`dict`):
                 Dict containing key metadata from header file. Positions are in
                 fractional coordinates.
 
@@ -676,24 +677,178 @@ class CastepPhonon(object):
                    symbols: [el1, el2, ...],
                    masses: [m1, m2, ...]}
 
-            qpts (np.ndarray): 1-D array of q-points in fractional coordinates
-            frequencies (np.ndarray):
+            qpts (:obj:`numpy.ndarray`):
+                Nx3 array of q-points in fractional coordinates
+            frequencies (:obj:`numpy.ndarray`):
                 2-D array of frequencies arranged [qpt, mode]. (Frequencies are
                 in units of header['frequency_unit']).
-            eigenvectors (np.ndarray, optional):
+            weights (:obj:`numpy.ndarray`, optional):
+                1-D array of q-point weights (not used in band structure plot).
+            eigenvectors (:obj:`numpy.ndarray`, optional):
                 4-D array of phonon eigenvectors arranged
-                [qpt, mode, atom, xyz]. Leave as None if unavailable/unused.
-                        
+                [qpt, mode, atom, xyz] (not used in band structure plot).
+
         """
         self.header = header
         self.qpts = qpts
+        self.weights = weights
         self.frequencies = frequencies
         self.eigenvectors = eigenvectors
 
     @classmethod
     def from_file(cls, filename):
-        pass
+        """Create a CastepPhonon object by reading CASTEP .phonon file
+
+        Args:
+            filename (:obj:`str`): Input file
+
+        Returns:
+            pymatgen.phonon.bandstructure.PhononBandStructure
+        """
+        header = read_phonon_header(filename)
+        qpts, weights, frequencies, eigenvectors = read_phonon_bands(filename,
+                                                                     header)
+
+        return cls(header, qpts, frequencies,
+                   weights=weights, eigenvectors=eigenvectors)
 
     def get_phonon_band_structure(self):
         # return PhononBandStructure()
         pass
+
+
+def read_phonon_header(filename):
+    """Read header information from CASTEP .phonon file
+
+    Args:
+        filename (:obj:`str`): Input file
+
+    Returns:
+        :obj:`dict`:
+
+        Dict containing key metadata from header file. Positions are in
+        fractional coordinates.
+
+          {nions: NIONS, nbranches: NBRANCHES, nqpts: NQPTS,
+           frequency_unit: 'cm-1',
+           cell: [[ax, ay, az], [bx, by, bz], [cx, cy, cz]],
+           positions: [[a1, b1, c1], [a2, b2, c2], ...],
+           symbols: [el1, el2, ...],
+           masses: [m1, m2, ...]}
+    """
+
+    int_keys = {'ions': 'nions',
+                'branches': 'nbranches',
+                'wavevectors': 'nqpts'}
+
+    header = {}
+    in_header = False
+    with zopen(filename, 'rt') as f:
+        for line in f:
+            line = line.strip()
+            if line[:12] == 'BEGIN header':
+                in_header = True
+            elif line[:10] == 'END header':
+                break
+            elif not in_header:
+                pass
+            else:
+                split_line = line.split()
+                # Get int data e.g. "Number of ions      1"
+                if split_line[0] == 'Number':
+                    header[int_keys[split_line[2]]] = int(split_line[3])
+
+                # Lattice vector block: next() will skip lines from for-loop
+                elif split_line[:4] == ['Unit', 'cell', 'vectors']:
+                    cell = [*next(f), *next(f), *next(f)]
+                    cell = np.array(cell, dtype=float).reshape(3, 3).tolist()
+
+                # Positions block: pre-allocate arrays and fill line-by-line
+                elif split_line[:2] == ['Fractional', 'Co-ordinates']:
+                    if not header.get('nions'):
+                        raise IOError("Could not find number of ions; phonon "
+                                      "file not formatted correctly.")
+                    header['positions'] = []
+                    header['symbols'] = []
+                    header['masses'] = []
+
+                    for i in range(header['nions']):
+                        _, *position, el, m = next(f).split()
+                        header['positions'].append(list(map(float, position)))
+                        header['symbols'].append(el)
+                        header['masses'].append(float(m))
+                else:
+                    logging.debug(
+                        'Skipping unused header line "{}"'.format(line))
+    return header
+
+
+def read_phonon_bands(filename, header):
+    """Using header information, read band data from CASTEP .phonon file
+
+    Args:
+        filename (:obj:`str`): Input file
+        header (:obj:`dict`): Header data including 
+        
+          {'nions': NIONS, 'nbranches': NBRANCHES, 'nqpts': NQPTS, ...}
+
+    Returns:
+        :obj:`tuple` (qpts, weights, frequencies, eigenvectors)
+
+        where *qpts* is a 3xN :obj:`numpy.ndarray` of q-points in fractional
+        coordinates, *weights* is a 1-D :obj:`numpy.ndarray` of q-point
+        weights, *frequencies* is a 2-D :obj:`numpy.ndarray` of frequencies
+        arranged [qpt, mode] and *eigenvectors* is a 4-D :obj:`numpy.ndarray`
+        of complex phonon eigenvectors arranged [qpt, mode, atom, xyz].
+
+    """
+
+    # Pre-allocate arrays
+    qpts = np.zeros((header['nqpts'], 3))
+    weights = np.zeros(header['nqpts'])
+    frequencies = np.zeros((header['nqpts'], header['nbranches']))
+    eigenvectors = np.zeros((header['nqpts'], header['nbranches'],
+                             header['nions'], 3), dtype=np.complex64)
+
+    # Scan past header
+    with zopen(filename, 'rt') as f:
+        for line in f:
+            if f.readline().strip() == 'END header':
+                break
+        else:
+            raise IOError('Did not find "END header" line in phonon file "{}".'
+                          ' File is not formatted correctly.'.format(filename))
+
+        # Read data blocks
+        for i_qpt in range(header['nqpts']):
+            # Typical q-pt line format:
+            # q-pt=   1   0.0000  0.0000  0.000   0.003012
+            #
+            #  -    INDEX ---------QPT---------    WEIGHT
+            #  0      1      2      3       4         5
+
+            qpt_line = f.readline().split()
+            assert qpt_line[0] == 'q-pt='
+            assert qpt_line[1] == str(i_qpt + 1)
+            qpts[i_qpt, :] = list(map(float, qpt_line[2:5]))
+            weights[i_qpt] = float(qpt_line[5])
+
+            # Next come frequencies, typical line   "   1    3.25123"
+            for i_mode in range(header['nbranches']):
+                frequencies[i_qpt, i_mode] = float(f.readline().split()[1])
+
+            # Next come eigenvectors, with some nice tabulation comments, e.g.
+            #
+            #                          Phonon Eigenvectors
+            #   Mode Ion         X                Y               Z
+            #      1   1  0.54308  0.0000  -0.7995  0.0000  0.2564  0.0000
+            #      2   1 -0.60969  0.0000  -0.1654  0.0000  0.7751  0.0000
+            assert f.readline().strip() == 'Phonon Eigenvectors'
+            assert 'X' in f.readline().split()
+            for i_mode in range(header['nbranches']):
+                for i_ion in range(header['nions']):
+                    eigenvector = np.fromstring(f.readline(), sep=' ')[2:]
+                    eigenvector = eigenvector[::2] + 1j * eigenvector[1::2]
+                    eigenvectors[i_qpt, i_mode, i_ion, :] = eigenvector
+
+        return (qpts, weights, frequencies, eigenvectors)
