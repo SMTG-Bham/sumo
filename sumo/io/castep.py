@@ -12,7 +12,7 @@ from pymatgen.core.structure import Structure
 from pymatgen.electronic_structure.core import Spin
 from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
 from pymatgen.electronic_structure.dos import Dos
-from pymatgen.phonon.bandstructure import PhononBandStructure
+from pymatgen.phonon.bandstructure import PhononBandStructureSymmLine
 
 _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009
@@ -286,7 +286,7 @@ def band_structure(bands_file, cell_file=None):
                                  coords_are_cartesian=False)
 
 
-def labels_from_cell(cell_file):
+def labels_from_cell(cell_file, phonon=False):
     """Read special k-point positions/labels from CASTEP cell file
 
     Args:
@@ -305,16 +305,24 @@ def labels_from_cell(cell_file):
 
             where k1, k2, k3 are given in fractional coordinates of the
             reciprocal lattice.
+        phonon (:obj:`bool`): Look for phonon interpolation  blocks instead of
+            electronic band structure (e.g. PHONON_FINE_KPOINT_PATH)
 
-    Returns:
+    returns:
         {:obj:`str`: :obj:`tuple`, ...}
 
     """
 
     labels = {}
 
-    blockstart = re.compile(r'^%block\s+bs_kpoint(s)?_(path|list)')
-    blockend = re.compile(r'^%endblock\s+bs_kpoint(s)?_(path|list)')
+    if phonon:
+        blockstart = re.compile(
+            r'^%block\s+phonon_fine_kpoint(s)?_(path|list)')
+        blockend = re.compile(
+            r'^%endblock\s+phonon_fine_kpoint(s)?_(path|list)')
+    else:        
+        blockstart = re.compile(r'^%block\s+bs_kpoint(s)?_(path|list)')
+        blockend = re.compile(r'^%endblock\s+bs_kpoint(s)?_(path|list)')
 
     with zopen(cell_file, 'r') as f:
         line = ''
@@ -680,13 +688,13 @@ class CastepPhonon(object):
             qpts (:obj:`numpy.ndarray`):
                 Nx3 array of q-points in fractional coordinates
             frequencies (:obj:`numpy.ndarray`):
-                2-D array of frequencies arranged [qpt, mode]. (Frequencies are
+                2-D array of frequencies arranged [mode, qpt]. (Frequencies are
                 in units of header['frequency_unit']).
             weights (:obj:`numpy.ndarray`, optional):
                 1-D array of q-point weights (not used in band structure plot).
             eigenvectors (:obj:`numpy.ndarray`, optional):
                 4-D array of phonon eigenvectors arranged
-                [qpt, mode, atom, xyz] (not used in band structure plot).
+                [mode, qpt, atom, xyz] (not used in band structure plot).
 
         """
         self.header = header
@@ -694,13 +702,14 @@ class CastepPhonon(object):
         self.weights = weights
         self.frequencies = frequencies
         self.eigenvectors = eigenvectors
+        self.labels = {}
 
     @classmethod
     def from_file(cls, filename):
         """Create a CastepPhonon object by reading CASTEP .phonon file
 
         Args:
-            filename (:obj:`str`): Input file
+            filename (:obj:`str`): Input .phonon file
 
         Returns:
             pymatgen.phonon.bandstructure.PhononBandStructure
@@ -712,9 +721,36 @@ class CastepPhonon(object):
         return cls(header, qpts, frequencies,
                    weights=weights, eigenvectors=eigenvectors)
 
-    def get_phonon_band_structure(self):
-        # return PhononBandStructure()
-        pass
+    def set_labels_from_file(self, filename):
+        """Set dictionary of special-point labels from .cell file comments
+
+        Args:
+            filename (:obj:`str`):
+                Input .cell file. Special point symbols should be included as
+                comments on the lines where those qpts are defined; *kgen* will
+                do this automatically when writing high-symmetry paths.
+
+        """
+        self.labels = labels_from_cell(filename, phonon=True)
+        
+
+    def get_band_structure(self):
+        lattice = Lattice(self.header['cell'])
+        structure = Structure(lattice, species=self.header['symbols'],
+                              coords=self.header['positions'])
+
+        # I think this is right? Need to test somehow...
+        mass_weights = np.sqrt(self.header['masses'])
+        displacements = self.eigenvectors * mass_weights[np.newaxis,
+                                                         np.newaxis,
+                                                         :,
+                                                         np.newaxis]
+
+        return PhononBandStructureSymmLine(self.qpts, self.frequencies,
+                                           lattice.reciprocal_lattice,
+                                           structure=structure,
+                                           eigendisplacements=displacements,
+                                           labels_dict=self.labels)
 
 
 def read_phonon_header(filename):
@@ -759,15 +795,19 @@ def read_phonon_header(filename):
                     header[int_keys[split_line[2]]] = int(split_line[3])
 
                 # Lattice vector block: next() will skip lines from for-loop
-                elif split_line[:4] == ['Unit', 'cell', 'vectors']:
-                    cell = [*next(f), *next(f), *next(f)]
-                    cell = np.array(cell, dtype=float).reshape(3, 3).tolist()
+                elif split_line[:3] == ['Unit', 'cell', 'vectors']:
+                    logging.info("Reading unit cell...")
+                    cell = [next(f).split(), next(f).split(), next(f).split()]
+                    header['cell'] = np.array(cell, dtype=float).tolist()
 
                 # Positions block: pre-allocate arrays and fill line-by-line
                 elif split_line[:2] == ['Fractional', 'Co-ordinates']:
                     if not header.get('nions'):
                         raise IOError("Could not find number of ions; phonon "
                                       "file not formatted correctly.")
+
+                    logging.info("Reading structure...")
+
                     header['positions'] = []
                     header['symbols'] = []
                     header['masses'] = []
@@ -780,6 +820,7 @@ def read_phonon_header(filename):
                 else:
                     logging.debug(
                         'Skipping unused header line "{}"'.format(line))
+    logging.info("Finished reading header")
     return header
 
 
@@ -798,22 +839,23 @@ def read_phonon_bands(filename, header):
         where *qpts* is a 3xN :obj:`numpy.ndarray` of q-points in fractional
         coordinates, *weights* is a 1-D :obj:`numpy.ndarray` of q-point
         weights, *frequencies* is a 2-D :obj:`numpy.ndarray` of frequencies
-        arranged [qpt, mode] and *eigenvectors* is a 4-D :obj:`numpy.ndarray`
-        of complex phonon eigenvectors arranged [qpt, mode, atom, xyz].
+        arranged [mode, qpt] and *eigenvectors* is a 4-D :obj:`numpy.ndarray`
+        of complex phonon eigenvectors arranged [mode, qpt, atom, xyz].
 
     """
+    logging.info("Reading phonon qpts, frequencies, weights, eigenvectors...")
 
     # Pre-allocate arrays
     qpts = np.zeros((header['nqpts'], 3))
     weights = np.zeros(header['nqpts'])
-    frequencies = np.zeros((header['nqpts'], header['nbranches']))
-    eigenvectors = np.zeros((header['nqpts'], header['nbranches'],
+    frequencies = np.zeros((header['nbranches'], header['nqpts']))
+    eigenvectors = np.zeros((header['nbranches'], header['nqpts'],
                              header['nions'], 3), dtype=np.complex64)
 
     # Scan past header
     with zopen(filename, 'rt') as f:
         for line in f:
-            if f.readline().strip() == 'END header':
+            if line.strip() == 'END header':
                 break
         else:
             raise IOError('Did not find "END header" line in phonon file "{}".'
@@ -835,7 +877,7 @@ def read_phonon_bands(filename, header):
 
             # Next come frequencies, typical line   "   1    3.25123"
             for i_mode in range(header['nbranches']):
-                frequencies[i_qpt, i_mode] = float(f.readline().split()[1])
+                frequencies[i_mode, i_qpt] = float(f.readline().split()[1])
 
             # Next come eigenvectors, with some nice tabulation comments, e.g.
             #
@@ -849,6 +891,6 @@ def read_phonon_bands(filename, header):
                 for i_ion in range(header['nions']):
                     eigenvector = np.fromstring(f.readline(), sep=' ')[2:]
                     eigenvector = eigenvector[::2] + 1j * eigenvector[1::2]
-                    eigenvectors[i_qpt, i_mode, i_ion, :] = eigenvector
+                    eigenvectors[i_mode, i_qpt, i_ion, :] = eigenvector
 
         return (qpts, weights, frequencies, eigenvectors)

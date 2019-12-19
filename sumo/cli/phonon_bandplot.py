@@ -29,8 +29,9 @@ import matplotlib as mpl
 mpl.use('Agg')
 from matplotlib import rcParams
 
-from phonopy.units import VaspToTHz, VaspToEv, VaspToCm
+from phonopy.units import VaspToTHz, VaspToEv, VaspToCm, THzToCm, CmToEv
 
+from sumo.io.castep import CastepPhonon
 from pymatgen.io.vasp.inputs import Poscar
 from pymatgen.io.phonopy import get_ph_bs_symm_line
 from pymatgen.phonon.bandstructure import PhononBandStructureSymmLine
@@ -182,6 +183,10 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
 
     # Replace dos filename with data array
     if dos is not None:
+        if phonon is None:
+            logging.error("Cannot use phonon DOS without Phonopy")
+            sys.exit()
+
         if isfile(dos):
             dos = np.genfromtxt(dos, comments='#')
         elif dos:
@@ -295,6 +300,25 @@ def _bs_from_filename(filename, poscar, dim, symprec, spg, kpt_list, labels,
                               factor=factors[units.lower()],
                               symmetrise=True, born=born,
                               write_fc=False)
+    elif '.phonon' in filename:
+        logging.warning("Reading pre-computed band structure from CASTEP. "
+                        "Be aware that many phonon-bandplot options will not "
+                        "be relevant.")
+        castep_phonon = CastepPhonon.from_file(filename)
+
+        cell_file = '.'.join(filename.split('.')[:-1] + ['cell'])
+        if isfile(cell_file):
+            logging.info("Found .cell file, reading x-axis labels from "
+                         "{}".format(cell_file))
+            castep_phonon.set_labels_from_file(cell_file)
+        else:
+            logging.warning("No .cell file found, cannot read x-axis labels.")
+
+        factors = {'cm-1': 1., 'thz': 1 / THzToCm,
+                   'ev': CmToEv, 'mev': 1000 * CmToEv}
+        castep_phonon.frequencies *= factors[units.lower()]
+        bs = castep_phonon.get_band_structure()
+        return bs, None
 
     else:
         msg = "Do not recognise file type of {}".format(filename)
