@@ -29,7 +29,6 @@ Block = collections.namedtuple('Block', 'values comments')
 
 unsupported_dosplot_args = {'elements', 'lm_orbitals', 'atoms'}
 
-
 class CastepCell(object):
     """Structure information and more: CASTEP seedname.cell file
 
@@ -320,7 +319,7 @@ def labels_from_cell(cell_file, phonon=False):
             r'^%block\s+phonon_fine_kpoint(s)?_(path|list)')
         blockend = re.compile(
             r'^%endblock\s+phonon_fine_kpoint(s)?_(path|list)')
-    else:        
+    else:
         blockstart = re.compile(r'^%block\s+bs_kpoint(s)?_(path|list)')
         blockend = re.compile(r'^%endblock\s+bs_kpoint(s)?_(path|list)')
 
@@ -732,7 +731,7 @@ class CastepPhonon(object):
 
         """
         self.labels = labels_from_cell(filename, phonon=True)
-        
+
 
     def get_band_structure(self):
         lattice = Lattice(self.header['cell'])
@@ -740,7 +739,7 @@ class CastepPhonon(object):
                               coords=self.header['positions'])
 
         # I think this is right? Need to test somehow...
-        mass_weights = np.sqrt(self.header['masses'])
+        mass_weights = 1 / np.sqrt(self.header['masses'])
         displacements = self.eigenvectors * mass_weights[np.newaxis,
                                                          np.newaxis,
                                                          :,
@@ -829,8 +828,8 @@ def read_phonon_bands(filename, header):
 
     Args:
         filename (:obj:`str`): Input file
-        header (:obj:`dict`): Header data including 
-        
+        header (:obj:`dict`): Header data including
+
           {'nions': NIONS, 'nbranches': NBRANCHES, 'nqpts': NQPTS, ...}
 
     Returns:

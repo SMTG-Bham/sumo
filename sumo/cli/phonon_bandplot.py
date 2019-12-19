@@ -51,11 +51,11 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
                     dim=None, born=None, qmesh=None, spg=None,
                     primitive_axis=None, line_density=60, units='THz',
                     symprec=0.01, mode='bradcrack', kpt_list=None,
-                    eigenvectors=False, labels=None, height=6., width=6.,
+                    eigenvectors=None, labels=None, height=6., width=6.,
                     style=None, no_base_style=False,
                     ymin=None, ymax=None, image_format='pdf', dpi=400,
                     plt=None, fonts=None, dos=None,
-                    to_json=None, from_json=None, legend=None):
+                    to_json=None, from_json=None, to_web=None, legend=None):
     """A script to plot phonon band structure diagrams.
 
     Args:
@@ -122,7 +122,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             path: Gamma -> Z | X -> M. If no labels are provided, letters from
             A -> Z will be used instead.
         eigenvectors (:obj:`bool`, optional): Write the eigenvectors to the
-            yaml file.
+            yaml file. (Always True if to_web is set.)
         dos (str): Path to Phonopy total dos .dat file
         height (:obj:`float`, optional): The height of the plot.
         width (:obj:`float`, optional): The width of the plot.
@@ -146,6 +146,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             path object.
         from_json (:obj:`list` or :obj:`str`, optional): (List of) JSON
             bandpath data filename(s) to import and overlay.
+        to_web (:obj:`str`, optional): JSON file to write data for
+            visualisation with http://henriquemiranda.github.io/phononwebsite
         legend (:obj:`list` or :obj:`None`, optional): Legend labels. If None,
             don't add a legend. With a list length equal to from_json, label
             json inputs only. With one extra list entry, label all lines
@@ -157,6 +159,14 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
     save_files = False if plt else True  # don't save if pyplot object provided
     if isinstance(from_json, str):
         from_json = [from_json]
+
+    if eigenvectors is None:
+        if to_web is None:
+            eigenvectors = False
+        else:
+            eigenvectors = True
+    elif not eigenvectors and to_web is not None:
+        raise ValueError("Cannot set eigenvectors=False and write web JSON")
 
     if filename is None:
         if from_json is None:
@@ -180,6 +190,10 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
         logging.info("Writing symmetry lines to {}".format(to_json))
         with open(to_json, 'wt') as f:
             f.write(bs.to_json())
+
+    if to_web is not None:
+        logging.info("Writing visualisation JSON to {}".format(to_web))
+        bs.write_phononwebsite(to_web)
 
     # Replace dos filename with data array
     if dos is not None:
@@ -366,7 +380,8 @@ def _get_parser():
                         help='q-mesh to use for phonon DOS')
     parser.add_argument('-b', '--born', metavar='B',
                         help='born effective charge file')
-    parser.add_argument('-e', '--eigenvectors', action='store_true',
+    parser.add_argument('-e', '--eigenvectors',
+                        action='store_true', default=None,
                         help='write the phonon eigenvectors to yaml file')
     parser.add_argument('--dim', nargs='+', metavar='N',
                         help='supercell matrix dimensions')
@@ -434,6 +449,9 @@ def _get_parser():
     parser.add_argument('--from-json', type=str, nargs='+', default=None,
                         dest='from_json',
                         help='Overlay band data from JSON files')
+    parser.add_argument('--to-web', type=str, default=None, dest='to_web',
+                        help='(Output JSON file for '
+                             'http://henriquemiranda.github.io/phononwebsite)')
     parser.add_argument('--legend', type=str, nargs='*', default=None,
                         help=('Legend labels. With no args, label json inputs '
                               'with filenames. With one arg per json file, '
@@ -509,8 +527,7 @@ def main():
                     dpi=args.dpi, fonts=args.font,
                     eigenvectors=args.eigenvectors, dos=args.dos,
                     to_json=args.to_json, from_json=args.from_json,
-                    legend=legend)
-
+                    to_web=args.to_web, legend=legend)
 
 if __name__ == "__main__":
     main()
