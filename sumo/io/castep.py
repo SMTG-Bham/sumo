@@ -196,7 +196,7 @@ class CastepCell(object):
 
 
 def read_tdos(bands_file, bin_width=0.01, gaussian=None,
-              padding=0.5, emin=None, emax=None):
+              padding=0.5, emin=None, emax=None, efermi_to_vbm=True):
     """Convert DOS data from CASTEP .bands file to Pymatgen/Sumo format
 
     The data is binned into a regular series using np.histogram
@@ -211,6 +211,9 @@ def read_tdos(bands_file, bin_width=0.01, gaussian=None,
             region. (This is not used if xmin and xmax are set.)
         emin (:obj:`float`, optional): Minimum energy value for output DOS
         emax (:obj:`float`, optional): Maximum energy value for output DOS
+        efermi_to_vbm (:obj:`bool`, optional):
+            If a bandgap is detected, modify the stored Fermi energy
+            so that it lies at the VBM.
 
     Returns:
         :obj:`pymatgen.electronic_structure.dos.Dos`
@@ -242,12 +245,36 @@ def read_tdos(bands_file, bin_width=0.01, gaussian=None,
                                    weights=weights)[0]
                 for spin, eigenvalue_set in eigenvalues.items()}
 
-    dos = Dos(header['e_fermi'][0], energies, dos_data)
+    calc_efermi = header['e_fermi'][0] * _ry_to_ev * 2
+    if efermi_to_vbm and not _is_metal(eigenvalues, calc_efermi):
+        logging.info("Setting energy zero to VBM")
+        efermi = _get_vbm(eigenvalues, calc_efermi)
+    else:
+        logging.info("Setting energy zero to Fermi energy")
+        efermi = calc_efermi
+
+    dos = Dos(efermi, energies, dos_data)
     if gaussian:
         dos.densities = dos.get_smeared_densities(gaussian)
 
     return dos
 
+def _is_metal(eigenvalues, efermi, tol=1e-5):
+    # Detect if material is a metal by checking if bands cross efermi
+    from itertools import chain
+    for band in chain(*eigenvalues.values()):
+        if np.any(band < (efermi - tol)) and np.any(band > (efermi + tol)):
+            logging.info("Electronic structure appears to be a metal")
+            return True
+    else:
+        logging.info("Electronic structure appears to have a bandgap")
+        return False
+
+def _get_vbm(eigenvalues, efermi):
+    from itertools import chain
+    occupied_states_by_band = (band[band < efermi]
+                               for band in chain(*eigenvalues.values()))
+    return max(chain(*occupied_states_by_band))
 
 def band_structure(bands_file, cell_file=None):
     """Convert band structure data from CASTEP to Pymatgen/Sumo format
