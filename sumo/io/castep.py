@@ -559,8 +559,10 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
                 ['\Gamma', '', 'X', '', 'Y']
 
         make_folders (:obj:`bool`, optional): Generate folders and copy in
-            param file from the current directory, setting task=BandStructure.
-            Cell file filename will be copies with the new band path block.
+            param file from the current directory, setting the TASK and
+            SPECTRAL_TASK tags as appropriate.  Cell file *filename* will be
+            copied with the new band path block.  If a matching .check file
+            exists this will also be copied, and the REUSE tag will be set.
 
         kpts_per_split (:obj:`int`, optional): If set, the k-points are split
             into separate k-point files (or folders) each containing the number
@@ -617,17 +619,25 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
     pad = int(math.floor(math.log10(len(kpt_cell_files)))) + 2
     if make_folders:
         # Derive param file name by changing extension from cell file
-        param_file = '.'.join(filename.split('.')[:-1] + ['param'])
+        seedname = '.'.join(filename.split('.')[:-1])
+        param_file = seedname + '.param'
+        check_file = seedname + '.check'
 
         for i, cell_file in enumerate(kpt_cell_files):
             split_folder = 'split-{}'.format(str(i + 1).zfill(pad))
             if directory:
                 split_folder = os.path.join(directory, split_folder)
+            os.mkdir(split_folder)
+
+            if os.path.isfile(check_file):
+                shutil.copy(check_file, split_folder)
+                tags.update({'reuse': os.path.basename(check_file)})
 
             copy_param(param_file, split_folder, tags=tags)
 
             cell_file.to_file(os.path.join(split_folder,
                                            os.path.basename(filename)))
+
 
     else:
         for i, cell_file in enumerate(kpt_cell_files):
@@ -651,16 +661,14 @@ def copy_param(filename, folder, tags=None):
 
     """
 
-    # Copy tags dict and remove case-sensitive keys
-    tags = {key.lower(): value for key, value in tags}
-
     output_filename = os.path.join(folder, os.path.basename(filename))
-    if not os.path.isdir(folder):
-        os.mkdir(folder)
-    if os.path.isfile(filename) and task is None:
+    if os.path.isfile(filename) and tags is None:
         shutil.copyfile(filename, output_filename)
 
     elif os.path.isfile(filename):
+        # Copy tags dict and remove case-sensitive keys
+        tags = {key.lower(): value for key, value in tags.items()}
+
         with open(filename, 'r') as infile:
             with open(output_filename, 'w') as outfile:
                 for line in infile:
