@@ -196,7 +196,7 @@ class CastepCell(object):
 
 
 def read_tdos(bands_file, bin_width=0.01, gaussian=None,
-              padding=0.5, emin=None, emax=None, efermi_to_vbm=True):
+              padding=None, emin=None, emax=None, efermi_to_vbm=True):
     """Convert DOS data from CASTEP .bands file to Pymatgen/Sumo format
 
     The data is binned into a regular series using np.histogram
@@ -209,7 +209,7 @@ def read_tdos(bands_file, bin_width=0.01, gaussian=None,
             function
         padding (:obj:`float`, optional): Energy range above and below occupied
             region. (This is not used if xmin and xmax are set.)
-        emin (:obj:`float`, optional): Minimum energy value for output DOS
+        emin (:obj:`float`, optional): Minimum energy value for output DOS)
         emax (:obj:`float`, optional): Maximum energy value for output DOS
         efermi_to_vbm (:obj:`bool`, optional):
             If a bandgap is detected, modify the stored Fermi energy
@@ -224,16 +224,33 @@ def read_tdos(bands_file, bin_width=0.01, gaussian=None,
     logging.info("Reading band eigenvalues...")
     _, weights, eigenvalues = read_bands_eigenvalues(bands_file, header)
 
+    calc_efermi = header['e_fermi'][0] * _ry_to_ev * 2
+    if efermi_to_vbm and not _is_metal(eigenvalues, calc_efermi):
+        logging.info("Setting energy zero to VBM")
+        efermi = _get_vbm(eigenvalues, calc_efermi)
+    else:
+        logging.info("Setting energy zero to Fermi energy")
+        efermi = calc_efermi
+
     emin_data = min(eigenvalues[Spin.up].flatten())
     emax_data = max(eigenvalues[Spin.up].flatten())
     if Spin.down in eigenvalues:
         emin_data = min(emin_data, min(eigenvalues[Spin.down].flatten()))
         emax_data = max(emax_data, max(eigenvalues[Spin.down].flatten()))
 
+    if padding is None and gaussian:
+        padding = gaussian * 3
+    elif padding is None:
+        padding = 0.5
+
     if emin is None:
         emin = emin_data - padding
     if emax is None:
         emax = emax_data + padding
+
+    # Shift sampling window to account for zeroing at VBM/EFermi
+    emin += efermi
+    emax += efermi
 
     bins = np.arange(emin, emax + bin_width, bin_width)
     energies = (bins[1:] + bins[:-1]) / 2
@@ -244,14 +261,6 @@ def read_tdos(bands_file, bin_width=0.01, gaussian=None,
     dos_data = {spin: np.histogram(eigenvalue_set, bins=bins,
                                    weights=weights)[0]
                 for spin, eigenvalue_set in eigenvalues.items()}
-
-    calc_efermi = header['e_fermi'][0] * _ry_to_ev * 2
-    if efermi_to_vbm and not _is_metal(eigenvalues, calc_efermi):
-        logging.info("Setting energy zero to VBM")
-        efermi = _get_vbm(eigenvalues, calc_efermi)
-    else:
-        logging.info("Setting energy zero to Fermi energy")
-        efermi = calc_efermi
 
     dos = Dos(efermi, energies, dos_data)
     if gaussian:
