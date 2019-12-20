@@ -241,14 +241,16 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
             bandstructures.append(bs)
         bs = get_reconstructed_band_structure(bandstructures)
     elif code == 'castep':
-        bands_file = filenames[0]
-        cell_file = bands_file.replace('bands', 'cell')
-        if os.path.isfile(cell_file):
-            logging.info('found cell file {}...'.format(cell_file))
-        else:
-            logging.info('did not find cell file {}...'.format(cell_file))
-            cell_file = None
-        bs = castep_band_structure(bands_file, cell_file=cell_file)
+        for bands_file in filenames:
+            cell_file = bands_file.replace('bands', 'cell')
+            if os.path.isfile(cell_file):
+                logging.info('found cell file {}...'.format(cell_file))
+            else:
+                logging.info('did not find cell file {}...'.format(cell_file))
+                cell_file = None
+            bs = castep_band_structure(bands_file, cell_file=cell_file)
+            bandstructures.append(bs)
+        bs = get_reconstructed_band_structure(bandstructures)
     elif code == 'questaal':
         bnds_file = filenames[0]
         ext = bnds_file.split('.')[-1]
