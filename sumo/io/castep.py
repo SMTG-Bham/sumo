@@ -5,6 +5,7 @@ import os
 import re
 import shutil
 import sys
+from itertools import product
 from monty.io import zopen
 import numpy as np
 from pymatgen.core.lattice import Lattice
@@ -294,7 +295,7 @@ def band_structure(bands_file, cell_file=None):
             this file.
         cell_file (:obj:`str`, optional): Path to CASTEP prefix.cell input
             file. If found, the positions of high-symmetry points are read from
-            the ``bs_kpoint_path`` block in this file.
+            the ``[bs|spectral]_kpoint(s)_[path|list]`` block in this file.
 
     Returns:
         :obj:`pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`
@@ -356,8 +357,10 @@ def labels_from_cell(cell_file, phonon=False):
         blockend = re.compile(
             r'^%endblock\s+phonon_fine_kpoint(s)?_(path|list)')
     else:
-        blockstart = re.compile(r'^%block\s+bs_kpoint(s)?_(path|list)')
-        blockend = re.compile(r'^%endblock\s+bs_kpoint(s)?_(path|list)')
+        blockstart = re.compile(
+            r'^%block\s+(bs|spectral)_kpoint(s)?_(path|list)')
+        blockend = re.compile(
+            r'^%endblock\s+(bs|spectral)_kpoint(s)?_(path|list)')
 
     with zopen(cell_file, 'r') as f:
         line = ''
@@ -584,27 +587,31 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
     kpt_cell_files = []
 
     if phonon:
-        task = 'Phonon'
+        tags = {'task': 'Phonon'}
         kpoint_tag = 'phonon_fine_kpoint_list'
         clash_tags = {'phonon_fine_kpoints_list',
                       'phonon_fine_kpoint_path',
                       'phonon_fine_kpoints_path'}
     else:
-        task = 'BandStructure'
-        kpoint_tag = 'bs_kpoint_list'
-        clash_tags = {'bs_kpoints_list', 'bs_kpoint_path', 'bs_kpoints_path'}
+        tags = {'task': 'Spectral', 'spectral_task': 'BandStructure'}
+        kpoint_tag = 'spectral_kpoint_list'
+        clash_tags = set(['{}_{}_{}'.format(*tag_parts) for tag_parts in
+                          product(('bs', 'spectral'),
+                                  ('kpoint', 'kpoints'),
+                                  ('path', 'list',
+                                   'mp_grid', 'mp_spacing', 'mp_offset'))])
 
     for kpt_split, label_split in zip(kpt_splits, label_splits):
         cellfile = CastepCell.from_file(filename)
-        cellfile.blocks[kpoint_tag] = Block(kpt_split, label_split)
-        # Remove any other band structure blocks which may have been loaded
 
+        # Remove any spectral blocks which may have already been loaded
         for key in clash_tags:
             try:
                 del cellfile.blocks[key]
             except KeyError:
                 pass
 
+        cellfile.blocks[kpoint_tag] = Block(kpt_split, label_split)
         kpt_cell_files.append(cellfile)
 
     pad = int(math.floor(math.log10(len(kpt_cell_files)))) + 2
@@ -617,7 +624,7 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             if directory:
                 split_folder = os.path.join(directory, split_folder)
 
-            copy_param(param_file, split_folder, task=task)
+            copy_param(param_file, split_folder, tags=tags)
 
             cell_file.to_file(os.path.join(split_folder,
                                            os.path.basename(filename)))
@@ -633,15 +640,19 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             cell_file.to_file(cell_filename)
 
 
-def copy_param(filename, folder, task=None):
+def copy_param(filename, folder, tags=None):
     """Copy CASTEP .param file, modifying Task if needed
 
     Args:
         filename (:obj:`str`): Path to CASTEP .param file
         folder (:obj:`str`): Directory for output .param file
-        task (:obj:`str` or :obj:`None`): Replace value of existing Task tag
+        tags (:obj:`dict` or :obj:`None`):
+            Tags to replace or insert (e.g. {'task': 'Phonon'})
 
     """
+
+    # Copy tags dict and remove case-sensitive keys
+    tags = {key.lower(): value for key, value in tags}
 
     output_filename = os.path.join(folder, os.path.basename(filename))
     if not os.path.isdir(folder):
@@ -653,10 +664,14 @@ def copy_param(filename, folder, task=None):
         with open(filename, 'r') as infile:
             with open(output_filename, 'w') as outfile:
                 for line in infile:
-                    if line.strip().lower()[:4] == 'task':
-                        outfile.write('Task : {}\n'.format(task))
+                    tag = line.split()[0].lower() if line.split() else None
+                    if tag in tags:
+                        outfile.write('{} : {}\n'.format(tag, tags.pop(tag)))
                     else:
                         outfile.write(line)
+                # Write remaining tags
+                for tag, value in tags.items():
+                    outfile.write('{} : {}\n'.format(tag, value))
     else:
         logging.warning("Cannot find param file {}, skipping".format(filename))
 
