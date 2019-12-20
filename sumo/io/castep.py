@@ -90,7 +90,7 @@ class CastepCell(object):
 
         if 'positions_frac' in self.blocks:
             elements_coords = [(row[0], list(map(float, row[1:4])))
-                               for row in self.blocks['positions_frac']]
+                               for row in self.blocks['positions_frac'].values]
             elements, coords = zip(*elements_coords)
             return Structure(lattice, elements, coords,
                              coords_are_cartesian=False)
