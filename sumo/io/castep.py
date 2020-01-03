@@ -812,9 +812,13 @@ class CastepPhonon(object):
 
 
 def read_phonon_header(filename):
-    """Read header information from CASTEP .phonon file
+    """Read header information from CASTEP .phonon Args
 
-    Args:
+    "Number of wavevectors" reported in the heading can be misleading as LO-TO
+    splitting adds extra Gamma-point entries. To get the array sizes straight
+    we also search the file for a "true N-qpts".
+
+    File:
         filename (:obj:`str`): Input file
 
     Returns:
@@ -823,7 +827,8 @@ def read_phonon_header(filename):
         Dict containing key metadata from header file. Positions are in
         fractional coordinates.
 
-          {nions: NIONS, nbranches: NBRANCHES, nqpts: NQPTS,
+          {n_ions: NIONS, n_branches: NBRANCHES, n_qpts: NQPTS,
+           n_entries: NQPTS(INCLUDING LOTO DUPLICATES),
            frequency_unit: 'cm-1',
            cell: [[ax, ay, az], [bx, by, bz], [cx, cy, cz]],
            positions: [[a1, b1, c1], [a2, b2, c2], ...],
@@ -831,9 +836,9 @@ def read_phonon_header(filename):
            masses: [m1, m2, ...]}
     """
 
-    int_keys = {'ions': 'nions',
-                'branches': 'nbranches',
-                'wavevectors': 'nqpts'}
+    int_keys = {'ions': 'n_ions',
+                'branches': 'n_branches',
+                'wavevectors': 'n_qpts'}
 
     header = {}
     in_header = False
@@ -860,7 +865,7 @@ def read_phonon_header(filename):
 
                 # Positions block: pre-allocate arrays and fill line-by-line
                 elif split_line[:2] == ['Fractional', 'Co-ordinates']:
-                    if not header.get('nions'):
+                    if not header.get('n_ions'):
                         raise IOError("Could not find number of ions; phonon "
                                       "file not formatted correctly.")
 
@@ -870,7 +875,7 @@ def read_phonon_header(filename):
                     header['symbols'] = []
                     header['masses'] = []
 
-                    for i in range(header['nions']):
+                    for i in range(header['n_ions']):
                         _, *position, el, m = next(f).split()
                         header['positions'].append(list(map(float, position)))
                         header['symbols'].append(el)
@@ -878,7 +883,14 @@ def read_phonon_header(filename):
                 else:
                     logging.debug(
                         'Skipping unused header line "{}"'.format(line))
-    logging.info("Finished reading header")
+
+        logging.info("Finished reading header, checking number of entries ...")
+        is_qpt = re.compile(r'^\s+q-pt=\s+')
+        header['n_entries'] = sum(bool(is_qpt.match(line)) for line in f)
+        if header['n_entries'] > header['n_qpts']:
+            logging.info("Found more entries than reported q-points: "
+                         "assume LO-TO splitting was used")
+
     return header
 
 
@@ -889,7 +901,11 @@ def read_phonon_bands(filename, header):
         filename (:obj:`str`): Input file
         header (:obj:`dict`): Header data including
 
-          {'nions': NIONS, 'nbranches': NBRANCHES, 'nqpts': NQPTS, ...}
+          {'n_ions': NIONS, 'n_branches': NBRANCHES, 'n_entries': ENTRIES, ...}
+
+          Note that ENTRIES may be larger than the reported "Number of
+          wavevectors" as Gamma points are sometimes duplicated to show LO-TO
+          splitting.
 
     Returns:
         :obj:`tuple` (qpts, weights, frequencies, eigenvectors)
@@ -904,11 +920,11 @@ def read_phonon_bands(filename, header):
     logging.info("Reading phonon qpts, frequencies, weights, eigenvectors...")
 
     # Pre-allocate arrays
-    qpts = np.zeros((header['nqpts'], 3))
-    weights = np.zeros(header['nqpts'])
-    frequencies = np.zeros((header['nbranches'], header['nqpts']))
-    eigenvectors = np.zeros((header['nbranches'], header['nqpts'],
-                             header['nions'], 3), dtype=np.complex64)
+    qpts = np.zeros((header['n_entries'], 3))
+    weights = np.zeros(header['n_entries'])
+    frequencies = np.zeros((header['n_branches'], header['n_entries']))
+    eigenvectors = np.zeros((header['n_branches'], header['n_entries'],
+                             header['n_ions'], 3), dtype=np.complex64)
 
     # Scan past header
     with zopen(filename, 'rt') as f:
@@ -920,7 +936,7 @@ def read_phonon_bands(filename, header):
                           ' File is not formatted correctly.'.format(filename))
 
         # Read data blocks
-        for i_qpt in range(header['nqpts']):
+        for i_qpt in range(header['n_entries']):
             # Typical q-pt line format:
             # q-pt=   1   0.0000  0.0000  0.000   0.003012
             #
@@ -929,12 +945,16 @@ def read_phonon_bands(filename, header):
 
             qpt_line = f.readline().split()
             assert qpt_line[0] == 'q-pt='
-            assert qpt_line[1] == str(i_qpt + 1)
+
+            # We can't check if the indices are correct because CASTEP gives a
+            # duplicate index to "Gamma-point" with delta for LO-TO splitting,
+            # so skip over the qpt number and go to data
+
             qpts[i_qpt, :] = list(map(float, qpt_line[2:5]))
             weights[i_qpt] = float(qpt_line[5])
 
             # Next come frequencies, typical line   "   1    3.25123"
-            for i_mode in range(header['nbranches']):
+            for i_mode in range(header['n_branches']):
                 frequencies[i_mode, i_qpt] = float(f.readline().split()[1])
 
             # Next come eigenvectors, with some nice tabulation comments, e.g.
@@ -945,8 +965,8 @@ def read_phonon_bands(filename, header):
             #      2   1 -0.60969  0.0000  -0.1654  0.0000  0.7751  0.0000
             assert f.readline().strip() == 'Phonon Eigenvectors'
             assert 'X' in f.readline().split()
-            for i_mode in range(header['nbranches']):
-                for i_ion in range(header['nions']):
+            for i_mode in range(header['n_branches']):
+                for i_ion in range(header['n_ions']):
                     eigenvector = np.fromstring(f.readline(), sep=' ')[2:]
                     eigenvector = eigenvector[::2] + 1j * eigenvector[1::2]
                     eigenvectors[i_mode, i_qpt, i_ion, :] = eigenvector
