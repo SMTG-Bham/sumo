@@ -4,14 +4,62 @@ from pkg_resources import resource_filename
 import json
 from numpy.testing import assert_array_almost_equal
 
+from pymatgen import Structure
 from pymatgen.electronic_structure.core import Spin
 from sumo.io.castep import (read_bands_header,
                             read_bands_eigenvalues,
                             labels_from_cell,
+                            CastepCell,
                             CastepPhonon)
 
 _ry_to_ev = 13.605693009
 
+
+class CastepCellTestCase(unittest.TestCase):
+    def setUp(self):
+        self.si_cell = resource_filename(
+            __name__,
+            path_join('..', 'data', 'Si', 'Si2.cell'))
+        self.si_cell_alt = resource_filename(
+            __name__,
+            path_join('..', 'data', 'Si', 'Si2-alt.cell'))
+        self.zns_band_cell = resource_filename(
+            __name__,
+            path_join('..', 'data', 'ZnS', 'zns.cell'))
+        self.zns_singlepoint_cell = resource_filename(
+            __name__,
+            path_join('..', 'data', 'ZnS', 'zns-sp.cell'))
+
+
+    def test_castep_cell_null_init(self):
+        null_cell = CastepCell()
+        self.assertEqual(null_cell.blocks, {})
+        self.assertEqual(null_cell.tags, {})
+
+        with self.assertRaises(ValueError):
+            structure = null_cell.structure
+
+    def test_castep_cell_from_singlepoint_file(self):
+        cc = CastepCell.from_file(self.zns_singlepoint_cell)
+        self.assertEqual(set(cc.blocks.keys()),
+                         set(('lattice_cart', 'positions_abs', 'species_pot')))
+        self.assertEqual({k: v.value for k, v in cc.tags.items()},
+                         {'fix_all_cell': ['true'],
+                          'fix_all_ions': ['true'],
+                          'symmetry_generate': ['true'],
+                          'kpoint_mp_grid': ['4', '4', '4'],
+                          'snap_to_symmetry': ['true']})
+        self.assertEqual(cc.blocks['species_pot'].values[1],
+                         ['S', 'NCP'])
+        self.assertEqual(cc.blocks['species_pot'].comments,
+                         ['', ''])
+
+        structure = cc.structure
+        self.assertIsInstance(structure, Structure)
+        assert_array_almost_equal(structure.lattice.matrix,
+                                  [[0., 2.71, 2.71],
+                                   [2.71, 0., 2.71],
+                                   [2.71, 2.71, 0.]])
 
 class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
     def setUp(self):
