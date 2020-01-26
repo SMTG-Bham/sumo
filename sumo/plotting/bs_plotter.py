@@ -50,7 +50,7 @@ class SBSPlotter(BSPlotter):
     def get_plot(self, zero_to_efermi=True, ymin=-6., ymax=6.,
                  width=None, height=None, vbm_cbm_marker=False,
                  ylabel='Energy (eV)',
-                 dpi=None, plt=None,
+                 dpi=None, plt=None, plot_dos_legend=True,
                  dos_plotter=None, dos_options=None, dos_label=None,
                  dos_aspect=3, aspect=None, fonts=None, style=None,
                  no_base_style=False, spin=None):
@@ -121,6 +121,7 @@ class SBSPlotter(BSPlotter):
                 structure and density of states subplot. For example,
                 ``dos_aspect = 3``, results in a ratio of 3:1, for the band
                 structure:dos plots.
+            plot_dos_legend (:obj:`bool`): Whether to plot the dos legend.
             aspect (:obj:`float`, optional): The aspect ratio of the band
                 structure plot. By default the dimensions of the figure size
                 are used to determine the aspect ratio. Set to ``1`` to force
@@ -131,7 +132,7 @@ class SBSPlotter(BSPlotter):
             style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
                 style specifications, to be composed on top of Sumo base
                 style.
-            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
             spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,
@@ -203,6 +204,7 @@ class SBSPlotter(BSPlotter):
                        vbm_cbm_marker=vbm_cbm_marker, width=width,
                        height=height, ymin=ymin, ymax=ymax,
                        dos_plotter=dos_plotter, dos_options=dos_options,
+                       plot_dos_legend=plot_dos_legend,
                        dos_label=dos_label, aspect=aspect)
         return plt
 
@@ -214,6 +216,7 @@ class SBSPlotter(BSPlotter):
                            ylabel='Energy (eV)',
                            dpi=400, plt=None,
                            dos_plotter=None, dos_options=None, dos_label=None,
+                           plot_dos_legend=True,
                            dos_aspect=3, aspect=None, fonts=None, style=None,
                            no_base_style=False, spin=None):
         """Get a :obj:`matplotlib.pyplot` of the projected band structure.
@@ -328,6 +331,7 @@ class SBSPlotter(BSPlotter):
                         subplots. Defaults to ``False``.
 
             dos_label (:obj:`str`, optional): DOS axis label/units
+            plot_dos_legend (:obj:`bool`): Whether to plot the dos legend.
             dos_aspect (:obj:`float`, optional): Aspect ratio for the band
                 structure and density of states subplot. For example,
                 ``dos_aspect = 3``, results in a ratio of 3:1, for the band
@@ -468,13 +472,15 @@ class SBSPlotter(BSPlotter):
                        vbm_cbm_marker=vbm_cbm_marker, width=width,
                        height=height, ymin=ymin, ymax=ymax,
                        dos_plotter=dos_plotter, dos_options=dos_options,
-                       dos_label=dos_label, aspect=aspect)
+                       dos_label=dos_label, plot_dos_legend=plot_dos_legend,
+                       aspect=aspect)
         return plt
 
     def _makeplot(self, ax, fig, data, zero_to_efermi=True,
                   vbm_cbm_marker=False, ymin=-6., ymax=6.,
                   height=None, width=None,
                   dos_plotter=None, dos_options=None, dos_label=None,
+                  plot_dos_legend=True,
                   aspect=None):
         """Tidy the band structure & add the density of states if required."""
         # draw line at Fermi level if not zeroing to e-Fermi
@@ -503,7 +509,8 @@ class SBSPlotter(BSPlotter):
                 dos_options = {}
 
             dos_options.update({'xmin': ymin, 'xmax': ymax})
-            self._makedos(ax, dos_plotter, dos_options, dos_label=dos_label)
+            self._makedos(ax, dos_plotter, dos_options, dos_label=dos_label,
+                          plot_legend=plot_dos_legend)
         else:
             # keep correct aspect ratio for axes based on canvas size
             x0, x1 = ax.get_xlim()
@@ -518,7 +525,8 @@ class SBSPlotter(BSPlotter):
 
             ax.set_aspect(aspect * ((x1 - x0) / (y1 - y0)))
 
-    def _makedos(self, ax, dos_plotter, dos_options, dos_label=None):
+    def _makedos(self, ax, dos_plotter, dos_options, dos_label=None,
+                 plot_legend=True):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
         # don't use first 4 colours; these are the band structure line colours
@@ -532,6 +540,9 @@ class SBSPlotter(BSPlotter):
         lines = plot_data['lines']
         spins = [Spin.up] if len(lines[0][0]['dens']) == 1 else \
             [Spin.up, Spin.down]
+
+        # disable y ticks for DOS panel
+        ax.tick_params(axis='y', which='both', right=False)
 
         for line_set in plot_data['lines']:
             for line, spin in it.product(line_set, spins):
@@ -555,7 +566,8 @@ class SBSPlotter(BSPlotter):
                 ax.set_xlabel(dos_label)
 
         ax.set_xticklabels([])
-        ax.legend(loc=2, frameon=False, ncol=1, bbox_to_anchor=(1., 1.))
+        if plot_legend:
+            ax.legend(loc=2, frameon=False, ncol=1, bbox_to_anchor=(1., 1.))
 
     @staticmethod
     def _sanitise_label(label):
