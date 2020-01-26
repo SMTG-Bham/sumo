@@ -1,8 +1,21 @@
 Change Log
 ==========
 
-`[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.3.0...HEAD>`_
+`[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.4.0...HEAD>`_
 ------------------------------------------------------------------------
+
+`[v1.4.0] <https://github.com/smtg-ucl/sumo/compare/v1.3.0...v1.4.0>`_ - 2020-01-25
+------
+
+New features:
+
+- Plot single spin channel band structures. (@kavanase)
+- Add scissor option to band plot. (@mkhorton)
+
+Bug fixes:
+
+- Fixed ytick labels for band + DOS plots. (@utf)
+- Fix a bug when the y axis limit is outside the DOS range in band + DOS tapes. (@utf)
 
 `[v1.3.0] <https://github.com/smtg-ucl/sumo/compare/v1.2.0...v1.3.0>`_ - 2019-10-20
 ------
