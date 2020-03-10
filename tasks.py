@@ -1,4 +1,5 @@
 """
+
 Deployment file to facilitate releases of sumo.
 Note that this file is meant to be run from the root directory of the repo.
 """
@@ -27,9 +28,9 @@ def release(ctx):
     with open("CHANGELOG.rst") as f:
         contents = f.read()
     new_ver = re.findall('\n(v.*)', contents)[0]
-    toks = re.finditer("v\d\.\d\.\d*\n\-*(.*?)^v\d\.\d\.\d", contents,
+    toks = re.finditer("------\n*(.*?)^\`\[v\d\.\d\.\d", contents,
                        re.MULTILINE | re.DOTALL)
-    desc = list(toks)[0].groups()[0].strip()
+    desc = list(toks)[1].groups()[0].strip()
     payload = {
         "tag_name": new_ver,
         "target_commitish": "master",

@@ -144,7 +144,11 @@ class SDOSPlotter(object):
                              'calculation results')
 
         # Visibility cutoff based on scale of total plot even if it is hidden
-        dmax = max([max(d[mask]) for d in dos.densities.values()])
+        try:
+            dmax = max([max(d[mask]) for d in dos.densities.values()])
+        except ValueError:
+            dmax = 0
+
         ymax = dmax if dmax > 0 else 0
         cutoff = (legend_cutoff / 100.) * (ymax / 1.05)
 
