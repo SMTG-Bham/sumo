@@ -279,13 +279,17 @@ def get_reconstructed_band_structure(list_bs, efermi=None):
                              labels_dict, structure=list_bs[0].structure,
                              projections=projections)
 
+
 def string_to_spin(spin_string):
     """Function to convert 'spin' cli argument to pymatgen Spin object"""
-    if spin_string in ['up','Up','1','+1']:
+    if spin_string in ['up', 'Up', '1', '+1']:
         return Spin.up
-    elif spin_string in ['down','Down','-1']:
+
+    elif spin_string in ['down', 'Down', '-1']:
         return Spin.down
-    elif spin_string in None:
+
+    elif spin_string is None:
         return None
+
     else:
         raise ValueError("Unable to parse 'spin' argument")
