@@ -162,10 +162,10 @@ class SBSPlotter(BSPlotter):
             raise ValueError('Spin-selection only possible with spin-polarised '
                              'calculation results')
 
-        elif spin is not None:
-            is_vb = self._bs.bands[spin] <= self._bs.get_vbm()['energy']
         elif self._bs.is_spin_polarized or self._bs.is_metal():
             is_vb = [True]
+        elif spin is not None:
+            is_vb = self._bs.bands[spin] <= self._bs.get_vbm()['energy']
         else:
             is_vb = self._bs.bands[Spin.up] <= self._bs.get_vbm()['energy']
 
