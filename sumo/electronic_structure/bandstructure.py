@@ -285,5 +285,7 @@ def string_to_spin(spin_string):
         return Spin.up
     elif spin_string in ['down','Down','-1']:
         return Spin.down
+    elif spin_string in None:
+        return None
     else:
         raise ValueError("Unable to parse 'spin' argument")
