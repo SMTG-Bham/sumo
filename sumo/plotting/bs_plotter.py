@@ -520,10 +520,11 @@ class SBSPlotter(BSPlotter):
             if height is None:
                 height = rcParams['figure.figsize'][1]
 
-            if not aspect:
-                aspect = height / width
+            if aspect is not False:
+                if not aspect:
+                    aspect = height / width
 
-            ax.set_aspect(aspect * ((x1 - x0) / (y1 - y0)))
+                ax.set_aspect(aspect * ((x1 - x0) / (y1 - y0)))
 
     def _makedos(self, ax, dos_plotter, dos_options, dos_label=None,
                  plot_legend=True):
