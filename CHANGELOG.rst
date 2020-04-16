@@ -4,6 +4,15 @@ Change Log
 `[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.4.0...HEAD>`_
 ------------------------------------------------------------------------
 
+New features:
+
+- Support for CASTEP: (AJJ)
+  - kgen: reciprocal-space path generation for electronic and phonon band-structures
+  - bandplot: band structures (with or without spin-polarisation). Currently no
+    support for element/orbital projected data (which would require a binary file parser).
+  - phonon-bandplot: phonon band structures from .phonon files
+  - dosplot: total-DOS plotting from eigenvaluues *(dosplot)*. Again,
+    projected-DOS plots are not currently available.
 
 `[v1.4.0] <https://github.com/smtg-ucl/sumo/compare/v1.3.0...v1.4.0>`_ - 2020-01-25
 ------
