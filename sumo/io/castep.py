@@ -276,9 +276,9 @@ def _is_metal(eigenvalues, efermi, tol=1e-5):
         if np.any(band < (efermi - tol)) and np.any(band > (efermi + tol)):
             logging.info("Electronic structure appears to be a metal")
             return True
-    else:
-        logging.info("Electronic structure appears to have a bandgap")
-        return False
+
+    logging.info("Electronic structure appears to have a bandgap")
+    return False
 
 def _get_vbm(eigenvalues, efermi):
     from itertools import chain
@@ -875,7 +875,7 @@ def read_phonon_header(filename):
                     header['symbols'] = []
                     header['masses'] = []
 
-                    for i in range(header['n_ions']):
+                    for _ in range(header['n_ions']):
                         _, *position, el, m = next(f).split()
                         header['positions'].append(list(map(float, position)))
                         header['symbols'].append(el)
@@ -944,7 +944,8 @@ def read_phonon_bands(filename, header):
             #  0      1      2      3       4         5
 
             qpt_line = f.readline().split()
-            assert qpt_line[0] == 'q-pt='
+            if not qpt_line[0] == 'q-pt=':
+                raise AssertionError()
 
             # We can't check if the indices are correct because CASTEP gives a
             # duplicate index to "Gamma-point" with delta for LO-TO splitting,
@@ -963,8 +964,10 @@ def read_phonon_bands(filename, header):
             #   Mode Ion         X                Y               Z
             #      1   1  0.54308  0.0000  -0.7995  0.0000  0.2564  0.0000
             #      2   1 -0.60969  0.0000  -0.1654  0.0000  0.7751  0.0000
-            assert f.readline().strip() == 'Phonon Eigenvectors'
-            assert 'X' in f.readline().split()
+            if not f.readline().strip() == 'Phonon Eigenvectors':
+                raise AssertionError()
+            if not 'X' in f.readline().split():
+                raise AssertionError()
             for i_mode in range(header['n_branches']):
                 for i_ion in range(header['n_ions']):
                     eigenvector = np.fromstring(f.readline(), sep=' ')[2:]
