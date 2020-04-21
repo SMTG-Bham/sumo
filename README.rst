@@ -115,12 +115,11 @@ Feature support for different codes
 +------------------+----------+--------+----------+
 | projected DOS    | **Y**    |  *N*   |  **Y**   |
 +------------------+----------+--------+----------+
-| phonon band plot | **Y** (2)| *N* (3)|   *N*    |
+| phonon band plot | **Y** (2)| **Y**  |   *N*    |
 +------------------+----------+--------+----------+
 
 (1) Brillouin-zone path can also be written for CASTEP phonon calculation
 (2) VASP phonons are plotted from Phonopy output files
-(3) Intend to support CASTEP phonons plotted from a pre-computed .phonon file
 
 Installation
 ------------
