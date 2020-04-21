@@ -1,0 +1,29 @@
+%BLOCK LATTICE_CART
+      -1.433199999999999       1.433200000000001       1.433200000000001
+       1.433200000000001      -1.433200000000000       1.433200000000000
+       1.433200000000000       1.433200000000000      -1.433200000000000
+%ENDBLOCK LATTICE_CART
+
+%BLOCK POSITIONS_FRAC
+ Fe   0.0000000000000000   0.0000000000000000   0.0000000000000000
+%ENDBLOCK POSITIONS_FRAC
+
+symmetry_generate
+
+! Kpoint grid for the Groundstate (SCF) calculation
+kpoint_mp_grid 8 8 8 
+
+
+! kpoint path through the Brillouin Zone for the Bandstructure
+%BLOCK BS_KPOINT_PATH
+0.0 0.0 0.0 !G    
+0.5 0.5 0.5 !H           
+0.5 0.0 0.0 !N           
+0.0 0.0 0.0 !G          
+0.75 0.25 -0.25 !P       
+0.5 0.0 0.0     !N
+%ENDBLOCK BS_KPOINT_PATH
+
+! Kpoint grid for a DOS plot (comment out BS_KPOINT_PATH block when using this)
+!bs_kpoint_mp_grid 12 12 12
+

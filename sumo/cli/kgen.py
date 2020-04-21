@@ -3,7 +3,7 @@
 # Distributed under the terms of the MIT License.
 
 """
-A script to generate KPOINTS files for band structure calculations in VASP
+A script to generate input files for band structure calculations
 
 TODO:
   * Add support for CDML labels
@@ -20,10 +20,12 @@ import argparse
 
 import numpy as np
 
-from sumo.symmetry.kpoints import get_path_data, write_kpoint_files
+from sumo.symmetry.kpoints import get_path_data
 from pymatgen.io.vasp.inputs import Poscar, Kpoints
+from sumo.io.castep import CastepCell
 import sumo.io.questaal
 from sumo.io.questaal import QuestaalInit, QuestaalSite
+import sumo.io.vasp
 
 
 __author__ = "Alex Ganose"
@@ -33,9 +35,11 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "July 6, 2017"
 
 
+phonon_supported_codes = {'castep',}
+
 def kgen(filename='POSCAR', code='vasp',
          directory=None, make_folders=False, symprec=0.01,
-         kpts_per_split=None, ibzkpt=None, spg=None, density=60,
+         kpts_per_split=None, ibzkpt=None, spg=None, density=60, phonon=False,
          mode='bradcrack', cart_coords=False, kpt_list=None, labels=None):
     """Generate KPOINTS files for VASP band structure calculations.
 
@@ -73,6 +77,8 @@ def kgen(filename='POSCAR', code='vasp',
             This option will only take effect when ``mode = 'bradcrack'``.
         line_density (:obj:`int`, optional): Density of k-points along the
             path.
+        phonon (:obj:`bool`, optional): Write phonon q-point path instead of
+            k-points. (Not appropriate for most codes.)
         mode (:obj:`str`, optional): Method used for calculating the
             high-symmetry path. The options are:
 
@@ -118,8 +124,25 @@ def kgen(filename='POSCAR', code='vasp',
         else:
             structure = QuestaalInit.from_file(filename).structure
             alat = None
+    elif code.lower() == 'castep':
+        if cart_coords:
+            logging.warning("Ignoring request for Cartesian coordinates: "
+                            "not applicable to CASTEP band structure format.")
+            cart_coords = False
+        if ibzkpt:
+            logging.warning('Ignoring request to use IBZKPT ("hybrid mode"), '
+                            'for CASTEP workflow the SCF mesh should already '
+                            'be set in input .cell file.')
+        structure = CastepCell.from_file(filename).structure
     else:
         raise ValueError('Code "{0}" not recognized.'.format(code))
+
+    if phonon and (code.lower() not in phonon_supported_codes):
+        logging.error("Cannot write phonon path for {code}. "
+                      "Supported codes: {supported}".format(
+                          code=code,
+                          supported=', '.join(phonon_supported_codes)))
+        sys.exit()
 
     kpath, kpoints, labels = get_path_data(structure, mode=mode,
                                            symprec=symprec, kpt_list=kpt_list,
@@ -156,9 +179,19 @@ def kgen(filename='POSCAR', code='vasp',
             kpts_per_split = int(input())
 
     if code.lower() == 'vasp':
-        write_kpoint_files(filename, kpoints, labels, make_folders=make_folders,
-                           ibzkpt=ibz, kpts_per_split=kpts_per_split,
-                           directory=directory, cart_coords=cart_coords)
+        sumo.io.vasp.write_kpoint_files(filename, kpoints, labels,
+                                        make_folders=make_folders,
+                                        ibzkpt=ibz,
+                                        kpts_per_split=kpts_per_split,
+                                        directory=directory,
+                                        cart_coords=cart_coords)
+
+    elif code.lower() == 'castep':
+        sumo.io.castep.write_kpoint_files(filename, kpoints, labels,
+                                          make_folders=make_folders,
+                                          kpts_per_split=kpts_per_split,
+                                          phonon=phonon,
+                                          directory=directory)
 
     elif code.lower() == 'questaal':
         if cart_coords:
@@ -229,6 +262,8 @@ def _get_parser():
     parser.add_argument('--labels', type=str, default=None,
                         help=('specify the labels for kpoints '
                               r'(e.g. "\Gamma,X")'))
+    parser.add_argument('--phonon', action='store_true',
+                        help='Write k-points as phonon band structure path')
     return parser
 
 
@@ -268,7 +303,8 @@ def main():
          directory=args.directory, symprec=args.symprec,
          make_folders=args.folders, kpts_per_split=args.split,
          ibzkpt=ibzkpt, spg=spg, density=args.density, mode=mode,
-         cart_coords=args.cartesian, kpt_list=kpoints, labels=labels)
+         cart_coords=args.cartesian, kpt_list=kpoints, labels=labels,
+         phonon=args.phonon)
 
 
 if __name__ == "__main__":

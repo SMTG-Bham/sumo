@@ -4,9 +4,19 @@ Change Log
 `[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.4.0...HEAD>`_
 ------------------------------------------------------------------------
 
+New features:
+
+- Support for CASTEP: (AJJ)
+
+  - kgen: reciprocal-space path generation for electronic and phonon band-structures
+  - bandplot: band structures (with or without spin-polarisation). Currently no
+    support for element/orbital projected data (which would require a binary file parser).
+  - phonon-bandplot: phonon band structures from .phonon files
+  - dosplot: total-DOS plotting from eigenvalues. Again,
+    projected-DOS plots are not currently available.
 
 `[v1.4.0] <https://github.com/smtg-ucl/sumo/compare/v1.3.0...v1.4.0>`_ - 2020-01-25
-------
+-----------------------------------------------------------------------------------
 
 New features:
 
@@ -19,7 +29,7 @@ Bug fixes:
 - Fix a bug when the y axis limit is outside the DOS range in band + DOS tapes. (@utf)
 
 `[v1.3.0] <https://github.com/smtg-ucl/sumo/compare/v1.2.0...v1.3.0>`_ - 2019-10-20
-------
+-----------------------------------------------------------------------------------
 
 This is the last supported version for Python 3.5, due to changes in pymatgen.
 
@@ -37,7 +47,7 @@ Bug fixes:
 - Fix rare interpolation issues for projected band structure plots. (@utf)
 
 `[v1.2.0] <https://github.com/smtg-ucl/sumo/compare/v1.1.3...v1.2.0>`_ - 2019-06-07
-------
+-----------------------------------------------------------------------------------
 
 This is the most contributers to a release so far!
 
