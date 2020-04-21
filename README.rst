@@ -117,9 +117,12 @@ Feature support for different codes
 +------------------+----------+--------+----------+
 | phonon band plot | **Y** (2)| **Y**  |   *N*    |
 +------------------+----------+--------+----------+
+| optical spectra  | **Y** (3)|  *N*   |  **Y**   |
++------------------+----------+--------+----------+
 
 (1) Brillouin-zone path can also be written for CASTEP phonon calculation
 (2) VASP phonons are plotted from Phonopy output files
+(3) As well as the LOPTICS sum over empty states, RPA spectra with ALGO=CHI are supported
 
 Installation
 ------------

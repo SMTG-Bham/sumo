@@ -1,9 +1,9 @@
 sumo-optplot
 ==============
 
-``sumo-optplot`` is a program for generating publication-ready optical absorption
-spectra diagrams from VASP calculations. The script supports plotting multiple
-spectra simultaneously.
+``sumo-optplot`` is a program for generating publication-ready optical
+absorption spectra diagrams from VASP or Questaal calculations. The
+script supports plotting multiple spectra simultaneously.
 
 .. contents:: Table of Contents
    :local:
@@ -18,7 +18,7 @@ and be can be accessed using the command::
     sumo-optplot -h
 
 To plot an absorption spectra, simply run the following command in a folder containing a ``vasprun.xml`` or
-``vasprun.xml.gz`` file, which has been calculated using ``LOPTICS = .TRUE.``::
+``vasprun.xml.gz`` file, which has been calculated using ``LOPTICS = .TRUE.`` or ``ALGO = CHI``::
 
     sumo-optplot
 
