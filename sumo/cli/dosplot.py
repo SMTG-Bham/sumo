@@ -174,11 +174,6 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
                              total_only)
 
     elif code.lower() == 'castep':
-        for arg in sumo.io.castep.unsupported_dosplot_args:
-            if locals().get(arg, None) is not None:
-                logging.error('Cannot set "{}" for CASTEP DOS; only total DOS '
-                              'is available.'.format(arg))
-                sys.exit()
 
         if filename:
             bands_file = filename
@@ -196,7 +191,6 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             cell_file = bands_file.replace('.bands', '.cell')
             pdos_file = pdos_file if os.path.isfile(pdos_file) else None
             cell_file = cell_file if os.path.isfile(cell_file) else None
-
         dos, pdos = sumo.io.castep.read_dos(bands_file, pdos_file=pdos_file, 
                                        cell_file=cell_file,
                                        gaussian=gaussian,
