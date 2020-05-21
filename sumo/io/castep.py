@@ -17,7 +17,7 @@ from pymatgen.phonon.bandstructure import PhononBandStructureSymmLine
 
 from sumo.electronic_structure.dos import get_pdos
 
-from castepbin.pdos import compute_pdos
+from castepxbin.pdos import compute_pdos
 
 _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009

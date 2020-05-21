@@ -41,7 +41,8 @@ setup(
     test_suite='setup.load_test_suite',
     packages=find_packages(),
     install_requires=['spglib', 'numpy', 'scipy',
-                      'h5py', 'phonopy>=2.1.3', 'matplotlib', 'seekpath'],
+                      'h5py', 'phonopy>=2.1.3', 'matplotlib', 'seekpath',
+                      'castepxbin@git+https://github.com/zhubonan/castepxbin.git@v0.0.1'],
     extras_require={'docs': ['sphinx', 'sphinx-argparse'],
                     ':python_version=="3.5"': [
                         'pymatgen >=2016.12.30, <=2019.6.20'],
