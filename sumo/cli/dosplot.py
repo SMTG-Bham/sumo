@@ -192,9 +192,17 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             else:
                 logging.error('ERROR: Too many *.bands files found!')
                 sys.exit()
-        dos = sumo.io.castep.read_tdos(bands_file, gaussian=gaussian,
-                                       emin=xmin, emax=xmax)
-        pdos = {}
+            pdos_file = bands_file.replace('.bands', '.pdos_bin')
+            cell_file = bands_file.replace('.bands', '.cell')
+            pdos_file = pdos_file if os.path.isfile(pdos_file) else None
+            cell_file = cell_file if os.path.isfile(cell_file) else None
+
+        dos, pdos = sumo.io.castep.read_dos(bands_file, pdos_file=pdos_file, 
+                                       cell_file=cell_file,
+                                       gaussian=gaussian,
+                                       emin=xmin, emax=xmax, lm_orbitals=lm_orbitals,
+                                       elements=elements,
+                                       atoms=atoms)
 
     elif code.lower() == 'questaal':
         if filename:
