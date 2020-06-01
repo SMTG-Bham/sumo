@@ -196,8 +196,12 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
         # If not, we cannot plot the PDOS
         if pdos_file is not None:
             if cell_file is None:
-                warnings.warn("Plotting PDOS requires the cell file to be present. Falling back to TDOS.")
+                logging.info("Plotting PDOS requires the cell file to be present, falling back to TDOS.")
                 pdos_file = None
+            else:
+                logging.info(f"Found PDOS binary file {pdos_file}, including PDOS in the plot.")
+        else:
+            logging.info("PDOS not available, falling back to TDOS.")
 
         dos, pdos = sumo.io.castep.read_dos(bands_file, pdos_file=pdos_file,
                                        cell_file=cell_file,
