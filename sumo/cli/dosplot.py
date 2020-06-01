@@ -187,11 +187,19 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             else:
                 logging.error('ERROR: Too many *.bands files found!')
                 sys.exit()
-            pdos_file = bands_file.replace('.bands', '.pdos_bin')
-            cell_file = bands_file.replace('.bands', '.cell')
-            pdos_file = pdos_file if os.path.isfile(pdos_file) else None
-            cell_file = cell_file if os.path.isfile(cell_file) else None
-        dos, pdos = sumo.io.castep.read_dos(bands_file, pdos_file=pdos_file, 
+        pdos_file = bands_file.replace('.bands', '.pdos_bin')
+        cell_file = bands_file.replace('.bands', '.cell')
+        pdos_file = pdos_file if os.path.isfile(pdos_file) else None
+        cell_file = cell_file if os.path.isfile(cell_file) else None
+
+        # Check if both pdos_bin and cell files are present.
+        # If not, we cannot plot the PDOS
+        if pdos_file is not None:
+            if cell_file is None:
+                warnings.warn("Plotting PDOS requires the cell file to be present. Falling back to TDOS.")
+                pdos_file = None
+
+        dos, pdos = sumo.io.castep.read_dos(bands_file, pdos_file=pdos_file,
                                        cell_file=cell_file,
                                        gaussian=gaussian,
                                        emin=xmin, emax=xmax, lm_orbitals=lm_orbitals,

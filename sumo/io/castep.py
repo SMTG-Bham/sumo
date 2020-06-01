@@ -276,20 +276,20 @@ def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussia
         if cell_file is None:
             raise RuntimeError('Cell file must be provided for PDOS')
         pdos_raw = compute_pdos(pdos_file, eigenvalues, weights, bins)
-        # Also we, need to read the structure, but have it sorted with increasing 
+        # Also we, need to read the structure, but have it sorted with increasing
         # atomic numbers
         structure = CastepCell.from_file(cell_file).structure.get_sorted_structure(key=lambda x: x.species.elements[0].Z)
         pdoss = {}
         for isite, site in enumerate(structure.sites):
             pdoss[site] = pdos_raw[isite]
         # Get the pdos dictionary for potting
-        pdos = get_pdos(CompleteDos(structure,dos, pdoss), 
-                        lm_orbitals=lm_orbitals, 
-                        elements=elements, 
+        pdos = get_pdos(CompleteDos(structure,dos, pdoss),
+                        lm_orbitals=lm_orbitals,
+                        elements=elements,
                         atoms=atoms)
         # Smear the PDOS
-        for x , orbs in pdos.items():
-            for y, dtmp in orbs.items():
+        for orbs in pdos.values():
+            for dtmp in orbs.values():
                 if gaussian:
                     dtmp.densities = dtmp.get_smeared_densities(gaussian)
     else:
