@@ -30,7 +30,7 @@ mpl.use('Agg')
 from sumo.io.questaal import QuestaalInit, QuestaalSite, labels_from_syml
 from sumo.io.questaal import band_structure as questaal_band_structure
 from sumo.io.castep import band_structure as castep_band_structure
-from sumo.io.castep import read_tdos as read_castep_tdos
+from sumo.io.castep import read_dos as read_castep_dos
 from sumo.plotting.bs_plotter import SBSPlotter
 from sumo.plotting.dos_plotter import SDOSPlotter
 from sumo.electronic_structure.dos import load_dos
@@ -306,9 +306,22 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
             dos, pdos = load_dos(dos_file, elements, lm_orbitals, atoms, gaussian,
                                  total_only)
         elif code == 'castep':
-            dos = read_castep_tdos(dos_file, gaussian=gaussian,
-                                   efermi_to_vbm=True)
-            pdos = {}
+            pdos_file = None
+            if cell_file:
+                pdos_file = cell_file.replace('.cell', '.pdos_bin')
+                if not os.path.isfile(pdos_file):
+                    pdos_file = None
+                    logging.info(f"Selecting PDOS file {pdos_file} does not exis, falling back to TDOS.")
+                else:
+                    logging.info(f"Selecting PDOS file {pdos_file}")
+            else:
+                logging.info(f"Cell file {cell_file} does not exis, cannot plot PDOS.")
+
+            dos, pdos = read_castep_dos(dos_file, pdos_file=pdos_file, cell_file=cell_file, 
+                                  gaussian=gaussian,
+                                  lm_orbitals=lm_orbitals,
+                                  elements=elements,
+                                  efermi_to_vbm=True)
         dos_plotter = SDOSPlotter(dos, pdos)
         dos_opts = {'plot_total': plot_total, 'legend_cutoff': legend_cutoff,
                     'colours': colours, 'yscale': yscale}
