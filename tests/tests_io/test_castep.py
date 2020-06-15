@@ -29,7 +29,10 @@ class CastepCellTestCase(unittest.TestCase):
         self.zns_singlepoint_cell = resource_filename(
             __name__,
             path_join('..', 'data', 'ZnS', 'zns-sp.cell'))
-
+        si_structure_file = resource_filename(
+            __name__,
+            path_join('..', 'data', 'Si', 'Si8.json'))
+        self.si_structure = Structure.from_file(si_structure_file)
 
     def test_castep_cell_null_init(self):
         null_cell = CastepCell()
@@ -60,6 +63,19 @@ class CastepCellTestCase(unittest.TestCase):
                                   [[0., 2.71, 2.71],
                                    [2.71, 0., 2.71],
                                    [2.71, 2.71, 0.]])
+
+    def test_castep_cell_from_structure(self):
+        cell = CastepCell.from_structure(self.si_structure)
+        self.assertEqual(cell.blocks['lattice_cart'].values,
+                         [['ang'],
+                          ['5.43', '0.0', '0.0'],
+                          ['0.0', '5.43', '0.0'],
+                          ['0.0', '0.0', '5.43']])
+        self.assertEqual(cell.blocks['positions_frac'].values[0],
+                         ['Si', '0.0', '0.0', '0.0'])
+        self.assertEqual(cell.blocks['positions_frac'].values[7],
+                         ['Si', '0.75', '0.75', '0.25'])
+
 
 class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
     def setUp(self):
