@@ -14,6 +14,10 @@ New features:
   - phonon-bandplot: phonon band structures from .phonon files
   - dosplot: total-DOS plotting from eigenvalues. Again,
     projected-DOS plots are not currently available.
+    
+Bug fixes:
+
+- Fix an oversight in the initial CASTEP/kgen implementation when the user provides a non-primitive cell as input.
 
 `[v1.4.0] <https://github.com/smtg-ucl/sumo/compare/v1.3.0...v1.4.0>`_ - 2020-01-25
 -----------------------------------------------------------------------------------
