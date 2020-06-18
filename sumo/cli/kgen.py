@@ -160,6 +160,9 @@ def kgen(filename='POSCAR', code='vasp',
         prim_filename = '{}_prim'.format(os.path.basename(filename))
         if code.lower() == 'questaal':
             QuestaalInit.from_structure(kpath.prim).to_file(prim_filename)
+        elif code.lower() == 'castep':
+            CastepCell.from_structure(kpath.prim).to_file(prim_filename)
+
         else:
             kpath.prim.to(filename=prim_filename)
 
