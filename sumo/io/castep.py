@@ -34,6 +34,7 @@ Block = collections.namedtuple('Block', 'values comments')
 
 unsupported_dosplot_args = {'elements', 'lm_orbitals', 'atoms'}
 
+
 class CastepCell(object):
     """Structure information and more: CASTEP seedname.cell file
 
@@ -199,6 +200,19 @@ class CastepCell(object):
 
         return cls(tags=tags, blocks=blocks)
 
+    @classmethod
+    def from_structure(cls, structure):
+        blocks = {'lattice_cart': Block([['ang']]
+                                        + [list(map(str, row))
+                                           for row in
+                                           structure.lattice.matrix],
+                                        ['', '', '', '']),
+                  'positions_frac': Block([[site.species_string,
+                                            *map(str, site.frac_coords)]
+                                           for site in structure.sites],
+                                           ['' for site in structure.sites])}
+        return cls(blocks=blocks)
+
 
 def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussian=None,
               padding=None, emin=None, emax=None, efermi_to_vbm=True,
@@ -300,6 +314,7 @@ def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussia
 
     return dos, pdos
 
+
 def _is_metal(eigenvalues, efermi, tol=1e-5):
     # Detect if material is a metal by checking if bands cross efermi
     from itertools import chain
@@ -311,11 +326,13 @@ def _is_metal(eigenvalues, efermi, tol=1e-5):
     logging.info("Electronic structure appears to have a bandgap")
     return False
 
+
 def _get_vbm(eigenvalues, efermi):
     from itertools import chain
     occupied_states_by_band = (band[band < efermi]
                                for band in chain(*eigenvalues.values()))
     return max(chain(*occupied_states_by_band))
+
 
 def band_structure(bands_file, cell_file=None):
     """Convert band structure data from CASTEP to Pymatgen/Sumo format
@@ -384,9 +401,9 @@ def labels_from_cell(cell_file, phonon=False):
 
     if phonon:
         blockstart = re.compile(
-            r'^%block\s+phonon_fine_kpoint(s)?_(path|list)')
+            r'^%block\s+phonon(_fine)?_kpoint(s)?_(path|list)')
         blockend = re.compile(
-            r'^%endblock\s+phonon_fine_kpoint(s)?_(path|list)')
+            r'^%endblock\s+phonon(_fine)?_kpoint(s)?_(path|list)')
     else:
         blockstart = re.compile(
             r'^%block\s+(bs|spectral)_kpoint(s)?_(path|list)')
@@ -669,7 +686,6 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             cell_file.to_file(os.path.join(split_folder,
                                            os.path.basename(filename)))
 
-
     else:
         for i, cell_file in enumerate(kpt_cell_files):
             if len(kpt_cell_files) > 1:
@@ -821,7 +837,6 @@ class CastepPhonon(object):
 
         """
         self.labels = labels_from_cell(filename, phonon=True)
-
 
     def get_band_structure(self):
         lattice = Lattice(self.header['cell'])
@@ -997,7 +1012,7 @@ def read_phonon_bands(filename, header):
             #      2   1 -0.60969  0.0000  -0.1654  0.0000  0.7751  0.0000
             if not f.readline().strip() == 'Phonon Eigenvectors':
                 raise AssertionError()
-            if not 'X' in f.readline().split():
+            if 'X' not in f.readline().split():
                 raise AssertionError()
             for i_mode in range(header['n_branches']):
                 for i_ion in range(header['n_ions']):
