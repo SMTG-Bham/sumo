@@ -311,13 +311,13 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
                 pdos_file = _replace_ext(cell_file, 'pdos_bin')
                 if not os.path.isfile(pdos_file):
                     pdos_file = None
-                    logging.info(f"Selecting PDOS file {pdos_file} does not exist, falling back to TDOS.")
+                    logging.info("Selecting PDOS file {} does not exist, falling back to TDOS.".format(pdos_file))
                 else:
-                    logging.info(f"Selecting PDOS file {pdos_file}")
+                    logging.info("Selecting PDOS file {}".format(pdos_file))
             else:
-                logging.info(f"Cell file {cell_file} does not exist, cannot plot PDOS.")
+                logging.info("Cell file {} does not exist, cannot plot PDOS.".format(pdos_file))
 
-            dos, pdos = read_castep_dos(dos_file, pdos_file=pdos_file, cell_file=cell_file, 
+            dos, pdos = read_castep_dos(dos_file, pdos_file=pdos_file, cell_file=cell_file,
                                         gaussian=gaussian,
                                         lm_orbitals=lm_orbitals,
                                         elements=elements,
@@ -471,7 +471,7 @@ def _replace_ext(string, new_ext):
     Returns:
         A string with files extension replaced by new_ext
     """
-    name, ext = os.path.splitext(string)
+    name, _ = os.path.splitext(string)
     return name + '.' + new_ext
 
 

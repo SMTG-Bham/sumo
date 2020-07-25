@@ -199,7 +199,7 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
                 logging.info("Plotting PDOS requires the cell file to be present, falling back to TDOS.")
                 pdos_file = None
             else:
-                logging.info(f"Found PDOS binary file {pdos_file}, including PDOS in the plot.")
+                logging.info("Found PDOS binary file {}, including PDOS in the plot.".format(pdos_file))
         else:
             logging.info("PDOS not available, falling back to TDOS.")
 
@@ -311,7 +311,7 @@ def _replace_ext(string, new_ext):
     Returns:
         A string with files extension replaced by new_ext
     """
-    name, ext = os.path.splitext(string)
+    name, _ = os.path.splitext(string)
     return name + '.' + new_ext
 
 
