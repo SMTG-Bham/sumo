@@ -242,7 +242,7 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
         bs = get_reconstructed_band_structure(bandstructures)
     elif code == 'castep':
         for bands_file in filenames:
-            cell_file = bands_file.replace('bands', 'cell')
+            cell_file = _replace_ext(bands_file, 'cell')
             if os.path.isfile(cell_file):
                 logging.info('found cell file {}...'.format(cell_file))
             else:
@@ -308,20 +308,20 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
         elif code == 'castep':
             pdos_file = None
             if cell_file:
-                pdos_file = cell_file.replace('.cell', '.pdos_bin')
+                pdos_file = _replace_ext(cell_file, 'pdos_bin')
                 if not os.path.isfile(pdos_file):
                     pdos_file = None
-                    logging.info(f"Selecting PDOS file {pdos_file} does not exis, falling back to TDOS.")
+                    logging.info(f"Selecting PDOS file {pdos_file} does not exist, falling back to TDOS.")
                 else:
                     logging.info(f"Selecting PDOS file {pdos_file}")
             else:
-                logging.info(f"Cell file {cell_file} does not exis, cannot plot PDOS.")
+                logging.info(f"Cell file {cell_file} does not exist, cannot plot PDOS.")
 
             dos, pdos = read_castep_dos(dos_file, pdos_file=pdos_file, cell_file=cell_file, 
-                                  gaussian=gaussian,
-                                  lm_orbitals=lm_orbitals,
-                                  elements=elements,
-                                  efermi_to_vbm=True)
+                                        gaussian=gaussian,
+                                        lm_orbitals=lm_orbitals,
+                                        elements=elements,
+                                        efermi_to_vbm=True)
         dos_plotter = SDOSPlotter(dos, pdos)
         dos_opts = {'plot_total': plot_total, 'legend_cutoff': legend_cutoff,
                     'colours': colours, 'yscale': yscale}
@@ -459,6 +459,20 @@ def _el_orb_tuple(string):
         else:
             el_orbs.append((el, tuple(splits[1:])))
     return el_orbs
+
+
+def _replace_ext(string, new_ext):
+    """Replace file extension
+
+    Args:
+        string (`str`): The file name with extensions to be replace
+        new_ext (`str`): The new extension
+
+    Returns:
+        A string with files extension replaced by new_ext
+    """
+    name, ext = os.path.splitext(string)
+    return name + '.' + new_ext
 
 
 def _get_parser():

@@ -187,8 +187,8 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             else:
                 logging.error('ERROR: Too many *.bands files found!')
                 sys.exit()
-        pdos_file = bands_file.replace('.bands', '.pdos_bin')
-        cell_file = bands_file.replace('.bands', '.cell')
+        pdos_file = _replace_ext(bands_file, 'pdos_bin')
+        cell_file = _replace_ext(bands_file, 'cell')
         pdos_file = pdos_file if os.path.isfile(pdos_file) else None
         cell_file = cell_file if os.path.isfile(cell_file) else None
 
@@ -299,6 +299,20 @@ def _el_orb(string):
         orbs = [orbs[0], 's', 'p', 'd', 'f'] if len(orbs) == 1 else orbs
         el_orbs[orbs.pop(0)] = orbs
     return el_orbs
+
+
+def _replace_ext(string, new_ext):
+    """Replace file extension
+
+    Args:
+        string (`str`): The file name with extensions to be replace
+        new_ext (`str`): The new extension
+
+    Returns:
+        A string with files extension replaced by new_ext
+    """
+    name, ext = os.path.splitext(string)
+    return name + '.' + new_ext
 
 
 def _atoms(atoms_string):
