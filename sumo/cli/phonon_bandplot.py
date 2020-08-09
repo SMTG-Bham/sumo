@@ -173,7 +173,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             filename = 'FORCE_SETS'
             bs, phonon = _bs_from_filename(filename, poscar, dim, symprec, spg,
                                            kpt_list, labels, primitive_axis,
-                                           units, born, mode, eigenvectors)
+                                           units, born, mode, eigenvectors,
+                                           line_density)
 
         else:
             logging.info("No input data, using file {} "
@@ -184,7 +185,8 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
     else:
         bs, phonon = _bs_from_filename(filename, poscar, dim, symprec, spg,
                                        kpt_list, labels, primitive_axis, units,
-                                       born, mode, eigenvectors)
+                                       born, mode, eigenvectors,
+                                       line_density)
 
     if to_json is not None:
         logging.info("Writing symmetry lines to {}".format(to_json))
@@ -230,6 +232,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
                     bbox_inches='tight')
 
         filename = save_data_files(bs, prefix=prefix, directory=directory)
+        return filename
     else:
         return plt
 
@@ -264,7 +267,7 @@ def save_data_files(bs, prefix=None, directory=None):
 
 
 def _bs_from_filename(filename, poscar, dim, symprec, spg, kpt_list, labels,
-                      primitive_axis, units, born, mode, eigenvectors):
+                      primitive_axis, units, born, mode, eigenvectors, line_density):
     """Analyse input files to create band structure"""
 
     if '.yaml' in filename:
@@ -343,7 +346,8 @@ def _bs_from_filename(filename, poscar, dim, symprec, spg, kpt_list, labels,
     kpath, kpoints, labels = get_path_data(poscar.structure, mode=mode,
                                            symprec=symprec, spg=spg,
                                            kpt_list=kpt_list,
-                                           labels=labels, phonopy=True)
+                                           labels=labels, phonopy=True,
+                                           line_density=line_density)
 
     # todo: calculate dos and plot also
     # phonon.set_mesh(mesh, is_gamma_center=False, is_eigenvectors=True,
