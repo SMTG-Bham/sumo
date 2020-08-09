@@ -307,7 +307,7 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
                                  total_only)
         elif code == 'castep':
             dos = read_castep_tdos(dos_file, gaussian=gaussian,
-                                   efermi_to_vbm=True)
+                                   efermi_to_vbm=True, emin=ymin, emax=ymax)
             pdos = {}
         dos_plotter = SDOSPlotter(dos, pdos)
         dos_opts = {'plot_total': plot_total, 'legend_cutoff': legend_cutoff,
