@@ -192,22 +192,24 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
         pdos_file = pdos_file if os.path.isfile(pdos_file) else None
         cell_file = cell_file if os.path.isfile(cell_file) else None
 
-        # Check if both pdos_bin and cell files are present.
-        # If not, we cannot plot the PDOS
-        if pdos_file is not None:
-            if cell_file is None:
-                logging.info("Plotting PDOS requires the cell file to be present, falling back to TDOS.")
-                pdos_file = None
+        if not total_only:
+            # Check if both pdos_bin and cell files are present.
+            # If not, we cannot plot the PDOS
+            if pdos_file is not None:
+                if cell_file is None:
+                    logging.info("Plotting PDOS requires the cell file to be present, falling back to TDOS.")
+                    pdos_file = None
+                else:
+                    logging.info("Found PDOS binary file {}, including PDOS in the plot.".format(pdos_file))
             else:
-                logging.info("Found PDOS binary file {}, including PDOS in the plot.".format(pdos_file))
-        else:
-            logging.info("PDOS not available, falling back to TDOS.")
+                logging.info("PDOS not available, falling back to TDOS.")
 
         dos, pdos = sumo.io.castep.read_dos(bands_file, pdos_file=pdos_file,
                                        cell_file=cell_file,
                                        gaussian=gaussian,
                                        emin=xmin, emax=xmax, lm_orbitals=lm_orbitals,
                                        elements=elements,
+                                       total_only=total_only,
                                        atoms=atoms)
 
     elif code.lower() == 'questaal':
@@ -248,6 +250,10 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             pdos_file=pdos_file, tdos_file=tdos_file, site_file=site_file,
             ry=True, gaussian=gaussian, total_only=total_only,
             elements=elements, lm_orbitals=lm_orbitals, atoms=atoms)
+
+    else:
+        logging.error("Unrecognised code: {}".format(code))
+        return
 
     save_files = False if plt else True  # don't save if pyplot object provided
 

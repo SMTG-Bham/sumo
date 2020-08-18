@@ -216,7 +216,7 @@ class CastepCell(object):
 
 def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussian=None,
               padding=None, emin=None, emax=None, efermi_to_vbm=True,
-              lm_orbitals=None, elements=None, atoms=None):
+              lm_orbitals=None, elements=None, atoms=None, total_only=False):
     """Convert DOS data from CASTEP .bands file to Pymatgen/Sumo format
 
     The data is binned into a regular series using np.histogram
@@ -286,7 +286,7 @@ def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussia
 
     dos = Dos(efermi, energies, dos_data)
 
-    if pdos_file is not None:
+    if pdos_file is not None and not total_only:
         if cell_file is None:
             raise RuntimeError('Cell file must be provided for PDOS')
         pdos_raw = compute_pdos(pdos_file, eigenvalues, weights, bins)
