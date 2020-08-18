@@ -252,7 +252,7 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             elements=elements, lm_orbitals=lm_orbitals, atoms=atoms)
 
     else:
-        logging.error("Unrecognised code: {}".format(code))
+        logging.error("ERROR: Unrecognised code: {}".format(code))
         return
 
     save_files = False if plt else True  # don't save if pyplot object provided
