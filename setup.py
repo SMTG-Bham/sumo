@@ -59,6 +59,7 @@ setup(
     entry_points={'console_scripts': [
                       'sumo-bandplot = sumo.cli.bandplot:main',
                       'sumo-bandstats = sumo.cli.bandstats:main',
+                      'sumo-brillplot = sumo.cli.brillplot:main',
                       'sumo-dosplot = sumo.cli.dosplot:main',
                       'sumo-kgen = sumo.cli.kgen:main',
                       'sumo-phonon-bandplot = sumo.cli.phonon_bandplot:main',

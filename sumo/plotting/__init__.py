@@ -12,6 +12,7 @@ import matplotlib.pyplot
 from matplotlib.collections import LineCollection
 from matplotlib import rc, rcParams
 from pkg_resources import resource_filename
+from mpl_toolkits.mplot3d import Axes3D
 
 colour_cache = {}
 
@@ -38,7 +39,6 @@ def styled_plot(*style_sheets):
     """
 
     def decorator(get_plot):
-
         def wrapper(*args, fonts=None, style=None, no_base_style=False,
                     **kwargs):
 
@@ -96,6 +96,27 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None):
     return plt
 
 
+def pretty_plot_3d(width=5, height=5, plt=None, dpi=None, fonts=None):
+    if plt is None:
+        plt = matplotlib.pyplot
+        if width is None:
+            width = matplotlib.rcParams['figure.figsize'][0]
+        if height is None:
+            height = matplotlib.rcParams['figure.figsize'][1]
+
+        if dpi is not None:
+            matplotlib.rcParams['figure.dpi'] = dpi
+
+        fig = plt.figure(figsize=(width, height), dpi=dpi)
+
+    else:
+        fig = plt.gcf()
+
+    ax = fig.add_subplot(111, projection='3d')
+
+    return plt
+
+
 def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
                    sharey=True, dpi=None, plt=None, gridspec_kw=None):
     """Get a :obj:`matplotlib.pyplot` subplot object with pretty defaults.
@@ -133,7 +154,6 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
         plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey, dpi=dpi,
                      figsize=(width, height), facecolor='w',
                      gridspec_kw=gridspec_kw)
-
     return plt
 
 
