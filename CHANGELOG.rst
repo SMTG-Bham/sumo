@@ -4,6 +4,11 @@ Change Log
 `[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v2.0.0...HEAD>`_
 ------------------------------------------------------------------------
 
+Bug fixes:
+
+- Fixed support for pymatgen versions > 2020.10.9.1 (@utf)
+
+
 `[v2.0.0] <https://github.com/smtg-ucl/sumo/compare/v1.4.0...v2.0.0>`_ - 2020-08-08
 -----------------------------------------------------------------------------------
 
