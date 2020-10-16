@@ -16,8 +16,6 @@ from copy import deepcopy
 from collections import defaultdict
 
 from pymatgen.electronic_structure.core import Spin
-from pymatgen.electronic_structure.bandstructure import (BandStructure,
-                                                         BandStructureSymmLine)
 
 
 def get_projections_by_branches(bs, selection, normalise=None):
@@ -223,61 +221,82 @@ def get_reconstructed_band_structure(list_bs, efermi=None):
     if efermi is None:
         efermi = sum([b.efermi for b in list_bs]) / len(list_bs)
 
-    kpoints = []
-    labels_dict = {}
-    rec_lattice = list_bs[0].lattice_rec
+    kpoints = np.concatenate([[k.frac_coords for k in bs.kpoints] for bs in list_bs])
     nb_bands = min([list_bs[i].nb_bands for i in range(len(list_bs))])
-
-    kpoints = np.concatenate([[k.frac_coords for k in bs.kpoints]
-                              for bs in list_bs])
-
     dicts = [bs.labels_dict for bs in list_bs]
     labels_dict = {k: v.frac_coords for d in dicts for k, v in d.items()}
+
+    eigenvals = {}
+    projections = {}
+    for spin in list_bs[0].bands.keys():
+        spin_bands = [bs.bands[spin][:nb_bands] for bs in list_bs]
+        eigenvals[spin] = np.concatenate(spin_bands, axis=1)
+
+        if len(list_bs[0].projections) != 0:
+            spin_projs = [bs.projections[Spin.up][:nb_bands] for bs in list_bs]
+            projections[Spin.up] = np.concatenate(spin_projs, axis=1)
+
+    bs = type(list_bs[0])(
+        kpoints,
+        eigenvals,
+        list_bs[0].lattice_rec,
+        efermi,
+        labels_dict,
+        structure=list_bs[0].structure,
+        projections=projections
+    )
+    return force_branches(bs)
+
+
+def force_branches(bandstructure):
+    """Force a linemode band structure to contain branches.
+
+    Branches give a specific portion of the path from one high-symmetry point
+    to another. Branches are required for the plotting methods to function correctly.
+    Unfortunately, due to the pymatgen BandStructure implementation they require
+    duplicate k-points in the band structure path. To avoid this unnecessary
+    computational expense, this function can reconstruct branches in band structures
+    without the duplicate k-points.
+
+    Args:
+        bandstructure: A band structure object.
+
+    Returns:
+        A band structure with brnaches.
+    """
+    kpoints = np.array([k.frac_coords for k in bandstructure.kpoints])
+    labels_dict = {k: v.frac_coords for k, v in bandstructure.labels_dict.items()}
 
     # pymatgen band structure objects support branches. These are formed when
     # two kpoints with the same label are next to each other. This bit of code
     # will ensure that the band structure will contain branches, if it doesn't
     # already.
     dup_ids = []
+    high_sym_kpoints = tuple(map(tuple, labels_dict.values()))
     for i, k in enumerate(kpoints):
         dup_ids.append(i)
-        if (tuple(k) in tuple(map(tuple, labels_dict.values()))
-                and i != 0 and i != len(kpoints) - 1
-                and (not np.array_equal(kpoints[i + 1], k)
-                     or not np.array_equal(kpoints[i - 1], k))):
+        if (tuple(k) in high_sym_kpoints and i != 0 and i != len(kpoints) - 1 and (
+                not np.array_equal(kpoints[i + 1], k) or not np.array_equal(kpoints[i - 1], k))):
             dup_ids.append(i)
 
     kpoints = kpoints[dup_ids]
 
     eigenvals = {}
-    eigenvals[Spin.up] = np.concatenate([bs.bands[Spin.up][:nb_bands]
-                                         for bs in list_bs], axis=1)
-    eigenvals[Spin.up] = eigenvals[Spin.up][:, dup_ids]
-
-    if list_bs[0].is_spin_polarized:
-        eigenvals[Spin.down] = np.concatenate([bs.bands[Spin.down][:nb_bands]
-                                               for bs in list_bs], axis=1)
-        eigenvals[Spin.down] = eigenvals[Spin.up][:, dup_ids]
-
     projections = {}
-    if len(list_bs[0].projections) != 0:
-        projs = [bs.projections[Spin.up][:nb_bands][dup_ids] for bs in list_bs]
-        projections[Spin.up] = np.concatenate(projs, axis=1)[:, dup_ids]
+    for spin, spin_energies in bandstructure.bands.items():
+        eigenvals[spin] = spin_energies[:, dup_ids]
+        if len(bandstructure.projections) != 0:
+            projections[spin] = bandstructure.projections[spin][:, dup_ids]
 
-        if list_bs[0].is_spin_polarized:
-            projs = [bs.projections[Spin.down][:nb_bands][dup_ids]
-                     for bs in list_bs]
-            projections[Spin.down] = np.concatenate(projs, axis=1)[:, dup_ids]
-
-    if isinstance(list_bs[0], BandStructureSymmLine):
-        return BandStructureSymmLine(kpoints, eigenvals, rec_lattice,
-                                     efermi, labels_dict,
-                                     structure=list_bs[0].structure,
-                                     projections=projections)
-    else:
-        return BandStructure(kpoints, eigenvals, rec_lattice, efermi,
-                             labels_dict, structure=list_bs[0].structure,
-                             projections=projections)
+    return type(bandstructure)(
+        kpoints,
+        eigenvals,
+        bandstructure.lattice_rec,
+        bandstructure.efermi,
+        labels_dict,
+        structure=bandstructure.structure,
+        projections=projections
+    )
 
 
 def string_to_spin(spin_string):
