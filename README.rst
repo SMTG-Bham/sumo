@@ -1,17 +1,20 @@
 Sumo
 ====
 
-.. image:: https://readthedocs.org/projects/sumo/badge/?version=latest
-    :target: http://sumo.readthedocs.io/en/latest/?badge=latest
+.. image:: https://img.shields.io/pypi/dm/sumo
+    :alt: Downloads
+
+.. image:: https://img.shields.io/github/workflow/status/smtg-ucl/sumo/Run%20tests
+    :target: https://github.com/SMTG-UCL/sumo/actions?query=workflow%3A%22Run+tests%22
+    :alt: Build Status
+
+.. image:: https://img.shields.io/readthedocs/sumo
+    :target: http://sumo.readthedocs.io/en/latest/
     :alt: Documentation Status
 
-.. image:: https://badge.fury.io/py/sumo.svg
-    :target: https://badge.fury.io/py/sumo
+.. image:: https://img.shields.io/pypi/v/sumo
+    :target: https://pypi.org/project/sumo/
     :alt: Pypi Repository
-
-.. image:: https://travis-ci.org/SMTG-UCL/sumo.svg?branch=master
-    :target: https://travis-ci.org/SMTG-UCL/sumo
-    :alt: Build Status
 
 .. image:: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d/status.svg
     :target: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d
