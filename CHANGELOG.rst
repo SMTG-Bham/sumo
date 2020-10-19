@@ -1,8 +1,16 @@
 Change Log
 ==========
 
-`[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v1.4.0...HEAD>`_
+`[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v2.0.0...HEAD>`_
 ------------------------------------------------------------------------
+
+Bug fixes:
+
+- Fixed support for pymatgen versions > 2020.10.9.1 (@utf)
+
+
+`[v2.0.0] <https://github.com/smtg-ucl/sumo/compare/v1.4.0...v2.0.0>`_ - 2020-08-08
+-----------------------------------------------------------------------------------
 
 New features:
 
@@ -14,10 +22,12 @@ New features:
   - phonon-bandplot: phonon band structures from .phonon files
   - dosplot: total-DOS plotting from eigenvalues. Again,
     projected-DOS plots are not currently available.
-    
+
 Bug fixes:
 
 - Fix an oversight in the initial CASTEP/kgen implementation when the user provides a non-primitive cell as input.
+- Python API fix for spin selection. (@kavanase)
+- Fix phonon band structure line density selection. (@utf)
 
 `[v1.4.0] <https://github.com/smtg-ucl/sumo/compare/v1.3.0...v1.4.0>`_ - 2020-01-25
 -----------------------------------------------------------------------------------
