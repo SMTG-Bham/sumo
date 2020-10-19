@@ -1,12 +1,16 @@
 Change Log
 ==========
 
-`[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v2.0.0...HEAD>`_
+`[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v2.0.1...HEAD>`_
 ------------------------------------------------------------------------
+
+`[v2.0.1] <https://github.com/smtg-ucl/sumo/compare/v2.0.0...v2.0.1>`_ - 2020-08-08
+-----------------------------------------------------------------------------------
 
 Bug fixes:
 
 - Fixed support for pymatgen versions > 2020.10.9.1 (@utf)
+- Fix yaml phonon-bandstructure plotting (@kavanase)
 
 
 `[v2.0.0] <https://github.com/smtg-ucl/sumo/compare/v1.4.0...v2.0.0>`_ - 2020-08-08
