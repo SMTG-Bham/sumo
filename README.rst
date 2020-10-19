@@ -1,8 +1,6 @@
 Sumo
 ====
 
-.. image:: https://img.shields.io/pypi/dm/sumo
-    :alt: Downloads
 
 .. image:: https://img.shields.io/github/workflow/status/smtg-ucl/sumo/Run%20tests
     :target: https://github.com/SMTG-UCL/sumo/actions?query=workflow%3A%22Run+tests%22
