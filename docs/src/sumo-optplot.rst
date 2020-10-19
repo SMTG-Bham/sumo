@@ -111,9 +111,9 @@ Questaal
 LMTO optics calculations with the ``lmf`` program are supported;
 when ``OPTICS MODE=1`` (or greater) in the *ctrl.ext* file an
 *opt.ext* file is written with the imaginary dielectric function vs
- energy in Ry. Sumo can import this file and compute a real component
- with the Kramers-Kronig relation; this provides the information
- needed for plotting optical properties. To plot the optical absorption::
+energy in Ry. Sumo can import this file and compute a real component
+with the Kramers-Kronig relation; this provides the information
+needed for plotting optical properties. To plot the optical absorption::
 
    sumo-optplot --code questaal -f opt.ext
 

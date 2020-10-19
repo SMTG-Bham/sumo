@@ -1,6 +1,0 @@
-include LICENSE
-include requirements_rtd.txt
-include sumo/symmetry/bradcrack.json
-include sumo/plotting/orbital_colours.conf
-include sumo/plotting/*.mplstyle
-include examples/orbital_colours.conf
