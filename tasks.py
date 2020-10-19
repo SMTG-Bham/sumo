@@ -27,8 +27,8 @@ def publish(ctx):
 def release(ctx):
     with open("CHANGELOG.rst") as f:
         contents = f.read()
-    new_ver = re.findall('\n(v.*)', contents)[0]
-    toks = re.finditer("------\n*(.*?)^\`\[v\d\.\d\.\d", contents,
+    new_ver = re.findall(r'\n`\[(v.*)]', contents)[0]
+    toks = re.finditer(r"-[-]+\n*(.*?\n*)^\`\[v\d\.\d\.\d", contents,
                        re.MULTILINE | re.DOTALL)
     desc = list(toks)[1].groups()[0].strip()
     payload = {
@@ -44,3 +44,4 @@ def release(ctx):
         data=json.dumps(payload),
         headers={"Authorization": "token " + os.environ["GITHUB_TOKEN"]})
     print(response.text)
+
