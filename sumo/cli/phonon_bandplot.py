@@ -271,7 +271,17 @@ def _bs_from_filename(filename, poscar, dim, symprec, spg, kpt_list, labels,
     """Analyse input files to create band structure"""
 
     if '.yaml' in filename:
+        logging.warning(f"Reading pre-computed band structure from {filename}. "
+                        "Be aware that many phonon-bandplot options will not "
+                        "be relevant.")
         yaml_file = filename
+        try:
+            poscar = poscar if poscar else 'POSCAR'
+            poscar = Poscar.from_file(poscar)
+        except IOError:
+            msg = "Cannot find POSCAR file, cannot generate symmetry path."
+            logging.error("\n {}".format(msg))
+            sys.exit()
 
     elif ('FORCE_SETS' in filename
           or 'FORCE_CONSTANTS' in filename
@@ -354,14 +364,19 @@ def _bs_from_filename(filename, poscar, dim, symprec, spg, kpt_list, labels,
     #                 is_mesh_symmetry=False)
     # phonon.set_partial_DOS()
 
-    phonon.set_band_structure(
-        kpoints, is_eigenvectors=eigenvectors, labels=labels)
-    yaml_file = 'sumo_band.yaml'
-    phonon._band_structure.write_yaml(filename=yaml_file)
+    if '.yaml' not in filename:
+        phonon.set_band_structure(
+            kpoints, is_eigenvectors=eigenvectors, labels=labels)
+        yaml_file = 'sumo_band.yaml'
+        phonon._band_structure.write_yaml(filename=yaml_file)
 
     bs = get_ph_bs_symm_line(yaml_file, has_nac=False,
                              labels_dict=kpath.kpoints)
-    return bs, phonon
+
+    if '.yaml' in filename:
+        return bs, None
+    else:
+        return bs, phonon
 
 
 def _get_parser():
