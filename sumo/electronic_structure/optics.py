@@ -19,7 +19,7 @@ def broaden_eps(dielectric, sigma):
     """Apply gaussian broadening to the dielectric response.
 
     Args:
-        dielectric_data (tuple): The high-frequency dielectric data, following
+        dielectric (tuple): The high-frequency dielectric data, following
             the same format as
             :attr:`pymatgen.io.vasp.outputs.Vasprun.dielectric`.
             This is a :obj:`tuple` containing the energy, the real part of the
@@ -54,7 +54,7 @@ def broaden_eps(dielectric, sigma):
     imag = [gaussian_filter1d(np.array(dielectric[2])[:, x], sigma / diff_avg)
             for x in range(6)]
 
-    return (e, np.array(real).T, np.array(imag).T)
+    return e, np.array(real).T, np.array(imag).T
 
 
 def calculate_dielectric_properties(dielectric, properties,
@@ -63,8 +63,7 @@ def calculate_dielectric_properties(dielectric, properties,
 
     Supported properties:
 
-    Absorption
-    ~~~~~~~~~~
+    *Absorption*
 
     The unit of alpha is :math:`\mathrm{cm}^{-1}`.
 
@@ -86,7 +85,7 @@ def calculate_dielectric_properties(dielectric, properties,
     .. math:: \lambda = hc/E
 
     Args:
-        dielectric_data (tuple): The high-frequency dielectric data, following
+        dielectric (tuple): The high-frequency dielectric data, following
             the same format as :obj:`pymatgen.io.vasp.Vasprun.dielectric`.
             This is a :obj:`tuple` containing the energy, the real part of the
             dielectric tensor, and the imaginary part of the tensor, as a
@@ -261,10 +260,9 @@ def kkr(de, eps_imag, cshift=1e-6):
             integration; this should be small (and results should not be very
             sensitive)
 
-        returns:
-            :obj:`numpy.array`
-                Real part of frequency-dependent dielectric function
-                corresponding to eps_imag. Array shape (NEDOS, 3, 3)
+    Returns:
+        (:obj:`numpy.array`) Real part of frequency-dependent dielectric function
+        corresponding to eps_imag. Array shape (NEDOS, 3, 3)
     """
     eps_imag = np.array(eps_imag)
     nedos = eps_imag.shape[0]
@@ -278,4 +276,3 @@ def kkr(de, eps_imag, cshift=1e-6):
         return total * (2/np.pi) * de + np.diag([1, 1, 1])
 
     return np.real([integration_element(w_r) for w_r in w_i[:, 0, 0]])
-

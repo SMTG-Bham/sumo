@@ -1,11 +1,11 @@
 Change Log
 ==========
 
-`[Unreleased] <https://github.com/smtg-ucl/sumo/compare/v2.0.1...HEAD>`_
-------------------------------------------------------------------------
+Unreleased
+----------
 
-`[v2.0.1] <https://github.com/smtg-ucl/sumo/compare/v2.0.0...v2.0.1>`_ - 2020-08-08
------------------------------------------------------------------------------------
+v2.0.1
+------
 
 Bug fixes:
 
@@ -13,8 +13,8 @@ Bug fixes:
 - Fix yaml phonon-bandstructure plotting (@kavanase)
 
 
-`[v2.0.0] <https://github.com/smtg-ucl/sumo/compare/v1.4.0...v2.0.0>`_ - 2020-08-08
------------------------------------------------------------------------------------
+v2.0.0
+------
 
 New features:
 
@@ -33,8 +33,8 @@ Bug fixes:
 - Python API fix for spin selection. (@kavanase)
 - Fix phonon band structure line density selection. (@utf)
 
-`[v1.4.0] <https://github.com/smtg-ucl/sumo/compare/v1.3.0...v1.4.0>`_ - 2020-01-25
------------------------------------------------------------------------------------
+v1.4.0
+------
 
 New features:
 
@@ -46,8 +46,8 @@ Bug fixes:
 - Fixed ytick labels for band + DOS plots. (@utf)
 - Fix a bug when the y axis limit is outside the DOS range in band + DOS tapes. (@utf)
 
-`[v1.3.0] <https://github.com/smtg-ucl/sumo/compare/v1.2.0...v1.3.0>`_ - 2019-10-20
------------------------------------------------------------------------------------
+v1.3.0
+------
 
 This is the last supported version for Python 3.5, due to changes in pymatgen.
 
@@ -64,8 +64,8 @@ Bug fixes:
 - Fix custom styling for phonon bandplotting from the CLI. (AJJ)
 - Fix rare interpolation issues for projected band structure plots. (@utf)
 
-`[v1.2.0] <https://github.com/smtg-ucl/sumo/compare/v1.1.3...v1.2.0>`_ - 2019-06-07
------------------------------------------------------------------------------------
+v1.2.0
+------
 
 This is the most contributers to a release so far!
 
@@ -115,13 +115,13 @@ This is the most contributers to a release so far!
       (e.g. VASP and bethesalpeter) may be plotted alongside one
       another.
 
-`[v1.1.3] <https://github.com/smtg-ucl/sumo/compare/v1.1.2...v1.1.3>`_ - 2018-12-24
------------------------------------------------------------------------------------
+v1.1.3
+------
 
 Update Manifest.in
 
-`[v1.1.2] <https://github.com/smtg-ucl/sumo/compare/v1.1.1...v1.1.2>`_ - 2018-11-30
------------------------------------------------------------------------------------
+v1.1.2
+------
 
 Various bugfixes and enhancements:
 
@@ -133,14 +133,14 @@ Various bugfixes and enhancements:
 - Add ``--units`` option for phonon band structures (@ajjackson).
 - Remove numbers from x-axis in band structures with DOS.
 
-`[v1.1.1] <https://github.com/smtg-ucl/sumo/compare/v1.1.0...v1.1.1>`_ - 2018-08-15
------------------------------------------------------------------------------------
+v1.1.1
+------
 
 Fix bug when installing from Pypi.
 
 
-`[v1.1.0] <https://github.com/smtg-ucl/sumo/compare/v1.0.10...v1.1.0>`_ - 2018-08-10
-------------------------------------------------------------------------------------
+v1.1.0
+------
 
 Use matplotlib style sheets for styling plots (@ajjackson & @utf).
 Enables plots to be customised based on user settings.
@@ -151,8 +151,8 @@ Various bug fixes:
 - Fix codacy style issues.
 - Plotting style standardised across all plots.
 
-`[v1.0.10] <https://github.com/smtg-ucl/sumo/compare/v1.0.9...v1.0.10>`_ - 2018-08-06
--------------------------------------------------------------------------------------
+v1.0.10
+-------
 
 Add option to align DOS to Fermi level (@shyamd)
 
@@ -161,8 +161,8 @@ Various bug fixes:
 - Fix many typos.
 - Updates to paper and documentation.
 
-`[v1.0.9] <https://github.com/smtg-ucl/sumo/compare/v1.0.8...v1.0.9>`_ - 2018-06-19
------------------------------------------------------------------------------------
+v1.0.9
+------
 
 ``phonon-bandplot`` now supports combined DOS & band structure plots (Adam Jackson, Arthur Yaud).
 
@@ -173,8 +173,8 @@ Various bug fixes:
 - Fix orbital projected band structures with branches (Adam Jackson).
 - Fix reading Eg from spin-pol calculations (Adam Jackson).
 
-`[v1.0.8] <https://github.com/smtg-ucl/sumo/compare/v1.0.7...v1.0.8>`_ - 2018-05-9
-----------------------------------------------------------------------------------
+v1.0.8
+------
 
 Enhancements by Adam Jackson:
 
@@ -188,26 +188,26 @@ Various bug fixes:
 - Fixed default arguments for band structure + dos plotting.
 - Added A centered orthorhombic lattice to ``BradCrackKpath``.
 
-`[v1.0.7] <https://github.com/smtg-ucl/sumo/compare/v1.0.6...v1.0.7>`_ - 2018-04-24
------------------------------------------------------------------------------------
+v1.0.7
+------
 
 Various bug fixes:
 
 - Fixed density option in kgen.
 - Fixed phonon-bandplot plotting limits.
 
-`[v1.0.6] <https://github.com/smtg-ucl/sumo/compare/v1.0.5...v1.0.6>`_ - 2018-04-18
------------------------------------------------------------------------------------
+v1.0.6
+------
 
 Move package data files.
 
-`[v1.0.5] <https://github.com/smtg-ucl/sumo/compare/v1.0.4...v1.0.5>`_ - 2018-04-17
------------------------------------------------------------------------------------
+v1.0.5
+------
 
 Minor bug fixes.
 
-`[v1.0.4] <https://github.com/smtg-ucl/sumo/compare/v1.0.0...v1.0.4>`_ - 2018-04-16
------------------------------------------------------------------------------------
+v1.0.4
+------
 
 Minor changes to Pypi config.
 

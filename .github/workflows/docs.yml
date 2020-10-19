@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v2
       with:
         python-version: 3.7
 
@@ -27,7 +27,7 @@ jobs:
         pip install -e .[docs]
 
     - name: Build
-      run: mkdocs build -f docs/mkdocs.yml -d ../docs_build
+      run: sphinx-build docs/src docs_build
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v2

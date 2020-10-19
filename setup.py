@@ -58,7 +58,7 @@ setup(
             "plotting/sumo_phonon.mplstyle",
         ]
     },
-    data_files=["examples/orbital_colours.conf", "LICENSE", "requirements_rtd.txt"],
+    data_files=["examples/orbital_colours.conf", "LICENSE"],
     entry_points={
         "console_scripts": [
             "sumo-bandplot = sumo.cli.bandplot:main",
