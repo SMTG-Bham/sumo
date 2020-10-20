@@ -6,10 +6,6 @@ Sumo
     :target: https://github.com/SMTG-UCL/sumo/actions?query=workflow%3A%22Run+tests%22
     :alt: Build Status
 
-.. image:: https://img.shields.io/readthedocs/sumo
-    :target: http://sumo.readthedocs.io/en/latest/
-    :alt: Documentation Status
-
 .. image:: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d/status.svg
     :target: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d
     :alt: JOSS Paper
@@ -69,15 +65,15 @@ Usage
 Sumo is intended to be used via the command-line, however, a
 fully-documented python API is also provided. A manual, including
 tutorials and API documentation, is `available online
-<http://sumo.readthedocs.io/en/latest/>`_. Additionally, the built-in
+<https://smtg-ucl.github.io/sumo/>`_. Additionally, the built-in
 help (``-h``) option for each command provides a summary of the
 available options.
 
 A guide to using each command can be found on the
-`Tutorial page <http://sumo.readthedocs.io/en/latest/tutorials.html>`_.
+`Tutorial page <https://smtg-ucl.github.io/sumo/tutorials.html>`_.
 
 For a preview of the functionality of sumo, see the
-`Gallery <http://sumo.readthedocs.io/en/latest/gallery.html>`_.
+`Gallery <https://smtg-ucl.github.io/sumo/gallery.html>`_.
 
 Currently, the scripts provided are:
 
@@ -96,7 +92,7 @@ Currently, the scripts provided are:
 
 Information on how to tweak the style of sumo plots is provided on the
 `Customising Sumo Plots page
-<http://sumo.readthedocs.io/en/latest/customising-plots.html>`_.
+<https://smtg-ucl.github.io/sumo/customising-plots.html>`_.
 
 Feature support for different codes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

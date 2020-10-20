@@ -34,4 +34,3 @@ jobs:
       with:
         deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
         publish_dir: ./docs_build
-        enable_jekyll: false
