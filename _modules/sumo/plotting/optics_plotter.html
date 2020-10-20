@@ -1,0 +1,371 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.plotting.optics_plotter &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.plotting.optics_plotter</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides a class for plotting optical absorption spectra.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">MaxNLocator</span><span class="p">,</span> <span class="n">FuncFormatter</span><span class="p">,</span> <span class="n">AutoMinorLocator</span>
+<span class="kn">from</span> <span class="nn">matplotlib.font_manager</span> <span class="kn">import</span> <span class="n">findfont</span><span class="p">,</span> <span class="n">FontProperties</span>
+
+<span class="kn">from</span> <span class="nn">sumo.plotting</span> <span class="kn">import</span> <span class="p">(</span><span class="n">pretty_subplot</span><span class="p">,</span> <span class="n">curry_power_tick</span><span class="p">,</span> <span class="n">styled_plot</span><span class="p">,</span>
+                           <span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_optics_style</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SOpticsPlotter"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.optics_plotter.SOpticsPlotter">[docs]</a><span class="k">class</span> <span class="nc">SOpticsPlotter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for plotting optical spectra.</span>
+
+<span class="sd">    The easiest way to initialise this class is using the output from the</span>
+<span class="sd">    :obj:`sumo.electronic_structure.optics.calculate_alpha()` method.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        spec_data (:obj:`dict` or :obj:`tuple` or :obj:`list`):</span>
+<span class="sd">            The optical absorption spectra. Should be formatted as a dict of</span>
+<span class="sd">            :obj:`tuple` of :obj:`list`::</span>
+
+<span class="sd">                {property: ([energies], [alpha]), ...}</span>
+
+<span class="sd">            Alternatively, the anisotropic (directional dependent) absorption</span>
+<span class="sd">            can be plotted if the data formatted as::</span>
+
+<span class="sd">                {property: ([energies], [alpha_xx, alpha_yy, alpha_zz]), ...}</span>
+
+<span class="sd">            If a :obj:`list` of :obj:`tuple` is provided, then multiple</span>
+<span class="sd">            absorption spectra can be plotted simultaneously.</span>
+
+<span class="sd">            The *property* keys set the type of spectrum being plotted (and</span>
+<span class="sd">            determine the y-axis label). Recognised values are &#39;absorption&#39;,</span>
+<span class="sd">            &#39;loss&#39;, &#39;eps-real&#39;, &#39;eps-im&#39;. Other values will be plotted and used</span>
+<span class="sd">            as the y-axis label.</span>
+
+<span class="sd">            It is recommended to use an OrderedDict to get a predictable</span>
+<span class="sd">            sequence of plotting axes (from top to bottom).</span>
+
+<span class="sd">            If no dict at all is used (i.e. spec_data is a data tuple or a list</span>
+<span class="sd">            of tuples) property will default to &#39;abs&#39;</span>
+
+<span class="sd">        band_gap (:obj:`float` or :obj:`list`, optional): The band gap as a</span>
+<span class="sd">            :obj:`float`, plotted as a dashed line. If plotting multiple</span>
+<span class="sd">            spectra then a :obj:`list` of band gaps can be provided. If an item</span>
+<span class="sd">            in the list is :obj:`None` no corresponding line is plotted.</span>
+<span class="sd">        label (:obj:`str` or :obj:`list`): A label to identify the spectra.</span>
+<span class="sd">            If plotting multiple spectra then a :obj:`list` of labels can</span>
+<span class="sd">            be provided.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec_data</span><span class="p">,</span> <span class="n">band_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Standardise to dict/list/tuple format</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec_data</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">spec_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;absorption&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">spec_data</span><span class="p">]}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec_data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">spec_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;absorption&#39;</span><span class="p">:</span> <span class="n">spec_data</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">spec_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">spec_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">v</span><span class="p">])</span>
+
+        <span class="n">n_datasets</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">spec_data</span><span class="o">.</span><span class="n">items</span><span class="p">()))[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">band_gap</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">band_gap</span> <span class="o">=</span> <span class="p">[</span><span class="n">band_gap</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">band_gap</span><span class="p">:</span>
+            <span class="n">band_gap</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_datasets</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="n">label</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">label</span> <span class="ow">and</span> <span class="n">n_datasets</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_datasets</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">label</span><span class="p">:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_datasets</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">n_datasets</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">band_gap</span><span class="p">)]))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;spec_data, band_gap, and label not same size&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;absorption&#39;</span> <span class="ow">in</span> <span class="n">spec_data</span><span class="p">:</span>
+            <span class="c1"># xmax: find lowest energy where absorption &gt; 2e4; add 1 eV</span>
+            <span class="n">xmax</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">ener</span><span class="p">,</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="n">spec_data</span><span class="p">[</span><span class="s1">&#39;absorption&#39;</span><span class="p">]:</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">&gt;</span> <span class="mf">2e4</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ener</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="n">ener</span><span class="p">[</span><span class="n">mask</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
+                    <span class="n">xmax</span> <span class="o">=</span> <span class="n">x</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">xmax</span> <span class="k">else</span> <span class="n">xmax</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If no absorption data, use the maximum of the shortest x range</span>
+            <span class="n">xmax</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;Inf&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">spec_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">spec</span><span class="p">:</span>
+                    <span class="n">xmax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="n">xmax</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spec_data</span> <span class="o">=</span> <span class="n">spec_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_band_gap</span> <span class="o">=</span> <span class="n">band_gap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_xmax</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">+</span> <span class="mf">1.</span>
+
+    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_optics_style</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">ymax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object of the optical spectra.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            width (:obj:`float`, optional): The width of the plot.</span>
+<span class="sd">            height (:obj:`float`, optional): The height of the plot.</span>
+<span class="sd">            xmin (:obj:`float`, optional): The minimum energy on the x-axis.</span>
+<span class="sd">            xmax (:obj:`float`, optional): The maximum energy on the x-axis.</span>
+<span class="sd">            ymin (:obj:`float`, optional): The minimum absorption intensity on</span>
+<span class="sd">                the y-axis.</span>
+<span class="sd">            ymax (:obj:`float`, optional): The maximum absorption intensity on</span>
+<span class="sd">                the y-axis.</span>
+<span class="sd">            colours (:obj:`list`, optional): A :obj:`list` of colours to use in</span>
+<span class="sd">                the plot. The colours can be specified as a hex code, set of</span>
+<span class="sd">                rgb values, or any other format supported by matplotlib.</span>
+<span class="sd">            dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for</span>
+<span class="sd">                the image.</span>
+<span class="sd">            plt (:obj:`matplotlib.pyplot`, optional): A</span>
+<span class="sd">                :obj:`matplotlib.pyplot` object to use for plotting.</span>
+<span class="sd">            fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a</span>
+<span class="sd">                a single font, specified as a :obj:`str`, or several fonts,</span>
+<span class="sd">                specified as a :obj:`list` of :obj:`str`.</span>
+<span class="sd">            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib</span>
+<span class="sd">                style specifications, to be composed on top of Sumo base</span>
+<span class="sd">                style.</span>
+<span class="sd">            no_base_style (:obj:`bool`, optional): Prevent use of sumo base</span>
+<span class="sd">                style. This can make alternative styles behave more</span>
+<span class="sd">                predictably.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`matplotlib.pyplot`: The plot of optical spectra.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_plots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spec_data</span><span class="p">)</span>
+        <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_subplot</span><span class="p">(</span><span class="n">n_plots</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                             <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+                             <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+
+        <span class="n">optics_colours</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">colours</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">optics_colours</span> <span class="o">=</span> <span class="n">colours</span> <span class="o">+</span> <span class="n">optics_colours</span>
+
+        <span class="n">standard_ylabels</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;absorption&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Absorption (cm$^\mathregular{-1}$)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;loss&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Energy-loss&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;eps_real&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Re($\epsilon$)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;eps_imag&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Im($\epsilon$)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;n_real&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Re(n)&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;n_imag&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Im(n)&#39;</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">ymax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ymax_series</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_plots</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ymax</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ymax</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">ymax_series</span> <span class="o">=</span> <span class="p">[</span><span class="n">ymax</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_plots</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ymax</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ymax_series</span> <span class="o">=</span> <span class="n">ymax</span>
+
+        <span class="k">if</span> <span class="n">ymin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ymin_series</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_plots</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">ymin_series</span> <span class="o">=</span> <span class="p">[</span><span class="n">ymin</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_plots</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ymin_series</span> <span class="o">=</span> <span class="n">ymin</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">spectrum_key</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_plots</span><span class="p">),</span>
+                                                       <span class="bp">self</span><span class="o">.</span><span class="n">_spec_data</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+                                                       <span class="n">ymin_series</span><span class="p">,</span>
+                                                       <span class="n">ymax_series</span><span class="p">):</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">_plot_spectrum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_band_gap</span><span class="p">,</span>
+                           <span class="n">ax</span><span class="p">,</span> <span class="n">optics_colours</span><span class="p">)</span>
+
+            <span class="n">xmax</span> <span class="o">=</span> <span class="n">xmax</span> <span class="k">if</span> <span class="n">xmax</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xmax</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">ymin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">spectrum_key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;absorption&#39;</span><span class="p">,</span> <span class="s1">&#39;loss&#39;</span><span class="p">,</span>
+                                                 <span class="s1">&#39;eps_imag&#39;</span><span class="p">,</span> <span class="s1">&#39;n_imag&#39;</span><span class="p">):</span>
+                <span class="n">ymin</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">ymin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ymin</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">ymax</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">spectrum_key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;absorption&#39;</span><span class="p">,):</span>
+                <span class="n">ymax</span> <span class="o">=</span> <span class="mf">1e5</span>
+            <span class="k">elif</span> <span class="n">ymax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ymax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">spectrum_key</span> <span class="o">==</span> <span class="s1">&#39;absorption&#39;</span><span class="p">:</span>
+                <span class="n">font</span> <span class="o">=</span> <span class="n">findfont</span><span class="p">(</span><span class="n">FontProperties</span><span class="p">(</span><span class="n">family</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;sans-serif&#39;</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="s1">&#39;Whitney&#39;</span> <span class="ow">in</span> <span class="n">font</span><span class="p">:</span>
+                    <span class="n">times_sign</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">times_sign</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;\times&#39;</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span>
+                    <span class="n">FuncFormatter</span><span class="p">(</span><span class="n">curry_power_tick</span><span class="p">(</span><span class="n">times_sign</span><span class="o">=</span><span class="n">times_sign</span><span class="p">)))</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">standard_ylabels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">spectrum_key</span><span class="p">,</span> <span class="n">spectrum_key</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="ow">or</span>
+                        <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_spec_data</span><span class="o">.</span><span class="n">items</span><span class="p">()))[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">)</span>
+
+        <span class="c1"># If only one plot, fix aspect ratio to match canvas</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spec_data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+            <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">width</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">height</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">((</span><span class="n">height</span><span class="o">/</span><span class="n">width</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">x1</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)))</span>
+
+        <span class="c1"># Otherwise, rely only on tight_layout and hope for the best</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">plt</span></div>
+
+
+<span class="k">def</span> <span class="nf">_plot_spectrum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">band_gap</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">optics_colours</span><span class="p">):</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ener</span><span class="p">,</span> <span class="n">alpha</span><span class="p">),</span> <span class="n">abs_label</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+                                               <span class="n">label</span><span class="p">,</span>
+                                               <span class="n">band_gap</span><span class="p">,</span>
+                                               <span class="n">optics_colours</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># if averaged optics only plot one line</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ener</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">abs_label</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="p">[</span><span class="s1">&#39;xx&#39;</span><span class="p">,</span> <span class="s1">&#39;yy&#39;</span><span class="p">,</span> <span class="s1">&#39;zz&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="s1">&#39;-.&#39;</span><span class="p">])</span>
+
+            <span class="k">for</span> <span class="n">direction_id</span><span class="p">,</span> <span class="n">direction_label</span><span class="p">,</span> <span class="n">ls</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">abs_label</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">direction_label</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">$_\mathregular{{</span><span class="si">{}</span><span class="s1">}}$&#39;</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">abs_label</span><span class="p">,</span> <span class="n">direction_label</span><span class="p">)</span>
+
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ener</span><span class="p">,</span> <span class="n">alpha</span><span class="p">[:,</span> <span class="n">direction_id</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="n">ls</span><span class="p">,</span>
+                        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bg</span><span class="p">:</span>
+            <span class="c1"># plot band gap line</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">bg</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.phonon.phonopy &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.phonon.phonopy</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides helper functions for dealing with phonopy.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">phonopy</span> <span class="kn">import</span> <span class="n">Phonopy</span><span class="p">,</span> <span class="n">file_IO</span>
+<span class="kn">from</span> <span class="nn">phonopy.structure.cells</span> <span class="kn">import</span> <span class="n">determinant</span>
+<span class="kn">from</span> <span class="nn">phonopy.units</span> <span class="kn">import</span> <span class="n">VaspToTHz</span><span class="p">,</span> <span class="n">Hartree</span><span class="p">,</span> <span class="n">Bohr</span>
+
+<span class="kn">from</span> <span class="nn">pymatgen.io.phonopy</span> <span class="kn">import</span> <span class="n">get_phonopy_structure</span>
+
+
+<div class="viewcode-block" id="load_phonopy"><a class="viewcode-back" href="../../../sumo.phonon.html#sumo.phonon.phonopy.load_phonopy">[docs]</a><span class="k">def</span> <span class="nf">load_phonopy</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">primitive_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">factor</span><span class="o">=</span><span class="n">VaspToTHz</span><span class="p">,</span> <span class="n">symmetrise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">born</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">write_fc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load phonopy output and return an ``phonopy.Phonopy`` object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (str): Path to phonopy output. Can be any of ``FORCE_SETS``,</span>
+<span class="sd">            ``FORCE_CONSTANTS``, or ``force_constants.hdf5``.</span>
+<span class="sd">        structure (:obj:`~pymatgen.core.structure.Structure`): The unitcell</span>
+<span class="sd">            structure.</span>
+<span class="sd">        dim (list): The supercell size, as a :obj:`list` of :obj:`float`.</span>
+<span class="sd">        symprec (:obj:`float`, optional): The tolerance for determining the</span>
+<span class="sd">            crystal symmetry.</span>
+<span class="sd">        primitive_matrix (:obj:`list` or :obj:`str`, optional): The</span>
+<span class="sd">            transformation matrix from the conventional to primitive cell. Only</span>
+<span class="sd">            required when the conventional cell was used as the starting</span>
+<span class="sd">            structure. Should be provided as a 3x3 :obj:`list` of :obj:`float`.</span>
+<span class="sd">            Alternatively the str &#39;auto&#39; may be provided.</span>
+<span class="sd">        factor (:obj:`float`, optional): The conversion factor for phonon</span>
+<span class="sd">            frequency. Defaults to :obj:`phonopy.units.VaspToTHz`.</span>
+<span class="sd">        symmetrise (:obj:`bool`, optional): Symmetrise the force constants.</span>
+<span class="sd">            Defaults to ``True``.</span>
+<span class="sd">        born (:obj:`str`, optional): Path to file containing Born effective</span>
+<span class="sd">            charges. Should be in the same format as the file produced by the</span>
+<span class="sd">            ``phonopy-vasp-born`` script provided by phonopy.</span>
+<span class="sd">        write_fc (:obj:`bool` or :obj:`str`,  optional): Write the force</span>
+<span class="sd">            constants to disk. If ``True``, a ``FORCE_CONSTANTS`` file will be</span>
+<span class="sd">            written. Alternatively, if set to ``&quot;hdf5&quot;``, a</span>
+<span class="sd">            ``force_constants.hdf5`` file will be written. Defaults to</span>
+<span class="sd">            ``False`` (force constants not written).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unitcell</span> <span class="o">=</span> <span class="n">get_phonopy_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
+    <span class="n">num_atom</span> <span class="o">=</span> <span class="n">unitcell</span><span class="o">.</span><span class="n">get_number_of_atoms</span><span class="p">()</span>
+    <span class="n">num_satom</span> <span class="o">=</span> <span class="n">determinant</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span> <span class="o">*</span> <span class="n">num_atom</span>
+
+    <span class="n">phonon</span> <span class="o">=</span> <span class="n">Phonopy</span><span class="p">(</span><span class="n">unitcell</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">primitive_matrix</span><span class="o">=</span><span class="n">primitive_matrix</span><span class="p">,</span>
+                     <span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;FORCE_CONSTANTS&#39;</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s1">&#39;.hdf5&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+        <span class="c1"># if force constants exist, use these to avoid recalculating them</span>
+        <span class="k">if</span> <span class="s1">&#39;.hdf5&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="n">fc</span> <span class="o">=</span> <span class="n">file_IO</span><span class="o">.</span><span class="n">read_force_constants_hdf5</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="s1">&#39;FORCE_CONSTANTS&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="n">fc</span> <span class="o">=</span> <span class="n">file_IO</span><span class="o">.</span><span class="n">parse_FORCE_CONSTANTS</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">fc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">num_satom</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Number of atoms in supercell is not consistent with the &quot;</span>
+                   <span class="s2">&quot;matrix shape of</span><span class="se">\n</span><span class="s2">force constants read from </span><span class="si">{}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">Please&quot;</span>
+                   <span class="s2">&quot;carefully check --dim.&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+        <span class="n">phonon</span><span class="o">.</span><span class="n">set_force_constants</span><span class="p">(</span><span class="n">fc</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="s1">&#39;FORCE_SETS&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+        <span class="c1"># load the force sets from file and calculate force constants</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">file_IO</span><span class="o">.</span><span class="n">parse_FORCE_SETS</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">fs</span><span class="p">[</span><span class="s1">&#39;natom&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">num_satom</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Number of atoms in supercell is not consistent with the &quot;</span>
+                   <span class="s2">&quot;the data in FORCE_SETS</span><span class="se">\n</span><span class="s2">Please carefully check --dim.&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+        <span class="n">phonon</span><span class="o">.</span><span class="n">set_displacement_dataset</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Calculating force constants...&quot;</span><span class="p">)</span>
+        <span class="n">phonon</span><span class="o">.</span><span class="n">produce_force_constants</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">born</span><span class="p">:</span>
+        <span class="c1"># load born parameters from a file</span>
+        <span class="n">nac_params</span> <span class="o">=</span> <span class="n">file_IO</span><span class="o">.</span><span class="n">parse_BORN</span><span class="p">(</span><span class="n">phonon</span><span class="o">.</span><span class="n">_primitive</span><span class="p">,</span>
+                                        <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">,</span>
+                                        <span class="n">filename</span><span class="o">=</span><span class="n">born</span><span class="p">)</span>
+
+        <span class="c1"># set the nac unit conversion factor manual,  specific to VASP</span>
+        <span class="n">nac_params</span><span class="p">[</span><span class="s1">&#39;factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Hartree</span> <span class="o">*</span> <span class="n">Bohr</span>
+        <span class="n">phonon</span><span class="o">.</span><span class="n">set_nac_params</span><span class="p">(</span><span class="n">nac_params</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">symmetrise</span><span class="p">:</span>
+        <span class="n">phonon</span><span class="o">.</span><span class="n">symmetrize_force_constants</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">write_fc</span> <span class="o">==</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">:</span>
+        <span class="n">file_IO</span><span class="o">.</span><span class="n">write_force_constants_to_hdf5</span><span class="p">(</span><span class="n">phonon</span><span class="o">.</span><span class="n">get_force_constants</span><span class="p">())</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Force constants written to force_constants.hdf5.&quot;</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">write_fc</span><span class="p">:</span>
+        <span class="n">file_IO</span><span class="o">.</span><span class="n">write_FORCE_CONSTANTS</span><span class="p">(</span><span class="n">phonon</span><span class="o">.</span><span class="n">get_force_constants</span><span class="p">())</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Force constants written to FORCE_CONSTANTS.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">phonon</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

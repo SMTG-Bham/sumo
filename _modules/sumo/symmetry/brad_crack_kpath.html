@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.symmetry.brad_crack_kpath &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.symmetry.brad_crack_kpath</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing class for generating Bradley and Cracknell k-point paths.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">load</span> <span class="k">as</span> <span class="n">load_json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">sumo.symmetry</span> <span class="kn">import</span> <span class="n">Kpath</span>
+
+
+<div class="viewcode-block" id="BradCrackKpath"><a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.brad_crack_kpath.BradCrackKpath">[docs]</a><span class="k">class</span> <span class="nc">BradCrackKpath</span><span class="p">(</span><span class="n">Kpath</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Class to generate k-points along paths from Bradley and Cracknell.</span>
+
+<span class="sd">    The paths used are based on Brillouin zones depicted in reference [brad]_.</span>
+
+<span class="sd">    .. [brad] &quot;The Mathematical Theory of Symmetry in Solids&quot;, C. J. Bradley</span>
+<span class="sd">              and A. P. Cracknell, Clarendon Press, 1972.</span>
+
+<span class="sd">    These paths represent only one particular route through the Brillouin</span>
+<span class="sd">    zone and do not cover every possible path (though they do visit every</span>
+<span class="sd">    high-symmetry k-point at least once).</span>
+
+<span class="sd">    These paths should be used with the correct primitive structure. This</span>
+<span class="sd">    structure can be accessed using the ``prim`` attribute. Compliance</span>
+<span class="sd">    between the provided structure and standardised structure checked using the</span>
+<span class="sd">    ``correct_structure()`` method.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        structure (:obj:`~pymatgen.core.structure.Structure`): The structure.</span>
+<span class="sd">        symprec (:obj:`float`, optional): The tolerance for determining the</span>
+<span class="sd">            crystal symmetry.</span>
+<span class="sd">        spg (:obj:`~pymatgen.symmetry.groups.SpaceGroup`, optional): Space</span>
+<span class="sd">            group used to override the symmetry determined by spglib. This is</span>
+<span class="sd">            not recommended and only provided for testing purposes.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        prim (:obj:`~pymatgen.core.structure.Structure`): The standardised</span>
+<span class="sd">            primitive cell structure for the generated k-point path.</span>
+<span class="sd">        conv (:obj:`~pymatgen.core.structure.Structure`): The standardised</span>
+<span class="sd">            conventional cell structure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">Kpath</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
+
+        <span class="n">angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">angles</span>
+        <span class="n">unique</span> <span class="o">=</span> <span class="n">angles</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">angles</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">angles</span><span class="o">.</span><span class="n">count</span><span class="p">))</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">abc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">abc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">abc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">spg</span><span class="p">:</span>
+            <span class="n">spg_symbol</span> <span class="o">=</span> <span class="n">spg</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="n">lattice_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lattice_type</span><span class="p">(</span><span class="n">spg</span><span class="o">.</span><span class="n">int_number</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">spg_symbol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spg_symbol</span>
+            <span class="n">lattice_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice_type</span>
+
+        <span class="n">bravais</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bravais_lattice</span><span class="p">(</span><span class="n">spg_symbol</span><span class="p">,</span> <span class="n">lattice_type</span><span class="p">,</span>
+                                            <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">unique</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bradcrack_data</span><span class="p">(</span><span class="n">bravais</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_bradcrack_data</span><span class="p">(</span><span class="n">bravais</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Read Bradley--Cracknell k-points path from data file</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            bravais (str): Lattice code including orientation e.g. &#39;trig_p_c&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: kpoint path and special point locations, formatted as e.g.::</span>
+
+<span class="sd">              {&#39;kpoints&#39;: {&#39;\Gamma&#39;: [0., 0., 0.], &#39;X&#39;: [0., 0.5, 0.], ...},</span>
+<span class="sd">               &#39;path&#39;: [[&#39;\Gamma&#39;, &#39;X&#39;, ..., &#39;P&#39;], [&#39;H&#39;, &#39;N&#39;, ...]]}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">json_file</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s1">&#39;bradcrack.json&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">bradcrack_data</span> <span class="o">=</span> <span class="n">load_json</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">bradcrack_data</span><span class="p">[</span><span class="n">bravais</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_bravais_lattice</span><span class="p">(</span><span class="n">spg_symbol</span><span class="p">,</span> <span class="n">lattice_type</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">unique</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get Bravais lattice symbol from symmetry data&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">lattice_type</span> <span class="o">==</span> <span class="s1">&#39;triclinic&#39;</span><span class="p">:</span>
+            <span class="k">return</span><span class="p">(</span><span class="s1">&#39;triclinic&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">lattice_type</span> <span class="o">==</span> <span class="s1">&#39;monoclinic&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;P&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">unique</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;mon_p_a&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">unique</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;mon_p_b&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">unique</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;mon_p_c&#39;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="s1">&#39;C&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">unique</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;mon_c_a&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">unique</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;mon_c_b&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">unique</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;mon_c_c&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">lattice_type</span> <span class="o">==</span> <span class="s1">&#39;orthorhombic&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;P&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">(</span><span class="s1">&#39;orth_p&#39;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="s1">&#39;A&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span> <span class="ow">or</span> <span class="s1">&#39;C&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;orth_c_a&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">b</span> <span class="o">&gt;</span> <span class="n">a</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;orth_c_b&#39;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="s1">&#39;F&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="o">/</span><span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="ow">and</span> <span class="mi">1</span><span class="o">/</span><span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="o">/</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="ow">and</span>
+                        <span class="mi">1</span><span class="o">/</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="o">/</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">b</span><span class="o">**</span><span class="mi">2</span><span class="p">):</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;orth_f_1&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="mi">1</span><span class="o">/</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">/</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">b</span><span class="o">**</span><span class="mi">2</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;orth_f_2&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="mi">1</span><span class="o">/</span><span class="n">b</span><span class="o">**</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">/</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;orth_f_3&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="mi">1</span><span class="o">/</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">/</span><span class="n">c</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">b</span><span class="o">**</span><span class="mi">2</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;orth_f_4&#39;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="s1">&#39;I&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span> <span class="ow">and</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">c</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;orth_i_a&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">b</span> <span class="o">&gt;</span> <span class="n">a</span> <span class="ow">and</span> <span class="n">b</span> <span class="o">&gt;</span> <span class="n">c</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;orth_i_b&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="n">a</span> <span class="ow">and</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;orth_i_c&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">lattice_type</span> <span class="o">==</span> <span class="s1">&#39;tetragonal&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;P&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">(</span><span class="s1">&#39;tet_p&#39;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="s1">&#39;I&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">c</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;tet_i_a&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;tet_i_c&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="n">lattice_type</span> <span class="o">==</span> <span class="s1">&#39;trigonal&#39;</span> <span class="ow">or</span> <span class="n">lattice_type</span> <span class="o">==</span> <span class="s1">&#39;hexagonal&#39;</span>
+                <span class="ow">or</span> <span class="n">lattice_type</span> <span class="o">==</span> <span class="s1">&#39;rhombohedral&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;R&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;trig_r_a&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;trig_r_c&#39;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="s1">&#39;P&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">unique</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;trig_p_a&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">unique</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">return</span><span class="p">(</span><span class="s1">&#39;trig_p_c&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">lattice_type</span> <span class="o">==</span> <span class="s2">&quot;cubic&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;P&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">(</span><span class="s1">&#39;cubic_p&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s1">&#39;I&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">(</span><span class="s1">&#39;cubic_i&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s1">&#39;F&#39;</span> <span class="ow">in</span> <span class="n">spg_symbol</span><span class="p">:</span>
+                <span class="k">return</span><span class="p">(</span><span class="s1">&#39;cubic_f&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

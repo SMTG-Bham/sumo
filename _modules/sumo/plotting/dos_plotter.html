@@ -1,0 +1,528 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.plotting.dos_plotter &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.plotting.dos_plotter</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides a class for plotting density of states data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">AutoMinorLocator</span>
+
+<span class="kn">from</span> <span class="nn">sumo.electronic_structure.dos</span> <span class="kn">import</span> <span class="n">sort_orbitals</span>
+<span class="kn">from</span> <span class="nn">sumo.plotting</span> <span class="kn">import</span> <span class="p">(</span><span class="n">pretty_plot</span><span class="p">,</span> <span class="n">pretty_subplot</span><span class="p">,</span> <span class="n">colour_cache</span><span class="p">,</span>
+                           <span class="n">styled_plot</span><span class="p">,</span> <span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_dos_style</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Spin</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">configparser</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">ConfigParser</span> <span class="k">as</span> <span class="nn">configparser</span>
+
+<span class="n">empty_space</span> <span class="o">=</span> <span class="mf">1.05</span>
+
+
+<div class="viewcode-block" id="SDOSPlotter"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter">[docs]</a><span class="k">class</span> <span class="nc">SDOSPlotter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for plotting density of states data.</span>
+
+<span class="sd">    This class should be initialised with the total and partial density</span>
+<span class="sd">    of states. The easiest way to generate the partial density of states is</span>
+<span class="sd">    using the following method::</span>
+
+<span class="sd">        pdos = sumo.electronic_structure.dos.get_pdos()</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dos (:obj:`~pymatgen.electronic_structure.dos.Dos`): The total density</span>
+<span class="sd">            of states.</span>
+<span class="sd">        pdos (:obj:`dict`, optional): The partial density of states. Formatted</span>
+<span class="sd">            as a :obj:`dict` of :obj:`dict` mapping the elements and their</span>
+<span class="sd">            orbitals to :obj:`~pymatgen.electronic_structure.dos.Dos` objects.</span>
+<span class="sd">            For example::</span>
+
+<span class="sd">                {</span>
+<span class="sd">                    &#39;Bi&#39;: {&#39;s&#39;: Dos, &#39;p&#39;: Dos ... },</span>
+<span class="sd">                    &#39;S&#39;: {&#39;s&#39;: Dos}</span>
+<span class="sd">                }</span>
+
+<span class="sd">            Usually generated using the</span>
+<span class="sd">            :obj:`sumo.electronic_structure.dos.get_pdos()` function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dos</span> <span class="o">=</span> <span class="n">dos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pdos</span> <span class="o">=</span> <span class="n">pdos</span>
+
+<div class="viewcode-block" id="SDOSPlotter.dos_plot_data"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter.dos_plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">dos_plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">plot_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_cutoff</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                      <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the plotting data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            yscale (:obj:`float`, optional): Scaling factor for the y-axis.</span>
+<span class="sd">            xmin (:obj:`float`, optional): The minimum energy to mask the</span>
+<span class="sd">                energy and density of states data (reduces plotting load).</span>
+<span class="sd">            xmax (:obj:`float`, optional): The maximum energy to mask the</span>
+<span class="sd">                energy and density of states data (reduces plotting load).</span>
+<span class="sd">            colours (:obj:`dict`, optional): Use custom colours for specific</span>
+<span class="sd">                element and orbital combinations. Specified as a :obj:`dict` of</span>
+<span class="sd">                :obj:`dict` of the colours. For example::</span>
+
+<span class="sd">                    {</span>
+<span class="sd">                        &#39;Sn&#39;: {&#39;s&#39;: &#39;r&#39;, &#39;p&#39;: &#39;b&#39;},</span>
+<span class="sd">                        &#39;O&#39;: {&#39;s&#39;: &#39;#000000&#39;}</span>
+<span class="sd">                    }</span>
+
+<span class="sd">                The colour can be a hex code, series of rgb value, or any other</span>
+<span class="sd">                format supported by matplotlib.</span>
+<span class="sd">            plot_total (:obj:`bool`, optional): Plot the total density of</span>
+<span class="sd">                states. Defaults to ``True``.</span>
+<span class="sd">            legend_cutoff (:obj:`float`, optional): The cut-off (in % of the</span>
+<span class="sd">                maximum density of states within the plotting range) for an</span>
+<span class="sd">                elemental orbital to be labelled in the legend. This prevents</span>
+<span class="sd">                the legend from containing labels for orbitals that have very</span>
+<span class="sd">                little contribution in the plotting range.</span>
+<span class="sd">            subplot (:obj:`bool`, optional): Plot the density of states for</span>
+<span class="sd">                each element on separate subplots. Defaults to ``False``.</span>
+<span class="sd">            zero_to_efermi (:obj:`bool`, optional): Normalise the plot such</span>
+<span class="sd">                that the Fermi level is set as 0 eV.</span>
+<span class="sd">            cache (:obj:`dict`, optional): Cache object tracking how colours</span>
+<span class="sd">                have been assigned to orbitals. The format is the same as the</span>
+<span class="sd">                &quot;colours&quot; dict. This defaults to the module-level</span>
+<span class="sd">                sumo.plotting.colour_cache object, but an empty dict can be</span>
+<span class="sd">                used as a fresh cache. This object will be modified in-place.</span>
+<span class="sd">            spin (:obj:`Spin`, optional): Check that spin-selection has not</span>
+<span class="sd">                been called for a closed-shell calculation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: The plotting data. Formatted with the following keys:</span>
+
+<span class="sd">                &quot;energies&quot; (:obj:`numpy.ndarray`)</span>
+<span class="sd">                    The energies.</span>
+
+<span class="sd">                &quot;mask&quot; (:obj:`numpy.ndarray`)</span>
+<span class="sd">                    A mask used to trim the density of states data and</span>
+<span class="sd">                    prevent unwanted data being included in the output file.</span>
+
+<span class="sd">                &quot;lines&quot; (:obj:`list`)</span>
+<span class="sd">                    A :obj:`list` of :obj:`dict` containing the density data</span>
+<span class="sd">                    and some metadata. Each line :obj:`dict` contains the keys:</span>
+
+<span class="sd">                        &quot;label&quot; (:obj:`str`)</span>
+<span class="sd">                            The label for the legend.</span>
+
+<span class="sd">                        &quot;dens&quot; (:obj:`numpy.ndarray`)</span>
+<span class="sd">                            The density of states data.</span>
+
+<span class="sd">                        &quot;colour&quot; (:obj:`str`)</span>
+<span class="sd">                            The colour of the line.</span>
+
+<span class="sd">                        &quot;alpha&quot; (:obj:`float`)</span>
+<span class="sd">                            The alpha value for line fill.</span>
+
+<span class="sd">                &quot;ymin&quot; (:obj:`float`)</span>
+<span class="sd">                    The minimum y-axis limit.</span>
+
+<span class="sd">                &quot;ymax&quot; (:obj:`float`)</span>
+<span class="sd">                    The maximum y-axis limit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cache</span> <span class="o">=</span> <span class="n">colour_cache</span>
+
+        <span class="c1"># mask needed to prevent unwanted data in pdf and for finding y limit</span>
+        <span class="n">dos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dos</span>
+        <span class="n">pdos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pdos</span>
+        <span class="n">eners</span> <span class="o">=</span> <span class="n">dos</span><span class="o">.</span><span class="n">energies</span> <span class="o">-</span> <span class="n">dos</span><span class="o">.</span><span class="n">efermi</span> <span class="k">if</span> <span class="n">zero_to_efermi</span> <span class="k">else</span> <span class="n">dos</span><span class="o">.</span><span class="n">energies</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">eners</span> <span class="o">&gt;=</span> <span class="n">xmin</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">eners</span> <span class="o">&lt;=</span> <span class="n">xmax</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">)</span>
+        <span class="n">plot_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mask&#39;</span><span class="p">:</span> <span class="n">mask</span><span class="p">,</span> <span class="s1">&#39;energies&#39;</span><span class="p">:</span> <span class="n">eners</span><span class="p">}</span>
+        <span class="n">spins</span> <span class="o">=</span> <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">spin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Spin-selection only possible with spin-polarised &#39;</span>
+                             <span class="s1">&#39;calculation results&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Visibility cutoff based on scale of total plot even if it is hidden</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">dmax</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">ymax</span> <span class="o">=</span> <span class="n">dmax</span> <span class="k">if</span> <span class="n">dmax</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="p">(</span><span class="n">legend_cutoff</span> <span class="o">/</span> <span class="mf">100.</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ymax</span> <span class="o">/</span> <span class="mf">1.05</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">plot_total</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;text.color&#39;</span> <span class="ow">in</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">:</span>
+                <span class="n">tdos_colour</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;text.color&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">tdos_colour</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">tdos_colour</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tdos_colour</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">tdos</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Total DOS&#39;</span><span class="p">,</span> <span class="s1">&#39;dens&#39;</span><span class="p">:</span> <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="p">,</span>
+                    <span class="s1">&#39;colour&#39;</span><span class="p">:</span> <span class="n">tdos_colour</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">}</span>
+
+            <span class="c1"># subplot data formatted as a list of lists of dicts, with each</span>
+            <span class="c1"># list of dicts being plotted on a separate graph, if only one list</span>
+            <span class="c1"># then solo plot</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">tdos</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">subplot</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[[]]</span>  <span class="c1"># need a blank list to add lines into</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">el</span><span class="p">,</span> <span class="n">el_pdos</span> <span class="ow">in</span> <span class="n">pdos</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">el_lines</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">orb</span> <span class="ow">in</span> <span class="n">sort_orbitals</span><span class="p">(</span><span class="n">el_pdos</span><span class="p">):</span>
+                <span class="n">dmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
+                            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">el_pdos</span><span class="p">[</span><span class="n">orb</span><span class="p">]</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+                <span class="n">ymax</span> <span class="o">=</span> <span class="n">dmax</span> <span class="k">if</span> <span class="n">dmax</span> <span class="o">&gt;</span> <span class="n">ymax</span> <span class="k">else</span> <span class="n">ymax</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">dmax</span> <span class="o">&lt;</span> <span class="n">cutoff</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">orb</span><span class="p">)</span>
+                <span class="n">colour</span><span class="p">,</span> <span class="n">cache</span> <span class="o">=</span> <span class="n">get_cached_colour</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">orb</span><span class="p">,</span> <span class="n">colours</span><span class="p">,</span>
+                                                  <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
+                <span class="n">el_lines</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
+                                 <span class="s1">&#39;colour&#39;</span><span class="p">:</span> <span class="n">colour</span><span class="p">,</span>
+                                 <span class="s1">&#39;dens&#39;</span><span class="p">:</span> <span class="n">el_pdos</span><span class="p">[</span><span class="n">orb</span><span class="p">]</span><span class="o">.</span><span class="n">densities</span><span class="p">})</span>
+            <span class="k">if</span> <span class="n">subplot</span><span class="p">:</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el_lines</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">el_lines</span><span class="p">)</span>
+
+        <span class="n">ymax</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">*</span> <span class="n">empty_space</span> <span class="o">/</span> <span class="n">yscale</span>
+        <span class="n">ymin</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="n">ymax</span>
+        <span class="n">plot_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;lines&#39;</span><span class="p">:</span> <span class="n">lines</span><span class="p">,</span> <span class="s1">&#39;ymax&#39;</span><span class="p">:</span> <span class="n">ymax</span><span class="p">,</span> <span class="s1">&#39;ymin&#39;</span><span class="p">:</span> <span class="n">ymin</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">plot_data</span></div>
+
+    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_dos_style</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span>
+                 <span class="n">xmax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">legend_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">legend_frame_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">legend_cutoff</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Arb. units&#39;</span><span class="p">,</span>
+                 <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object of the density of states.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            subplot (:obj:`bool`, optional): Plot the density of states for</span>
+<span class="sd">                each element on separate subplots. Defaults to ``False``.</span>
+<span class="sd">            width (:obj:`float`, optional): The width of the plot.</span>
+<span class="sd">            height (:obj:`float`, optional): The height of the plot.</span>
+<span class="sd">            xmin (:obj:`float`, optional): The minimum energy on the x-axis.</span>
+<span class="sd">            xmax (:obj:`float`, optional): The maximum energy on the x-axis.</span>
+<span class="sd">            yscale (:obj:`float`, optional): Scaling factor for the y-axis.</span>
+<span class="sd">            colours (:obj:`dict`, optional): Use custom colours for specific</span>
+<span class="sd">                element and orbital combinations. Specified as a :obj:`dict` of</span>
+<span class="sd">                :obj:`dict` of the colours. For example::</span>
+
+<span class="sd">                    {</span>
+<span class="sd">                        &#39;Sn&#39;: {&#39;s&#39;: &#39;r&#39;, &#39;p&#39;: &#39;b&#39;},</span>
+<span class="sd">                        &#39;O&#39;: {&#39;s&#39;: &#39;#000000&#39;}</span>
+<span class="sd">                    }</span>
+
+<span class="sd">                The colour can be a hex code, series of rgb value, or any other</span>
+<span class="sd">                format supported by matplotlib.</span>
+<span class="sd">            plot_total (:obj:`bool`, optional): Plot the total density of</span>
+<span class="sd">                states. Defaults to ``True``.</span>
+<span class="sd">            legend_on (:obj:`bool`, optional): Plot the graph legend. Defaults</span>
+<span class="sd">                to ``True``.</span>
+<span class="sd">            num_columns (:obj:`int`, optional): The number of columns in the</span>
+<span class="sd">                legend.</span>
+<span class="sd">            legend_frame_on (:obj:`bool`, optional): Plot a frame around the</span>
+<span class="sd">                graph legend. Defaults to ``False``.</span>
+<span class="sd">            legend_cutoff (:obj:`float`, optional): The cut-off (in % of the</span>
+<span class="sd">                maximum density of states within the plotting range) for an</span>
+<span class="sd">                elemental orbital to be labelled in the legend. This prevents</span>
+<span class="sd">                the legend from containing labels for orbitals that have very</span>
+<span class="sd">                little contribution in the plotting range.</span>
+<span class="sd">            xlabel (:obj:`str`, optional): Label/units for x-axis (i.e. energy)</span>
+<span class="sd">            ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)</span>
+<span class="sd">            zero_to_efermi (:obj:`bool`, optional): Normalise the plot such</span>
+<span class="sd">                that the Fermi level is set as 0 eV.</span>
+<span class="sd">            dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for</span>
+<span class="sd">                the image.</span>
+<span class="sd">            fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a</span>
+<span class="sd">                a single font, specified as a :obj:`str`, or several fonts,</span>
+<span class="sd">                specified as a :obj:`list` of :obj:`str`.</span>
+<span class="sd">            plt (:obj:`matplotlib.pyplot`, optional): A</span>
+<span class="sd">                :obj:`matplotlib.pyplot` object to use for plotting.</span>
+<span class="sd">            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib</span>
+<span class="sd">                style specifications, to be composed on top of Sumo base</span>
+<span class="sd">                style.</span>
+<span class="sd">            no_base_style (:obj:`bool`, optional): Prevent use of sumo base</span>
+<span class="sd">                style. This can make alternative styles behave more</span>
+<span class="sd">                predictably.</span>
+<span class="sd">            spin (:obj:`Spin`, optional): Plot a spin-polarised density of states,</span>
+<span class="sd">            &quot;up&quot; or &quot;1&quot; for spin up only, &quot;down&quot; or &quot;-1&quot; for spin down only.</span>
+<span class="sd">            Defaults to ``None``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`matplotlib.pyplot`: The density of states plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plot_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dos_plot_data</span><span class="p">(</span><span class="n">yscale</span><span class="o">=</span><span class="n">yscale</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
+                                       <span class="n">colours</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span> <span class="n">plot_total</span><span class="o">=</span><span class="n">plot_total</span><span class="p">,</span>
+                                       <span class="n">legend_cutoff</span><span class="o">=</span><span class="n">legend_cutoff</span><span class="p">,</span>
+                                       <span class="n">subplot</span><span class="o">=</span><span class="n">subplot</span><span class="p">,</span>
+                                       <span class="n">zero_to_efermi</span><span class="o">=</span><span class="n">zero_to_efermi</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">subplot</span><span class="p">:</span>
+            <span class="n">nplots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;lines&#39;</span><span class="p">])</span>
+            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_subplot</span><span class="p">(</span><span class="n">nplots</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+                                 <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">]</span>
+        <span class="n">energies</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;energies&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;lines&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;dens&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">spins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">spin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">spins</span> <span class="o">=</span> <span class="p">[</span><span class="n">spin</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">spins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">,</span> <span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line_set</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;lines&#39;</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">subplot</span><span class="p">:</span>
+                <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">line</span><span class="p">,</span> <span class="n">spin</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">line_set</span><span class="p">,</span> <span class="n">spins</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+                    <span class="n">densities</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;dens&#39;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">spin</span> <span class="ow">is</span> <span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
+                    <span class="n">densities</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;dens&#39;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">spin</span> <span class="ow">is</span> <span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="n">densities</span> <span class="o">=</span> <span class="o">-</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;dens&#39;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">densities</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                <span class="n">facecolor</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;colour&#39;</span><span class="p">],</span>
+                                <span class="n">alpha</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">])</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">densities</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                        <span class="n">color</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;colour&#39;</span><span class="p">])</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;ymax&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;ymin&#39;</span><span class="p">],</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;ymax&#39;</span><span class="p">])</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+            <span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;upper right&#39;</span> <span class="k">if</span> <span class="n">subplot</span> <span class="k">else</span> <span class="s1">&#39;best&#39;</span>
+            <span class="n">ncol</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">subplot</span> <span class="k">else</span> <span class="n">num_columns</span>
+            <span class="k">if</span> <span class="n">legend_on</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="n">legend_frame_on</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">)</span>
+
+        <span class="c1"># no add axis labels and sort out ticks</span>
+        <span class="k">if</span> <span class="n">subplot</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+                     <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;axes.labelcolor&#39;</span> <span class="ow">in</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">:</span>
+                <span class="n">ylabelcolor</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.labelcolor&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ylabelcolor</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">ylabelcolor</span><span class="p">,</span>
+                     <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">plt</span></div>
+
+
+<div class="viewcode-block" id="get_cached_colour"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.get_cached_colour">[docs]</a><span class="k">def</span> <span class="nf">get_cached_colour</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get a colour for a particular elemental and orbital combination.</span>
+
+<span class="sd">    If the element is not specified in the colours dictionary, the cache is</span>
+<span class="sd">    checked. If this element-orbital combination has not been chached before,</span>
+<span class="sd">    a new colour is drawn from the current matplotlib colour cycle and cached.</span>
+
+<span class="sd">    The default cache is sumo.plotting.colour_cache. To reset this cache, use</span>
+<span class="sd">    ``sumo.plotting.colour_cache.clear()``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        element (:obj:`str`): The element.</span>
+<span class="sd">        orbital (:obj:`str`): The orbital.</span>
+<span class="sd">        colours (:obj:`dict`, optional): Use custom colours for specific</span>
+<span class="sd">            element and orbital combinations. Specified as a :obj:`dict` of</span>
+<span class="sd">            :obj:`dict` of the colours. For example::</span>
+
+<span class="sd">                {</span>
+<span class="sd">                    &#39;Sn&#39;: {&#39;s&#39;: &#39;r&#39;, &#39;p&#39;: &#39;b&#39;},</span>
+<span class="sd">                    &#39;O&#39;: {&#39;s&#39;: &#39;#000000&#39;}</span>
+<span class="sd">                }</span>
+
+<span class="sd">            The colour can be a hex code, series of rgb value, or any other</span>
+<span class="sd">            format supported by matplotlib.</span>
+<span class="sd">        cache (:obj:`dict`, optional): Cache of colour values already</span>
+<span class="sd">            assigned. The format is the same as the custom colours dict. If</span>
+<span class="sd">            None, the module-level cache ``sumo.plotting.colour_cache`` is</span>
+<span class="sd">            used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: (colour, cache)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">colour_cache</span>
+
+    <span class="k">def</span> <span class="nf">_get_colour_with_cache</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span> <span class="n">cache</span><span class="p">,</span> <span class="n">colour_series</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return cached colour if available, or fetch and cache from cycle&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+        <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">orbital</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">[</span><span class="n">element</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">],</span> <span class="n">cache</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Iterate through colours to find one which is unused</span>
+            <span class="k">for</span> <span class="n">colour</span> <span class="ow">in</span> <span class="n">colour_series</span><span class="p">:</span>
+                <span class="c1"># Iterate through cache to check if colour already used</span>
+                <span class="k">if</span> <span class="n">colour</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[[</span><span class="n">col</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">orb</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+                                         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">orb</span> <span class="ow">in</span> <span class="n">cache</span><span class="o">.</span><span class="n">items</span><span class="p">()]):</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Not enough colours available for orbitals! &#39;</span>
+                                <span class="s1">&#39;Try a different theme.&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+                <span class="n">cache</span><span class="p">[</span><span class="n">element</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">element</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">orbital</span><span class="p">:</span> <span class="n">colour</span><span class="p">})</span>
+            <span class="k">return</span> <span class="n">colour</span><span class="p">,</span> <span class="n">cache</span>
+
+    <span class="n">colour_series</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colours</span><span class="p">,</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">colours</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">),</span> <span class="n">cache</span>
+        <span class="k">except</span><span class="p">(</span><span class="n">configparser</span><span class="o">.</span><span class="n">NoSectionError</span><span class="p">,</span> <span class="n">configparser</span><span class="o">.</span><span class="n">NoOptionError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_get_colour_with_cache</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span>
+                                          <span class="n">cache</span><span class="p">,</span> <span class="n">colour_series</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colours</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">colours</span><span class="p">[</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">],</span> <span class="n">cache</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_get_colour_with_cache</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span>
+                                          <span class="n">cache</span><span class="p">,</span> <span class="n">colour_series</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">colours</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_colour_with_cache</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span> <span class="n">cache</span><span class="p">,</span> <span class="n">colour_series</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Argument &quot;colours&quot; should be dict, &#39;</span>
+                        <span class="s1">&#39;ConfigParser or None.&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

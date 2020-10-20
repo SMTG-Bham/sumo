@@ -1,0 +1,442 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo-bandplot &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="sumo-bandstats" href="sumo-bandstats.html" />
+    <link rel="prev" title="sumo-dosplot" href="sumo-dosplot.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="sumo-bandplot">
+<h1>sumo-bandplot<a class="headerlink" href="#sumo-bandplot" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> is a program for generating publication-ready band structure diagrams.
+A large number of features are provided, including the ability to project orbital
+contributions on to the band structure.</p>
+<div class="contents local topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#usage" id="id1">Usage</a></p>
+<ul>
+<li><p><a class="reference internal" href="#file-searching" id="id2">File Searching</a></p></li>
+<li><p><a class="reference internal" href="#basic-options" id="id3">Basic Options</a></p></li>
+<li><p><a class="reference internal" href="#combined-band-structure-and-density-of-states-plots" id="id4">Combined Band Structure and Density of States Plots</a></p></li>
+<li><p><a class="reference internal" href="#projected-band-structures" id="id5">Projected Band Structures</a></p></li>
+<li><p><a class="reference internal" href="#advanced-example" id="id6">Advanced Example</a></p></li>
+<li><p><a class="reference internal" href="#questaal" id="id7">Questaal</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#command-line-interface" id="id8">Command-Line Interface</a></p>
+<ul>
+<li><p><a class="reference internal" href="#Named Arguments" id="id9">Named Arguments</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The full range of options supported by <code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> are detailed in the <a class="reference internal" href="#command-line-interface">Command-Line Interface</a> section,
+and be can be accessed using the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<p>To plot a band structure, simply run the following command in a folder containing a <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> or
+<code class="docutils literal notranslate"><span class="pre">vasprun.xml.gz</span></code> file, which has been calculated along a high-symmetry path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span>
+</pre></div>
+</div>
+<p>The plot will be written to a file named <code class="docutils literal notranslate"><span class="pre">band.pdf</span></code>, with the raw band structure data written to <code class="docutils literal notranslate"><span class="pre">band.dat</span></code>.</p>
+<p>For example, if we run the command in the <code class="docutils literal notranslate"><span class="pre">sumo/tests/data/Cs2SnI6/bandstructure</span></code> directory, the band structure
+should look like:</p>
+<a class="reference internal image-reference" href="_images/band_basic.png"><img alt="_images/band_basic.png" class="align-center" src="_images/band_basic.png" style="height: 400px;" /></a>
+<div class="section" id="file-searching">
+<h3>File Searching<a class="headerlink" href="#file-searching" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> will automatically look for <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> or <code class="docutils literal notranslate"><span class="pre">vasprun.xml.gz</span></code> files in the current
+directory. If the band structure has been broken up into multiple parts (as is common
+for hybrid band structure calculations), these files will be preferentially used. For this to work, the
+folders should be named <code class="docutils literal notranslate"><span class="pre">split-0*</span></code> and <code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> should be run in the folder containing
+the splits. For example, if the file structure is as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bandstructure/
+    split-01/
+        KPOINTS
+        vasprun.xml
+    split-02/
+        KPOINTS
+        vasprun.xml
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> should be run in the <code class="docutils literal notranslate"><span class="pre">bandstructure</span></code> directory.</p>
+</div>
+<div class="section" id="basic-options">
+<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this headline">¶</a></h3>
+<p>To specify a particular <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> to plot, the <code class="docutils literal notranslate"><span class="pre">--filenames</span></code> option can be used.
+If multiple <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> files are provided, they will be combined into a single band
+structure.</p>
+<p>The valence band maximum and conduction band minimum can be highlighted using the <code class="docutils literal notranslate"><span class="pre">--band-edges</span></code> option.</p>
+<p>The height, and width of the graphic, along with the y-axis limits, can be controlled via the
+<code class="docutils literal notranslate"><span class="pre">--width</span></code>, <code class="docutils literal notranslate"><span class="pre">--height</span></code>, <code class="docutils literal notranslate"><span class="pre">--ymax</span></code>, and <code class="docutils literal notranslate"><span class="pre">--ymin</span></code> options. For example, the plot above could be
+made more appealing using the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">width</span> <span class="mi">4</span> <span class="o">--</span><span class="n">ymin</span> <span class="o">-</span><span class="mi">4</span> <span class="o">--</span><span class="n">band</span><span class="o">-</span><span class="n">edges</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/band_rectangle.png"><img alt="_images/band_rectangle.png" class="align-center" src="_images/band_rectangle.png" style="height: 400px;" /></a>
+</div>
+<div class="section" id="combined-band-structure-and-density-of-states-plots">
+<h3>Combined Band Structure and Density of States Plots<a class="headerlink" href="#combined-band-structure-and-density-of-states-plots" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> can be used to simultaneously plot a band structure and density of states,
+using the <code class="docutils literal notranslate"><span class="pre">--dos</span></code> option. A <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> to use for the density of states information
+is required as input. For example, if we run the following command in the
+<code class="docutils literal notranslate"><span class="pre">sumo/tests/data/Cs2SnI6/bandstructure</span></code> folder, the output will look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">dos</span> <span class="o">../</span><span class="n">dos</span><span class="o">/</span><span class="n">vasprun</span><span class="o">.</span><span class="n">xml</span><span class="o">.</span><span class="n">gz</span> <span class="o">--</span><span class="n">ymin</span> <span class="o">-</span><span class="mi">4</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/band_with_dos.png"><img alt="_images/band_with_dos.png" class="align-center" src="_images/band_with_dos.png" style="height: 400px;" /></a>
+<p>Many options are provided for controlling the density of states output. The usage of these
+options is the same as in <code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code> and described in more detail on
+the <a class="reference internal" href="sumo-dosplot.html#sumo-dosplot"><span class="std std-ref">sumo-dosplot</span></a> page.</p>
+<p>To control the number of items that appear in the legend, see <a class="reference internal" href="sumo-dosplot.html#legend-labels"><span class="std std-ref">Legend Labels</span></a>.</p>
+<p>For plotting specific orbital or atomic contributions, see
+<a class="reference internal" href="sumo-dosplot.html#selective-plotting-of-specific-orbitals-and-atoms"><span class="std std-ref">Selective Plotting of Specific Orbitals and Atoms</span></a>.</p>
+<p>Furthermore, the colours of the lines in the density of states can be controlled
+by a configuration file (<code class="docutils literal notranslate"><span class="pre">--config</span></code>). See <a class="reference internal" href="sumo-dosplot.html#custom-line-colours"><span class="std std-ref">Custom Line Colours</span></a> for more details.</p>
+</div>
+<div class="section" id="projected-band-structures">
+<h3>Projected Band Structures<a class="headerlink" href="#projected-band-structures" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> can produce projected band structures, where the orbital contributions
+to a band are plotted. This behaviour is accessed using the <code class="docutils literal notranslate"><span class="pre">--project</span></code> option.
+The syntax for specifying which orbitals to project is as follows:</p>
+<ul class="simple">
+<li><p>Elements are identified using their symbol from the <code class="docutils literal notranslate"><span class="pre">POSCAR</span></code></p></li>
+<li><p>Multiple elements are separated via commas.</p></li>
+<li><p>Specific orbitals can be chosen by adding the orbital after the element using a period as a separator.</p></li>
+<li><p>If multiple orbitals are included for a single element definition, these will be combined into a single
+contribution.</p></li>
+<li><p>If no orbitals are specified but the atomic symbol is included, then all orbitals of that element will
+be combined.</p></li>
+<li><p>Multiple definitions for the same element are allowed (e.g. each specifying different orbitals).</p></li>
+</ul>
+<p>For example, to project the Sn s orbitals, the Sn p orbitals and a combined contribution from all the I orbitals,
+the command would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">project</span> <span class="n">Sn</span><span class="o">.</span><span class="n">s</span><span class="p">,</span><span class="n">Sn</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">I</span>
+</pre></div>
+</div>
+<p>For projected plots, the band structure and the projections are interpolated to ensure the bands are
+smooth. The degree of interpolation can be controlled by the <code class="docutils literal notranslate"><span class="pre">--interpolate-factor</span></code> option.
+The default is <code class="docutils literal notranslate"><span class="pre">4</span></code>, meaning the density of the eigenvalues and projections is quadrupled.</p>
+<p>Multiple projection modes are supported. These are controlled by the <code class="docutils literal notranslate"><span class="pre">--mode</span></code> option.</p>
+<p><strong>RGB Mode</strong></p>
+<p>The default is <code class="docutils literal notranslate"><span class="pre">--mode</span> <span class="pre">rgb</span></code>. Here the line colour depends on the character of the band. Each
+element or orbital contributes either red, green or blue, with the corresponding line colour
+a mixture of all three colours. <strong>This mode only supports up to 3 element/orbitals combinations.</strong>
+The order of the elements/orbitals determines which colour is used for each selection.</p>
+<p>For example, if the following command is run in the <code class="docutils literal notranslate"><span class="pre">sumo/tests/data/Cs2SnI6/bandstructure</span></code> directory,
+the output should look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">project</span> <span class="n">Sn</span><span class="o">.</span><span class="n">s</span><span class="p">,</span><span class="n">Sn</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">I</span> <span class="o">--</span><span class="n">ymin</span> <span class="o">-</span><span class="mi">4</span> <span class="o">--</span><span class="n">width</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/band_projected_rgb.png"><img alt="_images/band_projected_rgb.png" class="align-center" src="_images/band_projected_rgb.png" style="height: 400px;" /></a>
+<p><strong>Stacked Mode</strong></p>
+<p>If using <code class="docutils literal notranslate"><span class="pre">--mode</span> <span class="pre">stacked</span></code>, the element or orbital contributions are drawn as a series of stacked
+circles. The size of the circles can be scaled using the <code class="docutils literal notranslate"><span class="pre">--circle-size</span></code> option. This mode supports
+an unlimited number of element/orbital contributions.</p>
+<p>For example, if the following command is run in the <code class="docutils literal notranslate"><span class="pre">sumo/tests/data/OsO2/bandstructure</span></code> directory,
+the output should look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">project</span> <span class="n">Os</span><span class="o">.</span><span class="n">d</span><span class="p">,</span><span class="n">O</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">Os</span><span class="o">.</span><span class="n">s</span> <span class="o">--</span><span class="n">mode</span> <span class="n">stacked</span> <span class="o">--</span><span class="n">circle</span><span class="o">-</span><span class="n">size</span> <span class="mi">90</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/band_projected_stacked.png"><img alt="_images/band_projected_stacked.png" class="align-center" src="_images/band_projected_stacked.png" style="height: 400px;" /></a>
+</div>
+<div class="section" id="advanced-example">
+<h3>Advanced Example<a class="headerlink" href="#advanced-example" title="Permalink to this headline">¶</a></h3>
+<p>It is possible to combine both the <code class="docutils literal notranslate"><span class="pre">--density</span></code> and <code class="docutils literal notranslate"><span class="pre">--project</span></code> keywords. For best results,
+it is advised to use a configuration file (see <a class="reference internal" href="sumo-dosplot.html#custom-line-colours"><span class="std std-ref">Custom Line Colours</span></a>) to ensure the colours
+are consistent.</p>
+<p>For example, using the following configuration file (stored in this
+example as <code class="docutils literal notranslate"><span class="pre">my_colours.conf</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">I</span><span class="p">]</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">b</span>
+
+<span class="p">[</span><span class="n">Sn</span><span class="p">]</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">r</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">g</span>
+</pre></div>
+</div>
+<p>The following command, run in the <code class="docutils literal notranslate"><span class="pre">sumo/tests/docs/Cs2SnI6/bandstructure</span></code> folder, should output the graphic below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span>  <span class="o">--</span><span class="n">dos</span> <span class="o">../</span><span class="n">dos</span><span class="o">/</span><span class="n">vasprun</span><span class="o">.</span><span class="n">xml</span><span class="o">.</span><span class="n">gz</span> \
+                <span class="o">--</span><span class="n">project</span> <span class="n">Sn</span><span class="o">.</span><span class="n">s</span><span class="p">,</span><span class="n">Sn</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">I</span><span class="o">.</span><span class="n">p</span> \
+                <span class="o">--</span><span class="n">config</span> <span class="n">my_colours</span><span class="o">.</span><span class="n">conf</span> \
+                <span class="o">--</span><span class="n">ymin</span> <span class="o">-</span><span class="mi">4</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/band_projected_advanced.png"><img alt="_images/band_projected_advanced.png" class="align-center" src="_images/band_projected_advanced.png" style="height: 400px;" /></a>
+</div>
+<div class="section" id="questaal">
+<h3>Questaal<a class="headerlink" href="#questaal" title="Permalink to this headline">¶</a></h3>
+<p>Basic band structure plotting is supported for LMTO calculations with
+Questaal using <code class="docutils literal notranslate"><span class="pre">lmf</span></code>. (Orbital projection is not currently included.)</p>
+<p>A structure file (<em>site.ext</em>), symmetry lines file (<em>syml.ext</em>) and
+band structure output file (<em>bnds.ext</em>) should be present in the same
+directory with the same <em>ext</em> identifier. You can then plot with Sumo:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">code</span> <span class="n">questaal</span> <span class="o">-</span><span class="n">f</span> <span class="n">bnds</span><span class="o">.</span><span class="n">ext</span>
+</pre></div>
+</div>
+<p>The usual appearance options are supported.</p>
+</div>
+</div>
+<div class="section" id="command-line-interface">
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<p><blockquote>
+<div><p>bandplot is a script to produce publication-ready band
+structure diagrams</p>
+</div></blockquote>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span> <span class="p">[</span><span class="n">F</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">project</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mode</span> <span class="n">MODE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">interpolate</span><span class="o">-</span><span class="n">factor</span> <span class="n">N</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">circle</span><span class="o">-</span><span class="n">size</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ylabel</span> <span class="n">YLABEL</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">dos</span><span class="o">-</span><span class="n">label</span> <span class="n">DOS_LABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dos</span> <span class="n">DOS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">elements</span> <span class="n">E</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">orbitals</span> <span class="n">O</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">atoms</span> <span class="n">A</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spin</span> <span class="n">SPIN</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">scissor</span> <span class="n">SCISSOR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">total</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">total</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">legend</span><span class="o">-</span><span class="n">cutoff</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">g</span> <span class="n">G</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">scale</span> <span class="n">SCALE</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">height</span> <span class="n">HEIGHT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">width</span> <span class="n">WIDTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ymin</span> <span class="n">YMIN</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">ymax</span> <span class="n">YMAX</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">style</span> <span class="n">STYLE</span> <span class="p">[</span><span class="n">STYLE</span> <span class="o">...</span><span class="p">]]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">style</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">format</span> <span class="n">FORMAT</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">dpi</span> <span class="n">DPI</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">font</span> <span class="n">FONT</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-f, --filenames</kbd></dt>
+<dd><p>one or more vasprun.xml files to plot</p>
+</dd>
+<dt><kbd>-c, --code</kbd></dt>
+<dd><p>Electronic structure code (default: vasp).”questaal” also supported.</p>
+<p>Default: “vasp”</p>
+</dd>
+<dt><kbd>-p, --prefix</kbd></dt>
+<dd><p>prefix for the files generated</p>
+</dd>
+<dt><kbd>-d, --directory</kbd></dt>
+<dd><p>output directory for files</p>
+</dd>
+<dt><kbd>-b, --band-edges</kbd></dt>
+<dd><p>highlight the band edges with markers</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--project</kbd></dt>
+<dd><p>select which orbitals to project onto the band structure (e.g. “Zn.s,Zn.p,O”)</p>
+</dd>
+<dt><kbd>--mode</kbd></dt>
+<dd><p>mode for orbital projections (options: rgb, stacked)</p>
+<p>Default: “rgb”</p>
+</dd>
+<dt><kbd>--interpolate-factor</kbd></dt>
+<dd><p>interpolate factor for band structure projections (default: 4)</p>
+<p>Default: 4</p>
+</dd>
+<dt><kbd>--cartesian</kbd></dt>
+<dd><p>Read cartesian k-point coordinates. This is only necessary for some Questaal calculations; Vasp outputs are less ambiguous and this option will be ignored if –code=vasp.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--circle-size</kbd></dt>
+<dd><p>circle size for “stacked” projections (default: 150)</p>
+<p>Default: 150</p>
+</dd>
+<dt><kbd>--ylabel</kbd></dt>
+<dd><p>y-axis (i.e. energy) label/units</p>
+<p>Default: “Energy (eV)”</p>
+</dd>
+<dt><kbd>--dos-label</kbd></dt>
+<dd><p>Axis label for DOS if included</p>
+</dd>
+<dt><kbd>--dos</kbd></dt>
+<dd><p>path to density of states vasprun.xml</p>
+</dd>
+<dt><kbd>--elements</kbd></dt>
+<dd><p>elemental orbitals to plot (e.g. “C.s.p,O”)</p>
+</dd>
+<dt><kbd>--orbitals</kbd></dt>
+<dd><p>orbitals to split into lm-decomposed contributions (e.g. “Ru.d”)</p>
+</dd>
+<dt><kbd>--atoms</kbd></dt>
+<dd><p>atoms to include (e.g. “O.1.2.3,Ru.1.2.3”)</p>
+</dd>
+<dt><kbd>--spin</kbd></dt>
+<dd><p>select only one spin channel for a spin-polarised calculation (options: up, 1; down, -1)</p>
+</dd>
+<dt><kbd>--scissor</kbd></dt>
+<dd><p>apply scissor operator</p>
+</dd>
+<dt><kbd>--total-only</kbd></dt>
+<dd><p>only plot the total density of states</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no-total</kbd></dt>
+<dd><p>don’t plot the total density of states</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--legend-cutoff</kbd></dt>
+<dd><p>cut-off in % of total DOS that determines if a line is given a label (default: 3)</p>
+<p>Default: 3</p>
+</dd>
+<dt><kbd>-g, --gaussian</kbd></dt>
+<dd><p>standard deviation of DOS gaussian broadening</p>
+</dd>
+<dt><kbd>--scale</kbd></dt>
+<dd><p>scaling factor for the density of states</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--height</kbd></dt>
+<dd><p>height of the graph</p>
+</dd>
+<dt><kbd>--width</kbd></dt>
+<dd><p>width of the graph</p>
+</dd>
+<dt><kbd>--ymin</kbd></dt>
+<dd><p>minimum energy on the y-axis</p>
+<p>Default: -6.0</p>
+</dd>
+<dt><kbd>--ymax</kbd></dt>
+<dd><p>maximum energy on the y-axis</p>
+<p>Default: 6.0</p>
+</dd>
+<dt><kbd>--style</kbd></dt>
+<dd><p>matplotlib style specifications</p>
+</dd>
+<dt><kbd>--no-base-style</kbd></dt>
+<dd><p>prevent use of sumo base style</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--config</kbd></dt>
+<dd><p>colour configuration file</p>
+</dd>
+<dt><kbd>--format</kbd></dt>
+<dd><p>image file format (options: pdf, svg, jpg, png)</p>
+<p>Default: “pdf”</p>
+</dd>
+<dt><kbd>--dpi</kbd></dt>
+<dd><p>pixel density for image file</p>
+<p>Default: 400</p>
+</dd>
+<dt><kbd>--font</kbd></dt>
+<dd><p>font to use</p>
+</dd>
+</dl>
+</div>
+<p><blockquote>
+<div><p>Author: Alex Ganose
+Version: 1.0
+Last updated: July 18, 2017</p>
+</div></blockquote>
+</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sumo-kgen.html">sumo-kgen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-dosplot.html">sumo-dosplot</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">sumo-bandplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-bandstats.html">sumo-bandstats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-optplot.html">sumo-optplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-phonon-bandplot.html">sumo-phonon-bandplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customising-plots.html">Customising Sumo Plots</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/sumo-bandplot.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

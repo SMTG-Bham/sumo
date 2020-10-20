@@ -1,0 +1,538 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.cli.dosplot &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.cli.dosplot</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A script to plot density of states diagrams.</span>
+
+<span class="sd">TODO:</span>
+<span class="sd">    * Add ability to scale an orbitals density of states</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">Requirement</span><span class="p">,</span> <span class="n">resource_filename</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">sumo.io.questaal</span>
+<span class="kn">import</span> <span class="nn">sumo.io.castep</span>
+<span class="kn">from</span> <span class="nn">sumo.electronic_structure.dos</span> <span class="kn">import</span> <span class="n">load_dos</span><span class="p">,</span> <span class="n">write_files</span>
+<span class="kn">from</span> <span class="nn">sumo.electronic_structure.bandstructure</span> <span class="kn">import</span> <span class="n">string_to_spin</span>
+<span class="kn">from</span> <span class="nn">sumo.plotting.dos_plotter</span> <span class="kn">import</span> <span class="n">SDOSPlotter</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">configparser</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">ConfigParser</span> <span class="k">as</span> <span class="nn">configparser</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Alex Ganose&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Alex Ganose&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;alexganose@googlemail.com&quot;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s2">&quot;April 9, 2018&quot;</span>
+
+
+<div class="viewcode-block" id="dosplot"><a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.dosplot.dosplot">[docs]</a><span class="k">def</span> <span class="nf">dosplot</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="s1">&#39;vasp&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">elements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">total_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">legend_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_frame_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">legend_cutoff</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gaussian</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">8.</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">num_columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Arb. units&#39;</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">image_format</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A script to plot the density of states from a vasprun.xml file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (:obj:`str`, optional): Path to a DOS data file (can be</span>
+<span class="sd">            gzipped). The preferred file type depends on the electronic</span>
+<span class="sd">            structure code: vasprun.xml (VASP); *.bands (CASTEP); dos.*</span>
+<span class="sd">            (Questaal).</span>
+<span class="sd">        code (:obj:`str`, optional): Electronic structure code used (&#39;vasp&#39;,</span>
+<span class="sd">              &#39;castep&#39; or &#39;questaal&#39;). Note that for Castep only a rough TDOS</span>
+<span class="sd">              is available, assembled by sampling the eigenvalues.</span>
+<span class="sd">        prefix (:obj:`str`, optional): Prefix for file names.</span>
+<span class="sd">        directory (:obj:`str`, optional): The directory in which to save files.</span>
+<span class="sd">        elements (:obj:`dict`, optional): The elements and orbitals to extract</span>
+<span class="sd">            from the projected density of states. Should be provided as a</span>
+<span class="sd">            :obj:`dict` with the keys as the element names and corresponding</span>
+<span class="sd">            values as a :obj:`tuple` of orbitals. For example, the following</span>
+<span class="sd">            would extract the Bi s, px, py and d orbitals::</span>
+
+<span class="sd">                {&#39;Bi&#39;: (&#39;s&#39;, &#39;px&#39;, &#39;py&#39;, &#39;d&#39;)}</span>
+
+<span class="sd">            If an element is included with an empty :obj:`tuple`, all orbitals</span>
+<span class="sd">            for that species will be extracted. If ``elements`` is not set or</span>
+<span class="sd">            set to ``None``, all elements for all species will be extracted.</span>
+<span class="sd">        lm_orbitals (:obj:`dict`, optional): The orbitals to decompose into</span>
+<span class="sd">            their lm contributions (e.g. p -&gt; px, py, pz). Should be provided</span>
+<span class="sd">            as a :obj:`dict`, with the elements names as keys and a</span>
+<span class="sd">            :obj:`tuple` of orbitals as the corresponding values. For example,</span>
+<span class="sd">            the following would be used to decompose the oxygen p and d</span>
+<span class="sd">            orbitals::</span>
+
+<span class="sd">                {&#39;O&#39;: (&#39;p&#39;, &#39;d&#39;)}</span>
+
+<span class="sd">        atoms (:obj:`dict`, optional): Which atomic sites to use when</span>
+<span class="sd">            calculating the projected density of states. Should be provided as</span>
+<span class="sd">            a :obj:`dict`, with the element names as keys and a :obj:`tuple` of</span>
+<span class="sd">            :obj:`int` specifying the atomic indices as the corresponding</span>
+<span class="sd">            values. The elemental projected density of states will be summed</span>
+<span class="sd">            only over the atom indices specified. If an element is included</span>
+<span class="sd">            with an empty :obj:`tuple`, then all sites for that element will</span>
+<span class="sd">            be included. The indices are 0 based for each element specified in</span>
+<span class="sd">            the POSCAR. For example, the following will calculate the density</span>
+<span class="sd">            of states for the first 4 Sn atoms and all O atoms in the</span>
+<span class="sd">            structure::</span>
+
+<span class="sd">                {&#39;Sn&#39;: (1, 2, 3, 4), &#39;O&#39;: (, )}</span>
+
+<span class="sd">            If ``atoms`` is not set or set to ``None`` then all atomic sites</span>
+<span class="sd">            for all elements will be considered.</span>
+<span class="sd">        spin (:obj:`Spin`, optional): Plot only one spin channel from a</span>
+<span class="sd">            spin-polarised calculation; &quot;up&quot; or &quot;1&quot; for spin up only, &quot;down&quot; or</span>
+<span class="sd">            &quot;-1&quot; for spin down only. Defaults to ``None``.</span>
+<span class="sd">        subplot (:obj:`bool`, optional): Plot the density of states for each</span>
+<span class="sd">            element on separate subplots. Defaults to ``False``.</span>
+<span class="sd">        shift (:obj:`bool`, optional): Shift the energies such that the valence</span>
+<span class="sd">            band maximum (or Fermi level for metals) is at 0 eV. Defaults to</span>
+<span class="sd">            ``True``.</span>
+<span class="sd">        total_only (:obj:`bool`, optional): Only extract the total density of</span>
+<span class="sd">            states. Defaults to ``False``.</span>
+<span class="sd">        plot_total (:obj:`bool`, optional): Plot the total density of states.</span>
+<span class="sd">            Defaults to ``True``.</span>
+<span class="sd">        legend_on (:obj:`bool`, optional): Plot the graph legend. Defaults</span>
+<span class="sd">            to ``True``.</span>
+<span class="sd">        legend_frame_on (:obj:`bool`, optional): Plot a frame around the</span>
+<span class="sd">            graph legend. Defaults to ``False``.</span>
+<span class="sd">        legend_cutoff (:obj:`float`, optional): The cut-off (in % of the</span>
+<span class="sd">            maximum density of states within the plotting range) for an</span>
+<span class="sd">            elemental orbital to be labelled in the legend. This prevents</span>
+<span class="sd">            the legend from containing labels for orbitals that have very</span>
+<span class="sd">            little contribution in the plotting range.</span>
+<span class="sd">        gaussian (:obj:`float`, optional): Broaden the density of states using</span>
+<span class="sd">            convolution with a gaussian function. This parameter controls the</span>
+<span class="sd">            sigma or standard deviation of the gaussian distribution.</span>
+<span class="sd">        height (:obj:`float`, optional): The height of the plot.</span>
+<span class="sd">        width (:obj:`float`, optional): The width of the plot.</span>
+<span class="sd">        xmin (:obj:`float`, optional): The minimum energy on the x-axis.</span>
+<span class="sd">        xmax (:obj:`float`, optional): The maximum energy on the x-axis.</span>
+<span class="sd">        num_columns (:obj:`int`, optional): The number of columns in the</span>
+<span class="sd">            legend.</span>
+<span class="sd">        colours (:obj:`dict`, optional): Use custom colours for specific</span>
+<span class="sd">            element and orbital combinations. Specified as a :obj:`dict` of</span>
+<span class="sd">            :obj:`dict` of the colours. For example::</span>
+
+<span class="sd">                {</span>
+<span class="sd">                    &#39;Sn&#39;: {&#39;s&#39;: &#39;r&#39;, &#39;p&#39;: &#39;b&#39;},</span>
+<span class="sd">                    &#39;O&#39;: {&#39;s&#39;: &#39;#000000&#39;}</span>
+<span class="sd">                }</span>
+
+<span class="sd">            The colour can be a hex code, series of rgb value, or any other</span>
+<span class="sd">            format supported by matplotlib.</span>
+<span class="sd">        xlabel (:obj:`str`, optional): Label/units for x-axis (i.e. energy)</span>
+<span class="sd">        ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)</span>
+<span class="sd">        yscale (:obj:`float`, optional): Scaling factor for the y-axis.</span>
+<span class="sd">        style (:obj:`list` or :obj:`str`, optional): (List of) matplotlib style</span>
+<span class="sd">            specifications, to be composed on top of Sumo base style.</span>
+<span class="sd">        no_base_style (:obj:`bool`, optional): Prevent use of sumo base style.</span>
+<span class="sd">            This can make alternative styles behave more predictably.</span>
+<span class="sd">        image_format (:obj:`str`, optional): The image file format. Can be any</span>
+<span class="sd">            format supported by matplotlib, including: png, jpg, pdf, and svg.</span>
+<span class="sd">            Defaults to pdf.</span>
+<span class="sd">        dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for</span>
+<span class="sd">            the image.</span>
+<span class="sd">        plt (:obj:`matplotlib.pyplot`, optional): A</span>
+<span class="sd">            :obj:`matplotlib.pyplot` object to use for plotting.</span>
+<span class="sd">        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a</span>
+<span class="sd">            a single font, specified as a :obj:`str`, or several fonts,</span>
+<span class="sd">            specified as a :obj:`list` of :obj:`str`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A matplotlib pyplot object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;vasp&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;vasprun.xml&#39;</span><span class="p">):</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;vasprun.xml&#39;</span>
+            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;vasprun.xml.gz&#39;</span><span class="p">):</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;vasprun.xml.gz&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: No vasprun.xml found!&#39;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+        <span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span> <span class="o">=</span> <span class="n">load_dos</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">gaussian</span><span class="p">,</span>
+                             <span class="n">total_only</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;castep&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">sumo</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">castep</span><span class="o">.</span><span class="n">unsupported_dosplot_args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Cannot set &quot;</span><span class="si">{}</span><span class="s1">&quot; for CASTEP DOS; only total DOS &#39;</span>
+                              <span class="s1">&#39;is available.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arg</span><span class="p">))</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="n">bands_file</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">band_candidates</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*.bands&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">band_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: No *.bands file found!&#39;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">band_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">bands_file</span> <span class="o">=</span> <span class="n">band_candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: Too many *.bands files found!&#39;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="n">dos</span> <span class="o">=</span> <span class="n">sumo</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">castep</span><span class="o">.</span><span class="n">read_tdos</span><span class="p">(</span><span class="n">bands_file</span><span class="p">,</span> <span class="n">gaussian</span><span class="o">=</span><span class="n">gaussian</span><span class="p">,</span>
+                                       <span class="n">emin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="n">xmax</span><span class="p">)</span>
+        <span class="n">pdos</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">elif</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;questaal&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="n">pdos_file</span> <span class="o">=</span> <span class="n">filename</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">pdos_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pdos_candidates</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="s1">&#39;dos.*&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">pdos_candidates</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span> <span class="s1">&#39;png&#39;</span><span class="p">,</span> <span class="s1">&#39;svg&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;jpeg&#39;</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">elif</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;gz&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;bz2&#39;</span><span class="p">):</span>
+                    <span class="n">pdos_file</span> <span class="o">=</span> <span class="n">candidate</span>
+                    <span class="n">ext</span> <span class="o">=</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">pdos_file</span> <span class="o">=</span> <span class="n">candidate</span>
+                    <span class="n">ext</span> <span class="o">=</span> <span class="n">candidate</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No questaal dos file found&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;tdos.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">)):</span>
+            <span class="n">tdos_file</span> <span class="o">=</span> <span class="s1">&#39;tdos.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tdos_file</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;site.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">)):</span>
+            <span class="n">site_file</span> <span class="o">=</span> <span class="s1">&#39;site.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">site_file</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">shift</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Fermi level shift requested, but not implemented &quot;</span>
+                            <span class="s2">&quot;for Questaal DOS.&quot;</span><span class="p">)</span>
+
+        <span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span> <span class="o">=</span> <span class="n">sumo</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">questaal</span><span class="o">.</span><span class="n">read_dos</span><span class="p">(</span>
+            <span class="n">pdos_file</span><span class="o">=</span><span class="n">pdos_file</span><span class="p">,</span> <span class="n">tdos_file</span><span class="o">=</span><span class="n">tdos_file</span><span class="p">,</span> <span class="n">site_file</span><span class="o">=</span><span class="n">site_file</span><span class="p">,</span>
+            <span class="n">ry</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gaussian</span><span class="o">=</span><span class="n">gaussian</span><span class="p">,</span> <span class="n">total_only</span><span class="o">=</span><span class="n">total_only</span><span class="p">,</span>
+            <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="o">=</span><span class="n">lm_orbitals</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">)</span>
+
+    <span class="n">save_files</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">plt</span> <span class="k">else</span> <span class="kc">True</span>  <span class="c1"># don&#39;t save if pyplot object provided</span>
+
+    <span class="n">spin</span> <span class="o">=</span> <span class="n">string_to_spin</span><span class="p">(</span><span class="n">spin</span><span class="p">)</span> <span class="c1"># Convert spin argument to pymatgen Spin object</span>
+    <span class="n">plotter</span> <span class="o">=</span> <span class="n">SDOSPlotter</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span><span class="p">)</span>
+    <span class="n">plt</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_plot</span><span class="p">(</span><span class="n">subplot</span><span class="o">=</span><span class="n">subplot</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+                           <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="n">yscale</span><span class="p">,</span>
+                           <span class="n">colours</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span> <span class="n">plot_total</span><span class="o">=</span><span class="n">plot_total</span><span class="p">,</span>
+                           <span class="n">legend_on</span><span class="o">=</span><span class="n">legend_on</span><span class="p">,</span> <span class="n">num_columns</span><span class="o">=</span><span class="n">num_columns</span><span class="p">,</span>
+                           <span class="n">legend_frame_on</span><span class="o">=</span><span class="n">legend_frame_on</span><span class="p">,</span>
+                           <span class="n">xlabel</span><span class="o">=</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">,</span>
+                           <span class="n">legend_cutoff</span><span class="o">=</span><span class="n">legend_cutoff</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">,</span>
+                           <span class="n">fonts</span><span class="o">=</span><span class="n">fonts</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
+                           <span class="n">no_base_style</span><span class="o">=</span><span class="n">no_base_style</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">save_files</span><span class="p">:</span>
+        <span class="n">basename</span> <span class="o">=</span> <span class="s1">&#39;dos.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image_format</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="n">basename</span>
+        <span class="k">if</span> <span class="n">directory</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">image_format</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span>
+                    <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+        <span class="n">write_files</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">directory</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">plt</span></div>
+
+
+<span class="k">def</span> <span class="nf">_el_orb</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parse the element and orbital argument strings.</span>
+
+<span class="sd">    The presence of an element without any orbitals means that we want to plot</span>
+<span class="sd">    all of its orbitals.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (str): The element and orbitals as a string, in the form</span>
+<span class="sd">            ``&quot;C.s.p,O&quot;``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The elements and orbitals as a :obj:`dict`. For example::</span>
+
+<span class="sd">            {&#39;Bi&#39;: [&#39;s&#39;, &#39;px&#39;, &#39;py&#39;, &#39;d&#39;]}.</span>
+
+<span class="sd">        If an element symbol is included with an empty list, then all orbitals</span>
+<span class="sd">        for that species are considered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">el_orbs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
+        <span class="n">orbs</span> <span class="o">=</span> <span class="n">split</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">orbs</span> <span class="o">=</span> <span class="p">[</span><span class="n">orbs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">orbs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">orbs</span>
+        <span class="n">el_orbs</span><span class="p">[</span><span class="n">orbs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="n">orbs</span>
+    <span class="k">return</span> <span class="n">el_orbs</span>
+
+
+<span class="k">def</span> <span class="nf">_atoms</span><span class="p">(</span><span class="n">atoms_string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parse the atom string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        atoms_string (str): The atoms to plot, in the form ``&quot;C.1.2.3,&quot;``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The atomic indices over which to sum the DOS. Formatted as::</span>
+
+<span class="sd">            {Element: [atom_indices]}.</span>
+
+<span class="sd">        Indices are zero indexed for each atomic species. If an element symbol</span>
+<span class="sd">        is included with an empty list, then all sites for that species are</span>
+<span class="sd">        considered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">atoms</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="n">atoms_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
+        <span class="n">sites</span> <span class="o">=</span> <span class="n">split</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="n">sites</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">sites</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">sites</span><span class="p">))</span>
+        <span class="n">atoms</span><span class="p">[</span><span class="n">el</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sites</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">atoms</span>
+
+
+<span class="k">def</span> <span class="nf">_get_parser</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    dosplot is a script to produce publication-ready density of</span>
+<span class="s2">    states diagrams&quot;&quot;&quot;</span><span class="p">,</span>
+                                     <span class="n">epilog</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Author: </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">    Version: </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">    Last updated: </span><span class="si">{}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__author__</span><span class="p">,</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__date__</span><span class="p">))</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="s1">&#39;--filename&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;vasprun.xml file to plot&#39;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--code&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;vasp&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Input file format: &quot;vasp&quot; (vasprun.xml) or &#39;</span>
+                              <span class="s1">&#39;&quot;questaal&quot; (opt.ext)&#39;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="s1">&#39;--prefix&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;P&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;prefix for the files generated&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;--directory&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;output directory for files&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-e&#39;</span><span class="p">,</span> <span class="s1">&#39;--elements&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">_el_orb</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;E&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;elemental orbitals to plot (e.g. &quot;C.s.p,O&quot;)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--orbitals&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">_el_orb</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;orbitals to split into lm-decomposed &#39;</span>
+                              <span class="s1">&#39;contributions (e.g. &quot;Ru.d&quot;)&#39;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-a&#39;</span><span class="p">,</span> <span class="s1">&#39;--atoms&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">_atoms</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;atoms to include (e.g. &quot;O.1.2.3,Ru.1.2.3&quot;)&#39;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--spin&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;select one spin channel only for a spin-polarised &#39;</span>
+                              <span class="s1">&#39;calculation (options: up, 1; down, -1)&#39;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;--subplot&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;plot each element on separate subplots&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-g&#39;</span><span class="p">,</span> <span class="s1">&#39;--gaussian&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;G&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;standard deviation of gaussian broadening&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--columns&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;number of columns in the legend&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--legend-cutoff&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;legend_cutoff&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;cut-off in </span><span class="si">%%</span><span class="s1"> of total DOS that determines if&#39;</span>
+                              <span class="s1">&#39; a line is given a label (default: 3)&#39;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--no-legend&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;legend&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;hide the plot legend&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--legend-frame&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;legend_frame&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;display a box around the legend&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--no-shift&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;shift&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;don</span><span class="se">\&#39;</span><span class="s1">t shift the VBM/Fermi level to 0 eV&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--total-only&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;total_only&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;only plot the total density of states&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--no-total&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;total&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;don</span><span class="se">\&#39;</span><span class="s1">t plot the total density of states&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--height&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;height of the graph&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--width&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;width of the graph&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--xmin&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;minimum energy on the x-axis&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--xmax&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;maximum energy on the x-axis&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--config&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;colour configuration file&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--style&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;matplotlib style specifications&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--no-base-style&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;no_base_style&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;prevent use of sumo base style&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--xlabel&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;x-axis (i.e. energy) label/units&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--ylabel&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Arb. units&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;y-axis (i.e. DOS) label/units&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--yscale&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;scaling factor for the y-axis&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--format&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;image_format&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;FORMAT&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;image file format (options: pdf, svg, jpg, png)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--dpi&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;pixel density for image file&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--font&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;font to use&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">_get_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;sumo-dosplot.log&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+                        <span class="n">filemode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">console</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[:]))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="n">Requirement</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;sumo&#39;</span><span class="p">),</span>
+                                        <span class="s1">&#39;sumo/plotting/orbital_colours.conf&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span>
+    <span class="n">colours</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">colours</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">config_path</span><span class="p">))</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span>
+                            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UnicodeWarning</span><span class="p">,</span>
+                            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span>
+                            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;pymatgen&quot;</span><span class="p">)</span>
+
+    <span class="n">dosplot</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
+            <span class="n">directory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span>
+            <span class="n">lm_orbitals</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">orbitals</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">spin</span><span class="p">,</span>
+            <span class="n">subplot</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">subplot</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">shift</span><span class="p">,</span> <span class="n">total_only</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">total_only</span><span class="p">,</span>
+            <span class="n">plot_total</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">total</span><span class="p">,</span> <span class="n">legend_on</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">legend</span><span class="p">,</span>
+            <span class="n">legend_frame_on</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">legend_frame</span><span class="p">,</span>
+            <span class="n">legend_cutoff</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">legend_cutoff</span><span class="p">,</span> <span class="n">gaussian</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">gaussian</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span>
+            <span class="n">xmax</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xmax</span><span class="p">,</span> <span class="n">num_columns</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">style</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">no_base_style</span><span class="p">,</span>
+            <span class="n">xlabel</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ylabel</span><span class="p">,</span>
+            <span class="n">yscale</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">yscale</span><span class="p">,</span> <span class="n">image_format</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">image_format</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span>
+            <span class="n">fonts</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">font</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

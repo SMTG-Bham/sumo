@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo-dosplot &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="sumo-bandplot" href="sumo-bandplot.html" />
+    <link rel="prev" title="sumo-kgen" href="sumo-kgen.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="sumo-dosplot">
+<span id="id1"></span><h1>sumo-dosplot<a class="headerlink" href="#sumo-dosplot" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code> is a program for generating publication-ready density of states diagrams and extracting
+the density of states from VASP calculations. A large number of features are provided, including
+the ability to break the density of states down into the contributions from specific elements,
+orbitals, and atoms.</p>
+<div class="contents local topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#usage" id="id5">Usage</a></p>
+<ul>
+<li><p><a class="reference internal" href="#basic-options" id="id6">Basic Options</a></p></li>
+<li><p><a class="reference internal" href="#subplots" id="id7">Subplots</a></p></li>
+<li><p><a class="reference internal" href="#legend-labels" id="id8">Legend Labels</a></p></li>
+<li><p><a class="reference internal" href="#selective-plotting-of-specific-orbitals-and-atoms" id="id9">Selective Plotting of Specific Orbitals and Atoms</a></p></li>
+<li><p><a class="reference internal" href="#custom-line-colours" id="id10">Custom Line Colours</a></p></li>
+<li><p><a class="reference internal" href="#questaal" id="id11">Questaal</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#command-line-interface" id="id12">Command-Line Interface</a></p>
+<ul>
+<li><p><a class="reference internal" href="#Named Arguments" id="id13">Named Arguments</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The full range of options supported by <code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code> are detailed in the <a class="reference internal" href="#command-line-interface">Command-Line Interface</a> section,
+and be can be accessed using the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<p>To plot a density of states, simply run the following command in a folder containing a <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> or
+<code class="docutils literal notranslate"><span class="pre">vasprun.xml.gz</span></code> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span>
+</pre></div>
+</div>
+<p>The plot will be written to a file named <code class="docutils literal notranslate"><span class="pre">dos.pdf</span></code>, with the raw density of states data written to a series
+files. These will be named <code class="docutils literal notranslate"><span class="pre">total_dos.dat</span></code>, with additional files named <code class="docutils literal notranslate"><span class="pre">El_dos.dat</span></code> where <code class="docutils literal notranslate"><span class="pre">el</span></code> is an
+element name, for each element in the structure.</p>
+<p>For example, if we run the command in the <code class="docutils literal notranslate"><span class="pre">sumo/tests/data/Cs2SnI6/dos</span></code> directory, the density of states will
+look like:</p>
+<a class="reference internal image-reference" href="_images/dos_basic.png"><img alt="_images/dos_basic.png" class="align-center" src="_images/dos_basic.png" style="height: 400px;" /></a>
+<div class="section" id="basic-options">
+<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this headline">¶</a></h3>
+<p>The program automatically looks for files in the current directory, to specify alternative files, the
+<code class="docutils literal notranslate"><span class="pre">--filename</span></code> option can be used.</p>
+<p>The number of columns in the legend is controlled using the <code class="docutils literal notranslate"><span class="pre">--columns</span></code> option.</p>
+<p>The height, and width of the graphic, along with the x-axis limits, can be controlled via the
+<code class="docutils literal notranslate"><span class="pre">--width</span></code>, <code class="docutils literal notranslate"><span class="pre">--height</span></code>, <code class="docutils literal notranslate"><span class="pre">--xmax</span></code>, and <code class="docutils literal notranslate"><span class="pre">--xmin</span></code> options. For example, the plot above could be
+made more appealing using the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">width</span> <span class="mi">6</span> <span class="o">--</span><span class="n">height</span> <span class="mi">6</span> <span class="o">--</span><span class="n">xmin</span> <span class="o">-</span><span class="mi">4</span> <span class="o">--</span><span class="n">xmax</span> <span class="mi">6</span> <span class="o">--</span><span class="n">columns</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/dos_square.png"><img alt="_images/dos_square.png" class="align-center" src="_images/dos_square.png" style="height: 400px;" /></a>
+<p>Additional gaussian broadening can be applied using the <code class="docutils literal notranslate"><span class="pre">--gaussian</span></code> option. The setting expects a floating
+point number as the argument and controls the standard deviation of the broadening applied.</p>
+</div>
+<div class="section" id="subplots">
+<h3>Subplots<a class="headerlink" href="#subplots" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code> supports plotting the total and elemental density of states on separate panels, or subplots,
+using the <code class="docutils literal notranslate"><span class="pre">--subplot</span></code> option. For example, if we run the following command in the
+<code class="docutils literal notranslate"><span class="pre">sumo/tests/data/OsO2</span></code> folder, the output will look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">subplot</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/dos_subplot.png"><img alt="_images/dos_subplot.png" class="align-center" src="_images/dos_subplot.png" style="height: 400px;" /></a>
+</div>
+<div class="section" id="legend-labels">
+<span id="id2"></span><h3>Legend Labels<a class="headerlink" href="#legend-labels" title="Permalink to this headline">¶</a></h3>
+<p>You may have noticed that not all elements and their orbitals are displayed in the legend. This is because
+<code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code> only labels states that have a significant contribution in the plotting area. By default,
+a significant contribution is defined as greater than 3 % of the max total density of states. The
+number of labels present in the legend can be controlled via the <code class="docutils literal notranslate"><span class="pre">--legend-cutoff</span></code> option, which controls
+the cutoff in %, at which a label is given to an orbital.</p>
+<p>For example, if we wish to give all orbitals a label, simply set the cutoff to <code class="docutils literal notranslate"><span class="pre">0</span></code>
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">legend</span><span class="o">-</span><span class="n">cutoff</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>Will give a density of states that looks like:</p>
+<a class="reference internal image-reference" href="_images/dos_all_labels.png"><img alt="_images/dos_all_labels.png" class="align-center" src="_images/dos_all_labels.png" style="height: 400px;" /></a>
+</div>
+<div class="section" id="selective-plotting-of-specific-orbitals-and-atoms">
+<span id="id3"></span><h3>Selective Plotting of Specific Orbitals and Atoms<a class="headerlink" href="#selective-plotting-of-specific-orbitals-and-atoms" title="Permalink to this headline">¶</a></h3>
+<p>By default <code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code> includes all elements, orbitals, and atoms when plotting the density of states.
+However, sometimes it may be desirable to plot the density of states of only of a specific orbital,
+or even specific atoms.</p>
+<p><strong>Selecting Elements</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--elements</span></code> option controls which elemental orbitals are included in the plot.
+The syntax for specifying which elemental orbitals to include is as follows:</p>
+<ul class="simple">
+<li><p>Elements are identified using their symbol from the <code class="docutils literal notranslate"><span class="pre">POSCAR</span></code></p></li>
+<li><p>Multiple elements are separated via commas.</p></li>
+<li><p>Specific orbitals can be chosen by adding the orbital after the element using a period as a separator.</p></li>
+<li><p>If no orbitals are specified but the atomic symbol is included, then all orbitals of that element will
+be plotted.</p></li>
+</ul>
+<p>For example, to plot the Os s and d and all O orbitals, the command would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">elements</span> <span class="n">Os</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">d</span><span class="p">,</span><span class="n">O</span>
+</pre></div>
+</div>
+<p><strong>Selecting Atoms</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--atoms</span></code> option controls which atoms are included in the plot.
+The syntax for specifying which atoms to include is as follows:</p>
+<ul class="simple">
+<li><p>Elements are identified using their symbol from the <code class="docutils literal notranslate"><span class="pre">POSCAR</span></code></p></li>
+<li><p>Multiple elements are separated via commas.</p></li>
+<li><p>Specific atoms can be chosen by adding the atomic index after the element using a period as a separator.</p></li>
+<li><p>Atomic indexes begin at 1 for each species in the structure.</p></li>
+<li><p>If no atoms are specified but the atomic symbol is included, then all atoms of that element will
+be plotted.</p></li>
+</ul>
+<p>For example, to plot the second Os atom and the first two O atoms, the command would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">atoms</span> <span class="n">Os</span><span class="o">.</span><span class="mi">2</span><span class="p">,</span><span class="n">O</span><span class="o">.</span><span class="mf">1.2</span>
+</pre></div>
+</div>
+<p><strong>lm-Decomposed Orbitals</strong></p>
+<p>By default all lm-decomposed orbitals (e.g. px, py, and pz) are summed into a single orbital contribution
+(e.g. p). The <code class="docutils literal notranslate"><span class="pre">--orbitals</span></code> option can be used to plot the individual lm-decomposed contributions.
+Please note that the structure should be correctly oriented in cartesian space if the orbitals are to have
+any physical meaning. If you are unsure what this means, then you probably shouldn’t use this option.</p>
+<p>The syntax for specifying which orbitals to split into their lm contributions is as follows:</p>
+<ul class="simple">
+<li><p>Elements are identified using their symbol from the <code class="docutils literal notranslate"><span class="pre">POSCAR</span></code></p></li>
+<li><p>Multiple elements are separated via commas.</p></li>
+<li><p>Specific orbitals can be chosen by adding the orbital after the element using a period as a separator.</p></li>
+<li><p>If no orbitals are specified but the atomic symbol is included, then all orbitals of that element will
+be split.</p></li>
+</ul>
+<p>For example, to split the Os d orbitals, the command would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">orbitals</span> <span class="n">Os</span><span class="o">.</span><span class="n">d</span>
+</pre></div>
+</div>
+<p>All the above options can be used simultaneously. For example, plot the lm-decomposed d orbitals for
+the first Os atom, the following command would be used:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">orbitals</span> <span class="n">Os</span><span class="o">.</span><span class="n">d</span> <span class="o">--</span><span class="n">elements</span> <span class="n">Os</span><span class="o">.</span><span class="n">d</span> <span class="o">--</span><span class="n">atoms</span> <span class="n">Os</span><span class="o">.</span><span class="mi">1</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">total</span>
+</pre></div>
+</div>
+<p>The resulting plot looks like:</p>
+<a class="reference internal image-reference" href="_images/dos_specific.png"><img alt="_images/dos_specific.png" class="align-center" src="_images/dos_specific.png" style="height: 400px;" /></a>
+</div>
+<div class="section" id="custom-line-colours">
+<span id="id4"></span><h3>Custom Line Colours<a class="headerlink" href="#custom-line-colours" title="Permalink to this headline">¶</a></h3>
+<p>Sumo uses a config file for choosing the colours of elements and orbitals in density of states plots.
+The default colours can be found in <code class="docutils literal notranslate"><span class="pre">sumo/conf/orbital_colours.conf</span></code>. The format of this file is simple:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">N</span><span class="p">]</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">r</span>
+<span class="n">p</span> <span class="o">=</span> <span class="c1">#D93B2B</span>
+</pre></div>
+</div>
+<p>The element is specified in square brackets, with the orbitals and their colours listed beneath. The supported
+colour identifiers include hex codes, rgb values or any other format supported by matplotlib.</p>
+<p>To use your own custom colours, simply create your own config file in the current directory (e.g. <code class="docutils literal notranslate"><span class="pre">my_colours.conf</span></code>) and use the <code class="docutils literal notranslate"><span class="pre">--config</span></code> option to read in your settings. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">config</span> <span class="n">my_colours</span><span class="o">.</span><span class="n">conf</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="questaal">
+<h3>Questaal<a class="headerlink" href="#questaal" title="Permalink to this headline">¶</a></h3>
+<p>A typical workflow for plotting the DOS in Questaal is to first
+converge a density with LMF, then run a non-self-consistent step to
+output DOS files with a command such as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lmf</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">ext</span> <span class="o">--</span><span class="n">dos</span><span class="p">:</span><span class="n">npts</span><span class="o">=</span><span class="mi">2001</span><span class="p">:</span><span class="n">window</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span> <span class="o">--</span><span class="n">pdos</span> <span class="o">--</span><span class="n">quit</span><span class="o">=</span><span class="n">rho</span>
+</pre></div>
+</div>
+<p>Setting <cite>–pdos</cite> defaults to mode 2, decomposing the DOS contributions
+by l, m and each structure site. However, that decomposed data is
+written in a binary format to <em>moms.ext</em> while <em>dos.ext</em> contains a
+total-DOS. This will be overwritten in the next step, so for usage with Sumo please rename this file to “tdos.ext”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mv</span> <span class="n">dos</span><span class="o">.</span><span class="n">ext</span> <span class="n">tdos</span><span class="o">.</span><span class="n">ext</span>
+</pre></div>
+</div>
+<p>Part of Questaal, the <em>lmdos</em> program converts from <em>moms.ext</em> to a
+plottable PDOS. It needs to run with the same <cite>–dos</cite> and <cite>–pdos</cite>
+flags as the previous step, i.e. in this case:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lmdos</span> <span class="o">--</span><span class="n">dos</span><span class="p">:</span><span class="n">npts</span><span class="o">=</span><span class="mi">2001</span><span class="p">:</span><span class="n">window</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span> <span class="o">--</span><span class="n">pdos</span> <span class="n">ext</span>
+</pre></div>
+</div>
+<p>This generates a new <em>dos.ext</em> containing pdos data and replacing the
+existing file if present.</p>
+<p>To plot with Sumo, provide either file. If a single-channel file is
+provided, Sumo will plot a TDOS, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">code</span> <span class="n">questaal</span> <span class="o">-</span><span class="n">f</span> <span class="n">tdos</span><span class="o">.</span><span class="n">ext</span>
+</pre></div>
+</div>
+<p>If a multichannel PDOS file is provided, this will be interpreted as
+if decomposed by site, l, and m. The <em>site.ext</em> file is read in, and
+if present a file named <em>tdos.ext</em> will also be used to add the total
+DOS.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">code</span> <span class="n">questaal</span> <span class="o">-</span><span class="n">f</span> <span class="n">dos</span><span class="o">.</span><span class="n">ext</span>
+</pre></div>
+</div>
+<p>The <cite>–elements</cite> and <cite>–orbitals</cite> options may be used to specify which
+channels are grouped and/or shown. Note that empty sites may be
+included in the output if they have a non-negligible contribution to
+the DOS. The <cite>–elements</cite> switch may be useful for hiding these if
+desired.</p>
+</div>
+</div>
+<div class="section" id="command-line-interface">
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<p><blockquote>
+<div><p>dosplot is a script to produce publication-ready density of
+states diagrams</p>
+</div></blockquote>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">O</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">A</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">spin</span> <span class="n">SPIN</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">g</span> <span class="n">G</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">columns</span> <span class="n">N</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">legend</span><span class="o">-</span><span class="n">cutoff</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">legend</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">legend</span><span class="o">-</span><span class="n">frame</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">shift</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">total</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">total</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">height</span> <span class="n">HEIGHT</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">width</span> <span class="n">WIDTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">xmin</span> <span class="n">XMIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">xmax</span> <span class="n">XMAX</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">style</span> <span class="n">STYLE</span> <span class="p">[</span><span class="n">STYLE</span> <span class="o">...</span><span class="p">]]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">style</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">xlabel</span> <span class="n">XLABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ylabel</span> <span class="n">YLABEL</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">yscale</span> <span class="n">YSCALE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">format</span> <span class="n">FORMAT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dpi</span> <span class="n">DPI</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">font</span> <span class="n">FONT</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-f, --filename</kbd></dt>
+<dd><p>vasprun.xml file to plot</p>
+</dd>
+<dt><kbd>-c, --code</kbd></dt>
+<dd><p>Input file format: “vasp” (vasprun.xml) or “questaal” (opt.ext)</p>
+<p>Default: “vasp”</p>
+</dd>
+<dt><kbd>-p, --prefix</kbd></dt>
+<dd><p>prefix for the files generated</p>
+</dd>
+<dt><kbd>-d, --directory</kbd></dt>
+<dd><p>output directory for files</p>
+</dd>
+<dt><kbd>-e, --elements</kbd></dt>
+<dd><p>elemental orbitals to plot (e.g. “C.s.p,O”)</p>
+</dd>
+<dt><kbd>-o, --orbitals</kbd></dt>
+<dd><p>orbitals to split into lm-decomposed contributions (e.g. “Ru.d”)</p>
+</dd>
+<dt><kbd>-a, --atoms</kbd></dt>
+<dd><p>atoms to include (e.g. “O.1.2.3,Ru.1.2.3”)</p>
+</dd>
+<dt><kbd>--spin</kbd></dt>
+<dd><p>select one spin channel only for a spin-polarised calculation (options: up, 1; down, -1)</p>
+</dd>
+<dt><kbd>-s, --subplot</kbd></dt>
+<dd><p>plot each element on separate subplots</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-g, --gaussian</kbd></dt>
+<dd><p>standard deviation of gaussian broadening</p>
+</dd>
+<dt><kbd>--columns</kbd></dt>
+<dd><p>number of columns in the legend</p>
+<p>Default: 2</p>
+</dd>
+<dt><kbd>--legend-cutoff</kbd></dt>
+<dd><p>cut-off in % of total DOS that determines if a line is given a label (default: 3)</p>
+<p>Default: 3</p>
+</dd>
+<dt><kbd>--no-legend</kbd></dt>
+<dd><p>hide the plot legend</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--legend-frame</kbd></dt>
+<dd><p>display a box around the legend</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no-shift</kbd></dt>
+<dd><p>don’t shift the VBM/Fermi level to 0 eV</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--total-only</kbd></dt>
+<dd><p>only plot the total density of states</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no-total</kbd></dt>
+<dd><p>don’t plot the total density of states</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--height</kbd></dt>
+<dd><p>height of the graph</p>
+</dd>
+<dt><kbd>--width</kbd></dt>
+<dd><p>width of the graph</p>
+</dd>
+<dt><kbd>--xmin</kbd></dt>
+<dd><p>minimum energy on the x-axis</p>
+<p>Default: -6.0</p>
+</dd>
+<dt><kbd>--xmax</kbd></dt>
+<dd><p>maximum energy on the x-axis</p>
+<p>Default: 6.0</p>
+</dd>
+<dt><kbd>--config</kbd></dt>
+<dd><p>colour configuration file</p>
+</dd>
+<dt><kbd>--style</kbd></dt>
+<dd><p>matplotlib style specifications</p>
+</dd>
+<dt><kbd>--no-base-style</kbd></dt>
+<dd><p>prevent use of sumo base style</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--xlabel</kbd></dt>
+<dd><p>x-axis (i.e. energy) label/units</p>
+<p>Default: “Energy (eV)”</p>
+</dd>
+<dt><kbd>--ylabel</kbd></dt>
+<dd><p>y-axis (i.e. DOS) label/units</p>
+<p>Default: “Arb. units”</p>
+</dd>
+<dt><kbd>--yscale</kbd></dt>
+<dd><p>scaling factor for the y-axis</p>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--format</kbd></dt>
+<dd><p>image file format (options: pdf, svg, jpg, png)</p>
+<p>Default: “pdf”</p>
+</dd>
+<dt><kbd>--dpi</kbd></dt>
+<dd><p>pixel density for image file</p>
+<p>Default: 400</p>
+</dd>
+<dt><kbd>--font</kbd></dt>
+<dd><p>font to use</p>
+</dd>
+</dl>
+</div>
+<p><blockquote>
+<div><p>Author: Alex Ganose
+Version: 1.0
+Last updated: April 9, 2018</p>
+</div></blockquote>
+</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sumo-kgen.html">sumo-kgen</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">sumo-dosplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-bandplot.html">sumo-bandplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-bandstats.html">sumo-bandstats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-optplot.html">sumo-optplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-phonon-bandplot.html">sumo-phonon-bandplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customising-plots.html">Customising Sumo Plots</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/sumo-dosplot.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

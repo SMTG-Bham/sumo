@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.electronic_structure.effective_mass &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.electronic_structure.effective_mass</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing helper functions for calculating band effective masses.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">from</span> <span class="nn">scipy.constants</span> <span class="kn">import</span> <span class="n">physical_constants</span>
+
+<span class="n">eV_to_hartree</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;electron volt-hartree relationship&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">bohr_to_m</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s1">&#39;Bohr radius&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">angstrom_to_bohr</span> <span class="o">=</span> <span class="n">bohr_to_m</span> <span class="o">/</span> <span class="mf">1e-10</span>
+
+
+<div class="viewcode-block" id="get_fitting_data"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.effective_mass.get_fitting_data">[docs]</a><span class="k">def</span> <span class="nf">get_fitting_data</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">spin</span><span class="p">,</span> <span class="n">band_id</span><span class="p">,</span> <span class="n">kpoint_id</span><span class="p">,</span> <span class="n">num_sample_points</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extract fitting data for band extrema based on spin, kpoint and band.</span>
+
+<span class="sd">    Searches forward and backward from the extrema point, but will only sample</span>
+<span class="sd">    there data if there are enough points in that direction.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):</span>
+<span class="sd">            The band structure.</span>
+<span class="sd">        spin (:obj:`~pymatgen.electronic_structure.core.Spin`): Which spin</span>
+<span class="sd">            channel to sample.</span>
+<span class="sd">        band_id (int): Index of the band to sample.</span>
+<span class="sd">        kpoint_id (int): Index of the kpoint to sample.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: The data necessary to calculate the effective mass, along with</span>
+<span class="sd">        some metadata. Formatted as a :obj:`list` of :obj:`dict`, each with the</span>
+<span class="sd">        keys:</span>
+
+<span class="sd">        &#39;energies&#39; (:obj:`numpy.ndarray`)</span>
+<span class="sd">            Band eigenvalues in eV.</span>
+
+<span class="sd">        &#39;distances&#39; (:obj:`numpy.ndarray`)</span>
+<span class="sd">            Distances of the k-points in reciprocal space.</span>
+
+<span class="sd">        &#39;band_id&#39; (:obj:`int`)</span>
+<span class="sd">            The index of the band,</span>
+
+<span class="sd">        &#39;spin&#39; (:obj:`~pymatgen.electronic_structure.core.Spin`)</span>
+<span class="sd">            The spin channel</span>
+
+<span class="sd">        &#39;start_kpoint&#39; (:obj:`int`)</span>
+<span class="sd">            The index of the k-point at which the band extrema occurs</span>
+
+<span class="sd">        &#39;end_kpoint&#39; (:obj:`int`)</span>
+<span class="sd">            The k-point towards which the data has been sampled.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># branch data provides data about the start and end points</span>
+    <span class="c1"># of specific band paths</span>
+    <span class="n">branch_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">kpoint_id</span><span class="p">)</span>
+                   <span class="k">if</span> <span class="n">b</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">kpoint_id</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">start_kpoint</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[</span><span class="n">kpoint_id</span><span class="p">]</span>
+
+    <span class="n">fitting_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># check to see if there are enough points to sample from first</span>
+    <span class="c1"># check in the forward direction</span>
+    <span class="k">if</span> <span class="n">kpoint_id</span> <span class="o">+</span> <span class="n">num_sample_points</span> <span class="o">&lt;=</span> <span class="n">branch_data</span><span class="p">[</span><span class="s1">&#39;end_index&#39;</span><span class="p">]:</span>
+
+        <span class="c1"># calculate sampling limits</span>
+        <span class="n">start_id</span> <span class="o">=</span> <span class="n">kpoint_id</span>
+        <span class="n">end_id</span> <span class="o">=</span> <span class="n">kpoint_id</span> <span class="o">+</span> <span class="n">num_sample_points</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">band_id</span><span class="p">][</span><span class="n">start_id</span><span class="p">:</span><span class="n">end_id</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bs</span><span class="o">.</span><span class="n">distance</span><span class="p">[</span><span class="n">start_id</span><span class="p">:</span><span class="n">end_id</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+        <span class="c1"># normalise eigenvalues and distances to starting point</span>
+        <span class="n">energies</span> <span class="o">-=</span> <span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">band_id</span><span class="p">][</span><span class="n">kpoint_id</span><span class="p">]</span>
+        <span class="n">dists</span> <span class="o">-=</span> <span class="n">bs</span><span class="o">.</span><span class="n">distance</span><span class="p">[</span><span class="n">kpoint_id</span><span class="p">]</span>
+
+        <span class="c1"># symmetrise the data to make fitting more reliable</span>
+        <span class="n">energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">energies</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">energies</span><span class="p">[</span><span class="mi">1</span><span class="p">:]])</span>
+        <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="o">-</span><span class="n">dists</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dists</span><span class="p">[</span><span class="mi">1</span><span class="p">:]])</span>
+
+        <span class="n">end_kpoint</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[</span><span class="n">branch_data</span><span class="p">[</span><span class="s1">&#39;end_index&#39;</span><span class="p">]]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;energies&#39;</span><span class="p">:</span> <span class="n">energies</span><span class="p">,</span> <span class="s1">&#39;distances&#39;</span><span class="p">:</span> <span class="n">dists</span><span class="p">,</span> <span class="s1">&#39;band_id&#39;</span><span class="p">:</span> <span class="n">band_id</span><span class="p">,</span>
+                <span class="s1">&#39;spin&#39;</span><span class="p">:</span> <span class="n">spin</span><span class="p">,</span> <span class="s1">&#39;start_kpoint&#39;</span><span class="p">:</span> <span class="n">start_kpoint</span><span class="p">,</span>
+                <span class="s1">&#39;end_kpoint&#39;</span><span class="p">:</span> <span class="n">end_kpoint</span><span class="p">}</span>
+        <span class="n">fitting_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># check in the backward direction</span>
+    <span class="k">if</span> <span class="n">kpoint_id</span> <span class="o">-</span> <span class="n">num_sample_points</span> <span class="o">&gt;=</span> <span class="n">branch_data</span><span class="p">[</span><span class="s1">&#39;start_index&#39;</span><span class="p">]:</span>
+
+        <span class="c1"># calculate sampling limits</span>
+        <span class="n">start_id</span> <span class="o">=</span> <span class="n">kpoint_id</span> <span class="o">-</span> <span class="n">num_sample_points</span>
+        <span class="n">end_id</span> <span class="o">=</span> <span class="n">kpoint_id</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">energies</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">band_id</span><span class="p">][</span><span class="n">start_id</span><span class="p">:</span><span class="n">end_id</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">dists</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">distance</span><span class="p">[</span><span class="n">start_id</span><span class="p">:</span><span class="n">end_id</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># normalise eigenvalues and distances to starting point</span>
+        <span class="n">energies</span> <span class="o">-=</span> <span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">band_id</span><span class="p">][</span><span class="n">kpoint_id</span><span class="p">]</span>
+        <span class="n">dists</span> <span class="o">-=</span> <span class="n">bs</span><span class="o">.</span><span class="n">distance</span><span class="p">[</span><span class="n">kpoint_id</span><span class="p">]</span>
+
+        <span class="c1"># symmetrise the data to make fitting more reliable</span>
+        <span class="n">energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">energies</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">energies</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">dists</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">dists</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+
+        <span class="n">end_kpoint</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[</span><span class="n">branch_data</span><span class="p">[</span><span class="s1">&#39;start_index&#39;</span><span class="p">]]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;energies&#39;</span><span class="p">:</span> <span class="n">energies</span><span class="p">,</span> <span class="s1">&#39;distances&#39;</span><span class="p">:</span> <span class="n">dists</span><span class="p">,</span> <span class="s1">&#39;band_id&#39;</span><span class="p">:</span> <span class="n">band_id</span><span class="p">,</span>
+                <span class="s1">&#39;spin&#39;</span><span class="p">:</span> <span class="n">spin</span><span class="p">,</span> <span class="s1">&#39;start_kpoint&#39;</span><span class="p">:</span> <span class="n">start_kpoint</span><span class="p">,</span>
+                <span class="s1">&#39;end_kpoint&#39;</span><span class="p">:</span> <span class="n">end_kpoint</span><span class="p">}</span>
+        <span class="n">fitting_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fitting_data</span></div>
+
+
+<div class="viewcode-block" id="fit_effective_mass"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.effective_mass.fit_effective_mass">[docs]</a><span class="k">def</span> <span class="nf">fit_effective_mass</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">energies</span><span class="p">,</span> <span class="n">parabolic</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fit the effective masses using either a parabolic or nonparabolic fit.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        distances (:obj:`numpy.ndarray`): The x-distances between k-points in</span>
+<span class="sd">            reciprocal Angstroms, normalised to the band extrema.</span>
+<span class="sd">        energies (:obj:`numpy.ndarray`): The band eigenvalues normalised to the</span>
+<span class="sd">            eigenvalue of the band extrema.</span>
+<span class="sd">        parabolic (:obj:`bool`, optional): Use a parabolic fit of the band</span>
+<span class="sd">            edges. If ``False`` then nonparabolic fitting will be attempted.</span>
+<span class="sd">            Defaults to ``True``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: The effective mass in units of electron rest mass, :math:`m_0`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">parabolic</span><span class="p">:</span>
+        <span class="n">fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">energies</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">fit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># curvature therefore 2 * the exponent on the ^2 term</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Use non parabolic description of the bands</span>
+        <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+            <span class="n">top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">bot</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">alpha</span>
+            <span class="k">return</span> <span class="n">top</span> <span class="o">/</span> <span class="n">bot</span>
+
+        <span class="c1"># set boundaries for curve fitting: alpha &gt; 1e-8</span>
+        <span class="c1"># as alpha = 0 causes an error</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1e-8</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+        <span class="n">popt</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">distances</span><span class="p">,</span> <span class="n">energies</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span>
+                            <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">popt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># coefficient is currently in eV/Angstrom^2/h_bar^2</span>
+    <span class="c1"># want it in atomic units so Hartree/bohr^2/h_bar^2</span>
+    <span class="n">eff_mass</span> <span class="o">=</span> <span class="p">(</span><span class="n">angstrom_to_bohr</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">eV_to_hartree</span><span class="p">)</span> <span class="o">/</span> <span class="n">c</span>
+    <span class="k">return</span> <span class="n">eff_mass</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

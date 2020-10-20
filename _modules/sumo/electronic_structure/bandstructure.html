@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.electronic_structure.bandstructure &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.electronic_structure.bandstructure</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing helper functions for dealing with band structures.</span>
+
+<span class="sd">todo:</span>
+<span class="sd">  * Extend get projections to allow specifying lm orbitals and atomic sites.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Spin</span>
+
+
+<div class="viewcode-block" id="get_projections_by_branches"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.get_projections_by_branches">[docs]</a><span class="k">def</span> <span class="nf">get_projections_by_branches</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">normalise</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns orbital projections for each branch in a band structure.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):</span>
+<span class="sd">            The band structure.</span>
+<span class="sd">        selection (list): A list of :obj:`tuple` or :obj:`string`</span>
+<span class="sd">            identifying which projections to return. Projections can be</span>
+<span class="sd">            specified by both element and orbital, for example::</span>
+
+<span class="sd">                [(&#39;Sn&#39;, &#39;s&#39;), (&#39;Bi&#39;, &#39;p&#39;), (&#39;S&#39;, &#39;p&#39;)]</span>
+
+<span class="sd">            If just the element is specified then all the orbitals of that</span>
+<span class="sd">            element are combined. For example, the following will combine</span>
+<span class="sd">            all the S orbitals into a single projection::</span>
+
+<span class="sd">                [(&#39;Bi&#39;, &#39;s&#39;), (&#39;Bi&#39;, &#39;p&#39;), &#39;S&#39;]</span>
+
+<span class="sd">            Particular orbitals can also be combined, for example::</span>
+
+<span class="sd">                [(&#39;Bi&#39;, &#39;s&#39;), (&#39;Bi&#39;, &#39;p&#39;), (&#39;S&#39;, (&#39;s&#39;, &#39;p&#39;, &#39;d&#39;))]</span>
+
+<span class="sd">        normalise (:obj:`str`, optional): Normalisation the projections.</span>
+<span class="sd">            Options are:</span>
+
+<span class="sd">              * ``&#39;all&#39;``: Projections normalised against the sum of all</span>
+<span class="sd">                   other projections.</span>
+<span class="sd">              * ``&#39;select&#39;``: Projections normalised against the sum of the</span>
+<span class="sd">                   selected projections.</span>
+<span class="sd">              * ``None``: No normalisation performed.</span>
+
+<span class="sd">            Defaults to ``None``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A ``list`` of orbital projections for each branch of the band</span>
+<span class="sd">        structure, in the same order as specified in ``selection``, with</span>
+<span class="sd">        the format::</span>
+
+<span class="sd">            [ [ {spin: projections} ], [ {spin: projections} ], ... ]</span>
+
+<span class="sd">        Where spin is a :obj:`pymatgen.electronic_structure.core.Spin`</span>
+<span class="sd">        object and projections is a :obj:`numpy.array` of::</span>
+
+<span class="sd">            projections[band_index][kpoint_index]</span>
+
+<span class="sd">        If there are no projections in the band structure, then an array of</span>
+<span class="sd">        zeros is returned for each spin.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">spins</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">projections</span> <span class="o">=</span> <span class="n">get_projections</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">normalise</span><span class="o">=</span><span class="n">normalise</span><span class="p">)</span>
+
+    <span class="n">branches</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bs</span><span class="o">.</span><span class="n">branches</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="s1">&#39;start_index&#39;</span><span class="p">]</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="s1">&#39;end_index&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">branch_proj</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">projections</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">projections</span><span class="p">))):</span>
+            <span class="n">branch_proj</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span> <span class="o">=</span> <span class="n">projections</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">spin</span><span class="p">][:,</span> <span class="n">s</span><span class="p">:</span><span class="n">e</span><span class="p">]</span>
+
+        <span class="n">branches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">branch_proj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">branches</span></div>
+
+
+<div class="viewcode-block" id="get_projections"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.get_projections">[docs]</a><span class="k">def</span> <span class="nf">get_projections</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">normalise</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns orbital projections from a band structure.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):</span>
+<span class="sd">            The band structure.</span>
+<span class="sd">        selection (list): A list of :obj:`tuple` or :obj:`string`</span>
+<span class="sd">            identifying which projections to return. Projections can be</span>
+<span class="sd">            specified by both element and orbital, for example::</span>
+
+<span class="sd">                [(&#39;Bi&#39;, &#39;s&#39;), (&#39;Bi&#39;, &#39;p&#39;), (&#39;S&#39;, &#39;p&#39;)]</span>
+
+<span class="sd">            If just the element is specified then all the orbitals of</span>
+<span class="sd">            that element are combined. For example, the following will combine</span>
+<span class="sd">            all the S orbitals into a single projection::</span>
+
+<span class="sd">                [(&#39;Bi&#39;, &#39;s&#39;), (&#39;Bi&#39;, &#39;p&#39;), &#39;S&#39;]</span>
+
+<span class="sd">            Particular orbitals can also be combined, for example::</span>
+
+<span class="sd">                [(&#39;Bi&#39;, &#39;s&#39;), (&#39;Bi&#39;, &#39;p&#39;), (&#39;S&#39;, (&#39;s&#39;, &#39;p&#39;, &#39;d&#39;))]</span>
+
+<span class="sd">        normalise (:obj:`str`, optional): Normalisation the projections.</span>
+<span class="sd">            Options are:</span>
+
+<span class="sd">              * ``&#39;all&#39;``: Projections normalised against the sum of all</span>
+<span class="sd">                   other projections.</span>
+<span class="sd">              * ``&#39;select&#39;``: Projections normalised against the sum of the</span>
+<span class="sd">                   selected projections.</span>
+<span class="sd">              * ``None``: No normalisation performed.</span>
+
+<span class="sd">            Defaults to ``None``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A ``list`` of orbital projections, in the same order as specified</span>
+<span class="sd">        in ``selection``, with the format::</span>
+
+<span class="sd">            [ {spin: projections}, {spin: projections} ... ]</span>
+
+<span class="sd">        Where spin is a :obj:`pymatgen.electronic_structure.core.Spin`</span>
+<span class="sd">        object and projections is a :obj:`numpy.array` of::</span>
+
+<span class="sd">            projections[band_index][kpoint_index]</span>
+
+<span class="sd">        If there are no projections in the band structure, then an array of</span>
+<span class="sd">        zeros is returned for each spin.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">spins</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">nbands</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">nb_bands</span>
+    <span class="n">nkpts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bs</span><span class="o">.</span><span class="n">kpoints</span><span class="p">)</span>
+
+    <span class="c1"># if we are to normalise the data later we need access to all projections</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">symbol_set</span>
+    <span class="n">all_orbitals</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">]</span>
+
+    <span class="c1"># dictio has the form: {&#39;el1&#39;: [s, p, d, f], &#39;el2&#39;: [s, p, d, f]...}</span>
+    <span class="n">dictio</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="p">[</span><span class="n">all_orbitals</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)))</span>
+
+    <span class="c1"># bs.get_projection_on_elements_and_orbitals() returns the data in a</span>
+    <span class="c1"># really frustrating format, namely:</span>
+    <span class="c1">#     {spin: [band_index][kpoint_index]{element: {orbital: projection}}}</span>
+    <span class="n">all_proj</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_projections_on_elements_and_orbitals</span><span class="p">(</span><span class="n">dictio</span><span class="p">)</span>
+
+    <span class="c1"># Make a defaultdict of defaultdicts</span>
+    <span class="n">dict_proj</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span>
+    <span class="n">sum_proj</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbands</span><span class="p">,</span> <span class="n">nkpts</span><span class="p">))]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)))</span>
+
+    <span class="c1"># store the projections for all elements and orbitals in a useable format</span>
+    <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">orbital</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">all_orbitals</span><span class="p">):</span>
+
+        <span class="c1"># convert data to [nb][nk][projection]</span>
+        <span class="n">el_orb_proj</span> <span class="o">=</span> <span class="p">[[</span><span class="n">all_proj</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">nb</span><span class="p">][</span><span class="n">nk</span><span class="p">][</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">nk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nkpts</span><span class="p">)]</span> <span class="k">for</span> <span class="n">nb</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nbands</span><span class="p">)]</span>
+
+        <span class="n">dict_proj</span><span class="p">[</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">el_orb_proj</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">normalise</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">sum_proj</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">+=</span> <span class="n">el_orb_proj</span>
+
+    <span class="c1"># now go through the selected orbitals and extract what&#39;s needed</span>
+    <span class="n">spec_proj</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">selection</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># spec is just an element type, therefore sum all orbitals</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="n">spec</span>
+            <span class="n">orbitals</span> <span class="o">=</span> <span class="n">all_orbitals</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">element</span><span class="p">,</span> <span class="n">orbitals</span> <span class="o">=</span> <span class="n">spec</span>
+            <span class="c1"># even if there is only one orbital, make sure we can loop over it</span>
+            <span class="n">orbitals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">orbitals</span><span class="p">)</span>
+
+        <span class="n">proj</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbands</span><span class="p">,</span> <span class="n">nkpts</span><span class="p">))]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">orbital</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="n">orbitals</span><span class="p">):</span>
+            <span class="n">proj</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dict_proj</span><span class="p">[</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">normalise</span> <span class="o">==</span> <span class="s1">&#39;select&#39;</span><span class="p">:</span>
+                <span class="n">sum_proj</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dict_proj</span><span class="p">[</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span>
+
+        <span class="n">spec_proj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">normalise</span><span class="p">:</span>
+        <span class="c1"># to prevent warnings/errors relating to divide by zero,</span>
+        <span class="c1"># catch warnings and surround divide with np.nan_to_num</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spec_proj</span><span class="p">))):</span>
+                <span class="n">spec_proj</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">spec_proj</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span> <span class="o">/</span>
+                                                   <span class="n">sum_proj</span><span class="p">[</span><span class="n">spin</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">spec_proj</span></div>
+
+
+<div class="viewcode-block" id="get_reconstructed_band_structure"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.get_reconstructed_band_structure">[docs]</a><span class="k">def</span> <span class="nf">get_reconstructed_band_structure</span><span class="p">(</span><span class="n">list_bs</span><span class="p">,</span> <span class="n">efermi</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Combine a list of band structures into a single band structure.</span>
+
+<span class="sd">    This is typically very useful when you split non self consistent</span>
+<span class="sd">    band structure runs in several independent jobs and want to merge back</span>
+<span class="sd">    the results.</span>
+
+<span class="sd">    This method will also ensure that any BandStructure objects will contain</span>
+<span class="sd">    branches.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        list_bs (:obj:`list` of \</span>
+<span class="sd">        :obj:`~pymatgen.electronic_structure.bandstructure.BandStructure` \</span>
+<span class="sd">        or :obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):</span>
+<span class="sd">            The band structures.</span>
+<span class="sd">        efermi (:obj:`float`, optional): The Fermi energy of the reconstructed</span>
+<span class="sd">            band structure. If `None`, an average of all the Fermi energies</span>
+<span class="sd">            across all band structures is used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`pymatgen.electronic_structure.bandstructure.BandStructure` or \</span>
+<span class="sd">        :obj:`pymatgen.electronic_structure.bandstructureBandStructureSymmLine`:</span>
+<span class="sd">        A band structure object. The type depends on the type of the band</span>
+<span class="sd">        structures in ``list_bs``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">efermi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">efermi</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">b</span><span class="o">.</span><span class="n">efermi</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">list_bs</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_bs</span><span class="p">)</span>
+
+    <span class="n">kpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="n">k</span><span class="o">.</span><span class="n">frac_coords</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">bs</span><span class="o">.</span><span class="n">kpoints</span><span class="p">]</span> <span class="k">for</span> <span class="n">bs</span> <span class="ow">in</span> <span class="n">list_bs</span><span class="p">])</span>
+    <span class="n">nb_bands</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">list_bs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">nb_bands</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_bs</span><span class="p">))])</span>
+    <span class="n">dicts</span> <span class="o">=</span> <span class="p">[</span><span class="n">bs</span><span class="o">.</span><span class="n">labels_dict</span> <span class="k">for</span> <span class="n">bs</span> <span class="ow">in</span> <span class="n">list_bs</span><span class="p">]</span>
+    <span class="n">labels_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">frac_coords</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dicts</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="n">eigenvals</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">projections</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">spin</span> <span class="ow">in</span> <span class="n">list_bs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">bands</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">spin_bands</span> <span class="o">=</span> <span class="p">[</span><span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">[</span><span class="n">spin</span><span class="p">][:</span><span class="n">nb_bands</span><span class="p">]</span> <span class="k">for</span> <span class="n">bs</span> <span class="ow">in</span> <span class="n">list_bs</span><span class="p">]</span>
+        <span class="n">eigenvals</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">spin_bands</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_bs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">projections</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">spin_projs</span> <span class="o">=</span> <span class="p">[</span><span class="n">bs</span><span class="o">.</span><span class="n">projections</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">][:</span><span class="n">nb_bands</span><span class="p">]</span> <span class="k">for</span> <span class="n">bs</span> <span class="ow">in</span> <span class="n">list_bs</span><span class="p">]</span>
+            <span class="n">projections</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">spin_projs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">bs</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">list_bs</span><span class="p">[</span><span class="mi">0</span><span class="p">])(</span>
+        <span class="n">kpoints</span><span class="p">,</span>
+        <span class="n">eigenvals</span><span class="p">,</span>
+        <span class="n">list_bs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lattice_rec</span><span class="p">,</span>
+        <span class="n">efermi</span><span class="p">,</span>
+        <span class="n">labels_dict</span><span class="p">,</span>
+        <span class="n">structure</span><span class="o">=</span><span class="n">list_bs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span>
+        <span class="n">projections</span><span class="o">=</span><span class="n">projections</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">force_branches</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="force_branches"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.force_branches">[docs]</a><span class="k">def</span> <span class="nf">force_branches</span><span class="p">(</span><span class="n">bandstructure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Force a linemode band structure to contain branches.</span>
+
+<span class="sd">    Branches give a specific portion of the path from one high-symmetry point</span>
+<span class="sd">    to another. Branches are required for the plotting methods to function correctly.</span>
+<span class="sd">    Unfortunately, due to the pymatgen BandStructure implementation they require</span>
+<span class="sd">    duplicate k-points in the band structure path. To avoid this unnecessary</span>
+<span class="sd">    computational expense, this function can reconstruct branches in band structures</span>
+<span class="sd">    without the duplicate k-points.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bandstructure: A band structure object.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A band structure with brnaches.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">k</span><span class="o">.</span><span class="n">frac_coords</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">bandstructure</span><span class="o">.</span><span class="n">kpoints</span><span class="p">])</span>
+    <span class="n">labels_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">frac_coords</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bandstructure</span><span class="o">.</span><span class="n">labels_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="c1"># pymatgen band structure objects support branches. These are formed when</span>
+    <span class="c1"># two kpoints with the same label are next to each other. This bit of code</span>
+    <span class="c1"># will ensure that the band structure will contain branches, if it doesn&#39;t</span>
+    <span class="c1"># already.</span>
+    <span class="n">dup_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">high_sym_kpoints</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">labels_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kpoints</span><span class="p">):</span>
+        <span class="n">dup_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">in</span> <span class="n">high_sym_kpoints</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">kpoints</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">kpoints</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">k</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">kpoints</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">k</span><span class="p">))):</span>
+            <span class="n">dup_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="n">kpoints</span> <span class="o">=</span> <span class="n">kpoints</span><span class="p">[</span><span class="n">dup_ids</span><span class="p">]</span>
+
+    <span class="n">eigenvals</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">projections</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">spin_energies</span> <span class="ow">in</span> <span class="n">bandstructure</span><span class="o">.</span><span class="n">bands</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">eigenvals</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">=</span> <span class="n">spin_energies</span><span class="p">[:,</span> <span class="n">dup_ids</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bandstructure</span><span class="o">.</span><span class="n">projections</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">projections</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">=</span> <span class="n">bandstructure</span><span class="o">.</span><span class="n">projections</span><span class="p">[</span><span class="n">spin</span><span class="p">][:,</span> <span class="n">dup_ids</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">bandstructure</span><span class="p">)(</span>
+        <span class="n">kpoints</span><span class="p">,</span>
+        <span class="n">eigenvals</span><span class="p">,</span>
+        <span class="n">bandstructure</span><span class="o">.</span><span class="n">lattice_rec</span><span class="p">,</span>
+        <span class="n">bandstructure</span><span class="o">.</span><span class="n">efermi</span><span class="p">,</span>
+        <span class="n">labels_dict</span><span class="p">,</span>
+        <span class="n">structure</span><span class="o">=</span><span class="n">bandstructure</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span>
+        <span class="n">projections</span><span class="o">=</span><span class="n">projections</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="string_to_spin"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.string_to_spin">[docs]</a><span class="k">def</span> <span class="nf">string_to_spin</span><span class="p">(</span><span class="n">spin_string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function to convert &#39;spin&#39; cli argument to pymatgen Spin object&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">spin_string</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;up&#39;</span><span class="p">,</span> <span class="s1">&#39;Up&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;+1&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">Spin</span><span class="o">.</span><span class="n">up</span>
+
+    <span class="k">elif</span> <span class="n">spin_string</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;down&#39;</span><span class="p">,</span> <span class="s1">&#39;Down&#39;</span><span class="p">,</span> <span class="s1">&#39;-1&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">Spin</span><span class="o">.</span><span class="n">down</span>
+
+    <span class="k">elif</span> <span class="n">spin_string</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unable to parse &#39;spin&#39; argument&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

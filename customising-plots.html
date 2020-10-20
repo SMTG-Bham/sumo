@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customising Sumo Plots &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Gallery" href="gallery.html" />
+    <link rel="prev" title="sumo-phonon-bandplot" href="sumo-phonon-bandplot.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="customising-sumo-plots">
+<h1>Customising Sumo Plots<a class="headerlink" href="#customising-sumo-plots" title="Permalink to this headline">¶</a></h1>
+<p>Sumo’s default plotting style has been designed to look aesthetically pleasing, however,
+you may want to adjust the look and feel of plot for a publication. This is simple to
+achieve for both the command line scripts and python API. In this tutorial, we explore
+the ways in which sumo plots can customised.</p>
+<div class="contents local topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#command-line-interface" id="id1">Command-Line Interface</a></p>
+<ul>
+<li><p><a class="reference internal" href="#using-matplotlib-in-built-style-sheets" id="id2">Using matplotlib in-built style sheets</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#python-api" id="id3">Python API</a></p></li>
+</ul>
+</div>
+<div class="section" id="command-line-interface">
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<p>All sumo plotting scripts have a number of options that can be used to tweak the formatting
+of a plot, including the <code class="docutils literal notranslate"><span class="pre">--width</span></code>, <code class="docutils literal notranslate"><span class="pre">--height</span></code>, <code class="docutils literal notranslate"><span class="pre">--dpi</span></code>, and <code class="docutils literal notranslate"><span class="pre">--font</span></code>, options.
+Greater customisation is provided through the <code class="docutils literal notranslate"><span class="pre">--style</span></code> option, by use of
+<a class="reference external" href="https://matplotlib.org/users/style_sheets.html">matplotlib style sheets</a>.</p>
+<p>For example: to add minor tick marks to the x-axis and set the font size to 18 points,
+create a file called <code class="docutils literal notranslate"><span class="pre">custom.mplstyle</span></code> containing the following data:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">xtick.minor.size </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">7.5</span>
+<span class="nt">font.size </span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">18</span>
+</pre></div>
+</div>
+<p>Now run the sumo plotting command and select the style option by specifying the path
+to the above file. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">style</span> <span class="n">custom</span><span class="o">.</span><span class="n">mplstyle</span>
+</pre></div>
+</div>
+<p>The plot should now reflect your customisations:</p>
+<a class="reference internal image-reference" href="_images/dos_customised.png"><img alt="_images/dos_customised.png" class="align-center" src="_images/dos_customised.png" style="height: 400px;" /></a>
+<p>In this way, one can create a customised plotting style that can be used for all sumo
+plots to maintain consistency. To see examples of what can be tuned, see the
+<a class="reference external" href="https://github.com/SMTG-UCL/sumo/blob/mpl-style/sumo/plotting/sumo_base.mplstyle">default sumo style sheet</a>.</p>
+<div class="section" id="using-matplotlib-in-built-style-sheets">
+<h3>Using matplotlib in-built style sheets<a class="headerlink" href="#using-matplotlib-in-built-style-sheets" title="Permalink to this headline">¶</a></h3>
+<p>Matplotlib provides a large number of in-built style sheets that can be used.
+You can explore the <a class="reference external" href="https://matplotlib.org/gallery/style_sheets/style_sheets_reference.html">matplotlib gallery</a> to
+see what is available.
+These style sheets can be used in sumo by supplying the style name for the <code class="docutils literal notranslate"><span class="pre">--style</span></code> option.
+To make the most of these styles, their use should be combined with the <code class="docutils literal notranslate"><span class="pre">--no-base-style</span></code> option, which prevents
+the default sumo style from being applied.</p>
+<p>For example, to make plots for use on a black background, the <code class="docutils literal notranslate"><span class="pre">dark_background</span></code> style can be employed using the
+following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">style</span> <span class="n">dark_background</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">style</span>
+</pre></div>
+</div>
+<p>The plot should now reflect these changes:</p>
+<a class="reference internal image-reference" href="_images/dos_dark_bg.png"><img alt="_images/dos_dark_bg.png" class="align-center" src="_images/dos_dark_bg.png" style="height: 400px;" /></a>
+</div>
+</div>
+<div class="section" id="python-api">
+<h2>Python API<a class="headerlink" href="#python-api" title="Permalink to this headline">¶</a></h2>
+<p>Sumo plots produced using the python API support matplotlib style sheets for customisation through
+the <code class="docutils literal notranslate"><span class="pre">style</span></code> optional argument. The process by which this is achieved is described on the
+<a class="reference external" href="https://matplotlib.org/users/style_sheets.html">matplotlib website</a>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">style</span></code> option can take one of the following:</p>
+<ul>
+<li><p>A dictionary containing the style parameters. E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">style</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;xtick.minor.size&#39;</span><span class="p">:</span> <span class="mf">7.5</span><span class="p">,</span> <span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>A path to a matplotlib style sheet file.</p></li>
+<li><p>A matplotlib in-built style sheet name.</p></li>
+<li><p>A list containing one or more of the above, in which case the styles will be composited on
+top of each other.</p></li>
+</ul>
+<p>Similar to as discussed above, the <code class="docutils literal notranslate"><span class="pre">no_base_style</span></code> option should be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> for best results
+when using the in-built matplotlib styles.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sumo-kgen.html">sumo-kgen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-dosplot.html">sumo-dosplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-bandplot.html">sumo-bandplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-bandstats.html">sumo-bandstats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-optplot.html">sumo-optplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-phonon-bandplot.html">sumo-phonon-bandplot</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Customising Sumo Plots</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/customising-plots.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

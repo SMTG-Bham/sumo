@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.symmetry.kpoints &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.symmetry.kpoints</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module providing helper functions for generating k-points along a path.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<div class="viewcode-block" id="get_path_data"><a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpoints.get_path_data">[docs]</a><span class="k">def</span> <span class="nf">get_path_data</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bradcrack&#39;</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">spg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">line_density</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">cart_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kpt_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">phonopy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the k-point path, coordinates and symmetry labels for a structure.</span>
+
+<span class="sd">    If a manual :obj:`list` of kpoints is supplied using the ``kpt_list``</span>
+<span class="sd">    variable, the ``mode`` option will be ignored.</span>
+
+<span class="sd">    The format of the returned data will be different if phonopy is ``True`` or</span>
+<span class="sd">    ``False``. This is because phonopy requires the labels and kpoints to be</span>
+<span class="sd">    provided in a different format than kgen.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        structure (:obj:`~pymatgen.core.structure.Structure`): The structure.</span>
+<span class="sd">        mode (:obj:`str`, optional): Method used for calculating the</span>
+<span class="sd">            high-symmetry path. The options are:</span>
+
+<span class="sd">            bradcrack</span>
+<span class="sd">                Use the paths from Bradley and Cracknell. See [brad]_.</span>
+
+<span class="sd">            pymatgen</span>
+<span class="sd">                Use the paths from pymatgen. See [curt]_.</span>
+
+<span class="sd">            seekpath</span>
+<span class="sd">                Use the paths from SeeK-path. See [seek]_.</span>
+
+<span class="sd">        symprec (:obj:`float`, optional): The tolerance for determining the</span>
+<span class="sd">            crystal symmetry.</span>
+<span class="sd">        spg (:obj:`~pymatgen.symmetry.groups.SpaceGroup`, optional): Space</span>
+<span class="sd">            group used to override the symmetry determined by spglib. This is</span>
+<span class="sd">            not recommended and only provided for testing purposes.</span>
+<span class="sd">            This option will only take effect when ``mode = &#39;bradcrack&#39;``.</span>
+<span class="sd">        line_density (:obj:`int`, optional): Density of k-points along the</span>
+<span class="sd">            path.</span>
+<span class="sd">        cart_coords (:obj:`bool`, optional): Whether the k-points are returned</span>
+<span class="sd">            in cartesian or reciprocal coordinates. Defaults to ``False``</span>
+<span class="sd">            (fractional coordinates).</span>
+<span class="sd">        kpt_list (:obj:`list`, optional): List of k-points to use, formatted as</span>
+<span class="sd">            a list of subpaths, each containing a list of fractional k-points.</span>
+<span class="sd">            For example::</span>
+
+<span class="sd">                [ [[0., 0., 0.], [0., 0., 0.5]],</span>
+<span class="sd">                  [[0.5, 0., 0.], [0.5, 0.5, 0.]] ]</span>
+
+<span class="sd">            Will return points along ``0 0 0 -&gt; 0 0 1/2 | 1/2 0 0</span>
+<span class="sd">            -&gt; 1/2 1/2 0``</span>
+<span class="sd">        path_labels (:obj:`list`, optional): The k-point labels. These should</span>
+<span class="sd">            be provided as a :obj:`list` of :obj:`str` for each subpath of the</span>
+<span class="sd">            overall path. For example::</span>
+
+<span class="sd">                [ [&#39;Gamma&#39;, &#39;Z&#39;], [&#39;X&#39;, &#39;M&#39;] ]</span>
+
+<span class="sd">            combined with the above example for ``kpt_list`` would indicate the</span>
+<span class="sd">            path: Gamma -&gt; Z | X -&gt; M. If no labels are provided, letters from</span>
+<span class="sd">            A -&gt; Z will be used instead.</span>
+<span class="sd">        phonopy (:obj:`bool`, optional): Format the k-points and labels for</span>
+<span class="sd">            use with phonopy. Defaults to ``False``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: A tuple of a :obj:`~sumo.symmetry.kpath` object, the k-points</span>
+<span class="sd">        along the high-symmetry path, and the k-point labels. Returned as</span>
+<span class="sd">        ``(kpath, kpoints, labels)``.</span>
+
+<span class="sd">        The type of ``kpath`` object will depend on the value of ``mode`` and</span>
+<span class="sd">        whether ``kpt_list`` is set.</span>
+
+<span class="sd">        If ``phonopy == False``, then:</span>
+
+<span class="sd">            * ``kpoints`` is a :obj:`numpy.ndarray` of the k-point</span>
+<span class="sd">                coordinates along the high-symmetry path. For example::</span>
+
+<span class="sd">                    [[0, 0, 0], [0.25, 0, 0], [0.5, 0, 0], [0.5, 0, 0.25],</span>
+<span class="sd">                    [0.5, 0, 0.5]]</span>
+
+<span class="sd">            * ``labels`` is a :obj:`list` of the high symmetry labels for</span>
+<span class="sd">                each k-point (will be an empty :obj:`str` if the k-point has</span>
+<span class="sd">                no label). For example::</span>
+
+<span class="sd">                    [&#39;\Gamma&#39;, &#39;&#39;, &#39;X&#39;, &#39;&#39;, &#39;Y&#39;]</span>
+
+<span class="sd">        If ``phonopy == True``, then:</span>
+
+<span class="sd">            * ``kpoints`` is a :obj:`list` of :obj:`numpy.ndarray`</span>
+<span class="sd">                containing the k-points for each branch of the band</span>
+<span class="sd">                structure. This means that the first and last k-points of a</span>
+<span class="sd">                particular branch may be repeated. For example::</span>
+
+<span class="sd">                    [[[0, 0, 0], [0.25, 0, 0], [0.5, 0, 0]],</span>
+<span class="sd">                    [[0.5, 0, 0], [0.5, 0, 0.25], [0.5, 0, 0.5]]]</span>
+
+<span class="sd">            * ``labels`` is a :obj:`list` of the high symmetry labels.</span>
+<span class="sd">                For example::</span>
+
+<span class="sd">                    [&#39;\Gamma&#39;, &#39;X&#39;, &#39;Y&#39;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">sumo.symmetry</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BradCrackKpath</span><span class="p">,</span> <span class="n">SeekpathKpath</span><span class="p">,</span> <span class="n">PymatgenKpath</span><span class="p">,</span>
+                               <span class="n">CustomKpath</span><span class="p">)</span>
+    <span class="n">spg</span> <span class="o">=</span> <span class="n">_get_space_group_object</span><span class="p">(</span><span class="n">spg</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">kpt_list</span><span class="p">:</span>
+        <span class="n">kpath</span> <span class="o">=</span> <span class="n">CustomKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">kpt_list</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;bradcrack&#39;</span><span class="p">:</span>
+        <span class="n">kpath</span> <span class="o">=</span> <span class="n">BradCrackKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">,</span> <span class="n">spg</span><span class="o">=</span><span class="n">spg</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;seekpath&#39;</span><span class="p">:</span>
+        <span class="n">kpath</span> <span class="o">=</span> <span class="n">SeekpathKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;pymatgen&#39;</span><span class="p">:</span>
+        <span class="n">kpath</span> <span class="o">=</span> <span class="n">PymatgenKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
+
+    <span class="n">kpoints</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">kpath</span><span class="o">.</span><span class="n">get_kpoints</span><span class="p">(</span><span class="n">line_density</span><span class="o">=</span><span class="n">line_density</span><span class="p">,</span>
+                                        <span class="n">phonopy</span><span class="o">=</span><span class="n">phonopy</span><span class="p">,</span>
+                                        <span class="n">cart_coords</span><span class="o">=</span><span class="n">cart_coords</span><span class="p">)</span>
+    <span class="n">path_str</span> <span class="o">=</span> <span class="n">kpath</span><span class="o">.</span><span class="n">path_string</span>
+    <span class="n">kpt_dict</span> <span class="o">=</span> <span class="n">kpath</span><span class="o">.</span><span class="n">kpoints</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Structure information:&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Space group number: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kpath</span><span class="o">.</span><span class="n">_spg_data</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]))</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">International symbol: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kpath</span><span class="o">.</span><span class="n">spg_symbol</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Lattice type: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kpath</span><span class="o">.</span><span class="n">lattice_type</span><span class="p">))</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">k-point path:</span><span class="se">\n\t</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_str</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">k-points:&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">kpt_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="n">coord_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">kpoint</span><span class="p">])</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">coord_str</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">kpath</span><span class="p">,</span> <span class="n">kpoints</span><span class="p">,</span> <span class="n">labels</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_space_group_object</span><span class="p">(</span><span class="n">spg</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">pymatgen.symmetry.groups</span> <span class="kn">import</span> <span class="n">SpaceGroup</span>
+    <span class="k">if</span> <span class="n">spg</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s1">&#39;bradcrack&#39;</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: Specifying symmetry only supported using &quot;</span>
+                      <span class="s2">&quot;Bradley and Cracknell path.&quot;</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">spg</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spg</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">spg</span> <span class="o">=</span> <span class="n">SpaceGroup</span><span class="o">.</span><span class="n">from_int_number</span><span class="p">(</span><span class="n">spg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">spg</span> <span class="o">=</span> <span class="n">SpaceGroup</span><span class="p">(</span><span class="n">spg</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;WARNING: Forcing space group not recommended, the &quot;</span>
+                          <span class="s2">&quot;path is likely</span><span class="se">\n</span><span class="s2">incorrect. Use at your own risk.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: Space group not recognised.&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">spg</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

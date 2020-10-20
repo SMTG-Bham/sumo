@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo-bandstats &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="sumo-optplot" href="sumo-optplot.html" />
+    <link rel="prev" title="sumo-bandplot" href="sumo-bandplot.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="sumo-bandstats">
+<h1>sumo-bandstats<a class="headerlink" href="#sumo-bandstats" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> is a program for extracting band gaps and effective masses
+from a band structure calculation.</p>
+<div class="contents local topic" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#usage" id="id1">Usage</a></p>
+<ul>
+<li><p><a class="reference internal" href="#file-searching" id="id2">File Searching</a></p></li>
+<li><p><a class="reference internal" href="#basic-options" id="id3">Basic Options</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#command-line-interface" id="id4">Command-Line Interface</a></p>
+<ul>
+<li><p><a class="reference internal" href="#Named Arguments" id="id5">Named Arguments</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>The full range of options supported by <code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> are detailed in the <a class="reference internal" href="#command-line-interface">Command-Line Interface</a> section,
+and be can be accessed using the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandstats</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<p>To extract band structure information, simply run the following command in a folder containing
+a <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> or <code class="docutils literal notranslate"><span class="pre">vasprun.xml.gz</span></code> file, which has been calculated along a high-symmetry path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandstats</span>
+</pre></div>
+</div>
+<p>For example, if we run this command in the <code class="docutils literal notranslate"><span class="pre">sumo/tests/data/Cs2SnI6/bandstructure</span></code> directory,
+the output should look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Direct</span> <span class="n">band</span> <span class="n">gap</span><span class="p">:</span> <span class="mf">0.712</span> <span class="n">eV</span>
+  <span class="n">k</span><span class="o">-</span><span class="n">point</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">]</span>
+  <span class="n">k</span><span class="o">-</span><span class="n">point</span> <span class="n">indexes</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">113</span>
+  <span class="n">Band</span> <span class="n">indexes</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">37</span>
+
+<span class="n">Valence</span> <span class="n">band</span> <span class="n">maximum</span><span class="p">:</span>
+  <span class="n">Energy</span><span class="p">:</span> <span class="mf">1.444</span> <span class="n">eV</span>
+  <span class="n">k</span><span class="o">-</span><span class="n">point</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">]</span>
+  <span class="n">k</span><span class="o">-</span><span class="n">point</span> <span class="n">location</span><span class="p">:</span> \<span class="n">Gamma</span>
+  <span class="n">k</span><span class="o">-</span><span class="n">point</span> <span class="n">indexes</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">113</span>
+  <span class="n">Band</span> <span class="n">indexes</span><span class="p">:</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span>
+
+<span class="n">Conduction</span> <span class="n">band</span> <span class="n">minimum</span><span class="p">:</span>
+  <span class="n">Energy</span><span class="p">:</span> <span class="mf">2.155</span> <span class="n">eV</span>
+  <span class="n">k</span><span class="o">-</span><span class="n">point</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">]</span>
+  <span class="n">k</span><span class="o">-</span><span class="n">point</span> <span class="n">location</span><span class="p">:</span> \<span class="n">Gamma</span>
+  <span class="n">k</span><span class="o">-</span><span class="n">point</span> <span class="n">indexes</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">113</span>
+  <span class="n">Band</span> <span class="n">indexes</span><span class="p">:</span> <span class="mi">37</span>
+
+<span class="n">Using</span> <span class="n">parabolic</span> <span class="n">fitting</span> <span class="n">of</span> <span class="n">the</span> <span class="n">band</span> <span class="n">edges</span>
+
+<span class="n">Hole</span> <span class="n">effective</span> <span class="n">masses</span><span class="p">:</span>
+  <span class="n">m_h</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.641</span> <span class="o">|</span> <span class="n">band</span> <span class="mi">34</span> <span class="o">|</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">]</span> <span class="p">(</span>\<span class="n">Gamma</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]</span> <span class="p">(</span><span class="n">L</span><span class="p">)</span>
+  <span class="n">m_h</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.516</span> <span class="o">|</span> <span class="n">band</span> <span class="mi">34</span> <span class="o">|</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">]</span> <span class="p">(</span>\<span class="n">Gamma</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]</span> <span class="p">(</span><span class="n">X</span><span class="p">)</span>
+  <span class="n">m_h</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.641</span> <span class="o">|</span> <span class="n">band</span> <span class="mi">35</span> <span class="o">|</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">]</span> <span class="p">(</span>\<span class="n">Gamma</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]</span> <span class="p">(</span><span class="n">L</span><span class="p">)</span>
+  <span class="n">m_h</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.516</span> <span class="o">|</span> <span class="n">band</span> <span class="mi">35</span> <span class="o">|</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">]</span> <span class="p">(</span>\<span class="n">Gamma</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]</span> <span class="p">(</span><span class="n">X</span><span class="p">)</span>
+  <span class="n">m_h</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.234</span> <span class="o">|</span> <span class="n">band</span> <span class="mi">36</span> <span class="o">|</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">]</span> <span class="p">(</span>\<span class="n">Gamma</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]</span> <span class="p">(</span><span class="n">L</span><span class="p">)</span>
+  <span class="n">m_h</span><span class="p">:</span> <span class="o">-</span><span class="mf">15.158</span> <span class="o">|</span> <span class="n">band</span> <span class="mi">36</span> <span class="o">|</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">]</span> <span class="p">(</span>\<span class="n">Gamma</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]</span> <span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="n">Electron</span> <span class="n">effective</span> <span class="n">masses</span><span class="p">:</span>
+  <span class="n">m_e</span><span class="p">:</span> <span class="mf">0.207</span> <span class="o">|</span> <span class="n">band</span> <span class="mi">37</span> <span class="o">|</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">]</span> <span class="p">(</span>\<span class="n">Gamma</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]</span> <span class="p">(</span><span class="n">L</span><span class="p">)</span>
+  <span class="n">m_e</span><span class="p">:</span> <span class="mf">0.211</span> <span class="o">|</span> <span class="n">band</span> <span class="mi">37</span> <span class="o">|</span> <span class="p">[</span><span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">]</span> <span class="p">(</span>\<span class="n">Gamma</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="mf">0.50</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">]</span> <span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The effective masses are given in units of electron rest mass, <span class="math notranslate nohighlight">\(m_0\)</span>.</p>
+<p>If we compare this output to the band structure:</p>
+<a class="reference internal image-reference" href="_images/band_rectangle.png"><img alt="_images/band_rectangle.png" class="align-center" src="_images/band_rectangle.png" style="height: 400px;" /></a>
+<p>We can see that the valence band maximum is composed of three degenerate two-electron bands, whereas
+the conduction band minimum is composed of a single two-electron band.</p>
+<p>The effective masses from <span class="math notranslate nohighlight">\(\Gamma\)</span> to L and from <span class="math notranslate nohighlight">\(\Gamma\)</span> to X are generally small, except
+for the very flat valence band from <span class="math notranslate nohighlight">\(\Gamma\)</span> to X, which results in masses greater than
+15 <span class="math notranslate nohighlight">\(m_0\)</span>.</p>
+<div class="section" id="file-searching">
+<h3>File Searching<a class="headerlink" href="#file-searching" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> will automatically look for <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> or <code class="docutils literal notranslate"><span class="pre">vasprun.xml.gz</span></code> files in the current
+directory. If the band structure has been broken up into multiple parts (as is common
+for hybrid band structure calculations), these files will be preferentially used. For this to work, the
+folders should be named <code class="docutils literal notranslate"><span class="pre">split-0*</span></code> and <code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> should be run in the folder containing
+the splits. For example, if the file structure is as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>bandstructure/
+    split-01/
+        KPOINTS
+        vasprun.xml
+    split-02/
+        KPOINTS
+        vasprun.xml
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> should be run in the <code class="docutils literal notranslate"><span class="pre">bandstructure</span></code> directory.</p>
+</div>
+<div class="section" id="basic-options">
+<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this headline">¶</a></h3>
+<p>To specify a particular <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> to extract information from, the <code class="docutils literal notranslate"><span class="pre">--filenames</span></code> option
+can be used. If multiple <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> files are provided, they will be combined into a single band
+structure.</p>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> uses parabolic fitting to determine the effective masses. If then
+<code class="docutils literal notranslate"><span class="pre">--nonparabolic</span></code> option is used, then non-parabolic fitting of the band edges will be performed.</p>
+<p><code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> samples 3 k-points when determining the effective masses. This number can be
+controlled using the <code class="docutils literal notranslate"><span class="pre">--sample-points</span></code> option.</p>
+</div>
+</div>
+<div class="section" id="command-line-interface">
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<p><blockquote>
+<div><p>bandstats provides information on the band gap and effective
+masses of semiconductors.</p>
+</div></blockquote>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">bandstats</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span> <span class="p">[</span><span class="n">F</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">N</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-f, --filenames</kbd></dt>
+<dd><p>one or more vasprun.xml files to plot</p>
+</dd>
+<dt><kbd>-n, --nonparabolic</kbd></dt>
+<dd><p>use a nonparabolic model to fit the effective masses</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>-s, --sample-points</kbd></dt>
+<dd><p>number of k-points to sample in fitting</p>
+<p>Default: 3</p>
+</dd>
+</dl>
+</div>
+<p><blockquote>
+<div><p>Author: Alex Ganose
+Version: 1.0
+Last updated: March 4, 2018</p>
+</div></blockquote>
+</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="sumo-kgen.html">sumo-kgen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-dosplot.html">sumo-dosplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-bandplot.html">sumo-bandplot</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">sumo-bandstats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-optplot.html">sumo-optplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sumo-phonon-bandplot.html">sumo-phonon-bandplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customising-plots.html">Customising Sumo Plots</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/sumo-bandstats.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

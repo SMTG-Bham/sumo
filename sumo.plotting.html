@@ -1,0 +1,535 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.plotting package &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="sumo.symmetry package" href="sumo.symmetry.html" />
+    <link rel="prev" title="sumo.phonon package" href="sumo.phonon.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="sumo-plotting-package">
+<h1>sumo.plotting package<a class="headerlink" href="#sumo-plotting-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-sumo.plotting">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sumo.plotting" title="Permalink to this headline">¶</a></h2>
+<p>Subpackage providing helper functions for generating publication ready plots.</p>
+<dl class="py function">
+<dt id="sumo.plotting.curry_power_tick">
+<code class="sig-prename descclassname">sumo.plotting.</code><code class="sig-name descname">curry_power_tick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times_sign</span><span class="o">=</span><span class="default_value">'\\times'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting.html#curry_power_tick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.curry_power_tick" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="sumo.plotting.power_tick">
+<code class="sig-prename descclassname">sumo.plotting.</code><code class="sig-name descname">power_tick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">pos</span></em>, <em class="sig-param"><span class="n">times_sign</span><span class="o">=</span><span class="default_value">'\\times'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting.html#power_tick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.power_tick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom power ticker function.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sumo.plotting.pretty_plot">
+<code class="sig-prename descclassname">sumo.plotting.</code><code class="sig-name descname">pretty_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting.html#pretty_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.pretty_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a> object with publication ready defaults.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The width of the plot.</p></li>
+<li><p><strong>height</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The height of the plot.</p></li>
+<li><p><strong>plt</strong> (<a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a>, optional) – A <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a>
+object to use for plotting.</p></li>
+<li><p><strong>dpi</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The dots-per-inch (pixel density) for
+the plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a> object with
+publication ready defaults set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sumo.plotting.pretty_subplot">
+<code class="sig-prename descclassname">sumo.plotting.</code><code class="sig-name descname">pretty_subplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nrows</span></em>, <em class="sig-param"><span class="n">ncols</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sharex</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">sharey</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">gridspec_kw</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting.html#pretty_subplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.pretty_subplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a> subplot object with pretty defaults.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nrows</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – The number of rows in the subplot.</p></li>
+<li><p><strong>ncols</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – The number of columns in the subplot.</p></li>
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The width of the plot.</p></li>
+<li><p><strong>height</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The height of the plot.</p></li>
+<li><p><strong>sharex</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – All subplots share the same x-axis.
+Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>sharey</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – All subplots share the same y-axis.
+Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>dpi</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The dots-per-inch (pixel density) for
+the plot.</p></li>
+<li><p><strong>plt</strong> (<a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a>, optional) – A <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a>
+object to use for plotting.</p></li>
+<li><p><strong>gridspec_kw</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – Gridspec parameters. Please see:
+<a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplot.html#matplotlib.pyplot.subplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.subplot</span></code></a> for more information. Defaults
+to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a> subplot object
+with publication ready defaults set.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sumo.plotting.rgbline">
+<code class="sig-prename descclassname">sumo.plotting.</code><code class="sig-name descname">rgbline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">red</span></em>, <em class="sig-param"><span class="n">green</span></em>, <em class="sig-param"><span class="n">blue</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">linestyles</span><span class="o">=</span><span class="default_value">'solid'</span></em>, <em class="sig-param"><span class="n">linewidth</span><span class="o">=</span><span class="default_value">2.5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting.html#rgbline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.rgbline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a RGB coloured line for plotting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – x-axis data.</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – y-axis data (can be multidimensional array).</p></li>
+<li><p><strong>red</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Red data (must have same shape as <code class="docutils literal notranslate"><span class="pre">y</span></code>).</p></li>
+<li><p><strong>green</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Green data (must have same shape as <code class="docutils literal notranslate"><span class="pre">y</span></code>).</p></li>
+<li><p><strong>blue</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – blue data (must have same shape as <code class="docutils literal notranslate"><span class="pre">y</span></code>).</p></li>
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – Alpha (transparency)
+data (must have same shape as <code class="docutils literal notranslate"><span class="pre">y</span></code> or be an <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>).</p></li>
+<li><p><strong>linestyles</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Linestyle for plot. Options are
+<code class="docutils literal notranslate"><span class="pre">&quot;solid&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;dotted&quot;</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sumo.plotting.styled_plot">
+<code class="sig-prename descclassname">sumo.plotting.</code><code class="sig-name descname">styled_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">style_sheets</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting.html#styled_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.styled_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a decorator that will apply matplotlib style sheets to a plot.</p>
+<p><code class="docutils literal notranslate"><span class="pre">style_sheets</span></code> is a base set of styles, which will be ignored if
+<code class="docutils literal notranslate"><span class="pre">no_base_style</span></code> is set in the decorated function arguments.</p>
+<p>The style will further be overwritten by any styles in the <code class="docutils literal notranslate"><span class="pre">style</span></code>
+optional argument of the decorated function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>style_sheets</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) – Any matplotlib
+supported definition of a style sheet. Can be a list of style of
+style sheets.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-sumo.plotting.bs_plotter">
+<span id="sumo-plotting-bs-plotter-module"></span><h2>sumo.plotting.bs_plotter module<a class="headerlink" href="#module-sumo.plotting.bs_plotter" title="Permalink to this headline">¶</a></h2>
+<p>This module provides a class for plotting electronic band structure diagrams.</p>
+<dl class="py class">
+<dt id="sumo.plotting.bs_plotter.SBSPlotter">
+<em class="property">class </em><code class="sig-prename descclassname">sumo.plotting.bs_plotter.</code><code class="sig-name descname">SBSPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/bs_plotter.html#SBSPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.bs_plotter.SBSPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.plotter.html#pymatgen.electronic_structure.plotter.BSPlotter" title="(in pymatgen v2020.9.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.plotter.BSPlotter</span></code></a></p>
+<p>Class for plotting electronic band structures.</p>
+<p>This class is similar to the pymatgen
+<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.plotter.html#pymatgen.electronic_structure.plotter.BSPlotter" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.plotter.BSPlotter</span></code></a> class but overrides
+some methods to generate prettier plots.</p>
+<p>Additional functionality, such as projected band structure plots are
+available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structure.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="sumo.plotting.bs_plotter.SBSPlotter.get_plot">
+<code class="sig-name descname">get_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">fonts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_base_style</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.plotting.bs_plotter.SBSPlotter.get_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a matplotlib object for the bandstructures plot.
+Multiple bandstructure objs are plotted together if they have the
+same high symm path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zero_to_efermi</strong> – Automatically subtract off the Fermi energy from
+the eigenvalues and plot (E-Ef).</p></li>
+<li><p><strong>ylim</strong> – Specify the y-axis (energy) limits; by default None let
+the code choose. It is vbm-4 and cbm+4 if insulator
+efermi-10 and efermi+10 if metal</p></li>
+<li><p><strong>smooth</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>(</em><em>bools</em><em>)</em>) – interpolates the bands by a spline cubic.
+A single bool values means to interpolate all the bandstructure objs.
+A list of bools allows to select the bandstructure obs to interpolate.</p></li>
+<li><p><strong>smooth_tol</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – tolerance for fitting spline to band data.
+Default is None such that no tolerance will be used.</p></li>
+<li><p><strong>smooth_k</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – degree of splines 1&lt;k&lt;5</p></li>
+<li><p><strong>smooth_np</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – number of interpolated points per each branch.</p></li>
+<li><p><strong>bs_labels</strong> – labels for each band for the plot legend.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sumo.plotting.bs_plotter.SBSPlotter.get_projected_plot">
+<code class="sig-name descname">get_projected_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">fonts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_base_style</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.plotting.bs_plotter.SBSPlotter.get_projected_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-sumo.plotting.dos_plotter">
+<span id="sumo-plotting-dos-plotter-module"></span><h2>sumo.plotting.dos_plotter module<a class="headerlink" href="#module-sumo.plotting.dos_plotter" title="Permalink to this headline">¶</a></h2>
+<p>This module provides a class for plotting density of states data.</p>
+<dl class="py class">
+<dt id="sumo.plotting.dos_plotter.SDOSPlotter">
+<em class="property">class </em><code class="sig-prename descclassname">sumo.plotting.dos_plotter.</code><code class="sig-name descname">SDOSPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dos</span></em>, <em class="sig-param"><span class="n">pdos</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/dos_plotter.html#SDOSPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.dos_plotter.SDOSPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class for plotting density of states data.</p>
+<p>This class should be initialised with the total and partial density
+of states. The easiest way to generate the partial density of states is
+using the following method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pdos</span> <span class="o">=</span> <span class="n">sumo</span><span class="o">.</span><span class="n">electronic_structure</span><span class="o">.</span><span class="n">dos</span><span class="o">.</span><span class="n">get_pdos</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dos</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a>) – The total density
+of states.</p></li>
+<li><p><strong>pdos</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>The partial density of states. Formatted
+as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> mapping the elements and their
+orbitals to <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> objects.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;Bi&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">Dos</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="n">Dos</span> <span class="o">...</span> <span class="p">},</span>
+    <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">Dos</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Usually generated using the
+<a class="reference internal" href="sumo.electronic_structure.html#sumo.electronic_structure.dos.get_pdos" title="sumo.electronic_structure.dos.get_pdos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sumo.electronic_structure.dos.get_pdos()</span></code></a> function.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="sumo.plotting.dos_plotter.SDOSPlotter.dos_plot_data">
+<code class="sig-name descname">dos_plot_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">yscale</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">xmin</span><span class="o">=</span><span class="default_value">- 6.0</span></em>, <em class="sig-param"><span class="n">xmax</span><span class="o">=</span><span class="default_value">6.0</span></em>, <em class="sig-param"><span class="n">colours</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_total</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">legend_cutoff</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">subplot</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">zero_to_efermi</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cache</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/dos_plotter.html#SDOSPlotter.dos_plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.dos_plotter.SDOSPlotter.dos_plot_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the plotting data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>yscale</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – Scaling factor for the y-axis.</p></li>
+<li><p><strong>xmin</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The minimum energy to mask the
+energy and density of states data (reduces plotting load).</p></li>
+<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The maximum energy to mask the
+energy and density of states data (reduces plotting load).</p></li>
+<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>Use custom colours for specific
+element and orbital combinations. Specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of
+<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of the colours. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;Sn&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The colour can be a hex code, series of rgb value, or any other
+format supported by matplotlib.</p>
+</p></li>
+<li><p><strong>plot_total</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Plot the total density of
+states. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>legend_cutoff</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The cut-off (in % of the
+maximum density of states within the plotting range) for an
+elemental orbital to be labelled in the legend. This prevents
+the legend from containing labels for orbitals that have very
+little contribution in the plotting range.</p></li>
+<li><p><strong>subplot</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Plot the density of states for
+each element on separate subplots. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>zero_to_efermi</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Normalise the plot such
+that the Fermi level is set as 0 eV.</p></li>
+<li><p><strong>cache</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – Cache object tracking how colours
+have been assigned to orbitals. The format is the same as the
+“colours” dict. This defaults to the module-level
+sumo.plotting.colour_cache object, but an empty dict can be
+used as a fresh cache. This object will be modified in-place.</p></li>
+<li><p><strong>spin</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Spin</span></code>, optional) – Check that spin-selection has not
+been called for a closed-shell calculation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>The plotting data. Formatted with the following keys:</p>
+<blockquote>
+<div><dl>
+<dt>”energies” (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>)</dt><dd><p>The energies.</p>
+</dd>
+<dt>”mask” (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>)</dt><dd><p>A mask used to trim the density of states data and
+prevent unwanted data being included in the output file.</p>
+</dd>
+<dt>”lines” (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>)</dt><dd><p>A <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> containing the density data
+and some metadata. Each line <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> contains the keys:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>”label” (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>)</dt><dd><p>The label for the legend.</p>
+</dd>
+<dt>”dens” (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>)</dt><dd><p>The density of states data.</p>
+</dd>
+<dt>”colour” (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>)</dt><dd><p>The colour of the line.</p>
+</dd>
+<dt>”alpha” (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>)</dt><dd><p>The alpha value for line fill.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+<dt>”ymin” (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>)</dt><dd><p>The minimum y-axis limit.</p>
+</dd>
+<dt>”ymax” (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>)</dt><dd><p>The maximum y-axis limit.</p>
+</dd>
+</dl>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="sumo.plotting.dos_plotter.SDOSPlotter.get_plot">
+<code class="sig-name descname">get_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">fonts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_base_style</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.plotting.dos_plotter.SDOSPlotter.get_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="sumo.plotting.dos_plotter.get_cached_colour">
+<code class="sig-prename descclassname">sumo.plotting.dos_plotter.</code><code class="sig-name descname">get_cached_colour</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element</span></em>, <em class="sig-param"><span class="n">orbital</span></em>, <em class="sig-param"><span class="n">colours</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cache</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/dos_plotter.html#get_cached_colour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.dos_plotter.get_cached_colour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a colour for a particular elemental and orbital combination.</p>
+<p>If the element is not specified in the colours dictionary, the cache is
+checked. If this element-orbital combination has not been chached before,
+a new colour is drawn from the current matplotlib colour cycle and cached.</p>
+<p>The default cache is sumo.plotting.colour_cache. To reset this cache, use
+<code class="docutils literal notranslate"><span class="pre">sumo.plotting.colour_cache.clear()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The element.</p></li>
+<li><p><strong>orbital</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) – The orbital.</p></li>
+<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>Use custom colours for specific
+element and orbital combinations. Specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of
+<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of the colours. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;Sn&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The colour can be a hex code, series of rgb value, or any other
+format supported by matplotlib.</p>
+</p></li>
+<li><p><strong>cache</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – Cache of colour values already
+assigned. The format is the same as the custom colours dict. If
+None, the module-level cache <code class="docutils literal notranslate"><span class="pre">sumo.plotting.colour_cache</span></code> is
+used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(colour, cache)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sumo.plotting.optics_plotter">
+<span id="sumo-plotting-optics-plotter-module"></span><h2>sumo.plotting.optics_plotter module<a class="headerlink" href="#module-sumo.plotting.optics_plotter" title="Permalink to this headline">¶</a></h2>
+<p>This module provides a class for plotting optical absorption spectra.</p>
+<dl class="py class">
+<dt id="sumo.plotting.optics_plotter.SOpticsPlotter">
+<em class="property">class </em><code class="sig-prename descclassname">sumo.plotting.optics_plotter.</code><code class="sig-name descname">SOpticsPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spec_data</span></em>, <em class="sig-param"><span class="n">band_gap</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">label</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/optics_plotter.html#SOpticsPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.optics_plotter.SOpticsPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class for plotting optical spectra.</p>
+<p>The easiest way to initialise this class is using the output from the
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">sumo.electronic_structure.optics.calculate_alpha()</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spec_data</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) – <p>The optical absorption spectra. Should be formatted as a dict of
+<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nb">property</span><span class="p">:</span> <span class="p">([</span><span class="n">energies</span><span class="p">],</span> <span class="p">[</span><span class="n">alpha</span><span class="p">]),</span> <span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Alternatively, the anisotropic (directional dependent) absorption
+can be plotted if the data formatted as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nb">property</span><span class="p">:</span> <span class="p">([</span><span class="n">energies</span><span class="p">],</span> <span class="p">[</span><span class="n">alpha_xx</span><span class="p">,</span> <span class="n">alpha_yy</span><span class="p">,</span> <span class="n">alpha_zz</span><span class="p">]),</span> <span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> is provided, then multiple
+absorption spectra can be plotted simultaneously.</p>
+<p>The <em>property</em> keys set the type of spectrum being plotted (and
+determine the y-axis label). Recognised values are ‘absorption’,
+‘loss’, ‘eps-real’, ‘eps-im’. Other values will be plotted and used
+as the y-axis label.</p>
+<p>It is recommended to use an OrderedDict to get a predictable
+sequence of plotting axes (from top to bottom).</p>
+<p>If no dict at all is used (i.e. spec_data is a data tuple or a list
+of tuples) property will default to ‘abs’</p>
+</p></li>
+<li><p><strong>band_gap</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – The band gap as a
+<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, plotted as a dashed line. If plotting multiple
+spectra then a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of band gaps can be provided. If an item
+in the list is <a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> no corresponding line is plotted.</p></li>
+<li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) – A label to identify the spectra.
+If plotting multiple spectra then a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of labels can
+be provided.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="sumo.plotting.optics_plotter.SOpticsPlotter.get_plot">
+<code class="sig-name descname">get_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">fonts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_base_style</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.plotting.optics_plotter.SOpticsPlotter.get_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-sumo.plotting.phonon_bs_plotter">
+<span id="sumo-plotting-phonon-bs-plotter-module"></span><h2>sumo.plotting.phonon_bs_plotter module<a class="headerlink" href="#module-sumo.plotting.phonon_bs_plotter" title="Permalink to this headline">¶</a></h2>
+<p>This module provides a class for plotting phonon band structure diagrams.</p>
+<dl class="py class">
+<dt id="sumo.plotting.phonon_bs_plotter.SPhononBSPlotter">
+<em class="property">class </em><code class="sig-prename descclassname">sumo.plotting.phonon_bs_plotter.</code><code class="sig-name descname">SPhononBSPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bs</span></em>, <em class="sig-param"><span class="n">imag_tol</span><span class="o">=</span><span class="default_value">- 0.05</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/phonon_bs_plotter.html#SPhononBSPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.phonon_bs_plotter.SPhononBSPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pymatgen.org/pymatgen.phonon.plotter.html#pymatgen.phonon.plotter.PhononBSPlotter" title="(in pymatgen v2020.9.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.phonon.plotter.PhononBSPlotter</span></code></a></p>
+<p>Class for plotting phonon band structures.</p>
+<p>This class is similar to the <a class="reference external" href="https://pymatgen.org/pymatgen.phonon.plotter.html#pymatgen.phonon.plotter.PhononBSPlotter" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.phonon.plotter.PhononBSPlotter</span></code></a>
+class but overrides some methods to generate prettier plots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.phonon.bandstructure.html#pymatgen.phonon.bandstructure.PhononBandStructureSymmLine" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhononBandStructureSymmLine</span></code></a>) – The phonon band structure.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="sumo.plotting.phonon_bs_plotter.SPhononBSPlotter.get_plot">
+<code class="sig-name descname">get_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">fonts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_base_style</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.plotting.phonon_bs_plotter.SPhononBSPlotter.get_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a matplotlib object for the bandstructure plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ylim</strong> – Specify the y-axis (frequency) limits; by default None let
+the code choose.</p></li>
+<li><p><strong>units</strong> – units for the frequencies. Accepted values thz, ev, mev, ha, cm-1, cm^-1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Python API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="sumo.html">sumo package</a></li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/sumo.plotting.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

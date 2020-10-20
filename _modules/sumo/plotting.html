@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.plotting &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.plotting</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Subpackage providing helper functions for generating publication ready plots.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span>
+<span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">LineCollection</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rc</span><span class="p">,</span> <span class="n">rcParams</span>
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
+
+<span class="n">colour_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="n">sumo_base_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;sumo.plotting&#39;</span><span class="p">,</span> <span class="s1">&#39;sumo_base.mplstyle&#39;</span><span class="p">)</span>
+<span class="n">sumo_dos_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;sumo.plotting&#39;</span><span class="p">,</span> <span class="s1">&#39;sumo_dos.mplstyle&#39;</span><span class="p">)</span>
+<span class="n">sumo_bs_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;sumo.plotting&#39;</span><span class="p">,</span> <span class="s1">&#39;sumo_bs.mplstyle&#39;</span><span class="p">)</span>
+<span class="n">sumo_phonon_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;sumo.plotting&#39;</span><span class="p">,</span> <span class="s1">&#39;sumo_phonon.mplstyle&#39;</span><span class="p">)</span>
+<span class="n">sumo_optics_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;sumo.plotting&#39;</span><span class="p">,</span> <span class="s1">&#39;sumo_optics.mplstyle&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="styled_plot"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.styled_plot">[docs]</a><span class="k">def</span> <span class="nf">styled_plot</span><span class="p">(</span><span class="o">*</span><span class="n">style_sheets</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a decorator that will apply matplotlib style sheets to a plot.</span>
+
+<span class="sd">    ``style_sheets`` is a base set of styles, which will be ignored if</span>
+<span class="sd">    ``no_base_style`` is set in the decorated function arguments.</span>
+
+<span class="sd">    The style will further be overwritten by any styles in the ``style``</span>
+<span class="sd">    optional argument of the decorated function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        style_sheets (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib</span>
+<span class="sd">            supported definition of a style sheet. Can be a list of style of</span>
+<span class="sd">            style sheets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">get_plot</span><span class="p">):</span>
+
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">no_base_style</span><span class="p">:</span>
+                <span class="n">list_style</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">list_style</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">style_sheets</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">style</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">list_style</span> <span class="o">+=</span> <span class="n">style</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">list_style</span> <span class="o">+=</span> <span class="p">[</span><span class="n">style</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">fonts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">list_style</span> <span class="o">+=</span> <span class="p">[{</span><span class="s1">&#39;font.family&#39;</span><span class="p">:</span> <span class="s1">&#39;sans-serif&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;font.sans-serif&#39;</span><span class="p">:</span> <span class="n">fonts</span><span class="p">}]</span>
+
+            <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">list_style</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">get_plot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span>
+    <span class="k">return</span> <span class="n">decorator</span></div>
+
+
+<div class="viewcode-block" id="pretty_plot"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.pretty_plot">[docs]</a><span class="k">def</span> <span class="nf">pretty_plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object with publication ready defaults.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        width (:obj:`float`, optional): The width of the plot.</span>
+<span class="sd">        height (:obj:`float`, optional): The height of the plot.</span>
+<span class="sd">        plt (:obj:`matplotlib.pyplot`, optional): A :obj:`matplotlib.pyplot`</span>
+<span class="sd">            object to use for plotting.</span>
+<span class="sd">        dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for</span>
+<span class="sd">            the plot.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` object with</span>
+<span class="sd">        publication ready defaults set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">plt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span>
+        <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">dpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.dpi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpi</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">plt</span></div>
+
+
+<div class="viewcode-block" id="pretty_subplot"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.pretty_subplot">[docs]</a><span class="k">def</span> <span class="nf">pretty_subplot</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gridspec_kw</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` subplot object with pretty defaults.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nrows (int): The number of rows in the subplot.</span>
+<span class="sd">        ncols (int): The number of columns in the subplot.</span>
+<span class="sd">        width (:obj:`float`, optional): The width of the plot.</span>
+<span class="sd">        height (:obj:`float`, optional): The height of the plot.</span>
+<span class="sd">        sharex (:obj:`bool`, optional): All subplots share the same x-axis.</span>
+<span class="sd">            Defaults to ``True``.</span>
+<span class="sd">        sharey (:obj:`bool`, optional): All subplots share the same y-axis.</span>
+<span class="sd">            Defaults to ``True``.</span>
+<span class="sd">        dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for</span>
+<span class="sd">            the plot.</span>
+<span class="sd">        plt (:obj:`matplotlib.pyplot`, optional): A :obj:`matplotlib.pyplot`</span>
+<span class="sd">            object to use for plotting.</span>
+<span class="sd">        gridspec_kw (:obj:`dict`, optional): Gridspec parameters. Please see:</span>
+<span class="sd">            :obj:`matplotlib.pyplot.subplot` for more information. Defaults</span>
+<span class="sd">            to ``None``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` subplot object</span>
+<span class="sd">        with publication ready defaults set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># TODO: Make this work if plt is already set...</span>
+    <span class="k">if</span> <span class="n">plt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">sharex</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="n">sharey</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span>
+                     <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span>
+                     <span class="n">gridspec_kw</span><span class="o">=</span><span class="n">gridspec_kw</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">plt</span></div>
+
+
+<div class="viewcode-block" id="curry_power_tick"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.curry_power_tick">[docs]</a><span class="k">def</span> <span class="nf">curry_power_tick</span><span class="p">(</span><span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\times&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">power_tick</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">times_sign</span><span class="o">=</span><span class="n">times_sign</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span></div>
+
+<div class="viewcode-block" id="power_tick"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.power_tick">[docs]</a><span class="k">def</span> <span class="nf">power_tick</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\times&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Custom power ticker function. &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;$\mathregular</span><span class="si">{0}</span><span class="s1">$&#39;</span>
+    <span class="k">elif</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">exponent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="o">-</span><span class="n">val</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">exponent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+    <span class="n">coeff</span> <span class="o">=</span> <span class="n">val</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="n">exponent</span>
+
+    <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;$\mathregular{{</span><span class="si">{:.1f}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> 10^</span><span class="si">{:2d}</span><span class="s1">}}$&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coeff</span><span class="p">,</span>
+                                                          <span class="n">times_sign</span><span class="p">,</span>
+                                                          <span class="n">exponent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="rgbline"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.rgbline">[docs]</a><span class="k">def</span> <span class="nf">rgbline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get a RGB coloured line for plotting.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (list): x-axis data.</span>
+<span class="sd">        y (list): y-axis data (can be multidimensional array).</span>
+<span class="sd">        red (list): Red data (must have same shape as ``y``).</span>
+<span class="sd">        green (list): Green data (must have same shape as ``y``).</span>
+<span class="sd">        blue (list): blue data (must have same shape as ``y``).</span>
+<span class="sd">        alpha (:obj:`list` or :obj:`int`, optional): Alpha (transparency)</span>
+<span class="sd">            data (must have same shape as ``y`` or be an :obj:`int`).</span>
+<span class="sd">        linestyles (:obj:`str`, optional): Linestyle for plot. Options are</span>
+<span class="sd">            ``&quot;solid&quot;`` or ``&quot;dotted&quot;``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span><span class="p">])</span>
+        <span class="n">red</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">red</span><span class="p">])</span>
+        <span class="n">green</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">green</span><span class="p">])</span>
+        <span class="n">blue</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">blue</span><span class="p">])</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">alpha</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="p">[</span><span class="n">alpha</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="n">seg</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">colours</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">yy</span><span class="p">,</span> <span class="n">rr</span><span class="p">,</span> <span class="n">gg</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="n">aa</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">yy</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">seg</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">pts</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">pts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="n">nseg</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">rr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">rr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nseg</span><span class="p">)]</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">gg</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">gg</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nseg</span><span class="p">)]</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">bb</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">bb</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nseg</span><span class="p">)]</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nseg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span> <span class="o">*</span> <span class="n">aa</span>
+        <span class="n">colours</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)))</span>
+
+    <span class="n">lc</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span> <span class="n">rasterized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="n">linestyles</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lc</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

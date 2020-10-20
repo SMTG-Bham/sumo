@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Change Log &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="sumo" href="modules.html" />
+    <link rel="prev" title="Gallery" href="gallery.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="change-log">
+<h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="unreleased">
+<h2>Unreleased<a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="v2-0-1">
+<h2>v2.0.1<a class="headerlink" href="#v2-0-1" title="Permalink to this headline">¶</a></h2>
+<p>Bug fixes:</p>
+<ul class="simple">
+<li><p>Fixed support for pymatgen versions &gt; 2020.10.9.1 (&#64;utf)</p></li>
+<li><p>Fix yaml phonon-bandstructure plotting (&#64;kavanase)</p></li>
+</ul>
+</div>
+<div class="section" id="v2-0-0">
+<h2>v2.0.0<a class="headerlink" href="#v2-0-0" title="Permalink to this headline">¶</a></h2>
+<p>New features:</p>
+<ul class="simple">
+<li><p>Support for CASTEP: (AJJ)</p>
+<ul>
+<li><p>kgen: reciprocal-space path generation for electronic and phonon band-structures</p></li>
+<li><p>bandplot: band structures (with or without spin-polarisation). Currently no
+support for element/orbital projected data (which would require a binary file parser).</p></li>
+<li><p>phonon-bandplot: phonon band structures from .phonon files</p></li>
+<li><p>dosplot: total-DOS plotting from eigenvalues. Again,
+projected-DOS plots are not currently available.</p></li>
+</ul>
+</li>
+</ul>
+<p>Bug fixes:</p>
+<ul class="simple">
+<li><p>Fix an oversight in the initial CASTEP/kgen implementation when the user provides a non-primitive cell as input.</p></li>
+<li><p>Python API fix for spin selection. (&#64;kavanase)</p></li>
+<li><p>Fix phonon band structure line density selection. (&#64;utf)</p></li>
+</ul>
+</div>
+<div class="section" id="v1-4-0">
+<h2>v1.4.0<a class="headerlink" href="#v1-4-0" title="Permalink to this headline">¶</a></h2>
+<p>New features:</p>
+<ul class="simple">
+<li><p>Plot single spin channel band structures. (&#64;kavanase)</p></li>
+<li><p>Add scissor option to band plot. (&#64;mkhorton)</p></li>
+</ul>
+<p>Bug fixes:</p>
+<ul class="simple">
+<li><p>Fixed ytick labels for band + DOS plots. (&#64;utf)</p></li>
+<li><p>Fix a bug when the y axis limit is outside the DOS range in band + DOS tapes. (&#64;utf)</p></li>
+</ul>
+</div>
+<div class="section" id="v1-3-0">
+<h2>v1.3.0<a class="headerlink" href="#v1-3-0" title="Permalink to this headline">¶</a></h2>
+<p>This is the last supported version for Python 3.5, due to changes in pymatgen.</p>
+<p>New features:</p>
+<ul class="simple">
+<li><p>Ability to plot multiple phonon band structures on top of each other. (AJJ)</p></li>
+<li><p>Added primitive-auto option to <code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code>. AJJ</p></li>
+</ul>
+<p>Bug fixes:</p>
+<ul class="simple">
+<li><p>Added compatability with matplotlib 3.1. (AJJ)</p></li>
+<li><p>Use primitive cell when reading BORN. (AJJ)</p></li>
+<li><p>Set DOS cutoff when using <code class="docutils literal notranslate"><span class="pre">--no-total</span></code>. (AJJ)</p></li>
+<li><p>Fix custom styling for phonon bandplotting from the CLI. (AJJ)</p></li>
+<li><p>Fix rare interpolation issues for projected band structure plots. (&#64;utf)</p></li>
+</ul>
+</div>
+<div class="section" id="v1-2-0">
+<h2>v1.2.0<a class="headerlink" href="#v1-2-0" title="Permalink to this headline">¶</a></h2>
+<p>This is the most contributers to a release so far!</p>
+<ul class="simple">
+<li><p>Bug fixes
+- Fix error in P monoclinic (<em>b</em>-unique) “Bradcrack” high-symmetry path (C. N. Savory)
+- Fix appearance of y-axis formatter for optics plots (E. Rubinstein &amp; Adam J. Jackson)
+- Prevent an error when requesting DOS subplots with no total DOS (Z. Xing)
+- Fix missing f0 orbitals in orbital projected DOS plots (&#64;utf)
+- Update phonon-bandplot to use latest phonopy API (&#64;utf)</p></li>
+<li><p>New features</p>
+<ul>
+<li><p>Additional properties from dielectric function (AJJ &amp; K. T. Butler)</p>
+<ul>
+<li><p>any combination of absorption, loss, dielectric and complex refractive index components can be requested as a set of subplots</p></li>
+</ul>
+</li>
+<li><p>Allow full 3x3 supercell matrix to be specified for phonon band structures (AJJ)</p></li>
+<li><p>Band structure label manipulation with ‘&#64;’ (AJJ)</p>
+<ul>
+<li><p>place &#64; before a label to make it invisible in plot</p></li>
+<li><p>place &#64; at end to make unique point that avoids confusing pymatgen; the label will be displayed without any trailing &#64; characters</p></li>
+</ul>
+</li>
+<li><p>Aspect ratio control for band structures (A. M. Ganose)</p></li>
+</ul>
+</li>
+<li><p>New interfaces</p>
+<ul>
+<li><p>Questaal is now supported. Pretty much everything works except
+orbital-decomposed band structures and phonons. (AJJ)</p>
+<ul>
+<li><p>Generate a <em>syml.ext</em> band path file using <strong>sumo-kgen</strong> reading from a
+site.ext or init.ext file. (The site file is generally the correct
+choice.)</p></li>
+<li><p>Plot electronic band structure generated with <strong>lmf</strong> using
+<strong>sumo-bandplot</strong> reading from <em>bnds.ext</em> and <em>syml.ext</em> files.</p></li>
+<li><p>Plot a total DOS from <strong>lmf</strong> with <strong>sumo-dosplot</strong> reading <em>ext.dos</em></p></li>
+<li><p>Plot a PDOS from <strong>lmf</strong> by moving the total dos to <em>tdos.ext</em>
+and using Questaal tools to generate a <em>dos.ext</em> with orbital
+information before running <strong>sumo-dosplot</strong>.</p></li>
+<li><p>Plot optical properties with <strong>sumo-optplot</strong> from dielectric
+function written by <strong>lmf</strong> (<em>opt.ext</em>) or <strong>bethesalpeter</strong>
+(<em>ext.eps_BSE</em>). Optical spectra from multiple sources
+(e.g. VASP and bethesalpeter) may be plotted alongside one
+another.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="v1-1-3">
+<h2>v1.1.3<a class="headerlink" href="#v1-1-3" title="Permalink to this headline">¶</a></h2>
+<p>Update Manifest.in</p>
+</div>
+<div class="section" id="v1-1-2">
+<h2>v1.1.2<a class="headerlink" href="#v1-1-2" title="Permalink to this headline">¶</a></h2>
+<p>Various bugfixes and enhancements:</p>
+<ul class="simple">
+<li><p>Fix manual k-point selection in kgen.</p></li>
+<li><p>Band indicies in bandstats now 1-based.</p></li>
+<li><p>Fix colour cycler issue in band structures with DOS.</p></li>
+<li><p>Allow overriding y-axis DOS ticks.</p></li>
+<li><p>Fermi level now set to 0 eV in dosplot .dat files (&#64;frssp).</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">--units</span></code> option for phonon band structures (&#64;ajjackson).</p></li>
+<li><p>Remove numbers from x-axis in band structures with DOS.</p></li>
+</ul>
+</div>
+<div class="section" id="v1-1-1">
+<h2>v1.1.1<a class="headerlink" href="#v1-1-1" title="Permalink to this headline">¶</a></h2>
+<p>Fix bug when installing from Pypi.</p>
+</div>
+<div class="section" id="v1-1-0">
+<h2>v1.1.0<a class="headerlink" href="#v1-1-0" title="Permalink to this headline">¶</a></h2>
+<p>Use matplotlib style sheets for styling plots (&#64;ajjackson &amp; &#64;utf).
+Enables plots to be customised based on user settings.</p>
+<p>Various bug fixes:</p>
+<ul class="simple">
+<li><p>Fix bug when normalising DOS to Fermi level.</p></li>
+<li><p>Fix codacy style issues.</p></li>
+<li><p>Plotting style standardised across all plots.</p></li>
+</ul>
+</div>
+<div class="section" id="v1-0-10">
+<h2>v1.0.10<a class="headerlink" href="#v1-0-10" title="Permalink to this headline">¶</a></h2>
+<p>Add option to align DOS to Fermi level (&#64;shyamd)</p>
+<p>Various bug fixes:</p>
+<ul class="simple">
+<li><p>Fix many typos.</p></li>
+<li><p>Updates to paper and documentation.</p></li>
+</ul>
+</div>
+<div class="section" id="v1-0-9">
+<h2>v1.0.9<a class="headerlink" href="#v1-0-9" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">phonon-bandplot</span></code> now supports combined DOS &amp; band structure plots (Adam Jackson, Arthur Yaud).</p>
+<p>Various bug fixes:</p>
+<ul class="simple">
+<li><p>Fix P centered trigonal k-point path.</p></li>
+<li><p>Fix <code class="docutils literal notranslate"><span class="pre">--symprec</span></code> behaviour in phonon-bandplot.</p></li>
+<li><p>Fix orbital projected band structures with branches (Adam Jackson).</p></li>
+<li><p>Fix reading Eg from spin-pol calculations (Adam Jackson).</p></li>
+</ul>
+</div>
+<div class="section" id="v1-0-8">
+<h2>v1.0.8<a class="headerlink" href="#v1-0-8" title="Permalink to this headline">¶</a></h2>
+<p>Enhancements by Adam Jackson:</p>
+<ul class="simple">
+<li><p>Add y-label and dos label options for DOS &amp; band plots.</p></li>
+<li><p>Cache DOS colours for consistent plots.</p></li>
+</ul>
+<p>Various bug fixes:</p>
+<ul class="simple">
+<li><p>Fixed gaussian broadening of DOS.</p></li>
+<li><p>Fixed <code class="docutils literal notranslate"><span class="pre">--spg</span></code> option in kgen and phonon-bandplot.</p></li>
+<li><p>Fixed default arguments for band structure + dos plotting.</p></li>
+<li><p>Added A centered orthorhombic lattice to <code class="docutils literal notranslate"><span class="pre">BradCrackKpath</span></code>.</p></li>
+</ul>
+</div>
+<div class="section" id="v1-0-7">
+<h2>v1.0.7<a class="headerlink" href="#v1-0-7" title="Permalink to this headline">¶</a></h2>
+<p>Various bug fixes:</p>
+<ul class="simple">
+<li><p>Fixed density option in kgen.</p></li>
+<li><p>Fixed phonon-bandplot plotting limits.</p></li>
+</ul>
+</div>
+<div class="section" id="v1-0-6">
+<h2>v1.0.6<a class="headerlink" href="#v1-0-6" title="Permalink to this headline">¶</a></h2>
+<p>Move package data files.</p>
+</div>
+<div class="section" id="v1-0-5">
+<h2>v1.0.5<a class="headerlink" href="#v1-0-5" title="Permalink to this headline">¶</a></h2>
+<p>Minor bug fixes.</p>
+</div>
+<div class="section" id="v1-0-4">
+<h2>v1.0.4<a class="headerlink" href="#v1-0-4" title="Permalink to this headline">¶</a></h2>
+<p>Minor changes to Pypi config.</p>
+</div>
+<div class="section" id="v1-0-0">
+<h2>v1.0.0<a class="headerlink" href="#v1-0-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="added">
+<h3>Added<a class="headerlink" href="#added" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Script files:</p>
+<ul>
+<li><p>sumo-kgen</p></li>
+<li><p>sumo-dosplot</p></li>
+<li><p>sumo-bandplot</p></li>
+<li><p>sumo-bandstats</p></li>
+<li><p>sumo-optplot</p></li>
+<li><p>sumo-phonon-bandplot</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-0-1">v2.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-0-0">v2.0.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-4-0">v1.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-3-0">v1.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-2-0">v1.2.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-3">v1.1.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-2">v1.1.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-1">v1.1.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-0">v1.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0-10">v1.0.10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0-9">v1.0.9</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0-8">v1.0.8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0-7">v1.0.7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0-6">v1.0.6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0-5">v1.0.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0-4">v1.0.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0-0">v1.0.0</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/changelog.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

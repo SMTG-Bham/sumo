@@ -1,0 +1,852 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.cli package &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="sumo.electronic_structure package" href="sumo.electronic_structure.html" />
+    <link rel="prev" title="sumo package" href="sumo.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="sumo-cli-package">
+<h1>sumo.cli package<a class="headerlink" href="#sumo-cli-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-sumo.cli">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sumo.cli" title="Permalink to this headline">¶</a></h2>
+<p>Package containing command line tools.</p>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-sumo.cli.bandplot">
+<span id="sumo-cli-bandplot-module"></span><h2>sumo.cli.bandplot module<a class="headerlink" href="#module-sumo.cli.bandplot" title="Permalink to this headline">¶</a></h2>
+<p>A script to plot electronic band structure diagrams.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Replace the elements and project formats with the dream syntax</p></li>
+</ul>
+</div>
+<dl class="py function">
+<dt id="sumo.cli.bandplot.bandplot">
+<code class="sig-prename descclassname">sumo.cli.bandplot.</code><code class="sig-name descname">bandplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filenames</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">code</span><span class="o">=</span><span class="default_value">'vasp'</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">projection_selection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'rgb'</span></em>, <em class="sig-param"><span class="n">interpolate_factor</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">circle_size</span><span class="o">=</span><span class="default_value">150</span></em>, <em class="sig-param"><span class="n">dos_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cart_coords</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">scissor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ylabel</span><span class="o">=</span><span class="default_value">'Energy (eV)'</span></em>, <em class="sig-param"><span class="n">dos_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">elements</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lm_orbitals</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atoms</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">total_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">plot_total</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">legend_cutoff</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">gaussian</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ymin</span><span class="o">=</span><span class="default_value">- 6.0</span></em>, <em class="sig-param"><span class="n">ymax</span><span class="o">=</span><span class="default_value">6.0</span></em>, <em class="sig-param"><span class="n">colours</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">yscale</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_base_style</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">image_format</span><span class="o">=</span><span class="default_value">'pdf'</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">400</span></em>, <em class="sig-param"><span class="n">plt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fonts</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/cli/bandplot.html#bandplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.cli.bandplot.bandplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot electronic band structure diagrams from vasprun.xml files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filenames</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – <p>Path to input files:</p>
+<dl class="simple">
+<dt>Vasp:</dt><dd><p>Use vasprun.xml or vasprun.xml.gz file.</p>
+</dd>
+<dt>Questaal:</dt><dd><p>Path to a bnds.ext file. The extension will also be used to
+find site.ext and syml.ext files in the same directory.</p>
+</dd>
+<dt>Castep:</dt><dd><p>Path to a seedname.bands file. The prefix (“seedname”) is used
+to locate a seedname.cell file in the same directory and read
+in the positions of high-symmetry points.</p>
+</dd>
+</dl>
+<p>If no filenames are provided, sumo
+will search for vasprun.xml or vasprun.xml.gz files in folders
+named ‘split-0*’. Failing that, the code will look for a vasprun in
+the current directory. If a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of vasprun files is
+provided, these will be combined into a single band structure.</p>
+</p></li>
+<li><p><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Calculation type. Default is ‘vasp’;
+‘questaal’ and ‘castep’ also supported (with a reduced
+feature-set).</p></li>
+<li><p><strong>prefix</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Prefix for file names.</p></li>
+<li><p><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The directory in which to save files.</p></li>
+<li><p><strong>vbm_cbm_marker</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Plot markers to indicate the
+VBM and CBM locations.</p></li>
+<li><p><strong>projection_selection</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – <p>A list of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/string.html#module-string" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string</span></code></a>
+identifying which elements and orbitals to project on to the
+band structure. These can be specified by both element and
+orbital, for example, the following will project the Bi s, p
+and S p orbitals:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[(</span><span class="s1">&#39;Bi&#39;</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Bi&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>If just the element is specified then all the orbitals of
+that element are combined. For example, to sum all the S
+orbitals:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[(</span><span class="s1">&#39;Bi&#39;</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Bi&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">),</span> <span class="s1">&#39;S&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>You can also choose to sum particular orbitals by supplying a
+<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> of orbitals. For example, to sum the S s, p, and
+d orbitals into a single projection:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[(</span><span class="s1">&#39;Bi&#39;</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Bi&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">))]</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">'rgb'</span></code>, a maximum of 3 orbital/element
+combinations can be plotted simultaneously (one for red, green
+and blue), otherwise an unlimited number of elements/orbitals
+can be selected.</p>
+</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – <p>Type of projected band structure to
+plot. Options are:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>”rgb”</dt><dd><p>The band structure line color depends on the character
+of the band. Each element/orbital contributes either
+red, green or blue with the corresponding line colour a
+mixture of all three colours. This mode only supports
+up to 3 elements/orbitals combinations. The order of
+the <code class="docutils literal notranslate"><span class="pre">selection</span></code> <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> determines which colour
+is used for each selection.</p>
+</dd>
+<dt>”stacked”</dt><dd><p>The element/orbital contributions are drawn as a
+series of stacked circles, with the colour depending on
+the composition of the band. The size of the circles
+can be scaled using the <code class="docutils literal notranslate"><span class="pre">circle_size</span></code> option.</p>
+</dd>
+</dl>
+</div></blockquote>
+</p></li>
+<li><p><strong>circle_size</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The area of the circles used
+when <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">'stacked'</span></code>.</p></li>
+<li><p><strong>cart_coords</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Whether the k-points are read as
+cartesian or reciprocal coordinates. This is only required for
+Questaal output; Vasp output is less ambiguous. Defaults to
+<code class="docutils literal notranslate"><span class="pre">False</span></code> (fractional coordinates).</p></li>
+<li><p><strong>scissor</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – Apply a scissor operator (rigid shift
+of the CBM), use with caution if applying to metals.</p></li>
+<li><p><strong>(</strong> (<em>dos_file</em>) – obj:’str’, optional): Path to vasprun.xml file from which to
+read the density of states information. If set, the density of
+states will be plotted alongside the bandstructure.</p></li>
+<li><p><strong>elements</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>The elements and orbitals to extract
+from the projected density of states. Should be provided as a
+<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> with the keys as the element names and corresponding
+values as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> of orbitals. For example, the following
+would extract the Bi s, px, py and d orbitals:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;Bi&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;px&#39;</span><span class="p">,</span> <span class="s1">&#39;py&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)}</span>
+</pre></div>
+</div>
+<p>If an element is included with an empty <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>, all orbitals
+for that species will be extracted. If <code class="docutils literal notranslate"><span class="pre">elements</span></code> is not set or
+set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, all elements for all species will be extracted.</p>
+</p></li>
+<li><p><strong>lm_orbitals</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>The orbitals to decompose into
+their lm contributions (e.g. p -&gt; px, py, pz). Should be provided
+as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, with the elements names as keys and a
+<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> of orbitals as the corresponding values. For example,
+the following would be used to decompose the oxygen p and d
+orbitals:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)}</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>atoms</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>Which atomic sites to use when
+calculating the projected density of states. Should be provided as
+a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, with the element names as keys and a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> of
+<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a> specifying the atomic indices as the corresponding
+values. The elemental projected density of states will be summed
+only over the atom indices specified. If an element is included
+with an empty <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>, then all sites for that element will
+be included. The indices are 0 based for each element specified in
+the POSCAR. For example, the following will calculate the density
+of states for the first 4 Sn atoms and all O atoms in the
+structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;Sn&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="p">(,</span> <span class="p">)}</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">atoms</span></code> is not set or set to <code class="docutils literal notranslate"><span class="pre">None</span></code> then all atomic sites
+for all elements will be considered.</p>
+</p></li>
+<li><p><strong>spin</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Spin</span></code>, optional) – Plot only one spin channel from a
+spin-polarised calculation; “up” or “1” for spin up only, “down” or
+“-1” for spin down only. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>total_only</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Only extract the total density of
+states. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>plot_total</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Plot the total density of states.
+Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>legend_cutoff</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The cut-off (in % of the
+maximum density of states within the plotting range) for an
+elemental orbital to be labelled in the legend. This prevents
+the legend from containing labels for orbitals that have very
+little contribution in the plotting range.</p></li>
+<li><p><strong>gaussian</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – Broaden the density of states using
+convolution with a gaussian function. This parameter controls the
+sigma or standard deviation of the gaussian distribution.</p></li>
+<li><p><strong>height</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The height of the plot.</p></li>
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The width of the plot.</p></li>
+<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The minimum energy on the y-axis.</p></li>
+<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The maximum energy on the y-axis.</p></li>
+<li><p><strong>style</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – (List of) matplotlib style
+specifications, to be composed on top of Sumo base style.</p></li>
+<li><p><strong>no_base_style</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Prevent use of sumo base style.
+This can make alternative styles behave more predictably.</p></li>
+<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>Use custom colours for specific
+element and orbital combinations. Specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of
+<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of the colours. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;Sn&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The colour can be a hex code, series of rgb value, or any other
+format supported by matplotlib.</p>
+</p></li>
+<li><p><strong>yscale</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – Scaling factor for the y-axis.</p></li>
+<li><p><strong>image_format</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The image file format. Can be any
+format supported by matplotlib, including: png, jpg, pdf, and svg.
+Defaults to pdf.</p></li>
+<li><p><strong>dpi</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The dots-per-inch (pixel density) for
+the image.</p></li>
+<li><p><strong>plt</strong> (<a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a>, optional) – A
+<a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a> object to use for plotting.</p></li>
+<li><p><strong>fonts</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – Fonts to use in the plot. Can be a
+a single font, specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, or several fonts,
+specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If <code class="docutils literal notranslate"><span class="pre">plt</span></code> set then the <code class="docutils literal notranslate"><span class="pre">plt</span></code> object will be returned. Otherwise, the
+method will return a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of filenames written to disk.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sumo.cli.bandplot.find_vasprun_files">
+<code class="sig-prename descclassname">sumo.cli.bandplot.</code><code class="sig-name descname">find_vasprun_files</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/cli/bandplot.html#find_vasprun_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.cli.bandplot.find_vasprun_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for vasprun files from the current directory.</p>
+<p>The precedence order for file locations is:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>First search for folders named: ‘split-0*’</p></li>
+<li><p>Else, look in the current directory.</p></li>
+</ol>
+</div></blockquote>
+<p>The split folder names should always be zero based, therefore easily
+sortable.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sumo.cli.bandplot.save_data_files">
+<code class="sig-prename descclassname">sumo.cli.bandplot.</code><code class="sig-name descname">save_data_files</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bs</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/cli/bandplot.html#save_data_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.cli.bandplot.save_data_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the band structure data files to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bs</strong> (<cite>BandStructureSymmLine</cite>) – Calculated band structure.</p></li>
+<li><p><strong>prefix</strong> (<cite>str</cite>, optional) – Prefix for data file.</p></li>
+<li><p><strong>directory</strong> (<cite>str</cite>, optional) – Directory in which to save the data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The filename of the written data file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sumo.cli.bandstats">
+<span id="sumo-cli-bandstats-module"></span><h2>sumo.cli.bandstats module<a class="headerlink" href="#module-sumo.cli.bandstats" title="Permalink to this headline">¶</a></h2>
+<p>A script to calculate effective masses and band degeneracies.</p>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Would be good to reimplement get_vbm and get_cbm methods, with the ability
+to give degeneracies + other band edges within a certain tolerance.</p></li>
+<li><p>Sample custom k-point, band, spin combinations.</p></li>
+</ul>
+</div>
+<dl class="py function">
+<dt id="sumo.cli.bandstats.bandstats">
+<code class="sig-prename descclassname">sumo.cli.bandstats.</code><code class="sig-name descname">bandstats</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filenames</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_sample_points</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">temperature</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">degeneracy_tol</span><span class="o">=</span><span class="default_value">0.0001</span></em>, <em class="sig-param"><span class="n">parabolic</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/cli/bandstats.html#bandstats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.cli.bandstats.bandstats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the effective masses of the bands of a semiconductor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filenames</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – Path to vasprun.xml
+or vasprun.xml.gz file. If no filenames are provided, the code
+will search for vasprun.xml or vasprun.xml.gz files in folders
+named ‘split-0*’. Failing that, the code will look for a vasprun in
+the current directory. If a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of vasprun files is
+provided, these will be combined into a single band structure.</p></li>
+<li><p><strong>num_sample_points</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – Number of k-points to sample
+when fitting the effective masses.</p></li>
+<li><p><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – Find band edges within kB * T of
+the valence band maximum and conduction band minimum. Not currently
+implemented.</p></li>
+<li><p><strong>degeneracy_tol</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – Tolerance for determining the
+degeneracy of the valence band maximum and conduction band minimum.</p></li>
+<li><p><strong>parabolic</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Use a parabolic fit of the band
+edges. If <code class="docutils literal notranslate"><span class="pre">False</span></code> then nonparabolic fitting will be attempted.
+Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>The hole and electron effective masses. Formatted as a
+<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> with keys: <code class="docutils literal notranslate"><span class="pre">'hole_data'</span></code> and <code class="docutils literal notranslate"><span class="pre">'electron_data'</span></code>. The
+data is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> with the keys:</p>
+<dl class="simple">
+<dt>’effective_mass’ (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>)</dt><dd><p>The effective mass in units of electron rest mass, <span class="math notranslate nohighlight">\(m_0\)</span>.</p>
+</dd>
+<dt>’energies’ (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>)</dt><dd><p>Band eigenvalues in eV.</p>
+</dd>
+<dt>’distances’ (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>)</dt><dd><p>Distances of the k-points in reciprocal space.</p>
+</dd>
+<dt>’band_id’ (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>)</dt><dd><p>The index of the band,</p>
+</dd>
+<dt>’spin’ (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.core.html#pymatgen.electronic_structure.core.Spin" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Spin</span></code></a>)</dt><dd><p>The spin channel</p>
+</dd>
+<dt>’start_kpoint’ (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>)</dt><dd><p>The index of the k-point at which the band extrema occurs</p>
+</dd>
+</dl>
+<p>’end_kpoint’ (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>)</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sumo.cli.dosplot">
+<span id="sumo-cli-dosplot-module"></span><h2>sumo.cli.dosplot module<a class="headerlink" href="#module-sumo.cli.dosplot" title="Permalink to this headline">¶</a></h2>
+<p>A script to plot density of states diagrams.</p>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Add ability to scale an orbitals density of states</p></li>
+</ul>
+</div>
+<dl class="py function">
+<dt id="sumo.cli.dosplot.dosplot">
+<code class="sig-prename descclassname">sumo.cli.dosplot.</code><code class="sig-name descname">dosplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">code</span><span class="o">=</span><span class="default_value">'vasp'</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">elements</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lm_orbitals</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atoms</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">subplot</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">total_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">plot_total</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">legend_on</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">legend_frame_on</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">legend_cutoff</span><span class="o">=</span><span class="default_value">3.0</span></em>, <em class="sig-param"><span class="n">gaussian</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">6.0</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">8.0</span></em>, <em class="sig-param"><span class="n">xmin</span><span class="o">=</span><span class="default_value">- 6.0</span></em>, <em class="sig-param"><span class="n">xmax</span><span class="o">=</span><span class="default_value">6.0</span></em>, <em class="sig-param"><span class="n">num_columns</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">colours</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">yscale</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">xlabel</span><span class="o">=</span><span class="default_value">'Energy (eV)'</span></em>, <em class="sig-param"><span class="n">ylabel</span><span class="o">=</span><span class="default_value">'Arb. units'</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_base_style</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">image_format</span><span class="o">=</span><span class="default_value">'pdf'</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">400</span></em>, <em class="sig-param"><span class="n">plt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fonts</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/cli/dosplot.html#dosplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.cli.dosplot.dosplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>A script to plot the density of states from a vasprun.xml file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Path to a DOS data file (can be
+gzipped). The preferred file type depends on the electronic
+structure code: vasprun.xml (VASP); <em>.bands (CASTEP); dos.</em>
+(Questaal).</p></li>
+<li><p><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Electronic structure code used (‘vasp’,
+‘castep’ or ‘questaal’). Note that for Castep only a rough TDOS
+is available, assembled by sampling the eigenvalues.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Prefix for file names.</p></li>
+<li><p><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The directory in which to save files.</p></li>
+<li><p><strong>elements</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>The elements and orbitals to extract
+from the projected density of states. Should be provided as a
+<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> with the keys as the element names and corresponding
+values as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> of orbitals. For example, the following
+would extract the Bi s, px, py and d orbitals:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;Bi&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;px&#39;</span><span class="p">,</span> <span class="s1">&#39;py&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)}</span>
+</pre></div>
+</div>
+<p>If an element is included with an empty <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>, all orbitals
+for that species will be extracted. If <code class="docutils literal notranslate"><span class="pre">elements</span></code> is not set or
+set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, all elements for all species will be extracted.</p>
+</p></li>
+<li><p><strong>lm_orbitals</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>The orbitals to decompose into
+their lm contributions (e.g. p -&gt; px, py, pz). Should be provided
+as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, with the elements names as keys and a
+<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> of orbitals as the corresponding values. For example,
+the following would be used to decompose the oxygen p and d
+orbitals:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)}</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>atoms</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>Which atomic sites to use when
+calculating the projected density of states. Should be provided as
+a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, with the element names as keys and a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> of
+<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a> specifying the atomic indices as the corresponding
+values. The elemental projected density of states will be summed
+only over the atom indices specified. If an element is included
+with an empty <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>, then all sites for that element will
+be included. The indices are 0 based for each element specified in
+the POSCAR. For example, the following will calculate the density
+of states for the first 4 Sn atoms and all O atoms in the
+structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;Sn&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="p">(,</span> <span class="p">)}</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">atoms</span></code> is not set or set to <code class="docutils literal notranslate"><span class="pre">None</span></code> then all atomic sites
+for all elements will be considered.</p>
+</p></li>
+<li><p><strong>spin</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Spin</span></code>, optional) – Plot only one spin channel from a
+spin-polarised calculation; “up” or “1” for spin up only, “down” or
+“-1” for spin down only. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>subplot</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Plot the density of states for each
+element on separate subplots. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>shift</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Shift the energies such that the valence
+band maximum (or Fermi level for metals) is at 0 eV. Defaults to
+<code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>total_only</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Only extract the total density of
+states. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>plot_total</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Plot the total density of states.
+Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>legend_on</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Plot the graph legend. Defaults
+to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>legend_frame_on</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Plot a frame around the
+graph legend. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>legend_cutoff</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The cut-off (in % of the
+maximum density of states within the plotting range) for an
+elemental orbital to be labelled in the legend. This prevents
+the legend from containing labels for orbitals that have very
+little contribution in the plotting range.</p></li>
+<li><p><strong>gaussian</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – Broaden the density of states using
+convolution with a gaussian function. This parameter controls the
+sigma or standard deviation of the gaussian distribution.</p></li>
+<li><p><strong>height</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The height of the plot.</p></li>
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The width of the plot.</p></li>
+<li><p><strong>xmin</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The minimum energy on the x-axis.</p></li>
+<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The maximum energy on the x-axis.</p></li>
+<li><p><strong>num_columns</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The number of columns in the
+legend.</p></li>
+<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>Use custom colours for specific
+element and orbital combinations. Specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of
+<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of the colours. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;Sn&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="s1">&#39;#000000&#39;</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The colour can be a hex code, series of rgb value, or any other
+format supported by matplotlib.</p>
+</p></li>
+<li><p><strong>xlabel</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Label/units for x-axis (i.e. energy)</p></li>
+<li><p><strong>ylabel</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Label/units for y-axis (i.e. DOS)</p></li>
+<li><p><strong>yscale</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – Scaling factor for the y-axis.</p></li>
+<li><p><strong>style</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – (List of) matplotlib style
+specifications, to be composed on top of Sumo base style.</p></li>
+<li><p><strong>no_base_style</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Prevent use of sumo base style.
+This can make alternative styles behave more predictably.</p></li>
+<li><p><strong>image_format</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The image file format. Can be any
+format supported by matplotlib, including: png, jpg, pdf, and svg.
+Defaults to pdf.</p></li>
+<li><p><strong>dpi</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The dots-per-inch (pixel density) for
+the image.</p></li>
+<li><p><strong>plt</strong> (<a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a>, optional) – A
+<a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a> object to use for plotting.</p></li>
+<li><p><strong>fonts</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – Fonts to use in the plot. Can be a
+a single font, specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, or several fonts,
+specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A matplotlib pyplot object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sumo.cli.kgen">
+<span id="sumo-cli-kgen-module"></span><h2>sumo.cli.kgen module<a class="headerlink" href="#module-sumo.cli.kgen" title="Permalink to this headline">¶</a></h2>
+<p>A script to generate input files for band structure calculations</p>
+<div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Add support for CDML labels</p></li>
+<li><p>Save Brillouin zone diagram</p></li>
+<li><p>Return a list of filenames/folders</p></li>
+</ul>
+</div>
+<dl class="py function">
+<dt id="sumo.cli.kgen.kgen">
+<code class="sig-prename descclassname">sumo.cli.kgen.</code><code class="sig-name descname">kgen</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">'POSCAR'</span></em>, <em class="sig-param"><span class="n">code</span><span class="o">=</span><span class="default_value">'vasp'</span></em>, <em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">make_folders</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">symprec</span><span class="o">=</span><span class="default_value">0.01</span></em>, <em class="sig-param"><span class="n">kpts_per_split</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ibzkpt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">density</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">phonon</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'bradcrack'</span></em>, <em class="sig-param"><span class="n">cart_coords</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kpt_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/cli/kgen.html#kgen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.cli.kgen.kgen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate KPOINTS files for VASP band structure calculations.</p>
+<p>This script provides a wrapper around several frameworks used to generate
+k-points along a high-symmetry path. The paths found in Bradley and
+Cracknell, SeeK-path, and pymatgen are all supported.</p>
+<p>It is important to note that the standard primitive cell symmetry is
+different between SeeK-path and pymatgen. If the correct the structure
+is not used, the high-symmetry points (and band path) may be invalid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Path to VASP structure file. Default
+is <code class="docutils literal notranslate"><span class="pre">POSCAR</span></code>.</p></li>
+<li><p><strong>code</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Calculation type. Default is ‘vasp’;
+‘questaal’ also supported.</p></li>
+<li><p><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The output file directory.</p></li>
+<li><p><strong>make_folders</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Generate folders and copy in
+required files (INCAR, POTCAR, POSCAR, and possibly CHGCAR) from
+the current directory.</p></li>
+<li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The precision used for determining
+the cell symmetry.</p></li>
+<li><p><strong>kpts_per_split</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – If set, the k-points are split
+into separate k-point files (or folders) each containing the number
+of k-points specified. This is useful for hybrid band structure
+calculations where it is often intractable to calculate all
+k-points in the same calculation.</p></li>
+<li><p><strong>ibzkpt</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Path to IBZKPT file. If set, the
+generated k-points will be appended to the k-points in this file
+and given a weight of 0. This is necessary for hybrid band
+structure calculations.</p></li>
+<li><p><strong>spg</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The space group international
+number or symbol to override the symmetry determined by spglib.
+This is not recommended and only provided for testing purposes.
+This option will only take effect when <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">'bradcrack'</span></code>.</p></li>
+<li><p><strong>line_density</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – Density of k-points along the
+path.</p></li>
+<li><p><strong>phonon</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Write phonon q-point path instead of
+k-points. (Not appropriate for most codes.)</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – <p>Method used for calculating the
+high-symmetry path. The options are:</p>
+<dl class="simple">
+<dt>bradcrack</dt><dd><p>Use the paths from Bradley and Cracknell. See <a class="reference internal" href="sumo.symmetry.html#brad" id="id5"><span>[brad]</span></a>.</p>
+</dd>
+<dt>pymatgen</dt><dd><p>Use the paths from pymatgen. See <a class="reference internal" href="sumo.symmetry.html#curt" id="id6"><span>[curt]</span></a>.</p>
+</dd>
+<dt>seekpath</dt><dd><p>Use the paths from SeeK-path. See <a class="reference internal" href="sumo.symmetry.html#seek" id="id7"><span>[seek]</span></a>.</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>cart_coords</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Whether the k-points are returned
+in cartesian or reciprocal coordinates. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(fractional coordinates).</p></li>
+<li><p><strong>kpt_list</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – <p>List of k-points to use, formatted as
+a list of subpaths, each containing a list of fractional k-points.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="p">[[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]],</span>
+  <span class="p">[[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]]</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>Will return points along <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">0</span> <span class="pre">0</span> <span class="pre">-&gt;</span> <span class="pre">0</span> <span class="pre">0</span> <span class="pre">1/2</span> <span class="pre">|</span> <span class="pre">1/2</span> <span class="pre">0</span> <span class="pre">0</span>
+<span class="pre">-&gt;</span> <span class="pre">1/2</span> <span class="pre">1/2</span> <span class="pre">0</span></code></p>
+</p></li>
+<li><p><strong>path_labels</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – <p>The k-point labels. These should
+be provided as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> for each subpath of the
+overall path. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="p">[</span><span class="s1">&#39;Gamma&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">]</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>combined with the above example for <code class="docutils literal notranslate"><span class="pre">kpt_list</span></code> would indicate the
+path: Gamma -&gt; Z | X -&gt; M. If no labels are provided, letters from
+A -&gt; Z will be used instead. If a label begins with ‘&#64;’ it will be
+concealed when plotting with sumo-bandplot.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sumo.cli.optplot">
+<span id="sumo-cli-optplot-module"></span><h2>sumo.cli.optplot module<a class="headerlink" href="#module-sumo.cli.optplot" title="Permalink to this headline">¶</a></h2>
+<p>A script to calculate and plot optical spectra from ab initio calculations.</p>
+<dl class="py function">
+<dt id="sumo.cli.optplot.optplot">
+<code class="sig-prename descclassname">sumo.cli.optplot.</code><code class="sig-name descname">optplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">modes</span><span class="o">=</span><span class="default_value">'absorption'</span></em>, <em class="sig-param"><span class="n">filenames</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">codes</span><span class="o">=</span><span class="default_value">'vasp'</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">gaussian</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">band_gaps</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">average</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">6</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">6</span></em>, <em class="sig-param"><span class="n">xmin</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">xmax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ymin</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">ymax</span><span class="o">=</span><span class="default_value">100000.0</span></em>, <em class="sig-param"><span class="n">colours</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_base_style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">image_format</span><span class="o">=</span><span class="default_value">'pdf'</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">400</span></em>, <em class="sig-param"><span class="n">plt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fonts</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/cli/optplot.html#optplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.cli.optplot.optplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>A script to plot optical absorption spectra from VASP calculations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>modes</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>) – Ordered list of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> determining properties to plot.
+Accepted options are ‘absorption’ (default), ‘eps’, ‘eps-real’,
+‘eps-im’, ‘n’, ‘n-real’, ‘n-im’, ‘loss’ (equivalent to n-im).</p></li>
+<li><p><strong>filenames</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – Path to data file.
+For VASP this is a <em>vasprun.xml</em> file (can be gzipped); for
+Questaal the <em>opt.ext</em> file from <em>lmf</em> or <em>eps_BSE.out</em> from
+<em>bethesalpeter</em> may be used.
+Alternatively, a list of paths can be
+provided, in which case the absorption spectra for each will be
+plotted concurrently.</p></li>
+<li><p><strong>codes</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – Original
+calculator. Accepted values are ‘vasp’ and ‘questaal’. Items should
+correspond to filenames.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Prefix for file names.</p></li>
+<li><p><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The directory in which to save files.</p></li>
+<li><p><strong>gaussian</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>) – Standard deviation for gaussian broadening.</p></li>
+<li><p><strong>band_gaps</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – The band
+gap as a <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, plotted as a dashed line. If plotting
+multiple spectra then a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of band gaps can be provided.
+Band gaps can be provided as a floating-point number or as a path
+to a <em>vasprun.xml</em> file. To skip over a line, set its bandgap to
+zero or a negative number to place it outside the visible range.</p></li>
+<li><p><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) – A label to identify the spectra.
+If plotting multiple spectra then a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of labels can
+be provided.</p></li>
+<li><p><strong>average</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Average the dielectric response across
+all lattice directions. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>height</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The height of the plot.</p></li>
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The width of the plot.</p></li>
+<li><p><strong>xmin</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The minimum energy on the x-axis.</p></li>
+<li><p><strong>xmax</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The maximum energy on the x-axis.</p></li>
+<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The minimum absorption intensity on the
+y-axis.</p></li>
+<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The maximum absorption intensity on the
+y-axis.</p></li>
+<li><p><strong>colours</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – A <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of colours to use in the
+plot. The colours can be specified as a hex code, set of rgb
+values, or any other format supported by matplotlib.</p></li>
+<li><p><strong>style</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – (List of) matplotlib style
+specifications, to be composed on top of Sumo base style.</p></li>
+<li><p><strong>no_base_style</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Prevent use of sumo base style.
+This can make alternative styles behave more predictably.</p></li>
+<li><p><strong>image_format</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The image file format. Can be any
+format supported by matplotlib, including: png, jpg, pdf, and svg.
+Defaults to pdf.</p></li>
+<li><p><strong>dpi</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The dots-per-inch (pixel density) for
+the image.</p></li>
+<li><p><strong>plt</strong> (<a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a>, optional) – A
+<a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a> object to use for plotting.</p></li>
+<li><p><strong>fonts</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – Fonts to use in the plot. Can be a
+a single font, specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, or several fonts,
+specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A matplotlib pyplot object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-sumo.cli.phonon_bandplot">
+<span id="sumo-cli-phonon-bandplot-module"></span><h2>sumo.cli.phonon_bandplot module<a class="headerlink" href="#module-sumo.cli.phonon_bandplot" title="Permalink to this headline">¶</a></h2>
+<p>A script to plot phonon band structure diagrams.</p>
+<div class="admonition-todo admonition" id="id8">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>automatically plot dos if present in band.yaml</p></li>
+<li><p>make band structure from vasprun displacement/DFPT files</p></li>
+<li><p>deal with magnetic moments</p></li>
+<li><p>Read force_constants.hdf5</p></li>
+<li><p>read settings from phonopy config file</p></li>
+<li><p>prefix file names</p></li>
+</ul>
+</div>
+<dl class="py function">
+<dt id="sumo.cli.phonon_bandplot.phonon_bandplot">
+<code class="sig-prename descclassname">sumo.cli.phonon_bandplot.</code><code class="sig-name descname">phonon_bandplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">poscar</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dim</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">born</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">qmesh</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">primitive_axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">line_density</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">units</span><span class="o">=</span><span class="default_value">'THz'</span></em>, <em class="sig-param"><span class="n">symprec</span><span class="o">=</span><span class="default_value">0.01</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'bradcrack'</span></em>, <em class="sig-param"><span class="n">kpt_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">eigenvectors</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">6.0</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">6.0</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_base_style</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ymin</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ymax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">image_format</span><span class="o">=</span><span class="default_value">'pdf'</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">400</span></em>, <em class="sig-param"><span class="n">plt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fonts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dos</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">to_json</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">from_json</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">to_web</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">legend</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/cli/phonon_bandplot.html#phonon_bandplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.cli.phonon_bandplot.phonon_bandplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>A script to plot phonon band structure diagrams.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to phonopy output. Can be a band structure yaml
+file, <code class="docutils literal notranslate"><span class="pre">FORCE_SETS</span></code>, <code class="docutils literal notranslate"><span class="pre">FORCE_CONSTANTS</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">force_constants.hdf5</span></code>.</p></li>
+<li><p><strong>poscar</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Path to POSCAR file of unitcell. Not
+required if plotting the phonon band structure from a yaml file. If
+not specified, the script will search for a POSCAR file in the
+current directory.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Prefix for file names.</p></li>
+<li><p><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The directory in which to save files.</p></li>
+<li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – supercell matrix</p></li>
+<li><p><strong>born</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Path to file containing Born effective
+charges. Should be in the same format as the file produced by the
+<code class="docutils literal notranslate"><span class="pre">phonopy-vasp-born</span></code> script provided by phonopy.</p></li>
+<li><p><strong>qmesh</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – Q-point mesh to use for
+calculating the density of state. Formatted as a 3x1 <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of
+<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>.</p></li>
+<li><p><strong>spg</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The space group international
+number or symbol to override the symmetry determined by spglib.
+This is not recommended and only provided for testing purposes.
+This option will only take effect when <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">'bradcrack'</span></code>.</p></li>
+<li><p><strong>primitive_axis</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The
+transformation matrix from the conventional to primitive cell. Only
+required when the conventional cell was used as the starting
+structure. Should be provided as a 3x3 <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of
+<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>. Alternatively the string ‘auto’ may be used to
+request that a primitive matrix is determined automatically.</p></li>
+<li><p><strong>line_density</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – Density of k-points along the
+path.</p></li>
+<li><p><strong>units</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Units of phonon frequency. Accepted
+(case-insensitive) values are Thz, cm-1, eV, meV.</p></li>
+<li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – Tolerance for space-group-finding
+operations</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – <p>Method used for calculating the
+high-symmetry path. The options are:</p>
+<dl class="simple">
+<dt>bradcrack</dt><dd><p>Use the paths from Bradley and Cracknell. See <a class="reference internal" href="sumo.symmetry.html#brad" id="id9"><span>[brad]</span></a>.</p>
+</dd>
+<dt>pymatgen</dt><dd><p>Use the paths from pymatgen. See <a class="reference internal" href="sumo.symmetry.html#curt" id="id10"><span>[curt]</span></a>.</p>
+</dd>
+<dt>seekpath</dt><dd><p>Use the paths from SeeK-path. See <a class="reference internal" href="sumo.symmetry.html#seek" id="id11"><span>[seek]</span></a>.</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>kpt_list</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – <p>List of k-points to use, formatted as
+a list of subpaths, each containing a list of fractional k-points.
+For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="p">[[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]],</span>
+  <span class="p">[[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.</span><span class="p">]]</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>Will return points along <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">0</span> <span class="pre">0</span> <span class="pre">-&gt;</span> <span class="pre">0</span> <span class="pre">0</span> <span class="pre">1/2</span> <span class="pre">|</span> <span class="pre">1/2</span> <span class="pre">0</span> <span class="pre">0</span>
+<span class="pre">-&gt;</span> <span class="pre">1/2</span> <span class="pre">1/2</span> <span class="pre">0</span></code></p>
+</p></li>
+<li><p><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – <p>The k-point labels. These should
+be provided as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> for each subpath of the
+overall path. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="p">[</span><span class="s1">&#39;Gamma&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">]</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>combined with the above example for <code class="docutils literal notranslate"><span class="pre">kpt_list</span></code> would indicate the
+path: Gamma -&gt; Z | X -&gt; M. If no labels are provided, letters from
+A -&gt; Z will be used instead.</p>
+</p></li>
+<li><p><strong>eigenvectors</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Write the eigenvectors to the
+yaml file. (Always True if to_web is set.)</p></li>
+<li><p><strong>dos</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to Phonopy total dos .dat file</p></li>
+<li><p><strong>height</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The height of the plot.</p></li>
+<li><p><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The width of the plot.</p></li>
+<li><p><strong>ymin</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The minimum energy on the y-axis.</p></li>
+<li><p><strong>ymax</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The maximum energy on the y-axis.</p></li>
+<li><p><strong>style</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – (List of) matplotlib style
+specifications, to be composed on top of Sumo base style.</p></li>
+<li><p><strong>no_base_style</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Prevent use of sumo base style.
+This can make alternative styles behave more predictably.</p></li>
+<li><p><strong>image_format</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The image file format. Can be any
+format supported by matplotlib, including: png, jpg, pdf, and svg.
+Defaults to pdf.</p></li>
+<li><p><strong>dpi</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The dots-per-inch (pixel density) for
+the image.</p></li>
+<li><p><strong>plt</strong> (<a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a>, optional) – A
+<a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a> object to use for plotting.</p></li>
+<li><p><strong>fonts</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, optional) – Fonts to use in the plot. Can be a
+a single font, specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, or several fonts,
+specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>.</p></li>
+<li><p><strong>to_json</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – JSON file to dump the Pymatgen band
+path object.</p></li>
+<li><p><strong>from_json</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – (List of) JSON
+bandpath data filename(s) to import and overlay.</p></li>
+<li><p><strong>to_web</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – JSON file to write data for
+visualisation with <a class="reference external" href="http://henriquemiranda.github.io/phononwebsite">http://henriquemiranda.github.io/phononwebsite</a></p></li>
+<li><p><strong>legend</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, optional) – Legend labels. If None,
+don’t add a legend. With a list length equal to from_json, label
+json inputs only. With one extra list entry, label all lines
+beginning with new plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A matplotlib pyplot object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="sumo.cli.phonon_bandplot.save_data_files">
+<code class="sig-prename descclassname">sumo.cli.phonon_bandplot.</code><code class="sig-name descname">save_data_files</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bs</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/cli/phonon_bandplot.html#save_data_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.cli.phonon_bandplot.save_data_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the phonon band structure data files to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.phonon.bandstructure.html#pymatgen.phonon.bandstructure.PhononBandStructureSymmLine" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhononBandStructureSymmLine</span></code></a>) – The phonon band structure.</p></li>
+<li><p><strong>prefix</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Prefix for data file.</p></li>
+<li><p><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Directory in which to save the data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The filename of the written data file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Python API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="sumo.html">sumo package</a></li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/sumo.cli.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

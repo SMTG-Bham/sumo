@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.phonon package &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="sumo.plotting package" href="sumo.plotting.html" />
+    <link rel="prev" title="sumo.electronic_structure package" href="sumo.electronic_structure.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="sumo-phonon-package">
+<h1>sumo.phonon package<a class="headerlink" href="#sumo-phonon-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-sumo.phonon">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sumo.phonon" title="Permalink to this headline">¶</a></h2>
+<p>Package containing functions for loading and manipulating phonon data.</p>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-sumo.phonon.phonopy">
+<span id="sumo-phonon-phonopy-module"></span><h2>sumo.phonon.phonopy module<a class="headerlink" href="#module-sumo.phonon.phonopy" title="Permalink to this headline">¶</a></h2>
+<p>This module provides helper functions for dealing with phonopy.</p>
+<dl class="py function">
+<dt id="sumo.phonon.phonopy.load_phonopy">
+<code class="sig-prename descclassname">sumo.phonon.phonopy.</code><code class="sig-name descname">load_phonopy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">dim</span></em>, <em class="sig-param"><span class="n">symprec</span><span class="o">=</span><span class="default_value">0.01</span></em>, <em class="sig-param"><span class="n">primitive_matrix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">factor</span><span class="o">=</span><span class="default_value">15.633302300230191</span></em>, <em class="sig-param"><span class="n">symmetrise</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">born</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">write_fc</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/phonon/phonopy.html#load_phonopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.phonon.phonopy.load_phonopy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load phonopy output and return an <code class="docutils literal notranslate"><span class="pre">phonopy.Phonopy</span></code> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to phonopy output. Can be any of <code class="docutils literal notranslate"><span class="pre">FORCE_SETS</span></code>,
+<code class="docutils literal notranslate"><span class="pre">FORCE_CONSTANTS</span></code>, or <code class="docutils literal notranslate"><span class="pre">force_constants.hdf5</span></code>.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The unitcell
+structure.</p></li>
+<li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – The supercell size, as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>.</p></li>
+<li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
+crystal symmetry.</p></li>
+<li><p><strong>primitive_matrix</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – The
+transformation matrix from the conventional to primitive cell. Only
+required when the conventional cell was used as the starting
+structure. Should be provided as a 3x3 <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>.
+Alternatively the str ‘auto’ may be provided.</p></li>
+<li><p><strong>factor</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The conversion factor for phonon
+frequency. Defaults to <code class="xref py py-obj docutils literal notranslate"><span class="pre">phonopy.units.VaspToTHz</span></code>.</p></li>
+<li><p><strong>symmetrise</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Symmetrise the force constants.
+Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>born</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – Path to file containing Born effective
+charges. Should be in the same format as the file produced by the
+<code class="docutils literal notranslate"><span class="pre">phonopy-vasp-born</span></code> script provided by phonopy.</p></li>
+<li><p><strong>write_fc</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>,  optional) – Write the force
+constants to disk. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, a <code class="docutils literal notranslate"><span class="pre">FORCE_CONSTANTS</span></code> file will be
+written. Alternatively, if set to <code class="docutils literal notranslate"><span class="pre">&quot;hdf5&quot;</span></code>, a
+<code class="docutils literal notranslate"><span class="pre">force_constants.hdf5</span></code> file will be written. Defaults to
+<code class="docutils literal notranslate"><span class="pre">False</span></code> (force constants not written).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Python API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="sumo.html">sumo package</a></li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/sumo.phonon.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

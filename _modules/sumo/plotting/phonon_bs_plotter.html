@@ -1,0 +1,366 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.plotting.phonon_bs_plotter &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.plotting.phonon_bs_plotter</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides a class for plotting phonon band structure diagrams.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">MaxNLocator</span><span class="p">,</span> <span class="n">AutoMinorLocator</span>
+<span class="kn">from</span> <span class="nn">matplotlib.cbook</span> <span class="kn">import</span> <span class="n">flatten</span>
+<span class="kn">from</span> <span class="nn">matplotlib.transforms</span> <span class="kn">import</span> <span class="n">blended_transform_factory</span>
+
+<span class="kn">from</span> <span class="nn">pymatgen.phonon.plotter</span> <span class="kn">import</span> <span class="n">PhononBSPlotter</span>
+<span class="kn">from</span> <span class="nn">pymatgen.phonon.bandstructure</span> <span class="kn">import</span> <span class="n">PhononBandStructureSymmLine</span>
+
+<span class="kn">from</span> <span class="nn">sumo.plotting</span> <span class="kn">import</span> <span class="p">(</span><span class="n">pretty_plot</span><span class="p">,</span> <span class="n">pretty_subplot</span><span class="p">,</span> <span class="n">styled_plot</span><span class="p">,</span>
+                           <span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">,</span> <span class="n">sumo_phonon_style</span><span class="p">)</span>
+
+<span class="n">dashes</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SPhononBSPlotter"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.phonon_bs_plotter.SPhononBSPlotter">[docs]</a><span class="k">class</span> <span class="nc">SPhononBSPlotter</span><span class="p">(</span><span class="n">PhononBSPlotter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for plotting phonon band structures.</span>
+
+<span class="sd">    This class is similar to the :obj:`pymatgen.phonon.plotter.PhononBSPlotter`</span>
+<span class="sd">    class but overrides some methods to generate prettier plots.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bs (:obj:`~pymatgen.phonon.bandstructure.PhononBandStructureSymmLine`):</span>
+<span class="sd">            The phonon band structure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bs</span><span class="p">,</span> <span class="n">imag_tol</span><span class="o">=-</span><span class="mf">5e-2</span><span class="p">):</span>
+        <span class="n">PhononBSPlotter</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imag_tol</span> <span class="o">=</span> <span class="n">imag_tol</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_plot_phonon_dos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dashline</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;C0&#39;</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">dos</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">fill_betweenx</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;DOS&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dashline</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;grid.color&#39;</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
+                       <span class="n">dashes</span><span class="o">=</span><span class="n">dashes</span><span class="p">,</span>
+                       <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                       <span class="n">linewidth</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;ytick.major.width&#39;</span><span class="p">])</span>
+
+    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">,</span> <span class="n">sumo_phonon_style</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;THz&#39;</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">dos_aspect</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">from_json</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object of the phonon band structure.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            units (:obj:`str`, optional): Units of phonon frequency. Accepted</span>
+<span class="sd">                (case-insensitive) values are Thz, cm-1, eV, meV.</span>
+<span class="sd">            ymin (:obj:`float`, optional): The minimum energy on the y-axis.</span>
+<span class="sd">            ymax (:obj:`float`, optional): The maximum energy on the y-axis.</span>
+<span class="sd">            width (:obj:`float`, optional): The width of the plot.</span>
+<span class="sd">            height (:obj:`float`, optional): The height of the plot.</span>
+<span class="sd">            dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for</span>
+<span class="sd">                the image.</span>
+<span class="sd">            fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a</span>
+<span class="sd">                a single font, specified as a :obj:`str`, or several fonts,</span>
+<span class="sd">                specified as a :obj:`list` of :obj:`str`.</span>
+<span class="sd">            plt (:obj:`matplotlib.pyplot`, optional): A</span>
+<span class="sd">                :obj:`matplotlib.pyplot` object to use for plotting.</span>
+<span class="sd">            dos (:obj:`np.ndarray`): 2D Numpy array of total DOS data</span>
+<span class="sd">            dos_aspect (float): Width division for vertical DOS</span>
+<span class="sd">            color (:obj:`str` or :obj:`tuple`, optional): Line/fill colour in</span>
+<span class="sd">                any matplotlib-accepted format</span>
+<span class="sd">            style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib</span>
+<span class="sd">                style specifications, to be composed on top of Sumo base</span>
+<span class="sd">                style.</span>
+<span class="sd">            no_base_style (:obj:`bool`, optional): Prevent use of sumo base</span>
+<span class="sd">                style. This can make alternative styles behave more</span>
+<span class="sd">                predictably.</span>
+<span class="sd">            from_json (:obj:`list` or :obj:`None`, optional): List of paths to</span>
+<span class="sd">                :obj:`pymatgen.phonon.bandstructure.PhononBandStructureSymmline`</span>
+<span class="sd">                JSON dump files. These are used to generate additional plots</span>
+<span class="sd">                displayed under the data attached to this plotter.</span>
+<span class="sd">                The k-point path should be the same as the main plot; the</span>
+<span class="sd">                reciprocal lattice is adjusted to fit the scaling of the main</span>
+<span class="sd">                data input.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :obj:`matplotlib.pyplot`: The phonon band structure plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">from_json</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">from_json</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">legend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">legend</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">from_json</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">from_json</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">from_json</span><span class="p">):</span>
+                <span class="n">legend</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Inappropriate number of legend entries&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;C0&#39;</span>  <span class="c1"># Default to first colour in matplotlib series</span>
+
+        <span class="k">if</span> <span class="n">dos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+                                 <span class="n">sharex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">,</span>
+                                 <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;width_ratios&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">dos_aspect</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                                              <span class="s1">&#39;wspace&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_plot</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">_plot_lines</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Pull data from any PhononBSPlotter and add to axis&quot;&quot;&quot;</span>
+            <span class="n">dists</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">]</span>
+            <span class="n">freqs</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;frequency&#39;</span><span class="p">]</span>
+
+            <span class="c1"># nd is branch index, nb is band index, nk is kpoint index</span>
+            <span class="k">for</span> <span class="n">nd</span><span class="p">,</span> <span class="n">nb</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">])),</span>
+                                            <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nb_bands</span><span class="p">)):</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">nd</span><span class="p">][</span><span class="n">nb</span><span class="p">]</span>
+
+                <span class="c1"># plot band data</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dists</span><span class="p">[</span><span class="n">nd</span><span class="p">],</span> <span class="n">f</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                        <span class="n">zorder</span><span class="o">=</span><span class="n">zorder</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs_plot_data</span><span class="p">()</span>
+        <span class="n">_plot_lines</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bs_json</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">from_json</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">bs_json</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="n">json_data</span><span class="p">[</span><span class="s1">&#39;lattice_rec&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_bs</span><span class="o">.</span><span class="n">lattice_rec</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
+                <span class="n">bs</span> <span class="o">=</span> <span class="n">PhononBandStructureSymmLine</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+
+                <span class="c1"># bs.lattice_rec = self._bs.lattice_rec</span>
+                <span class="c1"># raise Exception(bs.qpoints)</span>
+            <span class="n">json_plotter</span> <span class="o">=</span> <span class="n">PhononBSPlotter</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
+            <span class="n">json_data</span> <span class="o">=</span> <span class="n">json_plotter</span><span class="o">.</span><span class="n">bs_plot_data</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">json_plotter</span><span class="o">.</span><span class="n">_nb_bands</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nb_bands</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Number of bands in </span><span class="si">{}</span><span class="s1"> does not match &#39;</span>
+                                <span class="s1">&#39;main plot&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bs_json</span><span class="p">))</span>
+            <span class="n">_plot_lines</span><span class="p">(</span><span class="n">json_data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span>
+                        <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+                        <span class="n">zorder</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">legend</span><span class="p">):</span>  <span class="c1"># Don&#39;t show legend if all entries are empty string</span>
+            <span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="n">Line2D</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                       <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">legend</span><span class="p">))],</span>
+                       <span class="n">legend</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maketicks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_makeplot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">(),</span> <span class="n">data</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+                       <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span> <span class="n">dos</span><span class="o">=</span><span class="n">dos</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">wspace</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">plt</span>
+
+    <span class="k">def</span> <span class="nf">_makeplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                  <span class="n">width</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">dos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Utility method to tidy phonon band structure diagrams. &quot;&quot;&quot;</span>
+        <span class="c1"># Define colours</span>
+        <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;C0&#39;</span>  <span class="c1"># Default to first colour in matplotlib series</span>
+
+        <span class="c1"># set x and y limits</span>
+        <span class="n">tymax</span> <span class="o">=</span> <span class="n">ymax</span> <span class="k">if</span> <span class="p">(</span><span class="n">ymax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="nb">max</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;frequency&#39;</span><span class="p">]))</span>
+        <span class="n">tymin</span> <span class="o">=</span> <span class="n">ymin</span> <span class="k">if</span> <span class="p">(</span><span class="n">ymin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="n">flatten</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;frequency&#39;</span><span class="p">]))</span>
+        <span class="n">pad</span> <span class="o">=</span> <span class="p">(</span><span class="n">tymax</span> <span class="o">-</span> <span class="n">tymin</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.05</span>
+
+        <span class="k">if</span> <span class="n">ymin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ymin</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">tymin</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imag_tol</span> <span class="k">else</span> <span class="n">tymin</span> <span class="o">-</span> <span class="n">pad</span>
+        <span class="n">ymax</span> <span class="o">=</span> <span class="n">ymax</span> <span class="k">if</span> <span class="n">ymax</span> <span class="k">else</span> <span class="n">tymax</span> <span class="o">+</span> <span class="n">pad</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">ymin</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dashline</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;grid.color&#39;</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
+                       <span class="n">dashes</span><span class="o">=</span><span class="n">dashes</span><span class="p">,</span>
+                       <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                       <span class="n">linewidth</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;ytick.major.width&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dashline</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">dos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_phonon_dos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                                  <span class="n">dashline</span><span class="o">=</span><span class="n">dashline</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="c1"># keep correct aspect ratio; match axis to canvas</span>
+            <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+            <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">width</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">height</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">((</span><span class="n">height</span><span class="o">/</span><span class="n">width</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">x1</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y0</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">_maketicks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;THz&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Utility method to add tick marks to a band structure.&quot;&quot;&quot;</span>
+        <span class="c1"># set y-ticks</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+        <span class="c1"># set x-ticks; only plot the unique tick labels</span>
+        <span class="n">ticks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
+        <span class="n">unique_d</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">unique_l</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">ticks</span><span class="p">[</span><span class="s1">&#39;distance&#39;</span><span class="p">]:</span>
+            <span class="n">temp_ticks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ticks</span><span class="p">[</span><span class="s1">&#39;distance&#39;</span><span class="p">],</span> <span class="n">ticks</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]))</span>
+            <span class="n">unique_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">unique_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp_ticks</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">unique_l</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">unique_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">unique_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Label positions:&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">dist</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">unique_d</span><span class="p">,</span> <span class="n">unique_l</span><span class="p">)):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">{:.4f}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">label</span><span class="p">))</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">unique_d</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">unique_l</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+
+        <span class="n">trans_xdata_yaxes</span> <span class="o">=</span> <span class="n">blended_transform_factory</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span>
+                                                      <span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">unique_d</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+                  <span class="n">transform</span><span class="o">=</span><span class="n">trans_xdata_yaxes</span><span class="p">,</span>
+                  <span class="n">colors</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;grid.color&#39;</span><span class="p">],</span>
+                  <span class="n">linewidth</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;grid.linewidth&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Use a text hyphen instead of a minus sign because some nice fonts</span>
+        <span class="c1"># like Whitney don&#39;t come with a real minus</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;thz&#39;</span><span class="p">:</span> <span class="s1">&#39;THz&#39;</span><span class="p">,</span> <span class="s1">&#39;cm-1&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;cm$^{\mathrm{-}\mathregular</span><span class="si">{1}</span><span class="s1">}$&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;ev&#39;</span><span class="p">:</span> <span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="s1">&#39;mev&#39;</span><span class="p">:</span> <span class="s1">&#39;meV&#39;</span><span class="p">}</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency (</span><span class="si">{0}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()]))</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

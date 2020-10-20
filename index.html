@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sumo &#8212; sumo 1.1.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorials" href="tutorials.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="sumo">
+<h1>Sumo<a class="headerlink" href="#sumo" title="Permalink to this headline">¶</a></h1>
+<a class="reference external image-reference" href="https://github.com/SMTG-UCL/sumo/actions?query=workflow%3A%22Run+tests%22"><img alt="Build Status" src="https://img.shields.io/github/workflow/status/smtg-ucl/sumo/Run%20tests" /></a>
+<a class="reference external image-reference" href="http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d"><img alt="JOSS Paper" src="http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d/status.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.org/project/sumo/"><img alt="Pypi Repository" src="https://img.shields.io/pypi/v/sumo" /></a>
+<a class="reference external image-reference" href="https://doi.org/10.5281/zenodo.1338124"><img alt="Zenodo Repository" src="https://zenodo.org/badge/DOI/10.5281/zenodo.1338124.svg" /></a>
+<p>Sumo is a Python toolkit for plotting and analysis of ab initio
+solid-state calculation data,
+built on existing Python packages from the solid-state
+chemistry/physics community.
+It is hoped that these command-line tools will bring some of the
+benefits of these libraries to a wider user-base while providing
+publication-ready plotting (powered by <a class="reference external" href="https://matplotlib.org">Matplotlib</a>.)</p>
+<p>The main features include:</p>
+<ol class="arabic simple">
+<li><p><strong>An extensive framework for generating high-symmetry k-point paths.</strong></p>
+<ul class="simple">
+<li><p>Crystallographic spacegroups are determined using <a class="reference external" href="https://atztogo.github.io/spglib">Spglib</a>.</p></li>
+<li><p>Conventional crystallographic paths are built in as well as interfaces to
+the <a class="reference external" href="https://github.com/giovannipizzi/seekpath">SeeK-path</a> and
+<a class="reference external" href="http://pymatgen.org">Pymatgen</a> implementations.</p></li>
+</ul>
+</li>
+<li><p><strong>Plotting scripts for electronic and phonon band structures, density
+of states, and optical absorption diagrams.</strong></p>
+<ul class="simple">
+<li><p>VASP calculations are imported using <a class="reference external" href="http://pymatgen.org">Pymatgen</a>.</p></li>
+<li><p>The <a class="reference external" href="https://atztogo.github.io/phonopy">Phonopy</a> framework is supported for phonon band structures.</p></li>
+</ul>
+</li>
+<li><p><strong>Analysis scripts to calculate parabolic and non-parabolic band
+effective masses.</strong></p>
+<ul class="simple">
+<li><p>Curve fitting is performed using <a class="reference external" href="https://www.scipy.org">Scipy</a>.</p></li>
+</ul>
+</li>
+</ol>
+<p>The code currently primarily supports VASP calculations, and has
+partial support for CASTEP and for LMTO calculations with
+<a class="reference external" href="https://www.questaal.org">Questaal</a>.
+We would like to add support for additional solid-state codes in
+future releases. Code contributions to interface with these packages
+are welcome.</p>
+<p>Sumo is free to use, however, we ask that you cite the code if you use
+it in your research. See the “contributing” section for information
+about reporting bugs and getting involved.</p>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Sumo is intended to be used via the command-line, however, a
+fully-documented python API is also provided. A manual, including
+tutorials and API documentation, is <a class="reference external" href="https://smtg-ucl.github.io/sumo/">available online</a>. Additionally, the built-in
+help (<code class="docutils literal notranslate"><span class="pre">-h</span></code>) option for each command provides a summary of the
+available options.</p>
+<p>A guide to using each command can be found on the
+<a class="reference external" href="https://smtg-ucl.github.io/sumo/tutorials.html">Tutorial page</a>.</p>
+<p>For a preview of the functionality of sumo, see the
+<a class="reference external" href="https://smtg-ucl.github.io/sumo/gallery.html">Gallery</a>.</p>
+<p>Currently, the scripts provided are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code>: For generating VASP KPOINTS files along high-symmetry
+k-point paths.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code>: For plotting publication-ready electronic band
+structure diagrams.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code>: For plotting publication-ready electronic density of
+states diagrams.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sumo-optplot</span></code>: For plotting publication-ready optical absorption
+diagrams.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code>: For plotting publication-ready phonon band
+structure diagrams.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code>: For calculating electron and hole effective masses
+from a band structure.</p></li>
+</ul>
+<p>Information on how to tweak the style of sumo plots is provided on the
+<a class="reference external" href="https://smtg-ucl.github.io/sumo/customising-plots.html">Customising Sumo Plots page</a>.</p>
+<div class="section" id="feature-support-for-different-codes">
+<h3>Feature support for different codes<a class="headerlink" href="#feature-support-for-different-codes" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 39%" />
+<col style="width: 22%" />
+<col style="width: 17%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Features</p></th>
+<th class="head"><p>VASP</p></th>
+<th class="head"><p>CASTEP</p></th>
+<th class="head"><p>Questaal</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>k-point path
+generation</p></td>
+<td><p><strong>Y</strong></p></td>
+<td><p><strong>Y</strong>
+(1)</p></td>
+<td><p><strong>Y</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>band plotting</p></td>
+<td><p><strong>Y</strong></p></td>
+<td><p><strong>Y</strong></p></td>
+<td><p><strong>Y</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>band projections</p></td>
+<td><p><strong>Y</strong></p></td>
+<td><p><em>N</em></p></td>
+<td><p><em>N</em></p></td>
+</tr>
+<tr class="row-odd"><td><p>band analysis</p></td>
+<td><p><strong>Y</strong></p></td>
+<td><p><em>N</em></p></td>
+<td><p><em>N</em></p></td>
+</tr>
+<tr class="row-even"><td><p>total DOS plot</p></td>
+<td><p><strong>Y</strong></p></td>
+<td><p><strong>Y</strong></p></td>
+<td><p><strong>Y</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>projected DOS</p></td>
+<td><p><strong>Y</strong></p></td>
+<td><p><em>N</em></p></td>
+<td><p><strong>Y</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>phonon band plot</p></td>
+<td><p><strong>Y</strong> (2)</p></td>
+<td><p><strong>Y</strong></p></td>
+<td><p><em>N</em></p></td>
+</tr>
+</tbody>
+</table>
+<ol class="arabic simple">
+<li><p>Brillouin-zone path can also be written for CASTEP phonon calculation</p></li>
+<li><p>VASP phonons are plotted from Phonopy output files</p></li>
+</ol>
+</div>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Sumo is a Python 3 package and requires a
+<a class="reference external" href="https://www.scipy.org/about.html">typical scientific Python stack</a>;
+we recommend using your main package manager if possible
+(e.g. apt, Homebrew), or Anaconda to install Python 3 with setuptools.
+It is a good idea to also use this package manager to install
+Numpy and Matplotlib, as building them with setuptools can be troublesome.
+Sumo can then be installed using the Python package manager “Pip”,
+which will automatically setup other Python packages as required:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install --user sumo
+</pre></div>
+</div>
+<p>If this is your first entry to the scientific Python ecosystem, be
+aware that the full stack including Scipy with need several hundred MB
+of disk space.</p>
+<div class="section" id="developer-installation">
+<h3>Developer installation<a class="headerlink" href="#developer-installation" title="Permalink to this headline">¶</a></h3>
+<p><em>Regular users can skip this section!</em></p>
+<p>Sumo can also be installed from a copy of the source repository
+(<a class="reference external" href="https://github.com/smtg-ucl/sumo">https://github.com/smtg-ucl/sumo</a>); this will be preferred for development
+work or if using experimental code branches.</p>
+<p>To clone the project from Github and make a local installation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/smtg-ucl/sumo.git
+<span class="nb">cd</span> sumo
+pip install --user -e .
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">-e</span></code> and <code class="docutils literal notranslate"><span class="pre">--user</span></code> options are recommended:
+Instead of copying files, with <code class="docutils literal notranslate"><span class="pre">-e</span></code> pip will create links to the
+source folder so that that tweaks to the code will be immediately
+reflected on the PATH.
+The <code class="docutils literal notranslate"><span class="pre">--user</span></code> flag installs to a directory in your home folder
+(usually under the hidden directory <em>~/.local</em>),
+preventing interference with your root Python installation.</p>
+<div class="section" id="tests">
+<h4>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h4>
+<p>From a developer installation, the unit tests can be
+run (from the root directory of the project) using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span>
+</pre></div>
+</div>
+<p>Automatic testing is run on the master branch of Sumo and proposed
+features using GitHub Actions.</p>
+</div>
+<div class="section" id="documentation">
+<h4>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h4>
+<p>To build the documentation from the project files, install
+sumo with extra Sphinx dependencies before compiling with <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install --user .<span class="o">[</span>docs<span class="o">]</span>
+sphinx-build docs/src docs_build
+</pre></div>
+</div>
+<p>The user guide can then be explored from <em>docs/build/html/index.html</em>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="how-to-cite-sumo">
+<h2>How to cite sumo<a class="headerlink" href="#how-to-cite-sumo" title="Permalink to this headline">¶</a></h2>
+<p>If you use sumo in your research, please consider citing the following work:</p>
+<blockquote>
+<div><p>Alex M. Ganose, Adam J. Jackson, David O. Scanlon. <em>sumo: Command-line tools for plotting and analysis of periodic ab initio calculations.</em> Journal of Open Source Software, 2018 3 (28), 717, <a class="reference external" href="https://doi.org/10.21105/joss.00717">doi:10.21105/joss.00717</a>.</p>
+</div></blockquote>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>Sumo is made available under the MIT License.</p>
+</div>
+<div class="section" id="detailed-requirements">
+<h2>Detailed requirements<a class="headerlink" href="#detailed-requirements" title="Permalink to this headline">¶</a></h2>
+<p>Sumo is currently compatible with Python 3.5+ and relies on a number of
+open-source python packages, specifically:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://pymatgen.org">Pymatgen</a> (version &gt;= 2017.12.30)</p></li>
+<li><p><a class="reference external" href="http://www.numpy.org">Numpy</a></p></li>
+<li><p><a class="reference external" href="https://www.scipy.org">Scipy</a></p></li>
+<li><p><a class="reference external" href="https://matplotlib.org">Matplotlib</a></p></li>
+<li><p><a class="reference external" href="https://atztogo.github.io/spglib">Spglib</a></p></li>
+<li><p><a class="reference external" href="https://atztogo.github.io/phonopy">Phonopy</a></p></li>
+<li><p><a class="reference external" href="https://github.com/giovannipizzi/seekpath">SeeK-path</a></p></li>
+<li><p><a class="reference external" href="https://www.h5py.org">H5py</a></p></li>
+</ul>
+</div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bugs-reports-and-feature-requests">
+<h3>Bugs reports and feature requests<a class="headerlink" href="#bugs-reports-and-feature-requests" title="Permalink to this headline">¶</a></h3>
+<p>There are probably still some bugs. If you think you’ve found
+one, please report it on the <a class="reference external" href="https://github.com/SMTG-UCL/sumo/issues">Issue Tracker</a>.
+This is also the place to propose ideas for new features or ask
+questions about the design of Sumo.
+Poor documentation is considered a bug, but please be as specific as
+possible when asking for improvements.</p>
+</div>
+<div class="section" id="code-contributions">
+<h3>Code contributions<a class="headerlink" href="#code-contributions" title="Permalink to this headline">¶</a></h3>
+<p>We welcome your help in improving and extending the package with your
+own contributions. This is managed through Github pull requests;
+for external contributions we prefer the
+<a class="reference external" href="https://guides.github.com/activities/forking/">“fork and pull”</a>
+workflow while core developers use branches in the main repository:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>First open an Issue to discuss the proposed contribution. This
+discussion might include how the changes fit Sumo’s scope and a
+general technical approach.</p></li>
+<li><p>Make your own project fork and implement the changes
+there. Please keep your code style compliant with PEP8.</p></li>
+<li><p>Open a pull request to merge the changes into the main
+project. A more detailed discussion can take place there before
+the changes are accepted.</p></li>
+</ol>
+</div></blockquote>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
