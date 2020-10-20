@@ -4,6 +4,11 @@ Change Log
 Unreleased
 ----------
 
+v2.0.2
+------
+
+New testing and release framework.
+
 v2.0.1
 ------
 
