@@ -1,0 +1,10 @@
+# This requirements file is for the benefit of ReadTheDocs
+# It omits Phonopy as this leads to errors; it needs to be installed
+# after other packages but requirements files do not guarantee this.
+numpy
+scipy
+spglib
+pymatgen
+h5py
+matplotlib
+seekpath
