@@ -65,8 +65,8 @@ class SBSPlotter(BSPlotter):
                  ylabel='Energy (eV)',
                  dpi=None, plt=None, plot_dos_legend=True,
                  dos_plotter=None, dos_options=None, dos_label=None,
-                 dos_aspect=3, aspect=None, fonts=None, style=None,
-                 no_base_style=False, spin=None):
+                 dos_aspect=3, aspect=None, spin=None, fonts=None, style=None,
+                 no_base_style=False):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
         If the system is spin polarised, and no spin has been specified, orange
@@ -139,6 +139,9 @@ class SBSPlotter(BSPlotter):
                 structure plot. By default the dimensions of the figure size
                 are used to determine the aspect ratio. Set to ``1`` to force
                 the plot to be square.
+            spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,
+                "up" or "1" for spin up only, "down" or "-1" for spin down only.
+                Defaults to ``None``.
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
                 a single font, specified as a :obj:`str`, or several fonts,
                 specified as a :obj:`list` of :obj:`str`.
@@ -148,9 +151,9 @@ class SBSPlotter(BSPlotter):
                 no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
-            spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,
-                "up" or "1" for spin up only, "down" or "-1" for spin down only.
-                Defaults to ``None``.
+            no_base_style (:obj:`bool`, optional): Prevent use of sumo base
+                style. This can make alternative styles behave more
+                predictably.
 
         Returns:
             :obj:`matplotlib.pyplot`: The electronic band structure plot.
