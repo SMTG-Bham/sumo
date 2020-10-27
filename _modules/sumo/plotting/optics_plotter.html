@@ -140,7 +140,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="n">label</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_xmax</span> <span class="o">=</span> <span class="n">xmax</span> <span class="o">+</span> <span class="mf">1.</span>
 
-    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_optics_style</span><span class="p">)</span>
+<div class="viewcode-block" id="SOpticsPlotter.get_plot"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.optics_plotter.SOpticsPlotter.get_plot">[docs]</a>    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_optics_style</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                  <span class="n">ymax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -271,7 +271,7 @@
 
         <span class="c1"># Otherwise, rely only on tight_layout and hope for the best</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">plt</span></div>
+        <span class="k">return</span> <span class="n">plt</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_plot_spectrum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">band_gap</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">optics_colours</span><span class="p">):</span>

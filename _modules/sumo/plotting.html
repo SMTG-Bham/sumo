@@ -40,6 +40,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Subpackage providing helper functions for generating publication ready plots.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -74,6 +75,7 @@
 
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">get_plot</span><span class="p">):</span>
 
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">get_plot</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 

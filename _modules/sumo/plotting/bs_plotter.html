@@ -94,14 +94,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">bs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bs</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nbands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nb_bands</span>
 
-    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">)</span>
+<div class="viewcode-block" id="SBSPlotter.get_plot"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.bs_plotter.SBSPlotter.get_plot">[docs]</a>    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span>
                  <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">,</span>
                  <span class="n">dpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_dos_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">dos_plotter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dos_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">dos_aspect</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                 <span class="n">dos_aspect</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object of the band structure.</span>
 
 <span class="sd">        If the system is spin polarised, and no spin has been specified, orange</span>
@@ -174,6 +174,9 @@
 <span class="sd">                structure plot. By default the dimensions of the figure size</span>
 <span class="sd">                are used to determine the aspect ratio. Set to ``1`` to force</span>
 <span class="sd">                the plot to be square.</span>
+<span class="sd">            spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,</span>
+<span class="sd">                &quot;up&quot; or &quot;1&quot; for spin up only, &quot;down&quot; or &quot;-1&quot; for spin down only.</span>
+<span class="sd">                Defaults to ``None``.</span>
 <span class="sd">            fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a</span>
 <span class="sd">                a single font, specified as a :obj:`str`, or several fonts,</span>
 <span class="sd">                specified as a :obj:`list` of :obj:`str`.</span>
@@ -183,9 +186,9 @@
 <span class="sd">                no_base_style (:obj:`bool`, optional): Prevent use of sumo base</span>
 <span class="sd">                style. This can make alternative styles behave more</span>
 <span class="sd">                predictably.</span>
-<span class="sd">            spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,</span>
-<span class="sd">                &quot;up&quot; or &quot;1&quot; for spin up only, &quot;down&quot; or &quot;-1&quot; for spin down only.</span>
-<span class="sd">                Defaults to ``None``.</span>
+<span class="sd">            no_base_style (:obj:`bool`, optional): Prevent use of sumo base</span>
+<span class="sd">                style. This can make alternative styles behave more</span>
+<span class="sd">                predictably.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            :obj:`matplotlib.pyplot`: The electronic band structure plot.</span>
@@ -254,9 +257,9 @@
                        <span class="n">dos_plotter</span><span class="o">=</span><span class="n">dos_plotter</span><span class="p">,</span> <span class="n">dos_options</span><span class="o">=</span><span class="n">dos_options</span><span class="p">,</span>
                        <span class="n">plot_dos_legend</span><span class="o">=</span><span class="n">plot_dos_legend</span><span class="p">,</span>
                        <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">plt</span>
+        <span class="k">return</span> <span class="n">plt</span></div>
 
-    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">)</span>
+<div class="viewcode-block" id="SBSPlotter.get_projected_plot"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.bs_plotter.SBSPlotter.get_projected_plot">[docs]</a>    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_projected_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span> <span class="n">interpolate_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
                            <span class="n">circle_size</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">projection_cutoff</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
                            <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -521,7 +524,7 @@
                        <span class="n">dos_plotter</span><span class="o">=</span><span class="n">dos_plotter</span><span class="p">,</span> <span class="n">dos_options</span><span class="o">=</span><span class="n">dos_options</span><span class="p">,</span>
                        <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span> <span class="n">plot_dos_legend</span><span class="o">=</span><span class="n">plot_dos_legend</span><span class="p">,</span>
                        <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">plt</span>
+        <span class="k">return</span> <span class="n">plt</span></div>
 
     <span class="k">def</span> <span class="nf">_makeplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                   <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span>
