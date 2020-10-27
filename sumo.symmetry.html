@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sumo.symmetry package &#8212; sumo 1.1.0 documentation</title>
+    <title>sumo.symmetry package &#8212; sumo 2.0.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -57,7 +57,7 @@ provided in a different format than kgen.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – <p>Method used for calculating the
 high-symmetry path. The options are:</p>
 <dl class="simple">
@@ -71,7 +71,7 @@ high-symmetry path. The options are:</p>
 </p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
-<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
+<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
 group used to override the symmetry determined by spglib. This is
 not recommended and only provided for testing purposes.
 This option will only take effect when <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">'bradcrack'</span></code>.</p></li>
@@ -183,7 +183,7 @@ differing k-point path generation classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 </ul>
@@ -196,7 +196,7 @@ crystal symmetry.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -208,7 +208,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -432,10 +432,10 @@ between the provided structure and standardised structure checked using the
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
-<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
+<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
 group used to override the symmetry determined by spglib. This is
 not recommended and only provided for testing purposes.</p></li>
 </ul>
@@ -448,7 +448,7 @@ not recommended and only provided for testing purposes.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -460,7 +460,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -685,7 +685,7 @@ standardised structure checked using the <code class="docutils literal notransla
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 </ul>
@@ -698,7 +698,7 @@ crystal symmetry.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -710,7 +710,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -933,7 +933,7 @@ standardised structure checked using the <code class="docutils literal notransla
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 </ul>
@@ -946,7 +946,7 @@ crystal symmetry.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -958,7 +958,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1212,7 +1212,7 @@ showing disconnections between subpaths. For example:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 <li><p><strong>kpt_list</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – <p>List of k-points to use, formatted as a list of
@@ -1245,7 +1245,7 @@ A -&gt; Z will be used instead.</p>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1257,7 +1257,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.9.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.10.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
