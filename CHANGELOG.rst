@@ -4,6 +4,17 @@ Change Log
 Unreleased
 ----------
 
+v2.1.0
+------
+
+Sumo is now python 3.6+ only.
+
+Additional bug fixes:
+
+- Fix band structure interpolation with small branches (@kavanase)
+- Update pymatgen version requirement.
+
+
 v2.0.2
 ------
 
