@@ -414,14 +414,20 @@ class SBSPlotter(BSPlotter):
             bands = bands[mask]
             weights = [proj[nd][i][spin][mask] for i in range(len(selection))]
 
-            # interpolate band structure to improve smoothness
-            temp_dists = np.linspace(distances[0], distances[-1],
-                                     len(distances) * interpolate_factor)
-            bands = interp1d(distances, bands, axis=1, bounds_error=False,
-                             fill_value="extrapolate")(temp_dists)
-            weights = interp1d(distances, weights, axis=2, bounds_error=False,
-                               fill_value="extrapolate")(temp_dists)
-            distances = temp_dists
+            if len(distances) > 2: # Only interpolate if it makes sense to do so
+                # interpolate band structure to improve smoothness
+                temp_dists = np.linspace(distances[0], distances[-1],
+                                         len(distances) * interpolate_factor)
+                bands = interp1d(distances, bands, axis=1, bounds_error=False,
+                                 fill_value="extrapolate")(temp_dists)
+                weights = interp1d(distances, weights, axis=2, bounds_error=False,
+                                   fill_value="extrapolate")(temp_dists)
+                distances = temp_dists
+
+            else: # change from list to array if we skipped the scipy interpolation
+                weights = np.array(weights)
+                bands = np.array(bands)
+                distances = np.array(distances)
 
             # sometimes VASP produces very small negative weights
             weights[weights < 0] = 0
