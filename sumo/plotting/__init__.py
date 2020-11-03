@@ -5,6 +5,7 @@
 """
 Subpackage providing helper functions for generating publication ready plots.
 """
+from functools import wraps
 
 import numpy as np
 
@@ -39,6 +40,7 @@ def styled_plot(*style_sheets):
 
     def decorator(get_plot):
 
+        @wraps(get_plot)
         def wrapper(*args, fonts=None, style=None, no_base_style=False,
                     **kwargs):
 

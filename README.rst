@@ -1,21 +1,19 @@
 Sumo
 ====
 
-.. image:: https://readthedocs.org/projects/sumo/badge/?version=latest
-    :target: http://sumo.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
 
-.. image:: https://badge.fury.io/py/sumo.svg
-    :target: https://badge.fury.io/py/sumo
-    :alt: Pypi Repository
-
-.. image:: https://travis-ci.org/SMTG-UCL/sumo.svg?branch=master
-    :target: https://travis-ci.org/SMTG-UCL/sumo
+.. image:: https://img.shields.io/github/workflow/status/smtg-ucl/sumo/Run%20tests
+    :target: https://github.com/SMTG-UCL/sumo/actions?query=workflow%3A%22Run+tests%22
     :alt: Build Status
 
 .. image:: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d/status.svg
     :target: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d
     :alt: JOSS Paper
+
+.. image:: https://img.shields.io/pypi/v/sumo
+    :target: https://pypi.org/project/sumo/
+    :alt: Pypi Repository
+
 
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1338124.svg
     :target: https://doi.org/10.5281/zenodo.1338124
@@ -67,15 +65,15 @@ Usage
 Sumo is intended to be used via the command-line, however, a
 fully-documented python API is also provided. A manual, including
 tutorials and API documentation, is `available online
-<http://sumo.readthedocs.io/en/latest/>`_. Additionally, the built-in
+<https://smtg-ucl.github.io/sumo/>`_. Additionally, the built-in
 help (``-h``) option for each command provides a summary of the
 available options.
 
 A guide to using each command can be found on the
-`Tutorial page <http://sumo.readthedocs.io/en/latest/tutorials.html>`_.
+`Tutorial page <https://smtg-ucl.github.io/sumo/tutorials.html>`_.
 
 For a preview of the functionality of sumo, see the
-`Gallery <http://sumo.readthedocs.io/en/latest/gallery.html>`_.
+`Gallery <https://smtg-ucl.github.io/sumo/gallery.html>`_.
 
 Currently, the scripts provided are:
 
@@ -94,7 +92,7 @@ Currently, the scripts provided are:
 
 Information on how to tweak the style of sumo plots is provided on the
 `Customising Sumo Plots page
-<http://sumo.readthedocs.io/en/latest/customising-plots.html>`_.
+<https://smtg-ucl.github.io/sumo/customising-plots.html>`_.
 
 Feature support for different codes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -135,7 +133,7 @@ which will automatically setup other Python packages as required:
 
 .. code-block:: bash
 
-    pip3 install --user sumo
+    pip install --user sumo
 
 If this is your first entry to the scientific Python ecosystem, be
 aware that the full stack including Scipy with need several hundred MB
@@ -157,7 +155,7 @@ To clone the project from Github and make a local installation:
 
     git clone https://github.com/smtg-ucl/sumo.git
     cd sumo
-    pip3 install --user -e .
+    pip install --user -e .
 
 The ``-e`` and ``--user`` options are recommended:
 Instead of copying files, with ``-e`` pip will create links to the
@@ -173,22 +171,21 @@ Tests
 From a developer installation, the unit tests can be
 run (from the root directory of the project) using::
 
-  python3 -m unittest discover tests
+  pytest
 
 Automatic testing is run on the master branch of Sumo and proposed
-features at https://travis-ci.org/SMTG-UCL/sumo .
+features using GitHub Actions.
 
 Documentation
 ^^^^^^^^^^^^^
 
 To build the documentation from the project files, install
-sumo with extra Sphinx dependencies before compiling with ``make``:
+sumo with extra Sphinx dependencies before compiling with ``sphinx-build``.
 
 .. code-block:: bash
 
-    pip3 install --user .[docs]
-    cd docs
-    make html
+    pip install --user .[docs]
+    sphinx-build docs/src docs_build
 
 The user guide can then be explored from *docs/build/html/index.html*.
 

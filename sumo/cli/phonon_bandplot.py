@@ -79,7 +79,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             number or symbol to override the symmetry determined by spglib.
             This is not recommended and only provided for testing purposes.
             This option will only take effect when ``mode = 'bradcrack'``.
-        primitive_matrix (:obj:`list` or :obj:`str`, optional): The
+        primitive_axis (:obj:`list` or :obj:`str`, optional): The
             transformation matrix from the conventional to primitive cell. Only
             required when the conventional cell was used as the starting
             structure. Should be provided as a 3x3 :obj:`list` of
@@ -112,7 +112,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
 
             Will return points along ``0 0 0 -> 0 0 1/2 | 1/2 0 0
             -> 1/2 1/2 0``
-        path_labels (:obj:`list`, optional): The k-point labels. These should
+        labels (:obj:`list`, optional): The k-point labels. These should
             be provided as a :obj:`list` of :obj:`str` for each subpath of the
             overall path. For example::
 
@@ -182,6 +182,7 @@ def phonon_bandplot(filename, poscar=None, prefix=None, directory=None,
             with open(from_json[0], 'r') as f:
                 bs = PhononBandStructureSymmLine.from_dict(json.load(f))
             from_json = from_json[1:]
+            phonon = None
     else:
         bs, phonon = _bs_from_filename(filename, poscar, dim, symprec, spg,
                                        kpt_list, labels, primitive_axis, units,
@@ -275,6 +276,7 @@ def _bs_from_filename(filename, poscar, dim, symprec, spg, kpt_list, labels,
                         "Be aware that many phonon-bandplot options will not "
                         "be relevant.")
         yaml_file = filename
+        phonon = None
         try:
             poscar = poscar if poscar else 'POSCAR'
             poscar = Poscar.from_file(poscar)
@@ -372,11 +374,7 @@ def _bs_from_filename(filename, poscar, dim, symprec, spg, kpt_list, labels,
 
     bs = get_ph_bs_symm_line(yaml_file, has_nac=False,
                              labels_dict=kpath.kpoints)
-
-    if '.yaml' in filename:
-        return bs, None
-    else:
-        return bs, phonon
+    return bs, phonon
 
 
 def _get_parser():
@@ -547,6 +545,7 @@ def main():
                     eigenvectors=args.eigenvectors, dos=args.dos,
                     to_json=args.to_json, from_json=args.from_json,
                     to_web=args.to_web, legend=legend)
+
 
 if __name__ == "__main__":
     main()
