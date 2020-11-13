@@ -449,14 +449,20 @@
             <span class="n">bands</span> <span class="o">=</span> <span class="n">bands</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
             <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">proj</span><span class="p">[</span><span class="n">nd</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">selection</span><span class="p">))]</span>
 
-            <span class="c1"># interpolate band structure to improve smoothness</span>
-            <span class="n">temp_dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">distances</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">distances</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                                     <span class="nb">len</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">*</span> <span class="n">interpolate_factor</span><span class="p">)</span>
-            <span class="n">bands</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                             <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">)(</span><span class="n">temp_dists</span><span class="p">)</span>
-            <span class="n">weights</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                               <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">)(</span><span class="n">temp_dists</span><span class="p">)</span>
-            <span class="n">distances</span> <span class="o">=</span> <span class="n">temp_dists</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span> <span class="c1"># Only interpolate if it makes sense to do so</span>
+                <span class="c1"># interpolate band structure to improve smoothness</span>
+                <span class="n">temp_dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">distances</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">distances</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                         <span class="nb">len</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">*</span> <span class="n">interpolate_factor</span><span class="p">)</span>
+                <span class="n">bands</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                 <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">)(</span><span class="n">temp_dists</span><span class="p">)</span>
+                <span class="n">weights</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                   <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">)(</span><span class="n">temp_dists</span><span class="p">)</span>
+                <span class="n">distances</span> <span class="o">=</span> <span class="n">temp_dists</span>
+
+            <span class="k">else</span><span class="p">:</span> <span class="c1"># change from list to array if we skipped the scipy interpolation</span>
+                <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+                <span class="n">bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bands</span><span class="p">)</span>
+                <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
 
             <span class="c1"># sometimes VASP produces very small negative weights</span>
             <span class="n">weights</span><span class="p">[</span><span class="n">weights</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -763,7 +769,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
