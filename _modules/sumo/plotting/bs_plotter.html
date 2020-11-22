@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sumo.plotting.bs_plotter &#8212; sumo 2.1.0 documentation</title>
+    <title>sumo.plotting.bs_plotter &#8212; sumo 2.1.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -698,16 +698,8 @@
 
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">unique_d</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">unique_l</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
-
-        <span class="n">trans_xdata_yaxes</span> <span class="o">=</span> <span class="n">blended_transform_factory</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span>
-                                                      <span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">unique_d</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
-                  <span class="n">transform</span><span class="o">=</span><span class="n">trans_xdata_yaxes</span><span class="p">,</span>
-                  <span class="n">colors</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;grid.color&#39;</span><span class="p">],</span>
-                  <span class="n">linewidth</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;grid.linewidth&#39;</span><span class="p">],</span>
-                  <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></div>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
