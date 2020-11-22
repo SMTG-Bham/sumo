@@ -4,6 +4,14 @@ Change Log
 Unreleased
 ----------
 
+v2.1.1
+------
+
+Enhancements:
+
+- Band structure grid lines can now be customised using a matplotlib
+  style sheet.
+
 v2.1.0
 ------
 
