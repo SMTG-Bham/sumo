@@ -14,6 +14,7 @@ axes.titlesize : 22
 axes.linewidth       : 1.5
 
 grid.linewidth       : 1.5
+grid.linestyle       : -
 grid.color           : black
 
 lines.linewidth : 2

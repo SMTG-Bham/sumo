@@ -663,13 +663,5 @@ class SBSPlotter(BSPlotter):
 
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
-        ax.xaxis.grid(True, ls='-')
+        ax.xaxis.grid(True)
         ax.set_ylabel(ylabel)
-
-        trans_xdata_yaxes = blended_transform_factory(ax.transData,
-                                                      ax.transAxes)
-        ax.vlines(unique_d, 0, 1,
-                  transform=trans_xdata_yaxes,
-                  colors=rcParams['grid.color'],
-                  linewidth=rcParams['grid.linewidth'],
-                  zorder=3)
