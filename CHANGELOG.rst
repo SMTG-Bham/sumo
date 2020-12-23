@@ -4,6 +4,12 @@ Change Log
 Unreleased
 ----------
 
+- Support is added for orbital-projected DOS plots from CASTEP. (@zhubonan)
+
+  - The binary parser is implemented and maintained in a separate
+    library castepxbin. This is maintained by Bonan Zhu, available on
+    PyPI and pinned to a specific version in the Sumo setup.py.
+
 v2.1.1
 ------
 
