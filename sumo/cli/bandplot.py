@@ -23,7 +23,7 @@ from pymatgen.electronic_structure.bandstructure import \
 import matplotlib as mpl
 mpl.use('Agg')
 
-from sumo.io.questaal import QuestaalInit, QuestaalSite, labels_from_syml
+from sumo.io.questaal import QuestaalSite, labels_from_syml
 from sumo.io.questaal import band_structure as questaal_band_structure
 from sumo.io.castep import band_structure as castep_band_structure
 from sumo.io.castep import read_dos as read_castep_dos
@@ -241,9 +241,9 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
         for bands_file in filenames:
             cell_file = _replace_ext(bands_file, 'cell')
             if os.path.isfile(cell_file):
-                logging.info('found cell file {}...'.format(cell_file))
+                logging.info('Found cell file {}...'.format(cell_file))
             else:
-                logging.info('did not find cell file {}...'.format(cell_file))
+                logging.info('Did not find cell file {}...'.format(cell_file))
                 cell_file = None
             bs = castep_band_structure(bands_file, cell_file=cell_file)
             bandstructures.append(bs)
@@ -300,21 +300,24 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
     dos_opts = None
     if dos_file:
         if code == 'vasp':
-            dos, pdos = load_dos(dos_file, elements, lm_orbitals, atoms, gaussian,
-                                 total_only)
+            dos, pdos = load_dos(dos_file, elements, lm_orbitals,
+                                 atoms, gaussian, total_only)
         elif code == 'castep':
             pdos_file = None
             if cell_file:
                 pdos_file = _replace_ext(cell_file, 'pdos_bin')
                 if not os.path.isfile(pdos_file):
                     pdos_file = None
-                    logging.info("Selecting PDOS file {} does not exist, falling back to TDOS.".format(pdos_file))
+                    logging.info(f"PDOS file {pdos_file} does not exist, "
+                                 "falling back to TDOS.")
                 else:
-                    logging.info("Selecting PDOS file {}".format(pdos_file))
+                    logging.info(f"Found PDOS file {pdos_file}")
             else:
-                logging.info("Cell file {} does not exist, cannot plot PDOS.".format(pdos_file))
+                logging.info(f"Cell file {cell_file} does not exist, "
+                             "cannot plot PDOS.")
 
-            dos, pdos = read_castep_dos(dos_file, pdos_file=pdos_file, cell_file=cell_file,
+            dos, pdos = read_castep_dos(dos_file, pdos_file=pdos_file,
+                                        cell_file=cell_file,
                                         gaussian=gaussian,
                                         lm_orbitals=lm_orbitals,
                                         elements=elements,
@@ -327,7 +330,7 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
     if scissor:
         bs = bs.apply_scissor(scissor)
 
-    spin = string_to_spin(spin) # Convert spin argument to pymatgen Spin object
+    spin = string_to_spin(spin)  # Convert spin name to pymatgen Spin object
     plotter = SBSPlotter(bs)
     if projection_selection:
         plt = plotter.get_projected_plot(
@@ -530,8 +533,9 @@ def _get_parser():
     parser.add_argument('--atoms', type=_atoms, metavar='A',
                         help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'))
     parser.add_argument('--spin', type=str, default=None,
-                        help=('select only one spin channel for a spin-polarised '
-                              'calculation (options: up, 1; down, -1)'))
+                        help=('select only one spin channel for a '
+                              'spin-polarised calculation '
+                              '(options: up, 1; down, -1)'))
     parser.add_argument('--scissor', type=float, default=None, dest='scissor',
                         help='apply scissor operator')
     parser.add_argument('--total-only', action='store_true', dest='total_only',
