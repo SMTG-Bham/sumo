@@ -50,11 +50,12 @@ orbitals, and atoms.</p>
 <li><p><a class="reference internal" href="#selective-plotting-of-specific-orbitals-and-atoms" id="id9">Selective Plotting of Specific Orbitals and Atoms</a></p></li>
 <li><p><a class="reference internal" href="#custom-line-colours" id="id10">Custom Line Colours</a></p></li>
 <li><p><a class="reference internal" href="#questaal" id="id11">Questaal</a></p></li>
+<li><p><a class="reference internal" href="#castep" id="id12">Castep</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#command-line-interface" id="id12">Command-Line Interface</a></p>
+<li><p><a class="reference internal" href="#command-line-interface" id="id13">Command-Line Interface</a></p>
 <ul>
-<li><p><a class="reference internal" href="#Named Arguments" id="id13">Named Arguments</a></p></li>
+<li><p><a class="reference internal" href="#Named Arguments" id="id14">Named Arguments</a></p></li>
 </ul>
 </li>
 </ul>
@@ -232,6 +233,14 @@ channels are grouped and/or shown. Note that empty sites may be
 included in the output if they have a non-negligible contribution to
 the DOS. The <cite>–elements</cite> switch may be useful for hiding these if
 desired.</p>
+</div>
+<div class="section" id="castep">
+<h3>Castep<a class="headerlink" href="#castep" title="Permalink to this headline">¶</a></h3>
+<p>When plotting from CASTEP, give the <em>seedname.bands</em> path as
+<cite>–filename</cite>.  If a <em>.pdos_bin</em> file is in the same directory,
+orbital-project DOS plots are possible; this requires the <em>.cell</em> file
+to also be available. Otherwise, a total DOS will be obtained by
+summing over the eigenvalue data in the <em>.bands</em> file.</p>
 </div>
 </div>
 <div class="section" id="command-line-interface">

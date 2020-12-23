@@ -78,8 +78,9 @@
 <div class="viewcode-block" id="dosplot"><a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.dosplot.dosplot">[docs]</a><span class="k">def</span> <span class="nf">dosplot</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="s1">&#39;vasp&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">elements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">total_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">legend_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_frame_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">legend_cutoff</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span> <span class="n">gaussian</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">height</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">8.</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">num_columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">legend_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_frame_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">legend_cutoff</span><span class="o">=</span><span class="mf">3.</span><span class="p">,</span>
+            <span class="n">gaussian</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">8.</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">num_columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Arb. units&#39;</span><span class="p">,</span>
             <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">image_format</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -208,11 +209,6 @@
                              <span class="n">total_only</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;castep&#39;</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">sumo</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">castep</span><span class="o">.</span><span class="n">unsupported_dosplot_args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Cannot set &quot;</span><span class="si">{}</span><span class="s1">&quot; for CASTEP DOS; only total DOS &#39;</span>
-                              <span class="s1">&#39;is available.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">arg</span><span class="p">))</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
             <span class="n">bands_file</span> <span class="o">=</span> <span class="n">filename</span>
@@ -226,9 +222,33 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: Too many *.bands files found!&#39;</span><span class="p">)</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
-        <span class="n">dos</span> <span class="o">=</span> <span class="n">sumo</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">castep</span><span class="o">.</span><span class="n">read_tdos</span><span class="p">(</span><span class="n">bands_file</span><span class="p">,</span> <span class="n">gaussian</span><span class="o">=</span><span class="n">gaussian</span><span class="p">,</span>
-                                       <span class="n">emin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="n">xmax</span><span class="p">)</span>
-        <span class="n">pdos</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">pdos_file</span> <span class="o">=</span> <span class="n">_replace_ext</span><span class="p">(</span><span class="n">bands_file</span><span class="p">,</span> <span class="s1">&#39;pdos_bin&#39;</span><span class="p">)</span>
+        <span class="n">cell_file</span> <span class="o">=</span> <span class="n">_replace_ext</span><span class="p">(</span><span class="n">bands_file</span><span class="p">,</span> <span class="s1">&#39;cell&#39;</span><span class="p">)</span>
+        <span class="n">pdos_file</span> <span class="o">=</span> <span class="n">pdos_file</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">pdos_file</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">cell_file</span> <span class="o">=</span> <span class="n">cell_file</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cell_file</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">total_only</span><span class="p">:</span>
+            <span class="c1"># Check if both pdos_bin and cell files are present.</span>
+            <span class="c1"># If not, we cannot plot the PDOS</span>
+            <span class="k">if</span> <span class="n">pdos_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cell_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Plotting PDOS requires the .cell file to be &quot;</span>
+                                 <span class="s2">&quot;present; falling back to TDOS.&quot;</span><span class="p">)</span>
+                    <span class="n">pdos_file</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found PDOS binary file </span><span class="si">{</span><span class="n">pdos_file</span><span class="si">}</span><span class="s2">; &quot;</span>
+                                 <span class="s2">&quot;including PDOS in the plot.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;PDOS not available, falling back to TDOS.&quot;</span><span class="p">)</span>
+
+        <span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span> <span class="o">=</span> <span class="n">sumo</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">castep</span><span class="o">.</span><span class="n">read_dos</span><span class="p">(</span><span class="n">bands_file</span><span class="p">,</span> <span class="n">pdos_file</span><span class="o">=</span><span class="n">pdos_file</span><span class="p">,</span>
+                                            <span class="n">cell_file</span><span class="o">=</span><span class="n">cell_file</span><span class="p">,</span>
+                                            <span class="n">gaussian</span><span class="o">=</span><span class="n">gaussian</span><span class="p">,</span>
+                                            <span class="n">emin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
+                                            <span class="n">lm_orbitals</span><span class="o">=</span><span class="n">lm_orbitals</span><span class="p">,</span>
+                                            <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span>
+                                            <span class="n">total_only</span><span class="o">=</span><span class="n">total_only</span><span class="p">,</span>
+                                            <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;questaal&#39;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
@@ -269,9 +289,13 @@
             <span class="n">ry</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gaussian</span><span class="o">=</span><span class="n">gaussian</span><span class="p">,</span> <span class="n">total_only</span><span class="o">=</span><span class="n">total_only</span><span class="p">,</span>
             <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="o">=</span><span class="n">lm_orbitals</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">)</span>
 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: Unrecognised code: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">code</span><span class="p">))</span>
+        <span class="k">return</span>
+
     <span class="n">save_files</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">plt</span> <span class="k">else</span> <span class="kc">True</span>  <span class="c1"># don&#39;t save if pyplot object provided</span>
 
-    <span class="n">spin</span> <span class="o">=</span> <span class="n">string_to_spin</span><span class="p">(</span><span class="n">spin</span><span class="p">)</span> <span class="c1"># Convert spin argument to pymatgen Spin object</span>
+    <span class="n">spin</span> <span class="o">=</span> <span class="n">string_to_spin</span><span class="p">(</span><span class="n">spin</span><span class="p">)</span>  <span class="c1"># Convert spin name to pymatgen Spin object</span>
     <span class="n">plotter</span> <span class="o">=</span> <span class="n">SDOSPlotter</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span><span class="p">)</span>
     <span class="n">plt</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_plot</span><span class="p">(</span><span class="n">subplot</span><span class="o">=</span><span class="n">subplot</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
                            <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="n">yscale</span><span class="p">,</span>
@@ -319,6 +343,20 @@
         <span class="n">orbs</span> <span class="o">=</span> <span class="p">[</span><span class="n">orbs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">orbs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">orbs</span>
         <span class="n">el_orbs</span><span class="p">[</span><span class="n">orbs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="n">orbs</span>
     <span class="k">return</span> <span class="n">el_orbs</span>
+
+
+<span class="k">def</span> <span class="nf">_replace_ext</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">new_ext</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Replace file extension</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (`str`): The file name with extensions to be replace</span>
+<span class="sd">        new_ext (`str`): The new extension</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A string with files extension replaced by new_ext</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">new_ext</span>
 
 
 <span class="k">def</span> <span class="nf">_atoms</span><span class="p">(</span><span class="n">atoms_string</span><span class="p">):</span>
@@ -371,8 +409,9 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-a&#39;</span><span class="p">,</span> <span class="s1">&#39;--atoms&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">_atoms</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;atoms to include (e.g. &quot;O.1.2.3,Ru.1.2.3&quot;)&#39;</span><span class="p">))</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--spin&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;select one spin channel only for a spin-polarised &#39;</span>
-                              <span class="s1">&#39;calculation (options: up, 1; down, -1)&#39;</span><span class="p">))</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;select one spin channel only for a &#39;</span>
+                              <span class="s1">&#39;spin-polarised calculation &#39;</span>
+                              <span class="s1">&#39;(options: up, 1; down, -1)&#39;</span><span class="p">))</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;--subplot&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;plot each element on separate subplots&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-g&#39;</span><span class="p">,</span> <span class="s1">&#39;--gaussian&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;G&#39;</span><span class="p">,</span>

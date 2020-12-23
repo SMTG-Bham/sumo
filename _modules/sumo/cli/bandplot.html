@@ -57,10 +57,10 @@
 <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
 <span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">sumo.io.questaal</span> <span class="kn">import</span> <span class="n">QuestaalInit</span><span class="p">,</span> <span class="n">QuestaalSite</span><span class="p">,</span> <span class="n">labels_from_syml</span>
+<span class="kn">from</span> <span class="nn">sumo.io.questaal</span> <span class="kn">import</span> <span class="n">QuestaalSite</span><span class="p">,</span> <span class="n">labels_from_syml</span>
 <span class="kn">from</span> <span class="nn">sumo.io.questaal</span> <span class="kn">import</span> <span class="n">band_structure</span> <span class="k">as</span> <span class="n">questaal_band_structure</span>
 <span class="kn">from</span> <span class="nn">sumo.io.castep</span> <span class="kn">import</span> <span class="n">band_structure</span> <span class="k">as</span> <span class="n">castep_band_structure</span>
-<span class="kn">from</span> <span class="nn">sumo.io.castep</span> <span class="kn">import</span> <span class="n">read_tdos</span> <span class="k">as</span> <span class="n">read_castep_tdos</span>
+<span class="kn">from</span> <span class="nn">sumo.io.castep</span> <span class="kn">import</span> <span class="n">read_dos</span> <span class="k">as</span> <span class="n">read_castep_dos</span>
 <span class="kn">from</span> <span class="nn">sumo.plotting.bs_plotter</span> <span class="kn">import</span> <span class="n">SBSPlotter</span>
 <span class="kn">from</span> <span class="nn">sumo.plotting.dos_plotter</span> <span class="kn">import</span> <span class="n">SDOSPlotter</span>
 <span class="kn">from</span> <span class="nn">sumo.electronic_structure.dos</span> <span class="kn">import</span> <span class="n">load_dos</span>
@@ -273,11 +273,11 @@
         <span class="n">bs</span> <span class="o">=</span> <span class="n">get_reconstructed_band_structure</span><span class="p">(</span><span class="n">bandstructures</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="s1">&#39;castep&#39;</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">bands_file</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-            <span class="n">cell_file</span> <span class="o">=</span> <span class="n">bands_file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;bands&#39;</span><span class="p">,</span> <span class="s1">&#39;cell&#39;</span><span class="p">)</span>
+            <span class="n">cell_file</span> <span class="o">=</span> <span class="n">_replace_ext</span><span class="p">(</span><span class="n">bands_file</span><span class="p">,</span> <span class="s1">&#39;cell&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cell_file</span><span class="p">):</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;found cell file </span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_file</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Found cell file </span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_file</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;did not find cell file </span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_file</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Did not find cell file </span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_file</span><span class="p">))</span>
                 <span class="n">cell_file</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">bs</span> <span class="o">=</span> <span class="n">castep_band_structure</span><span class="p">(</span><span class="n">bands_file</span><span class="p">,</span> <span class="n">cell_file</span><span class="o">=</span><span class="n">cell_file</span><span class="p">)</span>
             <span class="n">bandstructures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
@@ -334,12 +334,29 @@
     <span class="n">dos_opts</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">dos_file</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="s1">&#39;vasp&#39;</span><span class="p">:</span>
-            <span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span> <span class="o">=</span> <span class="n">load_dos</span><span class="p">(</span><span class="n">dos_file</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">gaussian</span><span class="p">,</span>
-                                 <span class="n">total_only</span><span class="p">)</span>
+            <span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span> <span class="o">=</span> <span class="n">load_dos</span><span class="p">(</span><span class="n">dos_file</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="p">,</span>
+                                 <span class="n">atoms</span><span class="p">,</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">total_only</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="s1">&#39;castep&#39;</span><span class="p">:</span>
-            <span class="n">dos</span> <span class="o">=</span> <span class="n">read_castep_tdos</span><span class="p">(</span><span class="n">dos_file</span><span class="p">,</span> <span class="n">gaussian</span><span class="o">=</span><span class="n">gaussian</span><span class="p">,</span>
-                                   <span class="n">efermi_to_vbm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">emin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">emax</span><span class="o">=</span><span class="n">ymax</span><span class="p">)</span>
-            <span class="n">pdos</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">pdos_file</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">cell_file</span><span class="p">:</span>
+                <span class="n">pdos_file</span> <span class="o">=</span> <span class="n">_replace_ext</span><span class="p">(</span><span class="n">cell_file</span><span class="p">,</span> <span class="s1">&#39;pdos_bin&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">pdos_file</span><span class="p">):</span>
+                    <span class="n">pdos_file</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PDOS file </span><span class="si">{</span><span class="n">pdos_file</span><span class="si">}</span><span class="s2"> does not exist, &quot;</span>
+                                 <span class="s2">&quot;falling back to TDOS.&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found PDOS file </span><span class="si">{</span><span class="n">pdos_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cell file </span><span class="si">{</span><span class="n">cell_file</span><span class="si">}</span><span class="s2"> does not exist, &quot;</span>
+                             <span class="s2">&quot;cannot plot PDOS.&quot;</span><span class="p">)</span>
+
+            <span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span> <span class="o">=</span> <span class="n">read_castep_dos</span><span class="p">(</span><span class="n">dos_file</span><span class="p">,</span> <span class="n">pdos_file</span><span class="o">=</span><span class="n">pdos_file</span><span class="p">,</span>
+                                        <span class="n">cell_file</span><span class="o">=</span><span class="n">cell_file</span><span class="p">,</span>
+                                        <span class="n">gaussian</span><span class="o">=</span><span class="n">gaussian</span><span class="p">,</span>
+                                        <span class="n">lm_orbitals</span><span class="o">=</span><span class="n">lm_orbitals</span><span class="p">,</span>
+                                        <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span>
+                                        <span class="n">efermi_to_vbm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="n">dos_plotter</span> <span class="o">=</span> <span class="n">SDOSPlotter</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span><span class="p">)</span>
         <span class="n">dos_opts</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;plot_total&#39;</span><span class="p">:</span> <span class="n">plot_total</span><span class="p">,</span> <span class="s1">&#39;legend_cutoff&#39;</span><span class="p">:</span> <span class="n">legend_cutoff</span><span class="p">,</span>
                     <span class="s1">&#39;colours&#39;</span><span class="p">:</span> <span class="n">colours</span><span class="p">,</span> <span class="s1">&#39;yscale&#39;</span><span class="p">:</span> <span class="n">yscale</span><span class="p">}</span>
@@ -347,7 +364,7 @@
     <span class="k">if</span> <span class="n">scissor</span><span class="p">:</span>
         <span class="n">bs</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">apply_scissor</span><span class="p">(</span><span class="n">scissor</span><span class="p">)</span>
 
-    <span class="n">spin</span> <span class="o">=</span> <span class="n">string_to_spin</span><span class="p">(</span><span class="n">spin</span><span class="p">)</span> <span class="c1"># Convert spin argument to pymatgen Spin object</span>
+    <span class="n">spin</span> <span class="o">=</span> <span class="n">string_to_spin</span><span class="p">(</span><span class="n">spin</span><span class="p">)</span>  <span class="c1"># Convert spin name to pymatgen Spin object</span>
     <span class="n">plotter</span> <span class="o">=</span> <span class="n">SBSPlotter</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">projection_selection</span><span class="p">:</span>
         <span class="n">plt</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_projected_plot</span><span class="p">(</span>
@@ -479,6 +496,20 @@
     <span class="k">return</span> <span class="n">el_orbs</span>
 
 
+<span class="k">def</span> <span class="nf">_replace_ext</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">new_ext</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Replace file extension</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        string (`str`): The file name with extensions to be replace</span>
+<span class="sd">        new_ext (`str`): The new extension</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A string with files extension replaced by new_ext</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">new_ext</span>
+
+
 <span class="k">def</span> <span class="nf">_get_parser</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    bandplot is a script to produce publication-ready band</span>
@@ -536,8 +567,9 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--atoms&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">_atoms</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;atoms to include (e.g. &quot;O.1.2.3,Ru.1.2.3&quot;)&#39;</span><span class="p">))</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--spin&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;select only one spin channel for a spin-polarised &#39;</span>
-                              <span class="s1">&#39;calculation (options: up, 1; down, -1)&#39;</span><span class="p">))</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;select only one spin channel for a &#39;</span>
+                              <span class="s1">&#39;spin-polarised calculation &#39;</span>
+                              <span class="s1">&#39;(options: up, 1; down, -1)&#39;</span><span class="p">))</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--scissor&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;scissor&#39;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;apply scissor operator&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--total-only&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;total_only&#39;</span><span class="p">,</span>
