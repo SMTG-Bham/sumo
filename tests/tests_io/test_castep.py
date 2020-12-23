@@ -2,12 +2,16 @@ import unittest
 from os.path import join as path_join
 from pkg_resources import resource_filename
 import json
-from numpy.testing import assert_array_almost_equal
 
+from monty.json import MontyDecoder
+from monty.io import gzip
+from numpy.testing import assert_array_almost_equal
 from pymatgen import Structure
 from pymatgen.electronic_structure.core import Spin
+
 from sumo.io.castep import (read_bands_header,
                             read_bands_eigenvalues,
+                            read_dos,
                             labels_from_cell,
                             CastepCell,
                             CastepPhonon)
@@ -75,6 +79,64 @@ class CastepCellTestCase(unittest.TestCase):
                          ['Si', '0.0', '0.0', '0.0'])
         self.assertEqual(cell.blocks['positions_frac'].values[7],
                          ['Si', '0.75', '0.75', '0.25'])
+
+
+class CastepDosNiOTestCase(unittest.TestCase):
+    def setUp(self):
+        nio_files = {'bands_file': 'NiO.bands',
+                     'pdos_file': 'NiO.pdos_bin',
+                     'cell_file': 'NiO.cell'}
+        for key, value in nio_files.items():
+            nio_files[key] = resource_filename(
+                __name__,
+                path_join('..', 'data', 'NiO', value))
+        self.read_dos_kwargs = nio_files
+
+        json_files = {'dos': 'dos-pmg.json.gz',
+                      'pdos': 'pdos-pmg.json.gz'}
+        self.ref_data = {}
+
+        for key, value in json_files.items():
+            filename = resource_filename(
+                __name__,
+                path_join('..', 'data', 'NiO', value))
+
+            with gzip.open(filename) as f:
+                self.ref_data[key] = json.load(f, cls=MontyDecoder)
+
+    def test_tdos_only(self):
+        kwargs = self.read_dos_kwargs.copy()
+        del kwargs['pdos_file']
+        del kwargs['cell_file']
+
+        tdos, pdos = read_dos(**kwargs)
+
+        for spin, densities in self.ref_data['dos'].densities.items():
+            assert_array_almost_equal(tdos.densities[spin],
+                                      densities)
+        self.assertFalse(pdos)
+
+    def test_missing_cell_file(self):
+        """Check error raised if PDOS given without .cell file"""
+        kwargs = self.read_dos_kwargs.copy()
+        del kwargs['cell_file']
+
+        with self.assertRaises(OSError):
+            tdos, pdos = read_dos(**kwargs)
+
+    def test_pdos(self):
+        tdos, pdos = read_dos(**self.read_dos_kwargs)
+
+        for spin, densities in self.ref_data['dos'].densities.items():
+            assert_array_almost_equal(tdos.densities[spin],
+                                      densities)
+
+        for component, orbital_data in self.ref_data['pdos'].items():
+            for orbital, dos in orbital_data.items():
+                for spin, densities in dos.densities.items():
+                    assert_array_almost_equal(
+                        pdos[component][orbital].densities[spin],
+                        densities)
 
 
 class CastepBandStructureTestCaseNoSpin(unittest.TestCase):

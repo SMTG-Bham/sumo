@@ -238,7 +238,11 @@ def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussia
             so that it lies at the VBM.
 
     Returns:
-        :obj:`pymatgen.electronic_structure.dos.Dos`
+        (:obj:`pymatgen.electronic_structure.dos.Dos`, dict)
+
+        where the dict is either empty or contains a PDOS arranged::
+
+          {species: {orbital: Dos}}
     """
 
     header = _read_bands_header_verbose(bands_file)
@@ -288,7 +292,8 @@ def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussia
 
     if pdos_file is not None and not total_only:
         if cell_file is None:
-            raise RuntimeError('Cell file must be provided for PDOS')
+            raise OSError(f'Cell file {cell_file} not found: this must be '
+                          'provided for PDOS.')
         pdos_raw = compute_pdos(pdos_file, eigenvalues, weights, bins)
         # Also we, need to read the structure, but have it sorted with increasing
         # atomic numbers
