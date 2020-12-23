@@ -12,8 +12,12 @@ from pymatgen.core.lattice import Lattice
 from pymatgen.core.structure import Structure
 from pymatgen.electronic_structure.core import Spin
 from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
-from pymatgen.electronic_structure.dos import Dos
+from pymatgen.electronic_structure.dos import Dos, CompleteDos
 from pymatgen.phonon.bandstructure import PhononBandStructureSymmLine
+
+from sumo.electronic_structure.dos import get_pdos
+
+from castepxbin.pdos import compute_pdos
 
 _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009
@@ -210,8 +214,9 @@ class CastepCell(object):
         return cls(blocks=blocks)
 
 
-def read_tdos(bands_file, bin_width=0.01, gaussian=None,
-              padding=None, emin=None, emax=None, efermi_to_vbm=True):
+def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussian=None,
+              padding=None, emin=None, emax=None, efermi_to_vbm=True,
+              lm_orbitals=None, elements=None, atoms=None, total_only=False):
     """Convert DOS data from CASTEP .bands file to Pymatgen/Sumo format
 
     The data is binned into a regular series using np.histogram
@@ -219,6 +224,8 @@ def read_tdos(bands_file, bin_width=0.01, gaussian=None,
     Args:
         bands_file (:obj:`str`): Path to CASTEP prefix.bands output file. The
             k-point positions, weights and eigenvalues are read from this file.
+        pdos_bin (:obj:`str`): Path to CASTEP prefix.pdos_bin output file. The
+            weights of projected density of states are read from this file.
         bin_width (:obj:`float`, optional): Spacing for DOS energy axis
         gaussian (:obj:`float` or None, optional): Width of Gaussian broadening
             function
@@ -231,7 +238,11 @@ def read_tdos(bands_file, bin_width=0.01, gaussian=None,
             so that it lies at the VBM.
 
     Returns:
-        :obj:`pymatgen.electronic_structure.dos.Dos`
+        (:obj:`pymatgen.electronic_structure.dos.Dos`, dict)
+
+        where the dict is either empty or contains a PDOS arranged::
+
+          {species: {orbital: Dos}}
     """
 
     header = _read_bands_header_verbose(bands_file)
@@ -278,10 +289,35 @@ def read_tdos(bands_file, bin_width=0.01, gaussian=None,
                 for spin, eigenvalue_set in eigenvalues.items()}
 
     dos = Dos(efermi, energies, dos_data)
+
+    if pdos_file is not None and not total_only:
+        if cell_file is None:
+            raise OSError(f'Cell file {cell_file} not found: this must be '
+                          'provided for PDOS.')
+        pdos_raw = compute_pdos(pdos_file, eigenvalues, weights, bins)
+        # Also we, need to read the structure, but have it sorted with increasing
+        # atomic numbers
+        structure = CastepCell.from_file(cell_file).structure.get_sorted_structure(key=lambda x: x.species.elements[0].Z)
+        pdoss = {}
+        for isite, site in enumerate(structure.sites):
+            pdoss[site] = pdos_raw[isite]
+        # Get the pdos dictionary for potting
+        pdos = get_pdos(CompleteDos(structure,dos, pdoss),
+                        lm_orbitals=lm_orbitals,
+                        elements=elements,
+                        atoms=atoms)
+        # Smear the PDOS
+        for orbs in pdos.values():
+            for dtmp in orbs.values():
+                if gaussian:
+                    dtmp.densities = dtmp.get_smeared_densities(gaussian)
+    else:
+        pdos = {}
+
     if gaussian:
         dos.densities = dos.get_smeared_densities(gaussian)
 
-    return dos
+    return dos, pdos
 
 
 def _is_metal(eigenvalues, efermi, tol=1e-5):
