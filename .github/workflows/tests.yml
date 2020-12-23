@@ -1,15 +1,6 @@
 name: Run tests
 
-on:
-  push:
-  pull_request:
-    branches:
-      # This is a hack suggested by piersy at https://github.community/t/how-to-trigger-an-action-on-push-or-pull-request-but-not-both/16662/10
-      # in order to a) run tests on pull requests from external forks
-      # b) not get a duplicate set of tests from 'push:' for branches in this repo.
-      # This pattern looks like a branch from a fork!
-    - '**:**'
-      # Please don't use colons in your branch names or they will be tested twice.
+on: [push, pull_request]
 
 jobs:
   test:
