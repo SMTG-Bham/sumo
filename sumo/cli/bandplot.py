@@ -1,7 +1,3 @@
-# coding: utf-8
-# Copyright (c) Scanlon Materials Theory Group
-# Distributed under the terms of the MIT License.
-
 """
 A script to plot electronic band structure diagrams.
 
@@ -62,7 +58,8 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
     """Plot electronic band structure diagrams from vasprun.xml files.
 
     Args:
-        filenames (:obj:`str` or :obj:`list`, optional): Path to input files.
+        filenames (:obj:`str` or :obj:`list`, optional): Path to input files:
+
             Vasp:
                 Use vasprun.xml or vasprun.xml.gz file.
             Questaal:
@@ -322,6 +319,7 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
                                         lm_orbitals=lm_orbitals,
                                         elements=elements,
                                         efermi_to_vbm=True)
+
         dos_plotter = SDOSPlotter(dos, pdos)
         dos_opts = {'plot_total': plot_total, 'legend_cutoff': legend_cutoff,
                     'colours': colours, 'yscale': yscale}
