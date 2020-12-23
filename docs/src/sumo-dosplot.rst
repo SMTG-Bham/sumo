@@ -230,6 +230,16 @@ included in the output if they have a non-negligible contribution to
 the DOS. The `--elements` switch may be useful for hiding these if
 desired.
 
+Castep
+~~~~~~
+
+When plotting from CASTEP, give the *seedname.bands* path as
+`--filename`.  If a *.pdos_bin* file is in the same directory,
+orbital-project DOS plots are possible; this requires the *.cell* file
+to also be available. Otherwise, a total DOS will be obtained by
+summing over the eigenvalue data in the *.bands* file.
+
+
 Command-Line Interface
 ----------------------
 
