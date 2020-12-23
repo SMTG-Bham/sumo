@@ -12,7 +12,6 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -157,16 +156,16 @@ style sheets.</p>
 <dl class="py class">
 <dt id="sumo.plotting.bs_plotter.SBSPlotter">
 <em class="property">class </em><code class="sig-prename descclassname">sumo.plotting.bs_plotter.</code><code class="sig-name descname">SBSPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/bs_plotter.html#SBSPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.bs_plotter.SBSPlotter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.plotter.html#pymatgen.electronic_structure.plotter.BSPlotter" title="(in pymatgen v2020.11.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.plotter.BSPlotter</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.plotter.html#pymatgen.electronic_structure.plotter.BSPlotter" title="(in pymatgen v2020.12.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.plotter.BSPlotter</span></code></a></p>
 <p>Class for plotting electronic band structures.</p>
 <p>This class is similar to the pymatgen
-<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.plotter.html#pymatgen.electronic_structure.plotter.BSPlotter" title="(in pymatgen v2020.11.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.plotter.BSPlotter</span></code></a> class but overrides
+<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.plotter.html#pymatgen.electronic_structure.plotter.BSPlotter" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.plotter.BSPlotter</span></code></a> class but overrides
 some methods to generate prettier plots.</p>
 <p>Additional functionality, such as projected band structure plots are
 available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2020.11.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structure.</p>
+<dd class="field-odd"><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structure.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -446,11 +445,11 @@ using the following method:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dos</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2020.11.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a>) – The total density
+<li><p><strong>dos</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a>) – The total density
 of states.</p></li>
 <li><p><strong>pdos</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>The partial density of states. Formatted
 as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> mapping the elements and their
-orbitals to <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2020.11.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> objects.
+orbitals to <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> objects.
 For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;Bi&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">Dos</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="n">Dos</span> <span class="o">...</span> <span class="p">},</span>
@@ -756,13 +755,13 @@ predictably.</p></li>
 <dl class="py class">
 <dt id="sumo.plotting.phonon_bs_plotter.SPhononBSPlotter">
 <em class="property">class </em><code class="sig-prename descclassname">sumo.plotting.phonon_bs_plotter.</code><code class="sig-name descname">SPhononBSPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bs</span></em>, <em class="sig-param"><span class="n">imag_tol</span><span class="o">=</span><span class="default_value">- 0.05</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/phonon_bs_plotter.html#SPhononBSPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.phonon_bs_plotter.SPhononBSPlotter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://pymatgen.org/pymatgen.phonon.plotter.html#pymatgen.phonon.plotter.PhononBSPlotter" title="(in pymatgen v2020.11.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.phonon.plotter.PhononBSPlotter</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://pymatgen.org/pymatgen.phonon.plotter.html#pymatgen.phonon.plotter.PhononBSPlotter" title="(in pymatgen v2020.12.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.phonon.plotter.PhononBSPlotter</span></code></a></p>
 <p>Class for plotting phonon band structures.</p>
-<p>This class is similar to the <a class="reference external" href="https://pymatgen.org/pymatgen.phonon.plotter.html#pymatgen.phonon.plotter.PhononBSPlotter" title="(in pymatgen v2020.11.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.phonon.plotter.PhononBSPlotter</span></code></a>
+<p>This class is similar to the <a class="reference external" href="https://pymatgen.org/pymatgen.phonon.plotter.html#pymatgen.phonon.plotter.PhononBSPlotter" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.phonon.plotter.PhononBSPlotter</span></code></a>
 class but overrides some methods to generate prettier plots.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.phonon.bandstructure.html#pymatgen.phonon.bandstructure.PhononBandStructureSymmLine" title="(in pymatgen v2020.11.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhononBandStructureSymmLine</span></code></a>) – The phonon band structure.</p>
+<dd class="field-odd"><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.phonon.bandstructure.html#pymatgen.phonon.bandstructure.PhononBandStructureSymmLine" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhononBandStructureSymmLine</span></code></a>) – The phonon band structure.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -881,7 +880,7 @@ data input.</p></li>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
