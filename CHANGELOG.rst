@@ -4,11 +4,21 @@ Change Log
 Unreleased
 ----------
 
+v2.2.0
+------
+
 - Support is added for orbital-projected DOS plots from CASTEP. (@zhubonan)
 
   - The binary parser is implemented and maintained in a separate
     library castepxbin. This is maintained by Bonan Zhu, available on
     PyPI and pinned to a specific version in the Sumo setup.py.
+
+Enhancements:
+
+- ``normalise`` option added to ``bandplot`` to control the normalisation of orbital
+  projections. The default has been changed from ``select`` to ``all``, meaning that
+  the size of projections is normalised against the sum of all other projections
+  at that band and k-point. (@utf)
 
 v2.1.1
 ------

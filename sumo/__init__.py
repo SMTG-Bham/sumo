@@ -6,4 +6,4 @@
 Sumo is a set of scripts and an API for dealing with VASP output files.
 """
 
-__version__ = "2.1.1"
+__version__ = "2.2.0"
