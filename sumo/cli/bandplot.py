@@ -47,6 +47,7 @@ __date__ = "July 18, 2017"
 
 def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
              vbm_cbm_marker=False, projection_selection=None, mode='rgb',
+             normalise="all",
              interpolate_factor=4, circle_size=150, dos_file=None,
              cart_coords=False, scissor=None,
              ylabel='Energy (eV)', dos_label=None,
@@ -123,6 +124,16 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
                     series of stacked circles, with the colour depending on
                     the composition of the band. The size of the circles
                     can be scaled using the ``circle_size`` option.
+
+        normalise (:obj:`str`, optional): Normalisation the projections.
+            Options are:
+
+              * ``'all'``: Projections normalised against the sum of all
+                   other projections.
+              * ``'select'``: Projections normalised against the sum of the
+                   selected projections.
+              * ``None``: No normalisation performed.
+
         circle_size (:obj:`float`, optional): The area of the circles used
             when ``mode = 'stacked'``.
         cart_coords (:obj:`bool`, optional): Whether the k-points are read as
@@ -317,7 +328,7 @@ def bandplot(filenames=None, code='vasp', prefix=None, directory=None,
     plotter = SBSPlotter(bs)
     if projection_selection:
         plt = plotter.get_projected_plot(
-            projection_selection, mode=mode,
+            projection_selection, mode=mode, normalise=normalise,
             interpolate_factor=interpolate_factor, circle_size=circle_size,
             zero_to_efermi=True, ymin=ymin, ymax=ymax, height=height,
             width=width, vbm_cbm_marker=vbm_cbm_marker, ylabel=ylabel,
@@ -474,6 +485,9 @@ def _get_parser():
     parser.add_argument('--mode', default='rgb', type=str,
                         help=('mode for orbital projections (options: rgb, '
                               'stacked)'))
+    parser.add_argument('--normalise', default='rgb', type=str,
+                        help=('how to normalise projections (options: all, '
+                              'select)'))
     parser.add_argument('--interpolate-factor', type=int, default=4,
                         dest='interpolate_factor', metavar='N',
                         help=('interpolate factor for band structure '
@@ -568,6 +582,7 @@ def main():
     bandplot(filenames=args.filenames, code=args.code, prefix=args.prefix,
              directory=args.directory, vbm_cbm_marker=args.band_edges,
              projection_selection=args.projection_selection, mode=args.mode,
+             normalise=args.normalise,
              interpolate_factor=args.interpolate_factor,
              cart_coords=args.cartesian, scissor=args.scissor,
              circle_size=args.circle_size, yscale=args.scale,
