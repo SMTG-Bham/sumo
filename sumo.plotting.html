@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sumo.plotting package &#8212; sumo 2.1.1 documentation</title>
+    <title>sumo.plotting package &#8212; sumo 2.2.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -156,16 +156,16 @@ style sheets.</p>
 <dl class="py class">
 <dt id="sumo.plotting.bs_plotter.SBSPlotter">
 <em class="property">class </em><code class="sig-prename descclassname">sumo.plotting.bs_plotter.</code><code class="sig-name descname">SBSPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/bs_plotter.html#SBSPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.bs_plotter.SBSPlotter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.plotter.html#pymatgen.electronic_structure.plotter.BSPlotter" title="(in pymatgen v2020.12.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.plotter.BSPlotter</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.plotter.html#pymatgen.electronic_structure.plotter.BSPlotter" title="(in pymatgen v2020.12.31)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.plotter.BSPlotter</span></code></a></p>
 <p>Class for plotting electronic band structures.</p>
 <p>This class is similar to the pymatgen
-<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.plotter.html#pymatgen.electronic_structure.plotter.BSPlotter" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.plotter.BSPlotter</span></code></a> class but overrides
+<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.plotter.html#pymatgen.electronic_structure.plotter.BSPlotter" title="(in pymatgen v2020.12.31)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.plotter.BSPlotter</span></code></a> class but overrides
 some methods to generate prettier plots.</p>
 <p>Additional functionality, such as projected band structure plots are
 available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structure.</p>
+<dd class="field-odd"><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2020.12.31)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structure.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -273,7 +273,7 @@ predictably.</p></li>
 
 <dl class="py method">
 <dt id="sumo.plotting.bs_plotter.SBSPlotter.get_projected_plot">
-<code class="sig-name descname">get_projected_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">selection</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'rgb'</span></em>, <em class="sig-param"><span class="n">interpolate_factor</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">circle_size</span><span class="o">=</span><span class="default_value">150</span></em>, <em class="sig-param"><span class="n">projection_cutoff</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">zero_to_efermi</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">ymin</span><span class="o">=</span><span class="default_value">- 6.0</span></em>, <em class="sig-param"><span class="n">ymax</span><span class="o">=</span><span class="default_value">6.0</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ylabel</span><span class="o">=</span><span class="default_value">'Energy (eV)'</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">400</span></em>, <em class="sig-param"><span class="n">plt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dos_plotter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dos_options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dos_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_dos_legend</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">dos_aspect</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">aspect</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fonts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_base_style</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/bs_plotter.html#SBSPlotter.get_projected_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.bs_plotter.SBSPlotter.get_projected_plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_projected_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">selection</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'rgb'</span></em>, <em class="sig-param"><span class="n">normalise</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">interpolate_factor</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">circle_size</span><span class="o">=</span><span class="default_value">150</span></em>, <em class="sig-param"><span class="n">projection_cutoff</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">zero_to_efermi</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">ymin</span><span class="o">=</span><span class="default_value">- 6.0</span></em>, <em class="sig-param"><span class="n">ymax</span><span class="o">=</span><span class="default_value">6.0</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ylabel</span><span class="o">=</span><span class="default_value">'Energy (eV)'</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">400</span></em>, <em class="sig-param"><span class="n">plt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dos_plotter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dos_options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dos_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot_dos_legend</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">dos_aspect</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">aspect</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fonts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">no_base_style</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">spin</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/bs_plotter.html#SBSPlotter.get_projected_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.bs_plotter.SBSPlotter.get_projected_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a <a class="reference external" href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.html#module-matplotlib.pyplot" title="(in Matplotlib v3.3.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code></a> of the projected band structure.</p>
 <p>If the system is spin polarised, no spin has been specified and
 <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">'rgb'</span></code> spin up and spin down bands are differentiated by
@@ -325,6 +325,24 @@ the composition of the band. The size of the circles
 can be scaled using the <code class="docutils literal notranslate"><span class="pre">circle_size</span></code> option.</p>
 </dd>
 </dl>
+</div></blockquote>
+</p></li>
+<li><p><strong>normalise</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – <p>Normalisation the projections.
+Options are:</p>
+<blockquote>
+<div><ul>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">'all'</span></code>: Projections normalised against the sum of all</dt><dd><p>other projections.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">'select'</span></code>: Projections normalised against the sum of the</dt><dd><p>selected projections.</p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: No normalisation performed.</p></li>
+</ul>
 </div></blockquote>
 </p></li>
 <li><p><strong>interpolate_factor</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, optional) – The factor by which to
@@ -445,11 +463,11 @@ using the following method:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dos</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a>) – The total density
+<li><p><strong>dos</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2020.12.31)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a>) – The total density
 of states.</p></li>
 <li><p><strong>pdos</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>The partial density of states. Formatted
 as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> mapping the elements and their
-orbitals to <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> objects.
+orbitals to <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2020.12.31)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> objects.
 For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;Bi&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">Dos</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="n">Dos</span> <span class="o">...</span> <span class="p">},</span>
@@ -755,13 +773,13 @@ predictably.</p></li>
 <dl class="py class">
 <dt id="sumo.plotting.phonon_bs_plotter.SPhononBSPlotter">
 <em class="property">class </em><code class="sig-prename descclassname">sumo.plotting.phonon_bs_plotter.</code><code class="sig-name descname">SPhononBSPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bs</span></em>, <em class="sig-param"><span class="n">imag_tol</span><span class="o">=</span><span class="default_value">- 0.05</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting/phonon_bs_plotter.html#SPhononBSPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.plotting.phonon_bs_plotter.SPhononBSPlotter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://pymatgen.org/pymatgen.phonon.plotter.html#pymatgen.phonon.plotter.PhononBSPlotter" title="(in pymatgen v2020.12.18)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.phonon.plotter.PhononBSPlotter</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://pymatgen.org/pymatgen.phonon.plotter.html#pymatgen.phonon.plotter.PhononBSPlotter" title="(in pymatgen v2020.12.31)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.phonon.plotter.PhononBSPlotter</span></code></a></p>
 <p>Class for plotting phonon band structures.</p>
-<p>This class is similar to the <a class="reference external" href="https://pymatgen.org/pymatgen.phonon.plotter.html#pymatgen.phonon.plotter.PhononBSPlotter" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.phonon.plotter.PhononBSPlotter</span></code></a>
+<p>This class is similar to the <a class="reference external" href="https://pymatgen.org/pymatgen.phonon.plotter.html#pymatgen.phonon.plotter.PhononBSPlotter" title="(in pymatgen v2020.12.31)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.phonon.plotter.PhononBSPlotter</span></code></a>
 class but overrides some methods to generate prettier plots.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.phonon.bandstructure.html#pymatgen.phonon.bandstructure.PhononBandStructureSymmLine" title="(in pymatgen v2020.12.18)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhononBandStructureSymmLine</span></code></a>) – The phonon band structure.</p>
+<dd class="field-odd"><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.phonon.bandstructure.html#pymatgen.phonon.bandstructure.PhononBandStructureSymmLine" title="(in pymatgen v2020.12.31)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhononBandStructureSymmLine</span></code></a>) – The phonon band structure.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -880,7 +898,7 @@ data input.</p></li>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

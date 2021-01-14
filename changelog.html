@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Change Log &#8212; sumo 2.1.1 documentation</title>
+    <title>Change Log &#8212; sumo 2.2.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -37,6 +37,9 @@
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="unreleased">
 <h2>Unreleased<a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="v2-2-0">
+<h2>v2.2.0<a class="headerlink" href="#v2-2-0" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Support is added for orbital-projected DOS plots from CASTEP. (&#64;zhubonan)</p>
 <ul>
@@ -45,6 +48,13 @@ library castepxbin. This is maintained by Bonan Zhu, available on
 PyPI and pinned to a specific version in the Sumo setup.py.</p></li>
 </ul>
 </li>
+</ul>
+<p>Enhancements:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">normalise</span></code> option added to <code class="docutils literal notranslate"><span class="pre">bandplot</span></code> to control the normalisation of orbital
+projections. The default has been changed from <code class="docutils literal notranslate"><span class="pre">select</span></code> to <code class="docutils literal notranslate"><span class="pre">all</span></code>, meaning that
+the size of projections is normalised against the sum of all other projections
+at that band and k-point. (&#64;utf)</p></li>
 </ul>
 </div>
 <div class="section" id="v2-1-1">
@@ -318,6 +328,7 @@ Enables plots to be customised based on user settings.</p>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-2-0">v2.2.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-1-1">v2.1.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-1-0">v2.1.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-0-2">v2.0.2</a></li>
@@ -370,7 +381,7 @@ Enables plots to be customised based on user settings.</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

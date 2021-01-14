@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sumo.cli.bandplot &#8212; sumo 2.1.1 documentation</title>
+    <title>sumo.cli.bandplot &#8212; sumo 2.2.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -81,6 +81,7 @@
 
 <div class="viewcode-block" id="bandplot"><a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.bandplot.bandplot">[docs]</a><span class="k">def</span> <span class="nf">bandplot</span><span class="p">(</span><span class="n">filenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="s1">&#39;vasp&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">projection_selection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span>
+             <span class="n">normalise</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
              <span class="n">interpolate_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">circle_size</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">dos_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">cart_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scissor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">,</span> <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -157,6 +158,16 @@
 <span class="sd">                    series of stacked circles, with the colour depending on</span>
 <span class="sd">                    the composition of the band. The size of the circles</span>
 <span class="sd">                    can be scaled using the ``circle_size`` option.</span>
+
+<span class="sd">        normalise (:obj:`str`, optional): Normalisation the projections.</span>
+<span class="sd">            Options are:</span>
+
+<span class="sd">              * ``&#39;all&#39;``: Projections normalised against the sum of all</span>
+<span class="sd">                   other projections.</span>
+<span class="sd">              * ``&#39;select&#39;``: Projections normalised against the sum of the</span>
+<span class="sd">                   selected projections.</span>
+<span class="sd">              * ``None``: No normalisation performed.</span>
+
 <span class="sd">        circle_size (:obj:`float`, optional): The area of the circles used</span>
 <span class="sd">            when ``mode = &#39;stacked&#39;``.</span>
 <span class="sd">        cart_coords (:obj:`bool`, optional): Whether the k-points are read as</span>
@@ -368,7 +379,7 @@
     <span class="n">plotter</span> <span class="o">=</span> <span class="n">SBSPlotter</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">projection_selection</span><span class="p">:</span>
         <span class="n">plt</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_projected_plot</span><span class="p">(</span>
-            <span class="n">projection_selection</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+            <span class="n">projection_selection</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">normalise</span><span class="o">=</span><span class="n">normalise</span><span class="p">,</span>
             <span class="n">interpolate_factor</span><span class="o">=</span><span class="n">interpolate_factor</span><span class="p">,</span> <span class="n">circle_size</span><span class="o">=</span><span class="n">circle_size</span><span class="p">,</span>
             <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
             <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">vbm_cbm_marker</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">,</span>
@@ -539,6 +550,9 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--mode&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;mode for orbital projections (options: rgb, &#39;</span>
                               <span class="s1">&#39;stacked)&#39;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--normalise&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;how to normalise projections (options: all, &#39;</span>
+                              <span class="s1">&#39;select)&#39;</span><span class="p">))</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--interpolate-factor&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
                         <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;interpolate_factor&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;interpolate factor for band structure &#39;</span>
@@ -634,6 +648,7 @@
     <span class="n">bandplot</span><span class="p">(</span><span class="n">filenames</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
              <span class="n">directory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">band_edges</span><span class="p">,</span>
              <span class="n">projection_selection</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">projection_selection</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
+             <span class="n">normalise</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">normalise</span><span class="p">,</span>
              <span class="n">interpolate_factor</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">interpolate_factor</span><span class="p">,</span>
              <span class="n">cart_coords</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cartesian</span><span class="p">,</span> <span class="n">scissor</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scissor</span><span class="p">,</span>
              <span class="n">circle_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">circle_size</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
@@ -711,7 +726,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

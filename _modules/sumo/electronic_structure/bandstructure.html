@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sumo.electronic_structure.bandstructure &#8212; sumo 2.1.1 documentation</title>
+    <title>sumo.electronic_structure.bandstructure &#8212; sumo 2.2.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -181,14 +181,14 @@
 
     <span class="c1"># Make a defaultdict of defaultdicts</span>
     <span class="n">dict_proj</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span>
-    <span class="n">sum_proj</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbands</span><span class="p">,</span> <span class="n">nkpts</span><span class="p">))]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)))</span>
+    <span class="n">sum_proj</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbands</span><span class="p">,</span> <span class="n">nkpts</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spins</span><span class="p">}</span>
 
     <span class="c1"># store the projections for all elements and orbitals in a useable format</span>
     <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">orbital</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">all_orbitals</span><span class="p">):</span>
 
-        <span class="c1"># convert data to [nb][nk][projection]</span>
-        <span class="n">el_orb_proj</span> <span class="o">=</span> <span class="p">[[</span><span class="n">all_proj</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">nb</span><span class="p">][</span><span class="n">nk</span><span class="p">][</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">]</span>
-                        <span class="k">for</span> <span class="n">nk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nkpts</span><span class="p">)]</span> <span class="k">for</span> <span class="n">nb</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nbands</span><span class="p">)]</span>
+        <span class="c1"># convert data to [nb][nk]</span>
+        <span class="n">el_orb_proj</span> <span class="o">=</span> <span class="p">[[</span><span class="n">all_proj</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">nb</span><span class="p">][</span><span class="n">nk</span><span class="p">][</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">]</span> <span class="k">for</span> <span class="n">nk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nkpts</span><span class="p">)]</span>
+                       <span class="k">for</span> <span class="n">nb</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nbands</span><span class="p">)]</span>
 
         <span class="n">dict_proj</span><span class="p">[</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">el_orb_proj</span><span class="p">)</span>
 
@@ -208,7 +208,7 @@
             <span class="c1"># even if there is only one orbital, make sure we can loop over it</span>
             <span class="n">orbitals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">orbitals</span><span class="p">)</span>
 
-        <span class="n">proj</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbands</span><span class="p">,</span> <span class="n">nkpts</span><span class="p">))]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)))</span>
+        <span class="n">proj</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbands</span><span class="p">,</span> <span class="n">nkpts</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spins</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">orbital</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="n">orbitals</span><span class="p">):</span>
             <span class="n">proj</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dict_proj</span><span class="p">[</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span>
 
@@ -222,8 +222,7 @@
         <span class="c1"># catch warnings and surround divide with np.nan_to_num</span>
         <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spec_proj</span><span class="p">))):</span>
-                <span class="n">spec_proj</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">spec_proj</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span> <span class="o">/</span>
-                                                   <span class="n">sum_proj</span><span class="p">[</span><span class="n">spin</span><span class="p">])</span>
+                <span class="n">spec_proj</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">spec_proj</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">spin</span><span class="p">]</span> <span class="o">/</span> <span class="n">sum_proj</span><span class="p">[</span><span class="n">spin</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">spec_proj</span></div>
 
 
@@ -407,7 +406,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

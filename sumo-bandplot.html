@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sumo-bandplot &#8212; sumo 2.1.1 documentation</title>
+    <title>sumo-bandplot &#8212; sumo 2.2.0 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -216,10 +216,10 @@ structure diagrams</p>
 </div></blockquote>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span> <span class="p">[</span><span class="n">F</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">project</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mode</span> <span class="n">MODE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">interpolate</span><span class="o">-</span><span class="n">factor</span> <span class="n">N</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">circle</span><span class="o">-</span><span class="n">size</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ylabel</span> <span class="n">YLABEL</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">dos</span><span class="o">-</span><span class="n">label</span> <span class="n">DOS_LABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dos</span> <span class="n">DOS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">elements</span> <span class="n">E</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">orbitals</span> <span class="n">O</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">atoms</span> <span class="n">A</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spin</span> <span class="n">SPIN</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">project</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mode</span> <span class="n">MODE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">normalise</span> <span class="n">NORMALISE</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">interpolate</span><span class="o">-</span><span class="n">factor</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">circle</span><span class="o">-</span><span class="n">size</span> <span class="n">S</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">ylabel</span> <span class="n">YLABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dos</span><span class="o">-</span><span class="n">label</span> <span class="n">DOS_LABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dos</span> <span class="n">DOS</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">elements</span> <span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">orbitals</span> <span class="n">O</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">atoms</span> <span class="n">A</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spin</span> <span class="n">SPIN</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">scissor</span> <span class="n">SCISSOR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">total</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">total</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">legend</span><span class="o">-</span><span class="n">cutoff</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">g</span> <span class="n">G</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">scale</span> <span class="n">SCALE</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">height</span> <span class="n">HEIGHT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">width</span> <span class="n">WIDTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ymin</span> <span class="n">YMIN</span><span class="p">]</span>
@@ -253,6 +253,10 @@ structure diagrams</p>
 </dd>
 <dt><kbd>--mode</kbd></dt>
 <dd><p>mode for orbital projections (options: rgb, stacked)</p>
+<p>Default: “rgb”</p>
+</dd>
+<dt><kbd>--normalise</kbd></dt>
+<dd><p>how to normalise projections (options: all, select)</p>
 <p>Default: “rgb”</p>
 </dd>
 <dt><kbd>--interpolate-factor</kbd></dt>
@@ -426,7 +430,7 @@ Last updated: July 18, 2017</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
