@@ -225,7 +225,8 @@ class SBSPlotter(BSPlotter):
         return plt
 
     @styled_plot(sumo_base_style, sumo_bs_style)
-    def get_projected_plot(self, selection, mode='rgb', interpolate_factor=4,
+    def get_projected_plot(self, selection, mode='rgb', normalise="all",
+                           interpolate_factor=4,
                            circle_size=150, projection_cutoff=0.001,
                            zero_to_efermi=True, ymin=-6., ymax=6., width=None,
                            height=None, vbm_cbm_marker=False,
@@ -283,6 +284,15 @@ class SBSPlotter(BSPlotter):
                         series of stacked circles, with the colour depending on
                         the composition of the band. The size of the circles
                         can be scaled using the ``circle_size`` option.
+
+            normalise (:obj:`str`, optional): Normalisation the projections.
+                Options are:
+
+                  * ``'all'``: Projections normalised against the sum of all
+                       other projections.
+                  * ``'select'``: Projections normalised against the sum of the
+                       selected projections.
+                  * ``None``: No normalisation performed.
 
             interpolate_factor (:obj:`int`, optional): The factor by which to
                 interpolate the band structure (necessary to make smooth
@@ -401,7 +411,7 @@ class SBSPlotter(BSPlotter):
         elif spin is Spin.down:
             spins = [spins[1]]
 
-        proj = get_projections_by_branches(self.bs, selection, normalise='select')
+        proj = get_projections_by_branches(self.bs, selection, normalise=normalise)
 
         # nd is branch index
         for spin, nd in it.product(spins, range(nbranches)):
