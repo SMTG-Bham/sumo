@@ -44,8 +44,9 @@ __date__ = "April 9, 2018"
 def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             elements=None, lm_orbitals=None, atoms=None, spin=None,
             subplot=False, shift=True, total_only=False, plot_total=True,
-            legend_on=True, legend_frame_on=False, legend_cutoff=3., gaussian=None,
-            height=6., width=8., xmin=-6., xmax=6., num_columns=2, colours=None,
+            legend_on=True, legend_frame_on=False, legend_cutoff=3.,
+            gaussian=None, colours=None,
+            height=6., width=8., xmin=-6., xmax=6., num_columns=2,
             yscale=1, xlabel='Energy (eV)', ylabel='Arb. units',
             style=None, no_base_style=False,
             image_format='pdf', dpi=400, plt=None, fonts=None):
@@ -174,11 +175,6 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
                              total_only)
 
     elif code.lower() == 'castep':
-        for arg in sumo.io.castep.unsupported_dosplot_args:
-            if locals().get(arg, None) is not None:
-                logging.error('Cannot set "{}" for CASTEP DOS; only total DOS '
-                              'is available.'.format(arg))
-                sys.exit()
 
         if filename:
             bands_file = filename
@@ -192,9 +188,33 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             else:
                 logging.error('ERROR: Too many *.bands files found!')
                 sys.exit()
-        dos = sumo.io.castep.read_tdos(bands_file, gaussian=gaussian,
-                                       emin=xmin, emax=xmax)
-        pdos = {}
+        pdos_file = _replace_ext(bands_file, 'pdos_bin')
+        cell_file = _replace_ext(bands_file, 'cell')
+        pdos_file = pdos_file if os.path.isfile(pdos_file) else None
+        cell_file = cell_file if os.path.isfile(cell_file) else None
+
+        if not total_only:
+            # Check if both pdos_bin and cell files are present.
+            # If not, we cannot plot the PDOS
+            if pdos_file is not None:
+                if cell_file is None:
+                    logging.info("Plotting PDOS requires the .cell file to be "
+                                 "present; falling back to TDOS.")
+                    pdos_file = None
+                else:
+                    logging.info(f"Found PDOS binary file {pdos_file}; "
+                                 "including PDOS in the plot.")
+            else:
+                logging.info("PDOS not available, falling back to TDOS.")
+
+        dos, pdos = sumo.io.castep.read_dos(bands_file, pdos_file=pdos_file,
+                                            cell_file=cell_file,
+                                            gaussian=gaussian,
+                                            emin=xmin, emax=xmax,
+                                            lm_orbitals=lm_orbitals,
+                                            elements=elements,
+                                            total_only=total_only,
+                                            atoms=atoms)
 
     elif code.lower() == 'questaal':
         if filename:
@@ -235,9 +255,13 @@ def dosplot(filename=None, code='vasp', prefix=None, directory=None,
             ry=True, gaussian=gaussian, total_only=total_only,
             elements=elements, lm_orbitals=lm_orbitals, atoms=atoms)
 
+    else:
+        logging.error("ERROR: Unrecognised code: {}".format(code))
+        return
+
     save_files = False if plt else True  # don't save if pyplot object provided
 
-    spin = string_to_spin(spin) # Convert spin argument to pymatgen Spin object
+    spin = string_to_spin(spin)  # Convert spin name to pymatgen Spin object
     plotter = SDOSPlotter(dos, pdos)
     plt = plotter.get_plot(subplot=subplot, width=width, height=height,
                            xmin=xmin, xmax=xmax, yscale=yscale,
@@ -285,6 +309,20 @@ def _el_orb(string):
         orbs = [orbs[0], 's', 'p', 'd', 'f'] if len(orbs) == 1 else orbs
         el_orbs[orbs.pop(0)] = orbs
     return el_orbs
+
+
+def _replace_ext(string, new_ext):
+    """Replace file extension
+
+    Args:
+        string (`str`): The file name with extensions to be replace
+        new_ext (`str`): The new extension
+
+    Returns:
+        A string with files extension replaced by new_ext
+    """
+    name, _ = os.path.splitext(string)
+    return name + '.' + new_ext
 
 
 def _atoms(atoms_string):
@@ -337,8 +375,9 @@ def _get_parser():
     parser.add_argument('-a', '--atoms', type=_atoms, metavar='A',
                         help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'))
     parser.add_argument('--spin', type=str, default=None,
-                        help=('select one spin channel only for a spin-polarised '
-                              'calculation (options: up, 1; down, -1)'))
+                        help=('select one spin channel only for a '
+                              'spin-polarised calculation '
+                              '(options: up, 1; down, -1)'))
     parser.add_argument('-s', '--subplot', action='store_true',
                         help='plot each element on separate subplots')
     parser.add_argument('-g', '--gaussian', type=float, metavar='G',

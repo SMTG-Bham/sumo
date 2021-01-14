@@ -42,6 +42,7 @@ setup(
         "phonopy>=2.1.3",
         "matplotlib",
         "seekpath",
+        "castepxbin==0.1.0",
     ],
     extras_require={
         "docs": ["sphinx", "sphinx-argparse"],
