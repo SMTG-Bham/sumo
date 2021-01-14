@@ -4,6 +4,11 @@ Change Log
 Unreleased
 ----------
 
+v2.2.1
+------
+
+Fixed typo in ``sumo-bandplot``.
+
 v2.2.0
 ------
 

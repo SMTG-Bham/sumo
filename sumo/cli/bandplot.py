@@ -516,7 +516,7 @@ def _get_parser():
     parser.add_argument('--mode', default='rgb', type=str,
                         help=('mode for orbital projections (options: rgb, '
                               'stacked)'))
-    parser.add_argument('--normalise', default='rgb', type=str,
+    parser.add_argument('--normalise', default='all', type=str,
                         help=('how to normalise projections (options: all, '
                               'select)'))
     parser.add_argument('--interpolate-factor', type=int, default=4,
