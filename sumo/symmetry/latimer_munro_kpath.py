@@ -41,7 +41,5 @@ class LatimerKpath(Kpath):
 
     def __init__(self, structure, symprec=1e-3):
         Kpath.__init__(self, structure, symprec=symprec)
-        pmg_path = HighSymmKpath(structure, symprec=symprec, path_type="lm")
+        pmg_path = HighSymmKpath(self.prim, symprec=symprec, path_type="lm")
         self._kpath = pmg_path._kpath
-        self.prim = pmg_path.prim
-        self.conv = pmg_path.conventional
