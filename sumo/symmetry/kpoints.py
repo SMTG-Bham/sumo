@@ -32,7 +32,7 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
             pymatgen
                 Use the paths from pymatgen. See [curt]_.
                 
-            latimer_munro
+            latimer-munro
                 Use the paths from Latimer & Munro. See [lm]_.
 
             seekpath
@@ -119,7 +119,7 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
         kpath = SeekpathKpath(structure, symprec=symprec)
     elif mode == 'pymatgen':
         kpath = PymatgenKpath(structure, symprec=symprec)
-    elif mode == 'latimer_munro':
+    elif mode == 'latimer-munro':
         kpath = LatimerKpath(structure, symprec=symprec)
 
     kpoints, labels = kpath.get_kpoints(line_density=line_density,
