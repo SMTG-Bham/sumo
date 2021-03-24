@@ -32,19 +32,20 @@ setup(
     ],
     keywords="chemistry pymatgen dft vasp dos band",
     packages=find_packages(),
+    python_requires='>=3.6',
     install_requires=[
         "spglib",
         "numpy",
         "scipy",
         "h5py",
+        "pymatgen>=2020.10.20",
         "phonopy>=2.1.3",
         "matplotlib",
         "seekpath",
+        "castepxbin==0.1.0",
     ],
     extras_require={
         "docs": ["sphinx", "sphinx-argparse"],
-        ':python_version=="3.5"': ["pymatgen >=2016.12.30, <=2019.6.20"],
-        ':python_version>="3.6"': ["pymatgen>=2017.12.30"],
         "tests": ["pytest"]
     },
     package_data={

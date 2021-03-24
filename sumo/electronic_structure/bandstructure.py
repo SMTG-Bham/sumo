@@ -147,14 +147,14 @@ def get_projections(bs, selection, normalise=None):
 
     # Make a defaultdict of defaultdicts
     dict_proj = defaultdict(lambda: defaultdict(dict))
-    sum_proj = dict(zip(spins, [np.zeros((nbands, nkpts))] * len(spins)))
+    sum_proj = {s: np.zeros((nbands, nkpts)) for s in spins}
 
     # store the projections for all elements and orbitals in a useable format
     for spin, element, orbital in it.product(spins, elements, all_orbitals):
 
-        # convert data to [nb][nk][projection]
-        el_orb_proj = [[all_proj[spin][nb][nk][element][orbital]
-                        for nk in range(nkpts)] for nb in range(nbands)]
+        # convert data to [nb][nk]
+        el_orb_proj = [[all_proj[spin][nb][nk][element][orbital] for nk in range(nkpts)]
+                       for nb in range(nbands)]
 
         dict_proj[element][orbital][spin] = np.array(el_orb_proj)
 
@@ -174,7 +174,7 @@ def get_projections(bs, selection, normalise=None):
             # even if there is only one orbital, make sure we can loop over it
             orbitals = tuple(orbitals)
 
-        proj = dict(zip(spins, [np.zeros((nbands, nkpts))] * len(spins)))
+        proj = {s: np.zeros((nbands, nkpts)) for s in spins}
         for spin, orbital in it.product(spins, orbitals):
             proj[spin] += dict_proj[element][orbital][spin]
 
@@ -188,8 +188,7 @@ def get_projections(bs, selection, normalise=None):
         # catch warnings and surround divide with np.nan_to_num
         with np.errstate(divide='ignore', invalid='ignore'):
             for spin, i in it.product(spins, range(len(spec_proj))):
-                spec_proj[i][spin] = np.nan_to_num(spec_proj[i][spin] /
-                                                   sum_proj[spin])
+                spec_proj[i][spin] = np.nan_to_num(spec_proj[i][spin] / sum_proj[spin])
     return spec_proj
 
 
