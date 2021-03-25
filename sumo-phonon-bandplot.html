@@ -47,7 +47,11 @@ structure diagrams based on <code class="docutils literal notranslate"><span cla
 <li><p><a class="reference internal" href="#high-symmetry-k-point-path" id="id8">High-Symmetry k-Point Path</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#command-line-interface" id="id9">Command-Line Interface</a></p></li>
+<li><p><a class="reference internal" href="#command-line-interface" id="id9">Command-Line Interface</a></p>
+<ul>
+<li><p><a class="reference internal" href="#Named Arguments" id="id10">Named Arguments</a></p></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="section" id="usage">
@@ -111,8 +115,8 @@ cell to primitive cell, the usage would be:</p>
 </div>
 <div class="section" id="high-symmetry-k-point-path">
 <h3>High-Symmetry k-Point Path<a class="headerlink" href="#high-symmetry-k-point-path" title="Permalink to this headline">¶</a></h3>
-<p>By default, the paths used are those from Bradley and Cracknell <span id="id1">[brad]</span>. To use the k-point paths provided
-SeeK-path <span id="id2">[seek]</span> or pymatgen <span id="id3">[curt]</span>. The options <code class="docutils literal notranslate"><span class="pre">--seekpath</span></code> or <code class="docutils literal notranslate"><span class="pre">--pymatgen</span></code> can be used.</p>
+<p>By default, the paths used are those from Bradley and Cracknell <a class="reference internal" href="sumo.symmetry.html#brad" id="id1"><span>[brad]</span></a>. To use the k-point paths provided
+SeeK-path <a class="reference internal" href="sumo.symmetry.html#seek" id="id2"><span>[seek]</span></a> or pymatgen <a class="reference internal" href="sumo.symmetry.html#curt" id="id3"><span>[curt]</span></a>. The options <code class="docutils literal notranslate"><span class="pre">--seekpath</span></code> or <code class="docutils literal notranslate"><span class="pre">--pymatgen</span></code> can be used.</p>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code> also supports generating k-points along custom k-point paths.
 This is controlled using the <code class="docutils literal notranslate"><span class="pre">--kpoints</span></code> option. The custom k-point path is specified
 as a string with commas separating the k-points.
@@ -136,6 +140,149 @@ For example, the path <code class="docutils literal notranslate"><span class="pr
 </div>
 <div class="section" id="command-line-interface">
 <h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<p><blockquote>
+<div><p>phonon-bandplot is a script to produce publication ready phonon band
+structure diagrams</p>
+</div></blockquote>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">q</span> <span class="n">N</span> <span class="n">N</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">B</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">dim</span> <span class="n">N</span> <span class="p">[</span><span class="n">N</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">poscar</span> <span class="n">POS</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">primitive</span><span class="o">-</span><span class="n">axis</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="o">|</span> <span class="o">--</span><span class="n">primitive</span><span class="o">-</span><span class="n">auto</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">symprec</span> <span class="n">SYMPREC</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">units</span> <span class="n">UNITS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spg</span> <span class="n">SPG</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">density</span> <span class="n">DENSITY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">seekpath</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pymatgen</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">kpoints</span> <span class="n">KPOINTS</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">labels</span> <span class="n">LABELS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">height</span> <span class="n">HEIGHT</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">width</span> <span class="n">WIDTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ymin</span> <span class="n">YMIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ymax</span> <span class="n">YMAX</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">style</span> <span class="n">STYLE</span> <span class="p">[</span><span class="n">STYLE</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">style</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">format</span> <span class="n">FORMAT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dpi</span> <span class="n">DPI</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">font</span> <span class="n">FONT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dos</span> <span class="p">[</span><span class="n">DOS</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">to</span><span class="o">-</span><span class="n">json</span> <span class="n">TO_JSON</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">from</span><span class="o">-</span><span class="n">json</span> <span class="n">FROM_JSON</span> <span class="p">[</span><span class="n">FROM_JSON</span> <span class="o">...</span><span class="p">]]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">to</span><span class="o">-</span><span class="n">web</span> <span class="n">TO_WEB</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">legend</span> <span class="p">[</span><span class="n">LEGEND</span> <span class="p">[</span><span class="n">LEGEND</span> <span class="o">...</span><span class="p">]]]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-f, --filename</kbd></dt>
+<dd><p>FORCE_SETS, FORCE_CONSTANTS or band.yaml file</p>
+</dd>
+<dt><kbd>-p, --prefix</kbd></dt>
+<dd><p>prefix for the files generated.</p>
+</dd>
+<dt><kbd>-d, --directory</kbd></dt>
+<dd><p>output directory for files</p>
+</dd>
+<dt><kbd>-q, --qmesh</kbd></dt>
+<dd><p>q-mesh to use for phonon DOS</p>
+<p>Default: (8, 8, 8)</p>
+</dd>
+<dt><kbd>-b, --born</kbd></dt>
+<dd><p>born effective charge file</p>
+</dd>
+<dt><kbd>-e, --eigenvectors</kbd></dt>
+<dd><p>write the phonon eigenvectors to yaml file</p>
+</dd>
+<dt><kbd>--dim</kbd></dt>
+<dd><p>supercell matrix dimensions</p>
+</dd>
+<dt><kbd>--poscar</kbd></dt>
+<dd><p>path to POSCAR file (if FORCE_SETS used)</p>
+</dd>
+<dt><kbd>--primitive-axis</kbd></dt>
+<dd><p>conventional to primitive cell transformation matrix</p>
+</dd>
+<dt><kbd>--primitive-auto</kbd></dt>
+<dd><p>Let phonopy automatically determine primitive cell transformation</p>
+</dd>
+<dt><kbd>--symprec</kbd></dt>
+<dd><p>tolerance for finding symmetry (default: 0.01)</p>
+<p>Default: 0.01</p>
+</dd>
+<dt><kbd>--units, -u</kbd></dt>
+<dd><p>Possible choices: THz, thz, cm-1, eV, ev, meV, mev</p>
+<p>choose units of phonon frequency (THz, cm-1, eV, meV)</p>
+<p>Default: “THz”</p>
+</dd>
+<dt><kbd>--spg</kbd></dt>
+<dd><p>space group number or symbol</p>
+</dd>
+<dt><kbd>--density</kbd></dt>
+<dd><p>k-point density along high-symmetry path</p>
+<p>Default: 60</p>
+</dd>
+<dt><kbd>--seekpath</kbd></dt>
+<dd><p>use seekpath to generate the high-symmetry path</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--pymatgen</kbd></dt>
+<dd><p>use pymatgen to generate the high-symmetry path</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--cartesian</kbd></dt>
+<dd><p>use cartesian k-point coordinates</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--kpoints</kbd></dt>
+<dd><p>specify a list of kpoints (e.g. “0 0 0, 0.5 0 0”)</p>
+</dd>
+<dt><kbd>--labels</kbd></dt>
+<dd><p>specify the labels for kpoints (e.g. “Gamma,X”)</p>
+</dd>
+<dt><kbd>--height</kbd></dt>
+<dd><p>height of the graph</p>
+</dd>
+<dt><kbd>--width</kbd></dt>
+<dd><p>width of the graph</p>
+</dd>
+<dt><kbd>--ymin</kbd></dt>
+<dd><p>minimum energy on the y-axis</p>
+</dd>
+<dt><kbd>--ymax</kbd></dt>
+<dd><p>maximum energy on the y-axis</p>
+</dd>
+<dt><kbd>--style</kbd></dt>
+<dd><p>matplotlib style specifications</p>
+</dd>
+<dt><kbd>--no-base-style</kbd></dt>
+<dd><p>prevent use of sumo base style</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--config</kbd></dt>
+<dd><p>colour configuration file</p>
+</dd>
+<dt><kbd>--format</kbd></dt>
+<dd><p>image file format (options: pdf, svg, jpg, png)</p>
+<p>Default: “pdf”</p>
+</dd>
+<dt><kbd>--dpi</kbd></dt>
+<dd><p>pixel density for image file</p>
+</dd>
+<dt><kbd>--font</kbd></dt>
+<dd><p>font to use</p>
+</dd>
+<dt><kbd>--dos</kbd></dt>
+<dd><p>Phonopy .dat file for phonon DOS</p>
+</dd>
+<dt><kbd>--to-json</kbd></dt>
+<dd><p>Output JSON file for band data</p>
+</dd>
+<dt><kbd>--from-json</kbd></dt>
+<dd><p>Overlay band data from JSON files</p>
+</dd>
+<dt><kbd>--to-web</kbd></dt>
+<dd><p>(Output JSON file for <a class="reference external" href="http://henriquemiranda.github.io/phononwebsite">http://henriquemiranda.github.io/phononwebsite</a>)</p>
+</dd>
+<dt><kbd>--legend</kbd></dt>
+<dd><p>Legend labels. With no args, label json inputs with filenames. With one arg per json file, label json inputs only. With one extra arg, label all lines beginning with new plot.</p>
+</dd>
+</dl>
+</div>
+<p><blockquote>
+<div><p>Author: Alex Ganose
+Version: 1.0
+Last updated: Jan 17, 2018</p>
+</div></blockquote>
+</p>
 </div>
 </div>
 

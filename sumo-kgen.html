@@ -56,7 +56,11 @@ literature, <code class="docutils literal notranslate"><span class="pre">sumo-kg
 <li><p><a class="reference internal" href="#questaal" id="id11">Questaal</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#command-line-interface" id="id12">Command-Line Interface</a></p></li>
+<li><p><a class="reference internal" href="#command-line-interface" id="id12">Command-Line Interface</a></p>
+<ul>
+<li><p><a class="reference internal" href="#Named Arguments" id="id13">Named Arguments</a></p></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="section" id="usage">
@@ -105,8 +109,8 @@ a file called <code class="docutils literal notranslate"><span class="pre">KPOIN
 <p>As the path depends on the symmetry of the lattice, it is important that the symmetry is determined
 correctly. The tolerance used for symmetry detection can be controlled using the <code class="docutils literal notranslate"><span class="pre">--symprec</span></code> option.
 The default is 0.01 Angstrom.</p>
-<p>By default, the paths used are those from Bradley and Cracknell <span id="id1">[brad]</span>. To use the k-point paths provided
-SeeK-path <span id="id2">[seek]</span> or pymatgen <span id="id3">[curt]</span>. The options <code class="docutils literal notranslate"><span class="pre">--seekpath</span></code> or <code class="docutils literal notranslate"><span class="pre">--pymatgen</span></code> can be used.</p>
+<p>By default, the paths used are those from Bradley and Cracknell <a class="reference internal" href="sumo.symmetry.html#brad" id="id1"><span>[brad]</span></a>. To use the k-point paths provided
+SeeK-path <a class="reference internal" href="sumo.symmetry.html#seek" id="id2"><span>[seek]</span></a> or pymatgen <a class="reference internal" href="sumo.symmetry.html#curt" id="id3"><span>[curt]</span></a>. The options <code class="docutils literal notranslate"><span class="pre">--seekpath</span></code> or <code class="docutils literal notranslate"><span class="pre">--pymatgen</span></code> can be used.</p>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> automatically looks for a <code class="docutils literal notranslate"><span class="pre">POSCAR</span></code> file in the current directory. A different structure
 file can be specified using the <code class="docutils literal notranslate"><span class="pre">--poscar</span></code> option.</p>
 <p>The density of the k-points along the path can be controlled using the <code class="docutils literal notranslate"><span class="pre">--density</span></code> option. The default is
@@ -208,6 +212,87 @@ and Bohr units it can get a bit confusing.</p>
 </div>
 <div class="section" id="command-line-interface">
 <h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<p><blockquote>
+<div><p>kgen generates KPOINTS files for running band structure calculations in
+VASP</p>
+</div></blockquote>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">kgen</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">y</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">symprec</span> <span class="n">SYMPREC</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spg</span> <span class="n">SPG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">density</span> <span class="n">DENSITY</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">seekpath</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pymatgen</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">latimer</span><span class="o">-</span><span class="n">munro</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">kpoints</span> <span class="n">KPOINTS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">labels</span> <span class="n">LABELS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">phonon</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-p, --poscar</kbd></dt>
+<dd><p>input structure file (default: POSCAR)</p>
+<p>Default: “POSCAR”</p>
+</dd>
+<dt><kbd>-c, --code</kbd></dt>
+<dd><p>Electronic structure code (default: vasp).”questaal” also supported.</p>
+<p>Default: “vasp”</p>
+</dd>
+<dt><kbd>-d, --directory</kbd></dt>
+<dd><p>output directory for files</p>
+</dd>
+<dt><kbd>-s, --split</kbd></dt>
+<dd><p>number of k-points to include per file</p>
+</dd>
+<dt><kbd>-f, --folders</kbd></dt>
+<dd><p>create folders and copy in necessary files</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-y, --hybrid</kbd></dt>
+<dd><p>append k-points to IBZKPT file with zero weight</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--symprec</kbd></dt>
+<dd><p>tolerance for finding symmetry (default: 0.01)</p>
+<p>Default: 0.01</p>
+</dd>
+<dt><kbd>--spg</kbd></dt>
+<dd><p>space group number or symbol</p>
+</dd>
+<dt><kbd>--density</kbd></dt>
+<dd><p>k-point density along high-symmetry path</p>
+<p>Default: 60</p>
+</dd>
+<dt><kbd>--seekpath</kbd></dt>
+<dd><p>use seekpath to generate the high-symmetry path</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--pymatgen</kbd></dt>
+<dd><p>use pymatgen to generate the high-symmetry path</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--latimer-munro</kbd></dt>
+<dd><p>use Latimer &amp; Munro method to generate the high-symmetry path</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--cartesian</kbd></dt>
+<dd><p>use cartesian k-point coordinates</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--kpoints</kbd></dt>
+<dd><p>specify a list of kpoints (e.g. “0 0 0, 0.5 0 0”)</p>
+</dd>
+<dt><kbd>--labels</kbd></dt>
+<dd><p>specify the labels for kpoints (e.g. “Gamma,X”)</p>
+</dd>
+<dt><kbd>--phonon</kbd></dt>
+<dd><p>Write k-points as phonon band structure path</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+<p><blockquote>
+<div><p>Author: Alex Ganose
+Version: 1.0
+Last updated: July 6, 2017</p>
+</div></blockquote>
+</p>
 </div>
 </div>
 

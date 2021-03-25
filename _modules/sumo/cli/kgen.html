@@ -1,0 +1,542 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.cli.kgen &#8212; sumo 2.2.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.cli.kgen</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A script to generate input files for band structure calculations</span>
+
+<span class="sd">TODO:</span>
+<span class="sd">  * Add support for CDML labels</span>
+<span class="sd">  * Save Brillouin zone diagram</span>
+<span class="sd">  * Return a list of filenames/folders</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pymatgen.io.vasp.inputs</span> <span class="kn">import</span> <span class="n">Kpoints</span><span class="p">,</span> <span class="n">Poscar</span>
+
+<span class="kn">import</span> <span class="nn">sumo.io.questaal</span>
+<span class="kn">import</span> <span class="nn">sumo.io.vasp</span>
+<span class="kn">from</span> <span class="nn">sumo.io.castep</span> <span class="kn">import</span> <span class="n">CastepCell</span>
+<span class="kn">from</span> <span class="nn">sumo.io.questaal</span> <span class="kn">import</span> <span class="n">QuestaalInit</span><span class="p">,</span> <span class="n">QuestaalSite</span>
+<span class="kn">from</span> <span class="nn">sumo.symmetry.kpoints</span> <span class="kn">import</span> <span class="n">get_path_data</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Alex Ganose&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Alex Ganose&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;alexganose@googlemail.com&quot;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s2">&quot;July 6, 2017&quot;</span>
+
+
+<span class="n">phonon_supported_codes</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;castep&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="kgen"><a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.kgen.kgen">[docs]</a><span class="k">def</span> <span class="nf">kgen</span><span class="p">(</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;POSCAR&quot;</span><span class="p">,</span>
+    <span class="n">code</span><span class="o">=</span><span class="s2">&quot;vasp&quot;</span><span class="p">,</span>
+    <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">make_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">symprec</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">kpts_per_split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ibzkpt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">spg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">density</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+    <span class="n">phonon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bradcrack&quot;</span><span class="p">,</span>
+    <span class="n">cart_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">kpt_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate KPOINTS files for VASP band structure calculations.</span>
+
+<span class="sd">    This script provides a wrapper around several frameworks used to generate</span>
+<span class="sd">    k-points along a high-symmetry path. The paths found in Bradley and</span>
+<span class="sd">    Cracknell, SeeK-path, and pymatgen are all supported.</span>
+
+<span class="sd">    It is important to note that the standard primitive cell symmetry is</span>
+<span class="sd">    different between SeeK-path and pymatgen. If the correct the structure</span>
+<span class="sd">    is not used, the high-symmetry points (and band path) may be invalid.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (:obj:`str`, optional): Path to VASP structure file. Default</span>
+<span class="sd">            is ``POSCAR``.</span>
+<span class="sd">        code (:obj:`str`, optional): Calculation type. Default is &#39;vasp&#39;;</span>
+<span class="sd">            &#39;questaal&#39; also supported.</span>
+<span class="sd">        directory (:obj:`str`, optional): The output file directory.</span>
+<span class="sd">        make_folders (:obj:`bool`, optional): Generate folders and copy in</span>
+<span class="sd">            required files (INCAR, POTCAR, POSCAR, and possibly CHGCAR) from</span>
+<span class="sd">            the current directory.</span>
+<span class="sd">        symprec (:obj:`float`, optional): The precision used for determining</span>
+<span class="sd">            the cell symmetry.</span>
+<span class="sd">        kpts_per_split (:obj:`int`, optional): If set, the k-points are split</span>
+<span class="sd">            into separate k-point files (or folders) each containing the number</span>
+<span class="sd">            of k-points specified. This is useful for hybrid band structure</span>
+<span class="sd">            calculations where it is often intractable to calculate all</span>
+<span class="sd">            k-points in the same calculation.</span>
+<span class="sd">        ibzkpt (:obj:`str`, optional): Path to IBZKPT file. If set, the</span>
+<span class="sd">            generated k-points will be appended to the k-points in this file</span>
+<span class="sd">            and given a weight of 0. This is necessary for hybrid band</span>
+<span class="sd">            structure calculations.</span>
+<span class="sd">        spg (:obj:`str` or :obj:`int`, optional): The space group international</span>
+<span class="sd">            number or symbol to override the symmetry determined by spglib.</span>
+<span class="sd">            This is not recommended and only provided for testing purposes.</span>
+<span class="sd">            This option will only take effect when ``mode = &#39;bradcrack&#39;``.</span>
+<span class="sd">        line_density (:obj:`int`, optional): Density of k-points along the</span>
+<span class="sd">            path.</span>
+<span class="sd">        phonon (:obj:`bool`, optional): Write phonon q-point path instead of</span>
+<span class="sd">            k-points. (Not appropriate for most codes.)</span>
+<span class="sd">        mode (:obj:`str`, optional): Method used for calculating the</span>
+<span class="sd">            high-symmetry path. The options are:</span>
+
+<span class="sd">            bradcrack</span>
+<span class="sd">                Use the paths from Bradley and Cracknell. See [brad]_.</span>
+
+<span class="sd">            pymatgen</span>
+<span class="sd">                Use the paths from pymatgen. See [curt]_.</span>
+
+<span class="sd">            latimer-munro</span>
+<span class="sd">                Use the paths from Latimer &amp; Munro. See [lm]_.</span>
+
+<span class="sd">            seekpath</span>
+<span class="sd">                Use the paths from SeeK-path. See [seek]_.</span>
+
+<span class="sd">        cart_coords (:obj:`bool`, optional): Whether the k-points are returned</span>
+<span class="sd">            in cartesian or reciprocal coordinates. Defaults to ``False``</span>
+<span class="sd">            (fractional coordinates).</span>
+<span class="sd">        kpt_list (:obj:`list`, optional): List of k-points to use, formatted as</span>
+<span class="sd">            a list of subpaths, each containing a list of fractional k-points.</span>
+<span class="sd">            For example::</span>
+
+<span class="sd">                [ [[0., 0., 0.], [0., 0., 0.5]],</span>
+<span class="sd">                  [[0.5, 0., 0.], [0.5, 0.5, 0.]] ]</span>
+
+<span class="sd">            Will return points along ``0 0 0 -&gt; 0 0 1/2 | 1/2 0 0</span>
+<span class="sd">            -&gt; 1/2 1/2 0``</span>
+<span class="sd">        path_labels (:obj:`list`, optional): The k-point labels. These should</span>
+<span class="sd">            be provided as a :obj:`list` of :obj:`str` for each subpath of the</span>
+<span class="sd">            overall path. For example::</span>
+
+<span class="sd">                [ [&#39;Gamma&#39;, &#39;Z&#39;], [&#39;X&#39;, &#39;M&#39;] ]</span>
+
+<span class="sd">            combined with the above example for ``kpt_list`` would indicate the</span>
+<span class="sd">            path: Gamma -&gt; Z | X -&gt; M. If no labels are provided, letters from</span>
+<span class="sd">            A -&gt; Z will be used instead. If a label begins with &#39;@&#39; it will be</span>
+<span class="sd">            concealed when plotting with sumo-bandplot.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;vasp&quot;</span><span class="p">:</span>
+        <span class="n">structure</span> <span class="o">=</span> <span class="n">Poscar</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">structure</span>
+    <span class="k">elif</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;questaal&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;site&quot;</span><span class="p">:</span>
+            <span class="n">site</span> <span class="o">=</span> <span class="n">QuestaalSite</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">structure</span> <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">structure</span>
+            <span class="n">alat</span> <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">alat</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">structure</span> <span class="o">=</span> <span class="n">QuestaalInit</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">structure</span>
+            <span class="n">alat</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;castep&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cart_coords</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Ignoring request for Cartesian coordinates: &quot;</span>
+                <span class="s2">&quot;not applicable to CASTEP band structure format.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">cart_coords</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">ibzkpt</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;Ignoring request to use IBZKPT (&quot;hybrid mode&quot;), &#39;</span>
+                <span class="s2">&quot;for CASTEP workflow the SCF mesh should already &quot;</span>
+                <span class="s2">&quot;be set in input .cell file.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">structure</span> <span class="o">=</span> <span class="n">CastepCell</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">structure</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Code &quot;</span><span class="si">{0}</span><span class="s1">&quot; not recognized.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">code</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">phonon</span> <span class="ow">and</span> <span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">phonon_supported_codes</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Cannot write phonon path for </span><span class="si">{code}</span><span class="s2">. &quot;</span>
+            <span class="s2">&quot;Supported codes: </span><span class="si">{supported}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">supported</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">phonon_supported_codes</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+
+    <span class="n">kpath</span><span class="p">,</span> <span class="n">kpoints</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">get_path_data</span><span class="p">(</span>
+        <span class="n">structure</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">,</span>
+        <span class="n">kpt_list</span><span class="o">=</span><span class="n">kpt_list</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+        <span class="n">spg</span><span class="o">=</span><span class="n">spg</span><span class="p">,</span>
+        <span class="n">line_density</span><span class="o">=</span><span class="n">density</span><span class="p">,</span>
+        <span class="n">cart_coords</span><span class="o">=</span><span class="n">cart_coords</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">k-point label indices:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">label</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">kpt_list</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
+        <span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="n">kpath</span><span class="o">.</span><span class="n">prim</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span>
+    <span class="p">):</span>
+        <span class="n">prim_filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_prim&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;questaal&quot;</span><span class="p">:</span>
+            <span class="n">QuestaalInit</span><span class="o">.</span><span class="n">from_structure</span><span class="p">(</span><span class="n">kpath</span><span class="o">.</span><span class="n">prim</span><span class="p">)</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">prim_filename</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;castep&quot;</span><span class="p">:</span>
+            <span class="n">CastepCell</span><span class="o">.</span><span class="n">from_structure</span><span class="p">(</span><span class="n">kpath</span><span class="o">.</span><span class="n">prim</span><span class="p">)</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">prim_filename</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">kpath</span><span class="o">.</span><span class="n">prim</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">prim_filename</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">WARNING: The input structure does not match the &quot;</span>
+            <span class="s2">&quot;expected standard</span><span class="se">\n</span><span class="s2">primitive symmetry, the path may be &quot;</span>
+            <span class="s2">&quot;incorrect! Use at your own risk.</span><span class="se">\n\n</span><span class="s2">The correct &quot;</span>
+            <span class="s2">&quot;symmetry primitive structure has been saved as </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prim_filename</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">ibz</span> <span class="o">=</span> <span class="n">_parse_ibzkpt</span><span class="p">(</span><span class="n">ibzkpt</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">make_folders</span> <span class="ow">and</span> <span class="n">ibz</span> <span class="ow">and</span> <span class="n">kpts_per_split</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Found </span><span class="si">{}</span><span class="s2"> total kpoints in path, do you want to &quot;</span>
+            <span class="s2">&quot;split them up? (y/n)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">kpoints</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">input</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;How many kpoints per file?&quot;</span><span class="p">)</span>
+            <span class="n">kpts_per_split</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">input</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;vasp&quot;</span><span class="p">:</span>
+        <span class="n">sumo</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">vasp</span><span class="o">.</span><span class="n">write_kpoint_files</span><span class="p">(</span>
+            <span class="n">filename</span><span class="p">,</span>
+            <span class="n">kpoints</span><span class="p">,</span>
+            <span class="n">labels</span><span class="p">,</span>
+            <span class="n">make_folders</span><span class="o">=</span><span class="n">make_folders</span><span class="p">,</span>
+            <span class="n">ibzkpt</span><span class="o">=</span><span class="n">ibz</span><span class="p">,</span>
+            <span class="n">kpts_per_split</span><span class="o">=</span><span class="n">kpts_per_split</span><span class="p">,</span>
+            <span class="n">directory</span><span class="o">=</span><span class="n">directory</span><span class="p">,</span>
+            <span class="n">cart_coords</span><span class="o">=</span><span class="n">cart_coords</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;castep&quot;</span><span class="p">:</span>
+        <span class="n">sumo</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">castep</span><span class="o">.</span><span class="n">write_kpoint_files</span><span class="p">(</span>
+            <span class="n">filename</span><span class="p">,</span>
+            <span class="n">kpoints</span><span class="p">,</span>
+            <span class="n">labels</span><span class="p">,</span>
+            <span class="n">make_folders</span><span class="o">=</span><span class="n">make_folders</span><span class="p">,</span>
+            <span class="n">kpts_per_split</span><span class="o">=</span><span class="n">kpts_per_split</span><span class="p">,</span>
+            <span class="n">phonon</span><span class="o">=</span><span class="n">phonon</span><span class="p">,</span>
+            <span class="n">directory</span><span class="o">=</span><span class="n">directory</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;questaal&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cart_coords</span><span class="p">:</span>
+            <span class="n">kpoints</span> <span class="o">=</span> <span class="p">[</span><span class="n">kpoint</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="k">for</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="n">kpoints</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">alat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Multiplying kpoint values by ALAT = </span><span class="si">{}</span><span class="s2"> Bohr&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alat</span><span class="p">))</span>
+                <span class="n">_bohr_to_angstrom</span> <span class="o">=</span> <span class="mf">0.5291772</span>
+                <span class="n">kpoints</span> <span class="o">=</span> <span class="p">[</span><span class="n">kpoint</span> <span class="o">*</span> <span class="n">alat</span> <span class="o">*</span> <span class="n">_bohr_to_angstrom</span> <span class="k">for</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="n">kpoints</span><span class="p">]</span>
+        <span class="n">sumo</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">questaal</span><span class="o">.</span><span class="n">write_kpoint_files</span><span class="p">(</span>
+            <span class="n">filename</span><span class="p">,</span>
+            <span class="n">kpoints</span><span class="p">,</span>
+            <span class="n">labels</span><span class="p">,</span>
+            <span class="n">make_folders</span><span class="o">=</span><span class="n">make_folders</span><span class="p">,</span>
+            <span class="n">directory</span><span class="o">=</span><span class="n">directory</span><span class="p">,</span>
+            <span class="n">cart_coords</span><span class="o">=</span><span class="n">cart_coords</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_parse_ibzkpt</span><span class="p">(</span><span class="n">ibzkpt</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">ibzkpt</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ibz</span> <span class="o">=</span> <span class="n">Kpoints</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">ibzkpt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ibz</span><span class="o">.</span><span class="n">tet_number</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ERROR: IBZKPT contains tetrahedron &quot;</span> <span class="s2">&quot;information.&quot;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ERROR: Hybrid specified but no IBZKPT file &quot;</span> <span class="s2">&quot;found.&quot;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ibz</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">ibz</span>
+
+
+<span class="k">def</span> <span class="nf">_get_parser</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    kgen generates KPOINTS files for running band structure calculations in</span>
+<span class="s2">    VASP&quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Author: </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">    Version: </span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">    Last updated: </span><span class="si">{}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">__author__</span><span class="p">,</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__date__</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-p&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--poscar&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;POSCAR&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;input structure file (default: POSCAR)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--code&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;vasp&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Electronic structure code (default: vasp).&quot;</span> <span class="s1">&#39;&quot;questaal&quot; also supported.&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-d&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--directory&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output directory for files&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--split&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;number of k-points to include per file&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--folders&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;create folders and copy in necessary files&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-y&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--hybrid&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;append k-points to IBZKPT file with zero weight&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--symprec&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;tolerance for finding symmetry (default: 0.01)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--spg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;space group number or symbol&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--density&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;k-point density along high-symmetry path&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--seekpath&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use seekpath to generate the high-symmetry path&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--pymatgen&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use pymatgen to generate the high-symmetry path&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--latimer-munro&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use Latimer &amp; Munro method to generate the high-symmetry path&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--cartesian&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use cartesian k-point coordinates&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--kpoints&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;specify a list of kpoints &quot;</span> <span class="s1">&#39;(e.g. &quot;0 0 0, 0.5 0 0&quot;)&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--labels&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;specify the labels for kpoints &quot;</span> <span class="sa">r</span><span class="s1">&#39;(e.g. &quot;\Gamma,X&quot;)&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--phonon&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Write k-points as phonon band structure path&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">_get_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;sumo-kgen.log&quot;</span><span class="p">,</span>
+        <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+        <span class="n">filemode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">console</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[:]))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
+
+    <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;bradcrack&quot;</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">seekpath</span><span class="p">:</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;seekpath&quot;</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">pymatgen</span><span class="p">:</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;pymatgen&quot;</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">latimer_munro</span><span class="p">:</span>  <span class="c1"># argparse converts hyphens in CLI arguments to underscore</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;latimer-munro&quot;</span>
+
+    <span class="n">ibzkpt</span> <span class="o">=</span> <span class="s2">&quot;IBZKPT&quot;</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">hybrid</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="n">spg</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">spg</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">spg</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">spg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">spg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">kpoints</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">kpoints</span><span class="p">:</span>
+        <span class="n">kpoints</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">kpt</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span> <span class="k">for</span> <span class="n">kpt</span> <span class="ow">in</span> <span class="n">kpts</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">kpts</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">labels</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)]</span>
+
+    <span class="n">kgen</span><span class="p">(</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">poscar</span><span class="p">,</span>
+        <span class="n">code</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
+        <span class="n">directory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span>
+        <span class="n">symprec</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">symprec</span><span class="p">,</span>
+        <span class="n">make_folders</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">folders</span><span class="p">,</span>
+        <span class="n">kpts_per_split</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">,</span>
+        <span class="n">ibzkpt</span><span class="o">=</span><span class="n">ibzkpt</span><span class="p">,</span>
+        <span class="n">spg</span><span class="o">=</span><span class="n">spg</span><span class="p">,</span>
+        <span class="n">density</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">density</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">cart_coords</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cartesian</span><span class="p">,</span>
+        <span class="n">kpt_list</span><span class="o">=</span><span class="n">kpoints</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
+        <span class="n">phonon</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">phonon</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
