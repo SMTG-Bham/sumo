@@ -12,7 +12,6 @@
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -121,6 +120,9 @@
 
 <span class="sd">            pymatgen</span>
 <span class="sd">                Use the paths from pymatgen. See [curt]_.</span>
+<span class="sd">                </span>
+<span class="sd">            latimer-munro</span>
+<span class="sd">                Use the paths from Latimer &amp; Munro. See [lm]_.</span>
 
 <span class="sd">            seekpath</span>
 <span class="sd">                Use the paths from SeeK-path. See [seek]_.</span>
@@ -291,6 +293,8 @@
                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use seekpath to generate the high-symmetry path&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--pymatgen&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use pymatgen to generate the high-symmetry path&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--latimer-munro&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use Latimer &amp; Munro method to generate the high-symmetry path&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--cartesian&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
                         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;use cartesian k-point coordinates&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--kpoints&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -318,6 +322,8 @@
         <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;seekpath&#39;</span>
     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">pymatgen</span><span class="p">:</span>
         <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;pymatgen&#39;</span>
+    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">latimer_munro</span><span class="p">:</span> <span class="c1"># argparse converts hyphens in CLI arguments to underscore</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;latimer-munro&#39;</span>
 
     <span class="n">ibzkpt</span> <span class="o">=</span> <span class="s1">&#39;IBZKPT&#39;</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">hybrid</span> <span class="k">else</span> <span class="kc">None</span>
 
@@ -407,7 +413,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

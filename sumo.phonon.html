@@ -12,7 +12,6 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="sumo.plotting package" href="sumo.plotting.html" />
@@ -47,14 +46,14 @@
 <p>This module provides helper functions for dealing with phonopy.</p>
 <dl class="py function">
 <dt id="sumo.phonon.phonopy.load_phonopy">
-<code class="sig-prename descclassname">sumo.phonon.phonopy.</code><code class="sig-name descname">load_phonopy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">structure</span></em>, <em class="sig-param"><span class="n">dim</span></em>, <em class="sig-param"><span class="n">symprec</span><span class="o">=</span><span class="default_value">0.01</span></em>, <em class="sig-param"><span class="n">primitive_matrix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">factor</span><span class="o">=</span><span class="default_value">15.633302300230191</span></em>, <em class="sig-param"><span class="n">symmetrise</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">born</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">write_fc</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/phonon/phonopy.html#load_phonopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sumo.phonon.phonopy.load_phonopy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">sumo.phonon.phonopy.</span></code><code class="sig-name descname"><span class="pre">load_phonopy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primitive_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15.633302300230191</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetrise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">born</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_fc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/phonon/phonopy.html#load_phonopy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.phonon.phonopy.load_phonopy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load phonopy output and return an <code class="docutils literal notranslate"><span class="pre">phonopy.Phonopy</span></code> object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to phonopy output. Can be any of <code class="docutils literal notranslate"><span class="pre">FORCE_SETS</span></code>,
 <code class="docutils literal notranslate"><span class="pre">FORCE_CONSTANTS</span></code>, or <code class="docutils literal notranslate"><span class="pre">force_constants.hdf5</span></code>.</p></li>
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2020.12.31)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The unitcell
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The unitcell
 structure.</p></li>
 <li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – The supercell size, as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
@@ -147,7 +146,7 @@ written. Alternatively, if set to <code class="docutils literal notranslate"><sp
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

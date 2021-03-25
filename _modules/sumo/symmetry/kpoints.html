@@ -12,7 +12,6 @@
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -65,6 +64,9 @@
 
 <span class="sd">            pymatgen</span>
 <span class="sd">                Use the paths from pymatgen. See [curt]_.</span>
+<span class="sd">                </span>
+<span class="sd">            latimer-munro</span>
+<span class="sd">                Use the paths from Latimer &amp; Munro. See [lm]_.</span>
 
 <span class="sd">            seekpath</span>
 <span class="sd">                Use the paths from SeeK-path. See [seek]_.</span>
@@ -139,7 +141,7 @@
 <span class="sd">                    [&#39;\Gamma&#39;, &#39;X&#39;, &#39;Y&#39;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">sumo.symmetry</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BradCrackKpath</span><span class="p">,</span> <span class="n">SeekpathKpath</span><span class="p">,</span> <span class="n">PymatgenKpath</span><span class="p">,</span>
-                               <span class="n">CustomKpath</span><span class="p">)</span>
+                               <span class="n">CustomKpath</span><span class="p">,</span> <span class="n">LatimerKpath</span><span class="p">)</span>
     <span class="n">spg</span> <span class="o">=</span> <span class="n">_get_space_group_object</span><span class="p">(</span><span class="n">spg</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">kpt_list</span><span class="p">:</span>
@@ -150,6 +152,8 @@
         <span class="n">kpath</span> <span class="o">=</span> <span class="n">SeekpathKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;pymatgen&#39;</span><span class="p">:</span>
         <span class="n">kpath</span> <span class="o">=</span> <span class="n">PymatgenKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;latimer-munro&#39;</span><span class="p">:</span>
+        <span class="n">kpath</span> <span class="o">=</span> <span class="n">LatimerKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
 
     <span class="n">kpoints</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">kpath</span><span class="o">.</span><span class="n">get_kpoints</span><span class="p">(</span><span class="n">line_density</span><span class="o">=</span><span class="n">line_density</span><span class="p">,</span>
                                         <span class="n">phonopy</span><span class="o">=</span><span class="n">phonopy</span><span class="p">,</span>
@@ -252,7 +256,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

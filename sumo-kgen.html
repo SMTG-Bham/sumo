@@ -12,7 +12,6 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="sumo-dosplot" href="sumo-dosplot.html" />
@@ -220,8 +219,8 @@ VASP</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">kgen</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">y</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">symprec</span> <span class="n">SYMPREC</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spg</span> <span class="n">SPG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">density</span> <span class="n">DENSITY</span><span class="p">]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">seekpath</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pymatgen</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">kpoints</span> <span class="n">KPOINTS</span><span class="p">]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">labels</span> <span class="n">LABELS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">phonon</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">seekpath</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pymatgen</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">latimer</span><span class="o">-</span><span class="n">munro</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">kpoints</span> <span class="n">KPOINTS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">labels</span> <span class="n">LABELS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">phonon</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="Named Arguments">
@@ -266,6 +265,10 @@ VASP</p>
 </dd>
 <dt><kbd>--pymatgen</kbd></dt>
 <dd><p>use pymatgen to generate the high-symmetry path</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--latimer-munro</kbd></dt>
+<dd><p>use Latimer &amp; Munro method to generate the high-symmetry path</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--cartesian</kbd></dt>
@@ -362,7 +365,7 @@ Last updated: July 6, 2017</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
