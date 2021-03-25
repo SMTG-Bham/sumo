@@ -6,6 +6,7 @@ import numpy as np
 from pymatgen.core.lattice import Lattice
 from sumo.io.questaal import QuestaalInit, dielectric_from_file
 
+
 class QuestaalOpticsTestCase(unittest.TestCase):
     def setUp(self):
         self.bse_path = resource_filename(

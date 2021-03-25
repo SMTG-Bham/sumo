@@ -6,7 +6,7 @@ import json
 from monty.json import MontyDecoder
 from monty.io import gzip
 from numpy.testing import assert_array_almost_equal
-from pymatgen import Structure
+from pymatgen.core.structure import Structure
 from pymatgen.electronic_structure.core import Spin
 
 from sumo.io.castep import (read_bands_header,

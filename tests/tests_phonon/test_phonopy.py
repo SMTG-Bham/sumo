@@ -7,6 +7,7 @@ from phonopy import Phonopy
 from pymatgen.io.vasp.inputs import Poscar
 import sumo.phonon.phonopy
 
+
 class PhonopyTestCase(unittest.TestCase):
     def setUp(self):
         self.phonon_data = resource_filename(__name__, path_join('..',

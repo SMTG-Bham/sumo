@@ -6,8 +6,7 @@ from numpy.testing import assert_almost_equal
 import json
 
 from pymatgen.io.vasp import Vasprun
-from sumo.electronic_structure.optics import (kkr,
-                                              calculate_dielectric_properties)
+from sumo.electronic_structure.optics import kkr, calculate_dielectric_properties
 
 
 class AbsorptionTestCase(unittest.TestCase):

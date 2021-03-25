@@ -2,6 +2,7 @@ import unittest
 
 from sumo.plotting.bs_plotter import SBSPlotter
 
+
 class SanitiseLabelTestCase(unittest.TestCase):
     def test_sanitise_label(self):
         for label_in, label_out in (('X', 'X'),

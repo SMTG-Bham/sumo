@@ -9,6 +9,7 @@ Module providing helper functions for generating k-points along a path.
 import sys
 import logging
 
+
 def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
                   line_density=60, cart_coords=False, kpt_list=None,
                   labels=None, phonopy=False):
@@ -31,7 +32,7 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
 
             pymatgen
                 Use the paths from pymatgen. See [curt]_.
-                
+
             latimer-munro
                 Use the paths from Latimer & Munro. See [lm]_.
 

@@ -8,6 +8,7 @@ from pymatgen.core.structure import Structure
 
 from sumo.symmetry.custom_kpath import CustomKpath
 
+
 class CustomKpathTestCase(unittest.TestCase):
 
     def setUp(self):
