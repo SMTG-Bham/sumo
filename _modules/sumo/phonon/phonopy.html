@@ -39,18 +39,26 @@
 <span class="sd">This module provides helper functions for dealing with phonopy.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">phonopy</span> <span class="kn">import</span> <span class="n">Phonopy</span><span class="p">,</span> <span class="n">file_IO</span>
 <span class="kn">from</span> <span class="nn">phonopy.structure.cells</span> <span class="kn">import</span> <span class="n">determinant</span>
-<span class="kn">from</span> <span class="nn">phonopy.units</span> <span class="kn">import</span> <span class="n">VaspToTHz</span><span class="p">,</span> <span class="n">Hartree</span><span class="p">,</span> <span class="n">Bohr</span>
-
+<span class="kn">from</span> <span class="nn">phonopy.units</span> <span class="kn">import</span> <span class="n">Bohr</span><span class="p">,</span> <span class="n">Hartree</span><span class="p">,</span> <span class="n">VaspToTHz</span>
 <span class="kn">from</span> <span class="nn">pymatgen.io.phonopy</span> <span class="kn">import</span> <span class="n">get_phonopy_structure</span>
 
 
-<div class="viewcode-block" id="load_phonopy"><a class="viewcode-back" href="../../../sumo.phonon.html#sumo.phonon.phonopy.load_phonopy">[docs]</a><span class="k">def</span> <span class="nf">load_phonopy</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">primitive_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">factor</span><span class="o">=</span><span class="n">VaspToTHz</span><span class="p">,</span> <span class="n">symmetrise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">born</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">write_fc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="load_phonopy"><a class="viewcode-back" href="../../../sumo.phonon.html#sumo.phonon.phonopy.load_phonopy">[docs]</a><span class="k">def</span> <span class="nf">load_phonopy</span><span class="p">(</span>
+    <span class="n">filename</span><span class="p">,</span>
+    <span class="n">structure</span><span class="p">,</span>
+    <span class="n">dim</span><span class="p">,</span>
+    <span class="n">symprec</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">primitive_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">factor</span><span class="o">=</span><span class="n">VaspToTHz</span><span class="p">,</span>
+    <span class="n">symmetrise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">born</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">write_fc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Load phonopy output and return an ``phonopy.Phonopy`` object.</span>
 
 <span class="sd">    Args:</span>
@@ -83,33 +91,38 @@
     <span class="n">num_atom</span> <span class="o">=</span> <span class="n">unitcell</span><span class="o">.</span><span class="n">get_number_of_atoms</span><span class="p">()</span>
     <span class="n">num_satom</span> <span class="o">=</span> <span class="n">determinant</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span> <span class="o">*</span> <span class="n">num_atom</span>
 
-    <span class="n">phonon</span> <span class="o">=</span> <span class="n">Phonopy</span><span class="p">(</span><span class="n">unitcell</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">primitive_matrix</span><span class="o">=</span><span class="n">primitive_matrix</span><span class="p">,</span>
-                     <span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
+    <span class="n">phonon</span> <span class="o">=</span> <span class="n">Phonopy</span><span class="p">(</span>
+        <span class="n">unitcell</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">primitive_matrix</span><span class="o">=</span><span class="n">primitive_matrix</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span>
+    <span class="p">)</span>
 
-    <span class="k">if</span> <span class="s1">&#39;FORCE_CONSTANTS&#39;</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s1">&#39;.hdf5&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;FORCE_CONSTANTS&quot;</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s2">&quot;.hdf5&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
         <span class="c1"># if force constants exist, use these to avoid recalculating them</span>
-        <span class="k">if</span> <span class="s1">&#39;.hdf5&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;.hdf5&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
             <span class="n">fc</span> <span class="o">=</span> <span class="n">file_IO</span><span class="o">.</span><span class="n">read_force_constants_hdf5</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="s1">&#39;FORCE_CONSTANTS&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="s2">&quot;FORCE_CONSTANTS&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
             <span class="n">fc</span> <span class="o">=</span> <span class="n">file_IO</span><span class="o">.</span><span class="n">parse_FORCE_CONSTANTS</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">fc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">num_satom</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Number of atoms in supercell is not consistent with the &quot;</span>
-                   <span class="s2">&quot;matrix shape of</span><span class="se">\n</span><span class="s2">force constants read from </span><span class="si">{}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">Please&quot;</span>
-                   <span class="s2">&quot;carefully check --dim.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Number of atoms in supercell is not consistent with the &quot;</span>
+                <span class="s2">&quot;matrix shape of</span><span class="se">\n</span><span class="s2">force constants read from </span><span class="si">{}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">Please&quot;</span>
+                <span class="s2">&quot;carefully check --dim.&quot;</span>
+            <span class="p">)</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
         <span class="n">phonon</span><span class="o">.</span><span class="n">set_force_constants</span><span class="p">(</span><span class="n">fc</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="s1">&#39;FORCE_SETS&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="s2">&quot;FORCE_SETS&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
         <span class="c1"># load the force sets from file and calculate force constants</span>
         <span class="n">fs</span> <span class="o">=</span> <span class="n">file_IO</span><span class="o">.</span><span class="n">parse_FORCE_SETS</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">fs</span><span class="p">[</span><span class="s1">&#39;natom&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">num_satom</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Number of atoms in supercell is not consistent with the &quot;</span>
-                   <span class="s2">&quot;the data in FORCE_SETS</span><span class="se">\n</span><span class="s2">Please carefully check --dim.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fs</span><span class="p">[</span><span class="s2">&quot;natom&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">num_satom</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Number of atoms in supercell is not consistent with the &quot;</span>
+                <span class="s2">&quot;the data in FORCE_SETS</span><span class="se">\n</span><span class="s2">Please carefully check --dim.&quot;</span>
+            <span class="p">)</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
@@ -120,18 +133,18 @@
 
     <span class="k">if</span> <span class="n">born</span><span class="p">:</span>
         <span class="c1"># load born parameters from a file</span>
-        <span class="n">nac_params</span> <span class="o">=</span> <span class="n">file_IO</span><span class="o">.</span><span class="n">parse_BORN</span><span class="p">(</span><span class="n">phonon</span><span class="o">.</span><span class="n">_primitive</span><span class="p">,</span>
-                                        <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">,</span>
-                                        <span class="n">filename</span><span class="o">=</span><span class="n">born</span><span class="p">)</span>
+        <span class="n">nac_params</span> <span class="o">=</span> <span class="n">file_IO</span><span class="o">.</span><span class="n">parse_BORN</span><span class="p">(</span>
+            <span class="n">phonon</span><span class="o">.</span><span class="n">_primitive</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">born</span>
+        <span class="p">)</span>
 
         <span class="c1"># set the nac unit conversion factor manual,  specific to VASP</span>
-        <span class="n">nac_params</span><span class="p">[</span><span class="s1">&#39;factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Hartree</span> <span class="o">*</span> <span class="n">Bohr</span>
+        <span class="n">nac_params</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Hartree</span> <span class="o">*</span> <span class="n">Bohr</span>
         <span class="n">phonon</span><span class="o">.</span><span class="n">set_nac_params</span><span class="p">(</span><span class="n">nac_params</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">symmetrise</span><span class="p">:</span>
         <span class="n">phonon</span><span class="o">.</span><span class="n">symmetrize_force_constants</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">write_fc</span> <span class="o">==</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">write_fc</span> <span class="o">==</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">:</span>
         <span class="n">file_IO</span><span class="o">.</span><span class="n">write_force_constants_to_hdf5</span><span class="p">(</span><span class="n">phonon</span><span class="o">.</span><span class="n">get_force_constants</span><span class="p">())</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Force constants written to force_constants.hdf5.&quot;</span><span class="p">)</span>
 

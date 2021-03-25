@@ -39,24 +39,29 @@
 <span class="sd">This module provides a class for plotting electronic band structure diagrams.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
-
-<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span><span class="p">,</span> <span class="n">cycler</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cycler</span><span class="p">,</span> <span class="n">rcParams</span>
 <span class="kn">from</span> <span class="nn">matplotlib.style</span> <span class="kn">import</span> <span class="n">context</span>
-<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">MaxNLocator</span><span class="p">,</span> <span class="n">AutoMinorLocator</span>
-<span class="kn">from</span> <span class="nn">matplotlib.transforms</span> <span class="kn">import</span> <span class="n">blended_transform_factory</span>
-
-<span class="kn">from</span> <span class="nn">sumo.plotting</span> <span class="kn">import</span> <span class="p">(</span><span class="n">pretty_plot</span><span class="p">,</span> <span class="n">pretty_subplot</span><span class="p">,</span> <span class="n">rgbline</span><span class="p">,</span>
-                           <span class="n">styled_plot</span><span class="p">,</span> <span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">sumo.electronic_structure.bandstructure</span> <span class="kn">import</span> \
-    <span class="n">get_projections_by_branches</span><span class="p">,</span> <span class="n">force_branches</span>
-
-<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.plotter</span> <span class="kn">import</span> <span class="n">BSPlotter</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">AutoMinorLocator</span><span class="p">,</span> <span class="n">MaxNLocator</span>
 <span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Spin</span>
+<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.plotter</span> <span class="kn">import</span> <span class="n">BSPlotter</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+
+<span class="kn">from</span> <span class="nn">sumo.electronic_structure.bandstructure</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">force_branches</span><span class="p">,</span>
+    <span class="n">get_projections_by_branches</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">sumo.plotting</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">pretty_plot</span><span class="p">,</span>
+    <span class="n">pretty_subplot</span><span class="p">,</span>
+    <span class="n">rgbline</span><span class="p">,</span>
+    <span class="n">styled_plot</span><span class="p">,</span>
+    <span class="n">sumo_base_style</span><span class="p">,</span>
+    <span class="n">sumo_bs_style</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">label_size</span> <span class="o">=</span> <span class="mi">22</span>
 
@@ -93,13 +98,28 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">nbands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nb_bands</span>
 
 <div class="viewcode-block" id="SBSPlotter.get_plot"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.bs_plotter.SBSPlotter.get_plot">[docs]</a>    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span>
-                 <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">,</span>
-                 <span class="n">dpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_dos_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">dos_plotter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dos_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">dos_aspect</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">ymin</span><span class="o">=-</span><span class="mf">6.0</span><span class="p">,</span>
+        <span class="n">ymax</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">plot_dos_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dos_plotter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dos_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dos_aspect</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object of the band structure.</span>
 
 <span class="sd">        If the system is spin polarised, and no spin has been specified, orange</span>
@@ -192,38 +212,47 @@
 <span class="sd">            :obj:`matplotlib.pyplot`: The electronic band structure plot.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">dos_plotter</span><span class="p">:</span>
-            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
-                                 <span class="n">sharex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span>
-                                 <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">,</span>
-                                 <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;width_ratios&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">dos_aspect</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-                                              <span class="s1">&#39;wspace&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_subplot</span><span class="p">(</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">,</span>
+                <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+                <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+                <span class="n">sharex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span>
+                <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">,</span>
+                <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;width_ratios&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">dos_aspect</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;wspace&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+            <span class="p">)</span>
             <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
-                              <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
+            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
             <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs_plot_data</span><span class="p">(</span><span class="n">zero_to_efermi</span><span class="p">)</span>
-        <span class="n">dists</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">]</span>
-        <span class="n">eners</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span>
+        <span class="n">dists</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">]</span>
+        <span class="n">eners</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">spin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Spin-selection only possible with spin-polarised &#39;</span>
-                             <span class="s1">&#39;calculation results&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Spin-selection only possible with spin-polarised &quot;</span>
+                <span class="s2">&quot;calculation results&quot;</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">is_metal</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">spin</span><span class="p">):</span>
             <span class="c1"># if metal or spin polarized and spin not specified</span>
             <span class="n">is_vb</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">spin</span><span class="p">:</span>
             <span class="c1"># not metal, spin-polarized and spin is set</span>
-            <span class="n">is_vb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span>
+            <span class="n">is_vb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># not metal, not spin polarized and therefore spin not set</span>
-            <span class="n">is_vb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span>
+            <span class="n">is_vb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
 
         <span class="c1"># nd is branch index, nb is band index, nk is kpoint index</span>
-        <span class="k">for</span> <span class="n">nd</span><span class="p">,</span> <span class="n">nb</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">])),</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbands</span><span class="p">)):</span>
-            <span class="n">e</span> <span class="o">=</span> <span class="n">eners</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">spin</span><span class="p">)][</span><span class="n">nd</span><span class="p">][</span><span class="n">nb</span><span class="p">]</span> <span class="k">if</span> <span class="n">spin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
-            <span class="k">else</span> <span class="n">eners</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">)][</span><span class="n">nd</span><span class="p">][</span><span class="n">nb</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">nd</span><span class="p">,</span> <span class="n">nb</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">])),</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbands</span><span class="p">)):</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">eners</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">spin</span><span class="p">)][</span><span class="n">nd</span><span class="p">][</span><span class="n">nb</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">spin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">eners</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">)][</span><span class="n">nd</span><span class="p">][</span><span class="n">nb</span><span class="p">]</span>
+            <span class="p">)</span>
 
             <span class="c1"># For closed-shell calculations with a bandgap, colour valence</span>
             <span class="c1"># bands blue (C0) and conduction bands orange (C1)</span>
@@ -234,41 +263,68 @@
             <span class="c1"># and overlay with C0 (dashed) spin down channel</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span> <span class="ow">and</span> <span class="n">spin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;C1&#39;</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="s2">&quot;C1&quot;</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">is_metal</span><span class="p">()</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">is_vb</span><span class="p">[</span><span class="n">nb</span><span class="p">]):</span>
-                <span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;C0&#39;</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="s2">&quot;C0&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;C1&#39;</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="s2">&quot;C1&quot;</span>
 
-            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dists</span><span class="p">[</span><span class="n">nd</span><span class="p">],</span> <span class="n">e</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dists</span><span class="p">[</span><span class="n">nd</span><span class="p">],</span> <span class="n">e</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># Plot second spin channel if it exists and no spin selected</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span> <span class="ow">and</span> <span class="n">spin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">nd</span><span class="p">,</span> <span class="n">nb</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">])),</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbands</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">nd</span><span class="p">,</span> <span class="n">nb</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">])),</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbands</span><span class="p">)):</span>
                 <span class="n">e</span> <span class="o">=</span> <span class="n">eners</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">)][</span><span class="n">nd</span><span class="p">][</span><span class="n">nb</span><span class="p">]</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dists</span><span class="p">[</span><span class="n">nd</span><span class="p">],</span> <span class="n">e</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">dists</span><span class="p">[</span><span class="n">nd</span><span class="p">],</span> <span class="n">e</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_maketicks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_makeplot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">(),</span> <span class="n">data</span><span class="p">,</span> <span class="n">zero_to_efermi</span><span class="o">=</span><span class="n">zero_to_efermi</span><span class="p">,</span>
-                       <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">vbm_cbm_marker</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
-                       <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span>
-                       <span class="n">dos_plotter</span><span class="o">=</span><span class="n">dos_plotter</span><span class="p">,</span> <span class="n">dos_options</span><span class="o">=</span><span class="n">dos_options</span><span class="p">,</span>
-                       <span class="n">plot_dos_legend</span><span class="o">=</span><span class="n">plot_dos_legend</span><span class="p">,</span>
-                       <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_makeplot</span><span class="p">(</span>
+            <span class="n">ax</span><span class="p">,</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">(),</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">zero_to_efermi</span><span class="o">=</span><span class="n">zero_to_efermi</span><span class="p">,</span>
+            <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">vbm_cbm_marker</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+            <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span>
+            <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span>
+            <span class="n">dos_plotter</span><span class="o">=</span><span class="n">dos_plotter</span><span class="p">,</span>
+            <span class="n">dos_options</span><span class="o">=</span><span class="n">dos_options</span><span class="p">,</span>
+            <span class="n">plot_dos_legend</span><span class="o">=</span><span class="n">plot_dos_legend</span><span class="p">,</span>
+            <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span>
+            <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">plt</span></div>
 
 <div class="viewcode-block" id="SBSPlotter.get_projected_plot"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.bs_plotter.SBSPlotter.get_projected_plot">[docs]</a>    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_projected_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span> <span class="n">normalise</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-                           <span class="n">interpolate_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-                           <span class="n">circle_size</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">projection_cutoff</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
-                           <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                           <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                           <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">,</span>
-                           <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                           <span class="n">dos_plotter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dos_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                           <span class="n">plot_dos_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                           <span class="n">dos_aspect</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                           <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_projected_plot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">selection</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rgb&quot;</span><span class="p">,</span>
+        <span class="n">normalise</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="n">interpolate_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">circle_size</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">projection_cutoff</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+        <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">ymin</span><span class="o">=-</span><span class="mf">6.0</span><span class="p">,</span>
+        <span class="n">ymax</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+        <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dos_plotter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dos_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">plot_dos_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dos_aspect</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` of the projected band structure.</span>
 
 <span class="sd">        If the system is spin polarised, no spin has been specified and</span>
@@ -416,29 +472,37 @@
 <span class="sd">            :obj:`matplotlib.pyplot`: The projected electronic band structure</span>
 <span class="sd">            plot.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;rgb&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Too many elements/orbitals specified (max 3)&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;solo&#39;</span> <span class="ow">and</span> <span class="n">dos_plotter</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Solo mode plotting with DOS not supported&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;rgb&quot;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Too many elements/orbitals specified (max 3)&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;solo&quot;</span> <span class="ow">and</span> <span class="n">dos_plotter</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Solo mode plotting with DOS not supported&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dos_plotter</span><span class="p">:</span>
-            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span>
-                                 <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">,</span>
-                                 <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;width_ratios&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">dos_aspect</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-                                              <span class="s1">&#39;wspace&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_subplot</span><span class="p">(</span>
+                <span class="mi">1</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">,</span>
+                <span class="n">width</span><span class="p">,</span>
+                <span class="n">height</span><span class="p">,</span>
+                <span class="n">sharex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span>
+                <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">,</span>
+                <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;width_ratios&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">dos_aspect</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;wspace&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+            <span class="p">)</span>
             <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_plot</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
             <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs_plot_data</span><span class="p">(</span><span class="n">zero_to_efermi</span><span class="p">)</span>
-        <span class="n">nbranches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">])</span>
+        <span class="n">nbranches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">])</span>
 
         <span class="c1"># Ensure we do spin up first, then spin down</span>
         <span class="n">spins</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="o">-</span><span class="n">s</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">spin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Spin-selection only possible with spin-polarised &#39;</span>
-                             <span class="s1">&#39;calculation results&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Spin-selection only possible with spin-polarised &quot;</span>
+                <span class="s2">&quot;calculation results&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">spin</span> <span class="ow">is</span> <span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">:</span>
             <span class="n">spins</span> <span class="o">=</span> <span class="p">[</span><span class="n">spins</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
         <span class="k">elif</span> <span class="n">spin</span> <span class="ow">is</span> <span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">:</span>
@@ -450,24 +514,37 @@
         <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">nbranches</span><span class="p">)):</span>
 
             <span class="c1"># mask data to reduce plotting load</span>
-            <span class="n">bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">spin</span><span class="p">)][</span><span class="n">nd</span><span class="p">])</span>
-            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">bands</span> <span class="o">&gt;</span> <span class="n">ymin</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">bands</span> <span class="o">&lt;</span> <span class="n">ymax</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-            <span class="n">distances</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">][</span><span class="n">nd</span><span class="p">]</span>
+            <span class="n">bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">spin</span><span class="p">)][</span><span class="n">nd</span><span class="p">])</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">bands</span> <span class="o">&gt;</span> <span class="n">ymin</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">bands</span> <span class="o">&lt;</span> <span class="n">ymax</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">][</span><span class="n">nd</span><span class="p">]</span>
             <span class="n">bands</span> <span class="o">=</span> <span class="n">bands</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
             <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="n">proj</span><span class="p">[</span><span class="n">nd</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">selection</span><span class="p">))]</span>
 
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span> <span class="c1"># Only interpolate if it makes sense to do so</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Only interpolate if it makes sense to do so</span>
                 <span class="c1"># interpolate band structure to improve smoothness</span>
-                <span class="n">temp_dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">distances</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">distances</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                                         <span class="nb">len</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">*</span> <span class="n">interpolate_factor</span><span class="p">)</span>
-                <span class="n">bands</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                 <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">)(</span><span class="n">temp_dists</span><span class="p">)</span>
-                <span class="n">weights</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                   <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">)(</span><span class="n">temp_dists</span><span class="p">)</span>
+                <span class="n">temp_dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+                    <span class="n">distances</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">distances</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">*</span> <span class="n">interpolate_factor</span>
+                <span class="p">)</span>
+                <span class="n">bands</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span>
+                    <span class="n">distances</span><span class="p">,</span>
+                    <span class="n">bands</span><span class="p">,</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">,</span>
+                <span class="p">)(</span><span class="n">temp_dists</span><span class="p">)</span>
+                <span class="n">weights</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span>
+                    <span class="n">distances</span><span class="p">,</span>
+                    <span class="n">weights</span><span class="p">,</span>
+                    <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                    <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">,</span>
+                <span class="p">)(</span><span class="n">temp_dists</span><span class="p">)</span>
                 <span class="n">distances</span> <span class="o">=</span> <span class="n">temp_dists</span>
 
-            <span class="k">else</span><span class="p">:</span> <span class="c1"># change from list to array if we skipped the scipy interpolation</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># change from list to array if we skipped the scipy interpolation</span>
                 <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
                 <span class="n">bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bands</span><span class="p">)</span>
                 <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
@@ -475,30 +552,35 @@
             <span class="c1"># sometimes VASP produces very small negative weights</span>
             <span class="n">weights</span><span class="p">[</span><span class="n">weights</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
-            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;rgb&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;rgb&quot;</span><span class="p">:</span>
 
                 <span class="c1"># colours aren&#39;t used now but needed later for legend</span>
-                <span class="n">colours</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#ff0000&#39;</span><span class="p">,</span> <span class="s1">&#39;#00ff00&#39;</span><span class="p">,</span> <span class="s1">&#39;#0000ff&#39;</span><span class="p">]</span>
+                <span class="n">colours</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#ff0000&quot;</span><span class="p">,</span> <span class="s2">&quot;#00ff00&quot;</span><span class="p">,</span> <span class="s2">&quot;#0000ff&quot;</span><span class="p">]</span>
 
                 <span class="c1"># if only two orbitals then just use red and blue</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
-                                        <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="n">colours</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#ff0000&#39;</span><span class="p">,</span> <span class="s1">&#39;#0000ff&#39;</span><span class="p">]</span>
+                    <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">colours</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#ff0000&quot;</span><span class="p">,</span> <span class="s2">&quot;#0000ff&quot;</span><span class="p">]</span>
 
-                <span class="n">ls</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span> <span class="k">if</span> <span class="n">spin</span> <span class="o">==</span> <span class="n">Spin</span><span class="o">.</span><span class="n">up</span> <span class="k">else</span> <span class="s1">&#39;--&#39;</span>
-                <span class="n">lc</span> <span class="o">=</span> <span class="n">rgbline</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">weights</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                             <span class="n">weights</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="n">ls</span><span class="p">,</span>
-                             <span class="n">linewidth</span><span class="o">=</span><span class="p">(</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;lines.linewidth&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.25</span><span class="p">))</span>
+                <span class="n">ls</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">spin</span> <span class="o">==</span> <span class="n">Spin</span><span class="o">.</span><span class="n">up</span> <span class="k">else</span> <span class="s2">&quot;--&quot;</span>
+                <span class="n">lc</span> <span class="o">=</span> <span class="n">rgbline</span><span class="p">(</span>
+                    <span class="n">distances</span><span class="p">,</span>
+                    <span class="n">bands</span><span class="p">,</span>
+                    <span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">weights</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">weights</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                    <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">linestyles</span><span class="o">=</span><span class="n">ls</span><span class="p">,</span>
+                    <span class="n">linewidth</span><span class="o">=</span><span class="p">(</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;lines.linewidth&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.25</span><span class="p">),</span>
+                <span class="p">)</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">lc</span><span class="p">)</span>
 
-            <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;stacked&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;stacked&quot;</span><span class="p">:</span>
                 <span class="c1"># TODO: Handle spin</span>
 
                 <span class="c1"># use some nice custom colours first, then default colours</span>
-                <span class="n">colours</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#3952A3&#39;</span><span class="p">,</span> <span class="s1">&#39;#FAA41A&#39;</span><span class="p">,</span> <span class="s1">&#39;#67BC47&#39;</span><span class="p">,</span> <span class="s1">&#39;#6ECCDD&#39;</span><span class="p">,</span>
-                           <span class="s1">&#39;#ED2025&#39;</span><span class="p">]</span>
-                <span class="n">colour_series</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
+                <span class="n">colours</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#3952A3&quot;</span><span class="p">,</span> <span class="s2">&quot;#FAA41A&quot;</span><span class="p">,</span> <span class="s2">&quot;#67BC47&quot;</span><span class="p">,</span> <span class="s2">&quot;#6ECCDD&quot;</span><span class="p">,</span> <span class="s2">&quot;#ED2025&quot;</span><span class="p">]</span>
+                <span class="n">colour_series</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.prop_cycle&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
                 <span class="n">colours</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">colour_series</span><span class="p">)</span>
 
                 <span class="c1"># very small circles look crap</span>
@@ -508,17 +590,22 @@
                 <span class="n">bands</span> <span class="o">=</span> <span class="n">bands</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
                 <span class="n">zorders</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">colours</span><span class="p">,</span> <span class="n">zorders</span><span class="p">):</span>
-                    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">bands</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">circle_size</span> <span class="o">*</span> <span class="n">w</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
-                               <span class="n">zorder</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">rasterized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                        <span class="n">distances</span><span class="p">,</span>
+                        <span class="n">bands</span><span class="p">,</span>
+                        <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
+                        <span class="n">s</span><span class="o">=</span><span class="n">circle_size</span> <span class="o">*</span> <span class="n">w</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="n">zorder</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+                        <span class="n">rasterized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
 
         <span class="c1"># plot the legend</span>
         <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">spec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">colours</span><span class="p">,</span> <span class="n">selection</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="n">spec</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot; + &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="o">-</span><span class="mi">10000</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">10000</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
-                       <span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot; + &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="o">-</span><span class="mi">10000</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">10000</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dos_plotter</span><span class="p">:</span>
             <span class="n">loc</span> <span class="o">=</span> <span class="mi">1</span>
@@ -527,44 +614,70 @@
             <span class="n">loc</span> <span class="o">=</span> <span class="mi">2</span>
             <span class="n">anchor_point</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="n">anchor_point</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                  <span class="n">handletextpad</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">scatterpoints</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
+            <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="n">anchor_point</span><span class="p">,</span>
+            <span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span>
+            <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">handletextpad</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">scatterpoints</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="c1"># finish and tidy plot</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_maketicks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_makeplot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">(),</span> <span class="n">data</span><span class="p">,</span> <span class="n">zero_to_efermi</span><span class="o">=</span><span class="n">zero_to_efermi</span><span class="p">,</span>
-                       <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">vbm_cbm_marker</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
-                       <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span>
-                       <span class="n">dos_plotter</span><span class="o">=</span><span class="n">dos_plotter</span><span class="p">,</span> <span class="n">dos_options</span><span class="o">=</span><span class="n">dos_options</span><span class="p">,</span>
-                       <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span> <span class="n">plot_dos_legend</span><span class="o">=</span><span class="n">plot_dos_legend</span><span class="p">,</span>
-                       <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_makeplot</span><span class="p">(</span>
+            <span class="n">ax</span><span class="p">,</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">(),</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">zero_to_efermi</span><span class="o">=</span><span class="n">zero_to_efermi</span><span class="p">,</span>
+            <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">vbm_cbm_marker</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+            <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span>
+            <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span>
+            <span class="n">dos_plotter</span><span class="o">=</span><span class="n">dos_plotter</span><span class="p">,</span>
+            <span class="n">dos_options</span><span class="o">=</span><span class="n">dos_options</span><span class="p">,</span>
+            <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span>
+            <span class="n">plot_dos_legend</span><span class="o">=</span><span class="n">plot_dos_legend</span><span class="p">,</span>
+            <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">plt</span></div>
 
-    <span class="k">def</span> <span class="nf">_makeplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                  <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span>
-                  <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">dos_plotter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dos_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">plot_dos_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                  <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_makeplot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">,</span>
+        <span class="n">fig</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">ymin</span><span class="o">=-</span><span class="mf">6.0</span><span class="p">,</span>
+        <span class="n">ymax</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
+        <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dos_plotter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dos_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">plot_dos_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Tidy the band structure &amp; add the density of states if required.&quot;&quot;&quot;</span>
         <span class="c1"># draw line at Fermi level if not zeroing to e-Fermi</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">zero_to_efermi</span><span class="p">:</span>
-            <span class="n">ytick_color</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;ytick.color&#39;</span><span class="p">]</span>
+            <span class="n">ytick_color</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;ytick.color&quot;</span><span class="p">]</span>
             <span class="n">ef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">efermi</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">ef</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">ytick_color</span><span class="p">)</span>
 
         <span class="c1"># set x and y limits</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">is_metal</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">zero_to_efermi</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">efermi</span> <span class="o">+</span> <span class="n">ymin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">.</span><span class="n">efermi</span> <span class="o">+</span> <span class="n">ymax</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">vbm_cbm_marker</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">cbm</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;cbm&#39;</span><span class="p">]:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">cbm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cbm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">vbm</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;vbm&#39;</span><span class="p">]:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">vbm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vbm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">cbm</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;cbm&quot;</span><span class="p">]:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">cbm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cbm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">vbm</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;vbm&quot;</span><span class="p">]:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">vbm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vbm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dos_plotter</span><span class="p">:</span>
             <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -572,17 +685,22 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">dos_options</span><span class="p">:</span>
                 <span class="n">dos_options</span> <span class="o">=</span> <span class="p">{}</span>
 
-            <span class="n">dos_options</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;xmin&#39;</span><span class="p">:</span> <span class="n">ymin</span><span class="p">,</span> <span class="s1">&#39;xmax&#39;</span><span class="p">:</span> <span class="n">ymax</span><span class="p">})</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_makedos</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">dos_plotter</span><span class="p">,</span> <span class="n">dos_options</span><span class="p">,</span> <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span>
-                          <span class="n">plot_legend</span><span class="o">=</span><span class="n">plot_dos_legend</span><span class="p">)</span>
+            <span class="n">dos_options</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;xmin&quot;</span><span class="p">:</span> <span class="n">ymin</span><span class="p">,</span> <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="n">ymax</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_makedos</span><span class="p">(</span>
+                <span class="n">ax</span><span class="p">,</span>
+                <span class="n">dos_plotter</span><span class="p">,</span>
+                <span class="n">dos_options</span><span class="p">,</span>
+                <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span>
+                <span class="n">plot_legend</span><span class="o">=</span><span class="n">plot_dos_legend</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># keep correct aspect ratio for axes based on canvas size</span>
             <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
             <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">width</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">width</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">height</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">height</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">aspect</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">aspect</span><span class="p">:</span>
@@ -590,60 +708,61 @@
 
                 <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="n">aspect</span> <span class="o">*</span> <span class="p">((</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span><span class="p">)))</span>
 
-    <span class="k">def</span> <span class="nf">_makedos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">dos_plotter</span><span class="p">,</span> <span class="n">dos_options</span><span class="p">,</span> <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">plot_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_makedos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">dos_plotter</span><span class="p">,</span> <span class="n">dos_options</span><span class="p">,</span> <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;This is basically the same as the SDOSPlotter get_plot function.&quot;&quot;&quot;</span>
 
         <span class="c1"># don&#39;t use first 4 colours; these are the band structure line colours</span>
-        <span class="n">cycle</span> <span class="o">=</span> <span class="n">cycler</span><span class="p">(</span>
-            <span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s1">&#39;color&#39;</span><span class="p">][</span><span class="mi">4</span><span class="p">:])</span>
-        <span class="k">with</span> <span class="n">context</span><span class="p">({</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">:</span> <span class="n">cycle</span><span class="p">}):</span>
+        <span class="n">cycle</span> <span class="o">=</span> <span class="n">cycler</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.prop_cycle&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s2">&quot;color&quot;</span><span class="p">][</span><span class="mi">4</span><span class="p">:])</span>
+        <span class="k">with</span> <span class="n">context</span><span class="p">({</span><span class="s2">&quot;axes.prop_cycle&quot;</span><span class="p">:</span> <span class="n">cycle</span><span class="p">}):</span>
             <span class="n">plot_data</span> <span class="o">=</span> <span class="n">dos_plotter</span><span class="o">.</span><span class="n">dos_plot_data</span><span class="p">(</span><span class="o">**</span><span class="n">dos_options</span><span class="p">)</span>
 
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">]</span>
-        <span class="n">energies</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;energies&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;lines&#39;</span><span class="p">]</span>
-        <span class="n">spins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;dens&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> \
-            <span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">,</span> <span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">]</span>
+        <span class="n">energies</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;energies&quot;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;lines&quot;</span><span class="p">]</span>
+        <span class="n">spins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;dens&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">,</span> <span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">]</span>
 
         <span class="c1"># disable y ticks for DOS panel</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">line_set</span> <span class="ow">in</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;lines&#39;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">line_set</span> <span class="ow">in</span> <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;lines&quot;</span><span class="p">]:</span>
             <span class="k">for</span> <span class="n">line</span><span class="p">,</span> <span class="n">spin</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">line_set</span><span class="p">,</span> <span class="n">spins</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">spin</span> <span class="o">==</span> <span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">:</span>
-                    <span class="n">label</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
-                    <span class="n">densities</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;dens&#39;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+                    <span class="n">densities</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;dens&quot;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                    <span class="n">densities</span> <span class="o">=</span> <span class="o">-</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;dens&#39;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">fill_betweenx</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">densities</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                 <span class="n">facecolor</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;colour&#39;</span><span class="p">],</span>
-                                 <span class="n">alpha</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">])</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">densities</span><span class="p">,</span> <span class="n">energies</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
-                        <span class="n">color</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;colour&#39;</span><span class="p">])</span>
+                    <span class="n">densities</span> <span class="o">=</span> <span class="o">-</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;dens&quot;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">fill_betweenx</span><span class="p">(</span>
+                    <span class="n">energies</span><span class="p">,</span>
+                    <span class="n">densities</span><span class="p">,</span>
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">facecolor</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;colour&quot;</span><span class="p">],</span>
+                    <span class="n">alpha</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">densities</span><span class="p">,</span> <span class="n">energies</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;colour&quot;</span><span class="p">])</span>
 
             <span class="c1"># x and y axis reversed versus normal dos plotting</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">dos_options</span><span class="p">[</span><span class="s1">&#39;xmin&#39;</span><span class="p">],</span> <span class="n">dos_options</span><span class="p">[</span><span class="s1">&#39;xmax&#39;</span><span class="p">])</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;ymin&#39;</span><span class="p">],</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;ymax&#39;</span><span class="p">])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">dos_options</span><span class="p">[</span><span class="s2">&quot;xmin&quot;</span><span class="p">],</span> <span class="n">dos_options</span><span class="p">[</span><span class="s2">&quot;xmax&quot;</span><span class="p">])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;ymin&quot;</span><span class="p">],</span> <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;ymax&quot;</span><span class="p">])</span>
 
             <span class="k">if</span> <span class="n">dos_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">dos_label</span><span class="p">)</span>
 
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([])</span>
         <span class="k">if</span> <span class="n">plot_legend</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_sanitise_label</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @&quot;&quot;&quot;</span>
 
         <span class="kn">import</span> <span class="nn">re</span>
-        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;^@.*$&#39;</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^@.*$&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;@+$&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;@+$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_sanitise_label_group</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">labelgroup</span><span class="p">):</span>
@@ -652,19 +771,19 @@
 <span class="sd">        Labels split with $\mid$ symbol will be treated for each part.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="sa">r</span><span class="s1">&#39;$\mid$&#39;</span> <span class="ow">in</span> <span class="n">labelgroup</span><span class="p">:</span>
-            <span class="n">label_components</span> <span class="o">=</span> <span class="n">labelgroup</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\mid$&#39;</span><span class="p">)</span>
-            <span class="n">good_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span>
-                           <span class="nb">map</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_sanitise_label</span><span class="p">,</span> <span class="n">label_components</span><span class="p">)</span>
-                           <span class="k">if</span> <span class="n">l</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">if</span> <span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span> <span class="ow">in</span> <span class="n">labelgroup</span><span class="p">:</span>
+            <span class="n">label_components</span> <span class="o">=</span> <span class="n">labelgroup</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span><span class="p">)</span>
+            <span class="n">good_labels</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_sanitise_label</span><span class="p">,</span> <span class="n">label_components</span><span class="p">)</span> <span class="k">if</span> <span class="n">l</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">]</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;$\mid$&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">good_labels</span><span class="p">)</span>
+                <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">good_labels</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_sanitise_label</span><span class="p">(</span><span class="n">labelgroup</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_maketicks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_maketicks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Utility method to add tick marks to a band structure.&quot;&quot;&quot;</span>
         <span class="c1"># set y-ticks</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span>
@@ -674,25 +793,26 @@
         <span class="n">ticks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ticks</span><span class="p">()</span>
         <span class="n">unique_d</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">unique_l</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">ticks</span><span class="p">[</span><span class="s1">&#39;distance&#39;</span><span class="p">]:</span>
-            <span class="n">temp_ticks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ticks</span><span class="p">[</span><span class="s1">&#39;distance&#39;</span><span class="p">],</span> <span class="n">ticks</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">ticks</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]:</span>
+            <span class="n">temp_ticks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ticks</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">],</span> <span class="n">ticks</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]))</span>
             <span class="n">unique_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">unique_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_ticks</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp_ticks</span><span class="p">)):</span>
                 <span class="c1"># Hide labels marked with @</span>
-                <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="s2">&quot;@&quot;</span> <span class="ow">in</span> <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
                     <span class="c1"># If a branch connection, check all parts of label</span>
-                    <span class="k">if</span> <span class="sa">r</span><span class="s1">&#39;$\mid$&#39;</span> <span class="ow">in</span> <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
-                        <span class="n">label_components</span> <span class="o">=</span> <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\mid$&#39;</span><span class="p">)</span>
-                        <span class="n">good_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">label_components</span>
-                                       <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;@&#39;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span> <span class="ow">in</span> <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">label_components</span> <span class="o">=</span> <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span><span class="p">)</span>
+                        <span class="n">good_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">label_components</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;@&quot;</span><span class="p">]</span>
                         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                             <span class="k">continue</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                                             <span class="sa">r</span><span class="s1">&#39;$\mid$&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">good_labels</span><span class="p">))</span>
+                            <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">good_labels</span><span class="p">),</span>
+                            <span class="p">)</span>
                     <span class="c1"># If a single label, check first character</span>
-                    <span class="k">elif</span> <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;@&#39;</span><span class="p">:</span>
+                    <span class="k">elif</span> <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;@&quot;</span><span class="p">:</span>
                         <span class="k">continue</span>
 
                 <span class="c1"># Append label to sequence if it is not same as predecessor</span>
@@ -700,9 +820,9 @@
                     <span class="n">unique_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
                     <span class="n">unique_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
 
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Label positions:&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Label positions:&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">dist</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">unique_d</span><span class="p">,</span> <span class="n">unique_l</span><span class="p">)):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">{:.4f}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">label</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:.4f}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">label</span><span class="p">))</span>
 
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">unique_d</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">unique_l</span><span class="p">)</span>

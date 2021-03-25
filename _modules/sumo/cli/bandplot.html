@@ -39,32 +39,32 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
-<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">Requirement</span><span class="p">,</span> <span class="n">resource_filename</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
-<span class="kn">from</span> <span class="nn">pymatgen.io.vasp.outputs</span> <span class="kn">import</span> <span class="n">BSVasprun</span>
-<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Spin</span>
-<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.bandstructure</span> <span class="kn">import</span> \
-    <span class="n">get_reconstructed_band_structure</span>
-
 <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
-<span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Agg&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">Requirement</span><span class="p">,</span> <span class="n">resource_filename</span>
+<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.bandstructure</span> <span class="kn">import</span> <span class="n">get_reconstructed_band_structure</span>
+<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Spin</span>
+<span class="kn">from</span> <span class="nn">pymatgen.io.vasp.outputs</span> <span class="kn">import</span> <span class="n">BSVasprun</span>
 
-<span class="kn">from</span> <span class="nn">sumo.io.questaal</span> <span class="kn">import</span> <span class="n">QuestaalSite</span><span class="p">,</span> <span class="n">labels_from_syml</span>
-<span class="kn">from</span> <span class="nn">sumo.io.questaal</span> <span class="kn">import</span> <span class="n">band_structure</span> <span class="k">as</span> <span class="n">questaal_band_structure</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">sumo.cli.dosplot</span> <span class="kn">import</span> <span class="n">_atoms</span><span class="p">,</span> <span class="n">_el_orb</span>
+<span class="kn">from</span> <span class="nn">sumo.electronic_structure.bandstructure</span> <span class="kn">import</span> <span class="n">string_to_spin</span>
+<span class="kn">from</span> <span class="nn">sumo.electronic_structure.dos</span> <span class="kn">import</span> <span class="n">load_dos</span>
 <span class="kn">from</span> <span class="nn">sumo.io.castep</span> <span class="kn">import</span> <span class="n">band_structure</span> <span class="k">as</span> <span class="n">castep_band_structure</span>
 <span class="kn">from</span> <span class="nn">sumo.io.castep</span> <span class="kn">import</span> <span class="n">read_dos</span> <span class="k">as</span> <span class="n">read_castep_dos</span>
+<span class="kn">from</span> <span class="nn">sumo.io.questaal</span> <span class="kn">import</span> <span class="n">QuestaalSite</span>
+<span class="kn">from</span> <span class="nn">sumo.io.questaal</span> <span class="kn">import</span> <span class="n">band_structure</span> <span class="k">as</span> <span class="n">questaal_band_structure</span>
+<span class="kn">from</span> <span class="nn">sumo.io.questaal</span> <span class="kn">import</span> <span class="n">labels_from_syml</span>
 <span class="kn">from</span> <span class="nn">sumo.plotting.bs_plotter</span> <span class="kn">import</span> <span class="n">SBSPlotter</span>
 <span class="kn">from</span> <span class="nn">sumo.plotting.dos_plotter</span> <span class="kn">import</span> <span class="n">SDOSPlotter</span>
-<span class="kn">from</span> <span class="nn">sumo.electronic_structure.dos</span> <span class="kn">import</span> <span class="n">load_dos</span>
-<span class="kn">from</span> <span class="nn">sumo.electronic_structure.bandstructure</span> <span class="kn">import</span> <span class="n">string_to_spin</span>
-<span class="kn">from</span> <span class="nn">sumo.cli.dosplot</span> <span class="kn">import</span> <span class="n">_atoms</span><span class="p">,</span> <span class="n">_el_orb</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">configparser</span>
@@ -78,17 +78,43 @@
 <span class="n">__date__</span> <span class="o">=</span> <span class="s2">&quot;July 18, 2017&quot;</span>
 
 
-<div class="viewcode-block" id="bandplot"><a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.bandplot.bandplot">[docs]</a><span class="k">def</span> <span class="nf">bandplot</span><span class="p">(</span><span class="n">filenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="s1">&#39;vasp&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">projection_selection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span>
-             <span class="n">normalise</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-             <span class="n">interpolate_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">circle_size</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">dos_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">cart_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">scissor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">,</span> <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">elements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">total_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_cutoff</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">gaussian</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-             <span class="n">image_format</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="bandplot"><a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.bandplot.bandplot">[docs]</a><span class="k">def</span> <span class="nf">bandplot</span><span class="p">(</span>
+    <span class="n">filenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">code</span><span class="o">=</span><span class="s2">&quot;vasp&quot;</span><span class="p">,</span>
+    <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">projection_selection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rgb&quot;</span><span class="p">,</span>
+    <span class="n">normalise</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">interpolate_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">circle_size</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+    <span class="n">dos_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cart_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">scissor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">,</span>
+    <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">elements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">total_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">plot_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">legend_cutoff</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">gaussian</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ymin</span><span class="o">=-</span><span class="mf">6.0</span><span class="p">,</span>
+    <span class="n">ymax</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
+    <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">image_format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
+    <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+    <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plot electronic band structure diagrams from vasprun.xml files.</span>
 
 <span class="sd">    Args:</span>
@@ -275,66 +301,73 @@
     <span class="c1"># now load all the band structure data and combine using the</span>
     <span class="c1"># get_reconstructed_band_structure function from pymatgen</span>
     <span class="n">bandstructures</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="s1">&#39;vasp&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;vasp&quot;</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">vr_file</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
             <span class="n">vr</span> <span class="o">=</span> <span class="n">BSVasprun</span><span class="p">(</span><span class="n">vr_file</span><span class="p">,</span> <span class="n">parse_projected_eigen</span><span class="o">=</span><span class="n">parse_projected</span><span class="p">)</span>
             <span class="n">bs</span> <span class="o">=</span> <span class="n">vr</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">(</span><span class="n">line_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">bandstructures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
         <span class="n">bs</span> <span class="o">=</span> <span class="n">get_reconstructed_band_structure</span><span class="p">(</span><span class="n">bandstructures</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="s1">&#39;castep&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;castep&quot;</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">bands_file</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-            <span class="n">cell_file</span> <span class="o">=</span> <span class="n">_replace_ext</span><span class="p">(</span><span class="n">bands_file</span><span class="p">,</span> <span class="s1">&#39;cell&#39;</span><span class="p">)</span>
+            <span class="n">cell_file</span> <span class="o">=</span> <span class="n">_replace_ext</span><span class="p">(</span><span class="n">bands_file</span><span class="p">,</span> <span class="s2">&quot;cell&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cell_file</span><span class="p">):</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Found cell file </span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_file</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found cell file </span><span class="si">{}</span><span class="s2">...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_file</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Did not find cell file </span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_file</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Did not find cell file </span><span class="si">{}</span><span class="s2">...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_file</span><span class="p">))</span>
                 <span class="n">cell_file</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">bs</span> <span class="o">=</span> <span class="n">castep_band_structure</span><span class="p">(</span><span class="n">bands_file</span><span class="p">,</span> <span class="n">cell_file</span><span class="o">=</span><span class="n">cell_file</span><span class="p">)</span>
             <span class="n">bandstructures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
         <span class="n">bs</span> <span class="o">=</span> <span class="n">get_reconstructed_band_structure</span><span class="p">(</span><span class="n">bandstructures</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="s1">&#39;questaal&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;questaal&quot;</span><span class="p">:</span>
         <span class="n">bnds_file</span> <span class="o">=</span> <span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">ext</span> <span class="o">=</span> <span class="n">bnds_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">bnds_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">bnds_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bnds_file</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">)</span>
 
-        <span class="n">site_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bnds_folder</span><span class="p">,</span> <span class="s1">&#39;site.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">)))</span>
+        <span class="n">site_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bnds_folder</span><span class="p">,</span> <span class="s2">&quot;site.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">)))</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">site_file</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;site file found, reading lattice...&#39;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;site file found, reading lattice...&quot;</span><span class="p">)</span>
             <span class="n">site_data</span> <span class="o">=</span> <span class="n">QuestaalSite</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">site_file</span><span class="p">)</span>
             <span class="n">bnds_lattice</span> <span class="o">=</span> <span class="n">site_data</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span>
             <span class="n">alat</span> <span class="o">=</span> <span class="n">site_data</span><span class="o">.</span><span class="n">alat</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Site file </span><span class="si">{}</span><span class="s1"> not found: &#39;</span>
-                          <span class="s1">&#39;needed to determine lattice&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">site_file</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+                <span class="s2">&quot;Site file </span><span class="si">{}</span><span class="s2"> not found: &quot;</span>
+                <span class="s2">&quot;needed to determine lattice&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">site_file</span><span class="p">)</span>
+            <span class="p">)</span>
 
-        <span class="n">syml_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bnds_folder</span><span class="p">,</span> <span class="s1">&#39;syml.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">)))</span>
+        <span class="n">syml_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bnds_folder</span><span class="p">,</span> <span class="s2">&quot;syml.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">)))</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">syml_file</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;syml file found, reading special-point labels...&#39;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;syml file found, reading special-point labels...&quot;</span><span class="p">)</span>
             <span class="n">bnds_labels</span> <span class="o">=</span> <span class="n">labels_from_syml</span><span class="p">(</span><span class="n">syml_file</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;syml file not found, band structure lacks labels&#39;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;syml file not found, band structure lacks labels&quot;</span><span class="p">)</span>
             <span class="n">bnds_labels</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="n">bs</span> <span class="o">=</span> <span class="n">questaal_band_structure</span><span class="p">(</span><span class="n">bnds_file</span><span class="p">,</span> <span class="n">bnds_lattice</span><span class="p">,</span> <span class="n">alat</span><span class="o">=</span><span class="n">alat</span><span class="p">,</span>
-                                     <span class="n">labels</span><span class="o">=</span><span class="n">bnds_labels</span><span class="p">,</span>
-                                     <span class="n">coords_are_cartesian</span><span class="o">=</span><span class="n">cart_coords</span><span class="p">)</span>
+        <span class="n">bs</span> <span class="o">=</span> <span class="n">questaal_band_structure</span><span class="p">(</span>
+            <span class="n">bnds_file</span><span class="p">,</span>
+            <span class="n">bnds_lattice</span><span class="p">,</span>
+            <span class="n">alat</span><span class="o">=</span><span class="n">alat</span><span class="p">,</span>
+            <span class="n">labels</span><span class="o">=</span><span class="n">bnds_labels</span><span class="p">,</span>
+            <span class="n">coords_are_cartesian</span><span class="o">=</span><span class="n">cart_coords</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># currently not supported as it is a pain to make subplots within subplots,</span>
     <span class="c1"># although need to check this is still the case</span>
-    <span class="k">if</span> <span class="s1">&#39;split&#39;</span> <span class="ow">in</span> <span class="n">mode</span> <span class="ow">and</span> <span class="n">dos_file</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: Plotting split projected band structure with DOS&#39;</span>
-                      <span class="s1">&#39; not supported.</span><span class="se">\n</span><span class="s1">Please use --projected-rgb or &#39;</span>
-                      <span class="s1">&#39;--projected-stacked options.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;split&quot;</span> <span class="ow">in</span> <span class="n">mode</span> <span class="ow">and</span> <span class="n">dos_file</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;ERROR: Plotting split projected band structure with DOS&quot;</span>
+            <span class="s2">&quot; not supported.</span><span class="se">\n</span><span class="s2">Please use --projected-rgb or &quot;</span>
+            <span class="s2">&quot;--projected-stacked options.&quot;</span>
+        <span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">projection_selection</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;rgb&#39;</span>
-            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">projection_selection</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">):</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: RGB projected band structure only &#39;</span>
-                      <span class="s1">&#39;supports up to 3 elements/orbitals.&#39;</span>
-                      <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Use alternative --mode setting.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">projection_selection</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;rgb&quot;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">projection_selection</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;ERROR: RGB projected band structure only &quot;</span>
+            <span class="s2">&quot;supports up to 3 elements/orbitals.&quot;</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Use alternative --mode setting.&quot;</span>
+        <span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
     <span class="c1"># don&#39;t save if pyplot object provided</span>
@@ -343,33 +376,44 @@
     <span class="n">dos_plotter</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">dos_opts</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">dos_file</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="s1">&#39;vasp&#39;</span><span class="p">:</span>
-            <span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span> <span class="o">=</span> <span class="n">load_dos</span><span class="p">(</span><span class="n">dos_file</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="p">,</span>
-                                 <span class="n">atoms</span><span class="p">,</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">total_only</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="s1">&#39;castep&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;vasp&quot;</span><span class="p">:</span>
+            <span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span> <span class="o">=</span> <span class="n">load_dos</span><span class="p">(</span>
+                <span class="n">dos_file</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">total_only</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;castep&quot;</span><span class="p">:</span>
             <span class="n">pdos_file</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">cell_file</span><span class="p">:</span>
-                <span class="n">pdos_file</span> <span class="o">=</span> <span class="n">_replace_ext</span><span class="p">(</span><span class="n">cell_file</span><span class="p">,</span> <span class="s1">&#39;pdos_bin&#39;</span><span class="p">)</span>
+                <span class="n">pdos_file</span> <span class="o">=</span> <span class="n">_replace_ext</span><span class="p">(</span><span class="n">cell_file</span><span class="p">,</span> <span class="s2">&quot;pdos_bin&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">pdos_file</span><span class="p">):</span>
                     <span class="n">pdos_file</span> <span class="o">=</span> <span class="kc">None</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PDOS file </span><span class="si">{</span><span class="n">pdos_file</span><span class="si">}</span><span class="s2"> does not exist, &quot;</span>
-                                 <span class="s2">&quot;falling back to TDOS.&quot;</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;PDOS file </span><span class="si">{</span><span class="n">pdos_file</span><span class="si">}</span><span class="s2"> does not exist, &quot;</span>
+                        <span class="s2">&quot;falling back to TDOS.&quot;</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found PDOS file </span><span class="si">{</span><span class="n">pdos_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cell file </span><span class="si">{</span><span class="n">cell_file</span><span class="si">}</span><span class="s2"> does not exist, &quot;</span>
-                             <span class="s2">&quot;cannot plot PDOS.&quot;</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Cell file </span><span class="si">{</span><span class="n">cell_file</span><span class="si">}</span><span class="s2"> does not exist, &quot;</span> <span class="s2">&quot;cannot plot PDOS.&quot;</span>
+                <span class="p">)</span>
 
-            <span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span> <span class="o">=</span> <span class="n">read_castep_dos</span><span class="p">(</span><span class="n">dos_file</span><span class="p">,</span> <span class="n">pdos_file</span><span class="o">=</span><span class="n">pdos_file</span><span class="p">,</span>
-                                        <span class="n">cell_file</span><span class="o">=</span><span class="n">cell_file</span><span class="p">,</span>
-                                        <span class="n">gaussian</span><span class="o">=</span><span class="n">gaussian</span><span class="p">,</span>
-                                        <span class="n">lm_orbitals</span><span class="o">=</span><span class="n">lm_orbitals</span><span class="p">,</span>
-                                        <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span>
-                                        <span class="n">efermi_to_vbm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span> <span class="o">=</span> <span class="n">read_castep_dos</span><span class="p">(</span>
+                <span class="n">dos_file</span><span class="p">,</span>
+                <span class="n">pdos_file</span><span class="o">=</span><span class="n">pdos_file</span><span class="p">,</span>
+                <span class="n">cell_file</span><span class="o">=</span><span class="n">cell_file</span><span class="p">,</span>
+                <span class="n">gaussian</span><span class="o">=</span><span class="n">gaussian</span><span class="p">,</span>
+                <span class="n">lm_orbitals</span><span class="o">=</span><span class="n">lm_orbitals</span><span class="p">,</span>
+                <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span>
+                <span class="n">efermi_to_vbm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="n">dos_plotter</span> <span class="o">=</span> <span class="n">SDOSPlotter</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span><span class="p">)</span>
-        <span class="n">dos_opts</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;plot_total&#39;</span><span class="p">:</span> <span class="n">plot_total</span><span class="p">,</span> <span class="s1">&#39;legend_cutoff&#39;</span><span class="p">:</span> <span class="n">legend_cutoff</span><span class="p">,</span>
-                    <span class="s1">&#39;colours&#39;</span><span class="p">:</span> <span class="n">colours</span><span class="p">,</span> <span class="s1">&#39;yscale&#39;</span><span class="p">:</span> <span class="n">yscale</span><span class="p">}</span>
+        <span class="n">dos_opts</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;plot_total&quot;</span><span class="p">:</span> <span class="n">plot_total</span><span class="p">,</span>
+            <span class="s2">&quot;legend_cutoff&quot;</span><span class="p">:</span> <span class="n">legend_cutoff</span><span class="p">,</span>
+            <span class="s2">&quot;colours&quot;</span><span class="p">:</span> <span class="n">colours</span><span class="p">,</span>
+            <span class="s2">&quot;yscale&quot;</span><span class="p">:</span> <span class="n">yscale</span><span class="p">,</span>
+        <span class="p">}</span>
 
     <span class="k">if</span> <span class="n">scissor</span><span class="p">:</span>
         <span class="n">bs</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">apply_scissor</span><span class="p">(</span><span class="n">scissor</span><span class="p">)</span>
@@ -378,32 +422,55 @@
     <span class="n">plotter</span> <span class="o">=</span> <span class="n">SBSPlotter</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">projection_selection</span><span class="p">:</span>
         <span class="n">plt</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_projected_plot</span><span class="p">(</span>
-            <span class="n">projection_selection</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">normalise</span><span class="o">=</span><span class="n">normalise</span><span class="p">,</span>
-            <span class="n">interpolate_factor</span><span class="o">=</span><span class="n">interpolate_factor</span><span class="p">,</span> <span class="n">circle_size</span><span class="o">=</span><span class="n">circle_size</span><span class="p">,</span>
-            <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
-            <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">vbm_cbm_marker</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">,</span>
-            <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">,</span> <span class="n">dos_plotter</span><span class="o">=</span><span class="n">dos_plotter</span><span class="p">,</span> <span class="n">dos_options</span><span class="o">=</span><span class="n">dos_opts</span><span class="p">,</span>
-            <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="n">fonts</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
-            <span class="n">no_base_style</span><span class="o">=</span><span class="n">no_base_style</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+            <span class="n">projection_selection</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+            <span class="n">normalise</span><span class="o">=</span><span class="n">normalise</span><span class="p">,</span>
+            <span class="n">interpolate_factor</span><span class="o">=</span><span class="n">interpolate_factor</span><span class="p">,</span>
+            <span class="n">circle_size</span><span class="o">=</span><span class="n">circle_size</span><span class="p">,</span>
+            <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span>
+            <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+            <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">vbm_cbm_marker</span><span class="p">,</span>
+            <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">,</span>
+            <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">,</span>
+            <span class="n">dos_plotter</span><span class="o">=</span><span class="n">dos_plotter</span><span class="p">,</span>
+            <span class="n">dos_options</span><span class="o">=</span><span class="n">dos_opts</span><span class="p">,</span>
+            <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span>
+            <span class="n">fonts</span><span class="o">=</span><span class="n">fonts</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
+            <span class="n">no_base_style</span><span class="o">=</span><span class="n">no_base_style</span><span class="p">,</span>
+            <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">plt</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_plot</span><span class="p">(</span>
-            <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
-            <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">vbm_cbm_marker</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">,</span>
-            <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">,</span> <span class="n">dos_plotter</span><span class="o">=</span><span class="n">dos_plotter</span><span class="p">,</span> <span class="n">dos_options</span><span class="o">=</span><span class="n">dos_opts</span><span class="p">,</span>
-            <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="n">fonts</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
-            <span class="n">no_base_style</span><span class="o">=</span><span class="n">no_base_style</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+            <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span>
+            <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+            <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">vbm_cbm_marker</span><span class="p">,</span>
+            <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">,</span>
+            <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">,</span>
+            <span class="n">dos_plotter</span><span class="o">=</span><span class="n">dos_plotter</span><span class="p">,</span>
+            <span class="n">dos_options</span><span class="o">=</span><span class="n">dos_opts</span><span class="p">,</span>
+            <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span>
+            <span class="n">fonts</span><span class="o">=</span><span class="n">fonts</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
+            <span class="n">no_base_style</span><span class="o">=</span><span class="n">no_base_style</span><span class="p">,</span>
+            <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">save_files</span><span class="p">:</span>
-        <span class="n">basename</span> <span class="o">=</span> <span class="s1">&#39;band.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image_format</span><span class="p">)</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="n">basename</span>
+        <span class="n">basename</span> <span class="o">=</span> <span class="s2">&quot;band.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image_format</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="n">basename</span>
         <span class="k">if</span> <span class="n">directory</span><span class="p">:</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">image_format</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span>
-                    <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">image_format</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
 
         <span class="n">written</span> <span class="o">=</span> <span class="p">[</span><span class="n">filename</span><span class="p">]</span>
-        <span class="n">written</span> <span class="o">+=</span> <span class="n">save_data_files</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
-                                   <span class="n">directory</span><span class="o">=</span><span class="n">directory</span><span class="p">)</span>
+        <span class="n">written</span> <span class="o">+=</span> <span class="n">save_data_files</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">directory</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">written</span>
 
     <span class="k">else</span><span class="p">:</span>
@@ -421,20 +488,20 @@
 <span class="sd">    The split folder names should always be zero based, therefore easily</span>
 <span class="sd">    sortable.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">folders</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;split-*&#39;</span><span class="p">)</span>
-    <span class="n">folders</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">folders</span><span class="p">)</span> <span class="k">if</span> <span class="n">folders</span> <span class="k">else</span> <span class="p">[</span><span class="s1">&#39;.&#39;</span><span class="p">]</span>
+    <span class="n">folders</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;split-*&quot;</span><span class="p">)</span>
+    <span class="n">folders</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">folders</span><span class="p">)</span> <span class="k">if</span> <span class="n">folders</span> <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">]</span>
 
     <span class="n">filenames</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">fol</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">:</span>
-        <span class="n">vr_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fol</span><span class="p">,</span> <span class="s1">&#39;vasprun.xml&#39;</span><span class="p">)</span>
-        <span class="n">vr_file_gz</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fol</span><span class="p">,</span> <span class="s1">&#39;vasprun.xml.gz&#39;</span><span class="p">)</span>
+        <span class="n">vr_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fol</span><span class="p">,</span> <span class="s2">&quot;vasprun.xml&quot;</span><span class="p">)</span>
+        <span class="n">vr_file_gz</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fol</span><span class="p">,</span> <span class="s2">&quot;vasprun.xml.gz&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">vr_file</span><span class="p">):</span>
             <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vr_file</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">vr_file_gz</span><span class="p">):</span>
             <span class="n">filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vr_file_gz</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: No vasprun.xml found in </span><span class="si">{}</span><span class="s1">!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fol</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: No vasprun.xml found in </span><span class="si">{}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fol</span><span class="p">))</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">filenames</span></div>
@@ -451,31 +518,31 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        The filename of the written data file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_band.dat&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="s1">&#39;band.dat&#39;</span>
-    <span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span> <span class="k">if</span> <span class="n">directory</span> <span class="k">else</span> <span class="s1">&#39;.&#39;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_band.dat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="s2">&quot;band.dat&quot;</span>
+    <span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span> <span class="k">if</span> <span class="n">directory</span> <span class="k">else</span> <span class="s2">&quot;.&quot;</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">bs</span><span class="o">.</span><span class="n">is_metal</span><span class="p">():</span>
         <span class="n">zero</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">efermi</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">zero</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span>
+        <span class="n">zero</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="s1">&#39;#k-distance eigenvalue[eV]</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;#k-distance eigenvalue[eV]</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
         <span class="c1"># write the spin up eigenvalues</span>
         <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">]:</span>
             <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bs</span><span class="o">.</span><span class="n">distance</span><span class="p">,</span> <span class="n">band</span><span class="p">):</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:.8f}</span><span class="s1"> </span><span class="si">{:.8f}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">e</span> <span class="o">-</span> <span class="n">zero</span><span class="p">))</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.8f}</span><span class="s2"> </span><span class="si">{:.8f}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">e</span> <span class="o">-</span> <span class="n">zero</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># calculation is spin polarised, write spin down bands at end of file</span>
         <span class="k">if</span> <span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">]:</span>
                 <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bs</span><span class="o">.</span><span class="n">distance</span><span class="p">,</span> <span class="n">band</span><span class="p">):</span>
-                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:.8f}</span><span class="s1"> </span><span class="si">{:.8f}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">e</span> <span class="o">-</span> <span class="n">zero</span><span class="p">))</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.8f}</span><span class="s2"> </span><span class="si">{:.8f}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">e</span> <span class="o">-</span> <span class="n">zero</span><span class="p">))</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">filename</span></div>
 
 
@@ -496,8 +563,8 @@
 <span class="sd">            `[(&#39;Sn&#39;, (&#39;s&#39;, &#39;p&#39;)), &#39;O&#39;]`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">el_orbs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">):</span>
-        <span class="n">splits</span> <span class="o">=</span> <span class="n">split</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">):</span>
+        <span class="n">splits</span> <span class="o">=</span> <span class="n">split</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
         <span class="n">el</span> <span class="o">=</span> <span class="n">splits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">el_orbs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
@@ -517,149 +584,285 @@
 <span class="sd">        A string with files extension replaced by new_ext</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">new_ext</span>
+    <span class="k">return</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">new_ext</span>
 
 
 <span class="k">def</span> <span class="nf">_get_parser</span><span class="p">():</span>
-    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    bandplot is a script to produce publication-ready band</span>
 <span class="s2">    structure diagrams&quot;&quot;&quot;</span><span class="p">,</span>
-                                     <span class="n">epilog</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    Author: </span><span class="si">{}</span><span class="s2"></span>
 <span class="s2">    Version: </span><span class="si">{}</span><span class="s2"></span>
-<span class="s2">    Last updated: </span><span class="si">{}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__author__</span><span class="p">,</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__date__</span><span class="p">))</span>
+<span class="s2">    Last updated: </span><span class="si">{}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">__author__</span><span class="p">,</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__date__</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="s1">&#39;--filenames&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-                        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;one or more vasprun.xml files to plot&quot;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--code&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;vasp&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Electronic structure code (default: vasp).&#39;</span>
-                             <span class="s1">&#39;&quot;questaal&quot; also supported.&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="s1">&#39;--prefix&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;P&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;prefix for the files generated&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;--directory&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;output directory for files&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="s1">&#39;--band-edges&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;band_edges&#39;</span><span class="p">,</span>
-                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;highlight the band edges with markers&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--project&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;S&#39;</span><span class="p">,</span>
-                        <span class="nb">type</span><span class="o">=</span><span class="n">_el_orb_tuple</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;projection_selection&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;select which orbitals to project onto the band &#39;</span>
-                              <span class="s1">&#39;structure (e.g. &quot;Zn.s,Zn.p,O&quot;)&#39;</span><span class="p">))</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--mode&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;rgb&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;mode for orbital projections (options: rgb, &#39;</span>
-                              <span class="s1">&#39;stacked)&#39;</span><span class="p">))</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--normalise&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;how to normalise projections (options: all, &#39;</span>
-                              <span class="s1">&#39;select)&#39;</span><span class="p">))</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--interpolate-factor&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;interpolate_factor&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;interpolate factor for band structure &#39;</span>
-                              <span class="s1">&#39;projections (default: 4)&#39;</span><span class="p">))</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--cartesian&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Read cartesian k-point coordinates. This is only&#39;</span>
-                             <span class="s1">&#39; necessary for some Questaal calculations; Vasp &#39;</span>
-                             <span class="s1">&#39;outputs are less ambiguous and this option will &#39;</span>
-                             <span class="s1">&#39;be ignored if --code=vasp.&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--circle-size&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
-                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;circle_size&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;S&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;circle size for &quot;stacked&quot; projections &#39;</span>
-                              <span class="s1">&#39;(default: 150)&#39;</span><span class="p">))</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--ylabel&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;y-axis (i.e. energy) label/units&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--dos-label&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;dos_label&#39;</span><span class="p">,</span>
-                        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Axis label for DOS if included&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--dos&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;path to density of states vasprun.xml&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--elements&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">_el_orb</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;E&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;elemental orbitals to plot (e.g. &quot;C.s.p,O&quot;)&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--orbitals&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">_el_orb</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;O&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;orbitals to split into lm-decomposed &#39;</span>
-                              <span class="s1">&#39;contributions (e.g. &quot;Ru.d&quot;)&#39;</span><span class="p">))</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--atoms&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">_atoms</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;atoms to include (e.g. &quot;O.1.2.3,Ru.1.2.3&quot;)&#39;</span><span class="p">))</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--spin&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;select only one spin channel for a &#39;</span>
-                              <span class="s1">&#39;spin-polarised calculation &#39;</span>
-                              <span class="s1">&#39;(options: up, 1; down, -1)&#39;</span><span class="p">))</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--scissor&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;scissor&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;apply scissor operator&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--total-only&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;total_only&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;only plot the total density of states&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--no-total&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;total&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;don</span><span class="se">\&#39;</span><span class="s1">t plot the total density of states&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--legend-cutoff&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;legend_cutoff&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;cut-off in </span><span class="si">%%</span><span class="s1"> of total DOS that determines if&#39;</span>
-                              <span class="s1">&#39; a line is given a label (default: 3)&#39;</span><span class="p">))</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-g&#39;</span><span class="p">,</span> <span class="s1">&#39;--gaussian&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;G&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;standard deviation of DOS gaussian broadening&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--scale&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;scaling factor for the density of states&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--height&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;height of the graph&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--width&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;width of the graph&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--ymin&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;minimum energy on the y-axis&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--ymax&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;maximum energy on the y-axis&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--style&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;matplotlib style specifications&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--no-base-style&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
-                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;no_base_style&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;prevent use of sumo base style&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--config&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;colour configuration file&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--format&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span>
-                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;image_format&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;FORMAT&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;image file format (options: pdf, svg, jpg, png)&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--dpi&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;pixel density for image file&#39;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--font&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;font to use&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--filenames&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;one or more vasprun.xml files to plot&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--code&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;vasp&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Electronic structure code (default: vasp).&quot;</span> <span class="s1">&#39;&quot;questaal&quot; also supported.&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--prefix&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;prefix for the files generated&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--directory&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output directory for files&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-b&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--band-edges&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;band_edges&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;highlight the band edges with markers&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--project&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;S&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">_el_orb_tuple</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;projection_selection&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;select which orbitals to project onto the band &quot;</span>
+            <span class="s1">&#39;structure (e.g. &quot;Zn.s,Zn.p,O&quot;)&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--mode&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;rgb&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;mode for orbital projections (options: rgb, &quot;</span> <span class="s2">&quot;stacked)&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--normalise&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;how to normalise projections (options: all, &quot;</span> <span class="s2">&quot;select)&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--interpolate-factor&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;interpolate_factor&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;interpolate factor for band structure &quot;</span> <span class="s2">&quot;projections (default: 4)&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--cartesian&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Read cartesian k-point coordinates. This is only&quot;</span>
+        <span class="s2">&quot; necessary for some Questaal calculations; Vasp &quot;</span>
+        <span class="s2">&quot;outputs are less ambiguous and this option will &quot;</span>
+        <span class="s2">&quot;be ignored if --code=vasp.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--circle-size&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;circle_size&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;S&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;circle size for &quot;stacked&quot; projections &#39;</span> <span class="s2">&quot;(default: 150)&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--ylabel&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;y-axis (i.e. energy) label/units&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--dos-label&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;dos_label&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Axis label for DOS if included&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--dos&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to density of states vasprun.xml&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--elements&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">_el_orb</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;E&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;elemental orbitals to plot (e.g. &quot;C.s.p,O&quot;)&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--orbitals&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">_el_orb</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;O&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;orbitals to split into lm-decomposed &quot;</span> <span class="s1">&#39;contributions (e.g. &quot;Ru.d&quot;)&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--atoms&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">_atoms</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;atoms to include (e.g. &quot;O.1.2.3,Ru.1.2.3&quot;)&#39;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--spin&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;select only one spin channel for a &quot;</span>
+            <span class="s2">&quot;spin-polarised calculation &quot;</span>
+            <span class="s2">&quot;(options: up, 1; down, -1)&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--scissor&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;scissor&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;apply scissor operator&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--total-only&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;total_only&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;only plot the total density of states&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--no-total&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_false&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;total&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t plot the total density of states&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--legend-cutoff&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;legend_cutoff&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;cut-off in </span><span class="si">%%</span><span class="s2"> of total DOS that determines if&quot;</span>
+            <span class="s2">&quot; a line is given a label (default: 3)&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-g&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--gaussian&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;G&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;standard deviation of DOS gaussian broadening&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--scale&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;scaling factor for the density of states&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--height&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;height of the graph&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--width&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;width of the graph&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--ymin&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=-</span><span class="mf">6.0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;minimum energy on the y-axis&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--ymax&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;maximum energy on the y-axis&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--style&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;matplotlib style specifications&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--no-base-style&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;no_base_style&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;prevent use of sumo base style&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;colour configuration file&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--format&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;image_format&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FORMAT&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;image file format (options: pdf, svg, jpg, png)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--dpi&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;pixel density for image file&quot;</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--font&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;font to use&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span>
 
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">_get_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;sumo-bandplot.log&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
-                        <span class="n">filemode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;sumo-bandplot.log&quot;</span><span class="p">,</span>
+        <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+        <span class="n">filemode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">console</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[:]))</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">config_path</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="n">Requirement</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s1">&#39;sumo&#39;</span><span class="p">),</span>
-                                        <span class="s1">&#39;sumo.plotting/orbital_colours.conf&#39;</span><span class="p">)</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span>
+            <span class="n">Requirement</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;sumo&quot;</span><span class="p">),</span> <span class="s2">&quot;sumo.plotting/orbital_colours.conf&quot;</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">config_path</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span>
     <span class="n">colours</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
     <span class="n">colours</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">config_path</span><span class="p">))</span>
 
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span>
-                            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">)</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UnicodeWarning</span><span class="p">,</span>
-                            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">)</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span>
-                            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;pymatgen&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UnicodeWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;pymatgen&quot;</span><span class="p">)</span>
 
-    <span class="n">bandplot</span><span class="p">(</span><span class="n">filenames</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
-             <span class="n">directory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">band_edges</span><span class="p">,</span>
-             <span class="n">projection_selection</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">projection_selection</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
-             <span class="n">normalise</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">normalise</span><span class="p">,</span>
-             <span class="n">interpolate_factor</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">interpolate_factor</span><span class="p">,</span>
-             <span class="n">cart_coords</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cartesian</span><span class="p">,</span> <span class="n">scissor</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scissor</span><span class="p">,</span>
-             <span class="n">circle_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">circle_size</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
-             <span class="n">ylabel</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ylabel</span><span class="p">,</span> <span class="n">dos_label</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dos_label</span><span class="p">,</span>
-             <span class="n">dos_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dos</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span>
-             <span class="n">lm_orbitals</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">orbitals</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">spin</span><span class="p">,</span>
-             <span class="n">total_only</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">total_only</span><span class="p">,</span> <span class="n">plot_total</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">total</span><span class="p">,</span>
-             <span class="n">legend_cutoff</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">legend_cutoff</span><span class="p">,</span> <span class="n">gaussian</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">gaussian</span><span class="p">,</span>
-             <span class="n">height</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span>
-             <span class="n">style</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">style</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">no_base_style</span><span class="p">,</span>
-             <span class="n">ymax</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ymax</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span> <span class="n">image_format</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">image_format</span><span class="p">,</span>
-             <span class="n">dpi</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">font</span><span class="p">)</span>
+    <span class="n">bandplot</span><span class="p">(</span>
+        <span class="n">filenames</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span>
+        <span class="n">code</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span>
+        <span class="n">directory</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span>
+        <span class="n">vbm_cbm_marker</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">band_edges</span><span class="p">,</span>
+        <span class="n">projection_selection</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">projection_selection</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">normalise</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">normalise</span><span class="p">,</span>
+        <span class="n">interpolate_factor</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">interpolate_factor</span><span class="p">,</span>
+        <span class="n">cart_coords</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cartesian</span><span class="p">,</span>
+        <span class="n">scissor</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scissor</span><span class="p">,</span>
+        <span class="n">circle_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">circle_size</span><span class="p">,</span>
+        <span class="n">yscale</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
+        <span class="n">ylabel</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ylabel</span><span class="p">,</span>
+        <span class="n">dos_label</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dos_label</span><span class="p">,</span>
+        <span class="n">dos_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dos</span><span class="p">,</span>
+        <span class="n">elements</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span>
+        <span class="n">lm_orbitals</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">orbitals</span><span class="p">,</span>
+        <span class="n">atoms</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span>
+        <span class="n">spin</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">spin</span><span class="p">,</span>
+        <span class="n">total_only</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">total_only</span><span class="p">,</span>
+        <span class="n">plot_total</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">total</span><span class="p">,</span>
+        <span class="n">legend_cutoff</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">legend_cutoff</span><span class="p">,</span>
+        <span class="n">gaussian</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">gaussian</span><span class="p">,</span>
+        <span class="n">height</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+        <span class="n">ymin</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ymin</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">style</span><span class="p">,</span>
+        <span class="n">no_base_style</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">no_base_style</span><span class="p">,</span>
+        <span class="n">ymax</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ymax</span><span class="p">,</span>
+        <span class="n">colours</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span>
+        <span class="n">image_format</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">image_format</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span>
+        <span class="n">fonts</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">font</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

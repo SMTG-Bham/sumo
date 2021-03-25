@@ -44,19 +44,19 @@
 <span class="sd"> - Sample custom k-point, band, spin combinations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="kn">from</span> <span class="nn">sumo.electronic_structure.bandstructure</span> <span class="kn">import</span> \
-    <span class="n">get_reconstructed_band_structure</span>
-<span class="kn">from</span> <span class="nn">sumo.electronic_structure.effective_mass</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_fitting_data</span><span class="p">,</span>
-                                                      <span class="n">fit_effective_mass</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">sumo.cli.bandplot</span> <span class="kn">import</span> <span class="n">find_vasprun_files</span>
-
-<span class="kn">from</span> <span class="nn">pymatgen.io.vasp.outputs</span> <span class="kn">import</span> <span class="n">BSVasprun</span>
 <span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Spin</span>
+<span class="kn">from</span> <span class="nn">pymatgen.io.vasp.outputs</span> <span class="kn">import</span> <span class="n">BSVasprun</span>
 
+<span class="kn">from</span> <span class="nn">sumo.cli.bandplot</span> <span class="kn">import</span> <span class="n">find_vasprun_files</span>
+<span class="kn">from</span> <span class="nn">sumo.electronic_structure.bandstructure</span> <span class="kn">import</span> <span class="n">get_reconstructed_band_structure</span>
+<span class="kn">from</span> <span class="nn">sumo.electronic_structure.effective_mass</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">fit_effective_mass</span><span class="p">,</span>
+    <span class="n">get_fitting_data</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Alex Ganose&quot;</span>
 <span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
@@ -65,11 +65,16 @@
 <span class="n">__date__</span> <span class="o">=</span> <span class="s2">&quot;March 4, 2018&quot;</span>
 
 
-<span class="n">kpt_str</span> <span class="o">=</span> <span class="s1">&#39;[</span><span class="si">{k[0]:.2f}</span><span class="s1">, </span><span class="si">{k[1]:.2f}</span><span class="s1">, </span><span class="si">{k[2]:.2f}</span><span class="s1">]&#39;</span>
+<span class="n">kpt_str</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">{k[0]:.2f}</span><span class="s2">, </span><span class="si">{k[1]:.2f}</span><span class="s2">, </span><span class="si">{k[2]:.2f}</span><span class="s2">]&quot;</span>
 
 
-<div class="viewcode-block" id="bandstats"><a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.bandstats.bandstats">[docs]</a><span class="k">def</span> <span class="nf">bandstats</span><span class="p">(</span><span class="n">filenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_sample_points</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-              <span class="n">degeneracy_tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">parabolic</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="bandstats"><a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.bandstats.bandstats">[docs]</a><span class="k">def</span> <span class="nf">bandstats</span><span class="p">(</span>
+    <span class="n">filenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_sample_points</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">degeneracy_tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span>
+    <span class="n">parabolic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculate the effective masses of the bands of a semiconductor.</span>
 
 <span class="sd">    Args:</span>
@@ -128,7 +133,7 @@
     <span class="n">bs</span> <span class="o">=</span> <span class="n">get_reconstructed_band_structure</span><span class="p">(</span><span class="n">bandstructures</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">bs</span><span class="o">.</span><span class="n">is_metal</span><span class="p">():</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: System is metallic!&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: System is metallic!&quot;</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
     <span class="n">_log_band_gap_information</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
@@ -136,19 +141,19 @@
     <span class="n">vbm_data</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()</span>
     <span class="n">cbm_data</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_cbm</span><span class="p">()</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Valence band maximum:&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Valence band maximum:&quot;</span><span class="p">)</span>
     <span class="n">_log_band_edge_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">vbm_data</span><span class="p">)</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Conduction band minimum:&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Conduction band minimum:&quot;</span><span class="p">)</span>
     <span class="n">_log_band_edge_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">cbm_data</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">parabolic</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Using parabolic fitting of the band edges&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Using parabolic fitting of the band edges&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Using nonparabolic fitting of the band edges&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Using nonparabolic fitting of the band edges&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">temperature</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;ERROR: This feature is not yet supported!&#39;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: This feature is not yet supported!&quot;</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Work out where the hole and electron band edges are.</span>
@@ -156,42 +161,56 @@
         <span class="c1"># the effective mass are identified as a tuple of:</span>
         <span class="c1"># (spin, band_index, kpoint_index)</span>
         <span class="n">hole_extrema</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">bands</span> <span class="ow">in</span> <span class="n">vbm_data</span><span class="p">[</span><span class="s1">&#39;band_index&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">hole_extrema</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">spin</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">)</span> <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">bands</span>
-                                 <span class="k">for</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="n">vbm_data</span><span class="p">[</span><span class="s1">&#39;kpoint_index&#39;</span><span class="p">]])</span>
+        <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">bands</span> <span class="ow">in</span> <span class="n">vbm_data</span><span class="p">[</span><span class="s2">&quot;band_index&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">hole_extrema</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">bands</span>
+                    <span class="k">for</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="n">vbm_data</span><span class="p">[</span><span class="s2">&quot;kpoint_index&quot;</span><span class="p">]</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
 
         <span class="n">elec_extrema</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">bands</span> <span class="ow">in</span> <span class="n">cbm_data</span><span class="p">[</span><span class="s1">&#39;band_index&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">elec_extrema</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">spin</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">)</span> <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">bands</span>
-                                 <span class="k">for</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="n">cbm_data</span><span class="p">[</span><span class="s1">&#39;kpoint_index&#39;</span><span class="p">]])</span>
+        <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">bands</span> <span class="ow">in</span> <span class="n">cbm_data</span><span class="p">[</span><span class="s2">&quot;band_index&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">elec_extrema</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="p">(</span><span class="n">spin</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">bands</span>
+                    <span class="k">for</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="n">cbm_data</span><span class="p">[</span><span class="s2">&quot;kpoint_index&quot;</span><span class="p">]</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
 
         <span class="c1"># extract the data we need for fitting from the band structure</span>
         <span class="n">hole_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">extrema</span> <span class="ow">in</span> <span class="n">hole_extrema</span><span class="p">:</span>
-            <span class="n">hole_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">get_fitting_data</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="o">*</span><span class="n">extrema</span><span class="p">,</span>
-                             <span class="n">num_sample_points</span><span class="o">=</span><span class="n">num_sample_points</span><span class="p">))</span>
+            <span class="n">hole_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">get_fitting_data</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="o">*</span><span class="n">extrema</span><span class="p">,</span> <span class="n">num_sample_points</span><span class="o">=</span><span class="n">num_sample_points</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="n">elec_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">extrema</span> <span class="ow">in</span> <span class="n">elec_extrema</span><span class="p">:</span>
-            <span class="n">elec_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">get_fitting_data</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="o">*</span><span class="n">extrema</span><span class="p">,</span>
-                             <span class="n">num_sample_points</span><span class="o">=</span><span class="n">num_sample_points</span><span class="p">))</span>
+            <span class="n">elec_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">get_fitting_data</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="o">*</span><span class="n">extrema</span><span class="p">,</span> <span class="n">num_sample_points</span><span class="o">=</span><span class="n">num_sample_points</span><span class="p">)</span>
+            <span class="p">)</span>
 
     <span class="c1"># calculate the effective masses and log the information</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Hole effective masses:&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Hole effective masses:&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">hole_data</span><span class="p">:</span>
-        <span class="n">eff_mass</span> <span class="o">=</span> <span class="n">fit_effective_mass</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;energies&#39;</span><span class="p">],</span>
-                                      <span class="n">parabolic</span><span class="o">=</span><span class="n">parabolic</span><span class="p">)</span>
-        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;effective_mass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eff_mass</span>
-        <span class="n">_log_effective_mass_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span><span class="p">,</span> <span class="n">mass_type</span><span class="o">=</span><span class="s1">&#39;m_h&#39;</span><span class="p">)</span>
+        <span class="n">eff_mass</span> <span class="o">=</span> <span class="n">fit_effective_mass</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;energies&quot;</span><span class="p">],</span> <span class="n">parabolic</span><span class="o">=</span><span class="n">parabolic</span>
+        <span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;effective_mass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eff_mass</span>
+        <span class="n">_log_effective_mass_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span><span class="p">,</span> <span class="n">mass_type</span><span class="o">=</span><span class="s2">&quot;m_h&quot;</span><span class="p">)</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Electron effective masses:&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Electron effective masses:&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">elec_data</span><span class="p">:</span>
-        <span class="n">eff_mass</span> <span class="o">=</span> <span class="n">fit_effective_mass</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;distances&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;energies&#39;</span><span class="p">],</span>
-                                      <span class="n">parabolic</span><span class="o">=</span><span class="n">parabolic</span><span class="p">)</span>
-        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;effective_mass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eff_mass</span>
+        <span class="n">eff_mass</span> <span class="o">=</span> <span class="n">fit_effective_mass</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;energies&quot;</span><span class="p">],</span> <span class="n">parabolic</span><span class="o">=</span><span class="n">parabolic</span>
+        <span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;effective_mass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">eff_mass</span>
         <span class="n">_log_effective_mass_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;hole_data&#39;</span><span class="p">:</span> <span class="n">hole_data</span><span class="p">,</span> <span class="s1">&#39;electron_data&#39;</span><span class="p">:</span> <span class="n">elec_data</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hole_data&quot;</span><span class="p">:</span> <span class="n">hole_data</span><span class="p">,</span> <span class="s2">&quot;electron_data&quot;</span><span class="p">:</span> <span class="n">elec_data</span><span class="p">}</span></div>
 
 
 <span class="k">def</span> <span class="nf">_log_band_gap_information</span><span class="p">(</span><span class="n">bs</span><span class="p">):</span>
@@ -201,44 +220,43 @@
 <span class="sd">        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bg_data</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_band_gap</span><span class="p">()</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">bg_data</span><span class="p">[</span><span class="s1">&#39;direct&#39;</span><span class="p">]:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Indirect band gap: </span><span class="si">{:.3f}</span><span class="s1"> eV&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bg_data</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">bg_data</span><span class="p">[</span><span class="s2">&quot;direct&quot;</span><span class="p">]:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Indirect band gap: </span><span class="si">{:.3f}</span><span class="s2"> eV&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bg_data</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]))</span>
 
     <span class="n">direct_data</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_direct_band_gap_dict</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span><span class="p">:</span>
-        <span class="n">direct_bg</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="n">spin_data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
-                         <span class="k">for</span> <span class="n">spin_data</span> <span class="ow">in</span> <span class="n">direct_data</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Direct band gap: </span><span class="si">{:.3f}</span><span class="s1"> eV&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">direct_bg</span><span class="p">))</span>
+        <span class="n">direct_bg</span> <span class="o">=</span> <span class="nb">min</span><span class="p">((</span><span class="n">spin_data</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">spin_data</span> <span class="ow">in</span> <span class="n">direct_data</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Direct band gap: </span><span class="si">{:.3f}</span><span class="s2"> eV&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">direct_bg</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">spin_data</span> <span class="ow">in</span> <span class="n">direct_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">direct_kindex</span> <span class="o">=</span> <span class="n">spin_data</span><span class="p">[</span><span class="s1">&#39;kpoint_index&#39;</span><span class="p">]</span>
+            <span class="n">direct_kindex</span> <span class="o">=</span> <span class="n">spin_data</span><span class="p">[</span><span class="s2">&quot;kpoint_index&quot;</span><span class="p">]</span>
             <span class="n">direct_kpoint</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[</span><span class="n">direct_kindex</span><span class="p">]</span><span class="o">.</span><span class="n">frac_coords</span>
             <span class="n">direct_kpoint</span> <span class="o">=</span> <span class="n">kpt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">direct_kpoint</span><span class="p">)</span>
             <span class="n">eq_kpoints</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_equivalent_kpoints</span><span class="p">(</span><span class="n">direct_kindex</span><span class="p">)</span>
-            <span class="n">k_indices</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">eq_kpoints</span><span class="p">))</span>
+            <span class="n">k_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">eq_kpoints</span><span class="p">))</span>
 
             <span class="c1"># add 1 to band indices to be consistent with VASP band numbers.</span>
-            <span class="n">b_indices</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">spin_data</span><span class="p">[</span><span class="s1">&#39;band_indices&#39;</span><span class="p">]])</span>
+            <span class="n">b_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">spin_data</span><span class="p">[</span><span class="s2">&quot;band_indices&quot;</span><span class="p">]])</span>
 
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{}</span><span class="s1">:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spin</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()))</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;    k-point: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">direct_kpoint</span><span class="p">))</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;    k-point indices: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k_indices</span><span class="p">))</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;    Band indices: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b_indices</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">{}</span><span class="s2">:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spin</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    k-point: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">direct_kpoint</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    k-point indices: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k_indices</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;    Band indices: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b_indices</span><span class="p">))</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">direct_bg</span> <span class="o">=</span> <span class="n">direct_data</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Direct band gap: </span><span class="si">{:.3f}</span><span class="s1"> eV&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">direct_bg</span><span class="p">))</span>
+        <span class="n">direct_bg</span> <span class="o">=</span> <span class="n">direct_data</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">][</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Direct band gap: </span><span class="si">{:.3f}</span><span class="s2"> eV&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">direct_bg</span><span class="p">))</span>
 
-        <span class="n">direct_kindex</span> <span class="o">=</span> <span class="n">direct_data</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">][</span><span class="s1">&#39;kpoint_index&#39;</span><span class="p">]</span>
+        <span class="n">direct_kindex</span> <span class="o">=</span> <span class="n">direct_data</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">][</span><span class="s2">&quot;kpoint_index&quot;</span><span class="p">]</span>
         <span class="n">direct_kpoint</span> <span class="o">=</span> <span class="n">kpt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">bs</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[</span><span class="n">direct_kindex</span><span class="p">]</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">)</span>
-        <span class="n">k_indices</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span>
-                                  <span class="n">bs</span><span class="o">.</span><span class="n">get_equivalent_kpoints</span><span class="p">(</span><span class="n">direct_kindex</span><span class="p">)))</span>
-        <span class="n">b_indices</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
-                               <span class="n">direct_data</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">][</span><span class="s1">&#39;band_indices&#39;</span><span class="p">]])</span>
+        <span class="n">k_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_equivalent_kpoints</span><span class="p">(</span><span class="n">direct_kindex</span><span class="p">)))</span>
+        <span class="n">b_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">direct_data</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">][</span><span class="s2">&quot;band_indices&quot;</span><span class="p">]]</span>
+        <span class="p">)</span>
 
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  k-point: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">direct_kpoint</span><span class="p">))</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  k-point indices: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k_indices</span><span class="p">))</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Band indices: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b_indices</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  k-point: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">direct_kpoint</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  k-point indices: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k_indices</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  Band indices: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b_indices</span><span class="p">))</span>
 
 
 <span class="k">def</span> <span class="nf">_log_band_edge_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">):</span>
@@ -251,33 +269,34 @@
 <span class="sd">            ``bs.get_cbm()``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span><span class="p">:</span>
-        <span class="n">spins</span> <span class="o">=</span> <span class="n">edge_data</span><span class="p">[</span><span class="s1">&#39;band_index&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="n">b_indices</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
-                                <span class="n">edge_data</span><span class="p">[</span><span class="s1">&#39;band_index&#39;</span><span class="p">][</span><span class="n">spin</span><span class="p">]])</span>
-                     <span class="o">+</span> <span class="s1">&#39;(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spin</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span> <span class="k">for</span> <span class="n">spin</span> <span class="ow">in</span> <span class="n">spins</span><span class="p">]</span>
-        <span class="n">b_indices</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">b_indices</span><span class="p">)</span>
+        <span class="n">spins</span> <span class="o">=</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;band_index&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">b_indices</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;band_index&quot;</span><span class="p">][</span><span class="n">spin</span><span class="p">]])</span>
+            <span class="o">+</span> <span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spin</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">spin</span> <span class="ow">in</span> <span class="n">spins</span>
+        <span class="p">]</span>
+        <span class="n">b_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">b_indices</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">b_indices</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
-                               <span class="n">edge_data</span><span class="p">[</span><span class="s1">&#39;band_index&#39;</span><span class="p">][</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">]])</span>
+        <span class="n">b_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;band_index&quot;</span><span class="p">][</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">]])</span>
 
-    <span class="n">kpoint</span> <span class="o">=</span> <span class="n">edge_data</span><span class="p">[</span><span class="s1">&#39;kpoint&#39;</span><span class="p">]</span>
+    <span class="n">kpoint</span> <span class="o">=</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;kpoint&quot;</span><span class="p">]</span>
     <span class="n">kpoint_str</span> <span class="o">=</span> <span class="n">kpt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">kpoint</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">)</span>
-    <span class="n">k_indices</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">[</span><span class="s1">&#39;kpoint_index&#39;</span><span class="p">]))</span>
+    <span class="n">k_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;kpoint_index&quot;</span><span class="p">]))</span>
 
     <span class="k">if</span> <span class="n">kpoint</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
         <span class="n">k_loc</span> <span class="o">=</span> <span class="n">kpoint</span><span class="o">.</span><span class="n">label</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">branch</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">edge_data</span><span class="p">[</span><span class="s1">&#39;kpoint_index&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">k_loc</span> <span class="o">=</span> <span class="s1">&#39;between </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">branch</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="n">branch</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;kpoint_index&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">k_loc</span> <span class="o">=</span> <span class="s2">&quot;between </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">branch</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Energy: </span><span class="si">{:.3f}</span><span class="s1"> eV&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_data</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]))</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  k-point: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kpoint_str</span><span class="p">))</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  k-point location: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k_loc</span><span class="p">))</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  k-point indices: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k_indices</span><span class="p">))</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Band indices: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b_indices</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  Energy: </span><span class="si">{:.3f}</span><span class="s2"> eV&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  k-point: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kpoint_str</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  k-point location: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k_loc</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  k-point indices: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k_indices</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  Band indices: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b_indices</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_log_effective_mass_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">is_spin_polarized</span><span class="p">,</span> <span class="n">mass_type</span><span class="o">=</span><span class="s1">&#39;m_e&#39;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_log_effective_mass_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">is_spin_polarized</span><span class="p">,</span> <span class="n">mass_type</span><span class="o">=</span><span class="s2">&quot;m_e&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Log data about the effective masses and their directions.</span>
 
 <span class="sd">    Args:</span>
@@ -304,59 +323,85 @@
 
 <span class="sd">        is_spin_polarized (bool): Whether the system is spin polarized.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39; (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;spin&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_spin_polarized</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;spin&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_spin_polarized</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
     <span class="c1"># add 1 to band id to be consistent with VASP</span>
-    <span class="n">band_str</span> <span class="o">=</span> <span class="s1">&#39;band </span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;band_id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="n">band_str</span> <span class="o">=</span> <span class="s2">&quot;band </span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;band_id&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
 
-    <span class="n">start_kpoint</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;start_kpoint&#39;</span><span class="p">]</span>
-    <span class="n">end_kpoint</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;end_kpoint&#39;</span><span class="p">]</span>
-    <span class="n">eff_mass</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;effective_mass&#39;</span><span class="p">]</span>
+    <span class="n">start_kpoint</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;start_kpoint&quot;</span><span class="p">]</span>
+    <span class="n">end_kpoint</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;end_kpoint&quot;</span><span class="p">]</span>
+    <span class="n">eff_mass</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;effective_mass&quot;</span><span class="p">]</span>
 
     <span class="n">kpoint_str</span> <span class="o">=</span> <span class="n">kpt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">start_kpoint</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">start_kpoint</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
-        <span class="n">kpoint_str</span> <span class="o">+=</span> <span class="s1">&#39; (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start_kpoint</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
-    <span class="n">kpoint_str</span> <span class="o">+=</span> <span class="s1">&#39; -&gt; &#39;</span>
+        <span class="n">kpoint_str</span> <span class="o">+=</span> <span class="s2">&quot; (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start_kpoint</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+    <span class="n">kpoint_str</span> <span class="o">+=</span> <span class="s2">&quot; -&gt; &quot;</span>
     <span class="n">kpoint_str</span> <span class="o">+=</span> <span class="n">kpt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">end_kpoint</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">end_kpoint</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
-        <span class="n">kpoint_str</span> <span class="o">+=</span> <span class="s1">&#39; (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end_kpoint</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">kpoint_str</span> <span class="o">+=</span> <span class="s2">&quot; (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end_kpoint</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{}</span><span class="s1">: </span><span class="si">{:.3f}</span><span class="s1"> | </span><span class="si">{}</span><span class="s1"> | </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mass_type</span><span class="p">,</span> <span class="n">eff_mass</span><span class="p">,</span>
-                                                 <span class="n">band_str</span><span class="p">,</span> <span class="n">kpoint_str</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;  </span><span class="si">{}</span><span class="s2">: </span><span class="si">{:.3f}</span><span class="s2"> | </span><span class="si">{}</span><span class="s2"> | </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mass_type</span><span class="p">,</span> <span class="n">eff_mass</span><span class="p">,</span> <span class="n">band_str</span><span class="p">,</span> <span class="n">kpoint_str</span><span class="p">)</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_get_parser</span><span class="p">():</span>
-    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    bandstats provides information on the band gap and effective</span>
 <span class="s2">    masses of semiconductors.&quot;&quot;&quot;</span><span class="p">,</span>
-                                     <span class="n">epilog</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    Author: </span><span class="si">{}</span><span class="s2"></span>
 <span class="s2">    Version: </span><span class="si">{}</span><span class="s2"></span>
-<span class="s2">    Last updated: </span><span class="si">{}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">__author__</span><span class="p">,</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__date__</span><span class="p">))</span>
+<span class="s2">    Last updated: </span><span class="si">{}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">__author__</span><span class="p">,</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__date__</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-f&#39;</span><span class="p">,</span> <span class="s1">&#39;--filenames&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-                        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;one or more vasprun.xml files to plot&quot;</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="s1">&#39;--nonparabolic&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;use a nonparabolic model to fit the &#39;</span>
-                              <span class="s1">&#39;effective masses&#39;</span><span class="p">))</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;--sample-points&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-                        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;sample_points&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span>
-                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;number of k-points to sample in fitting&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--filenames&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;one or more vasprun.xml files to plot&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-n&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--nonparabolic&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_false&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;use a nonparabolic model to fit the &quot;</span> <span class="s2">&quot;effective masses&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--sample-points&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;sample_points&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;number of k-points to sample in fitting&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span>
 
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">_get_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;sumo-bandstats.log&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
-                        <span class="n">filemode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;sumo-bandstats.log&quot;</span><span class="p">,</span>
+        <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+        <span class="n">filemode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">console</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[:]))</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
 
-    <span class="n">bandstats</span><span class="p">(</span><span class="n">filenames</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span> <span class="n">num_sample_points</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">sample_points</span><span class="p">,</span>
-              <span class="n">parabolic</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">nonparabolic</span><span class="p">)</span>
+    <span class="n">bandstats</span><span class="p">(</span>
+        <span class="n">filenames</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span>
+        <span class="n">num_sample_points</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">sample_points</span><span class="p">,</span>
+        <span class="n">parabolic</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">nonparabolic</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

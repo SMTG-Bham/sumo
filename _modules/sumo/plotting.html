@@ -40,20 +40,19 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span>
-<span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">LineCollection</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rc</span><span class="p">,</span> <span class="n">rcParams</span>
+<span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">LineCollection</span>
 <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 
 <span class="n">colour_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="n">sumo_base_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;sumo.plotting&#39;</span><span class="p">,</span> <span class="s1">&#39;sumo_base.mplstyle&#39;</span><span class="p">)</span>
-<span class="n">sumo_dos_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;sumo.plotting&#39;</span><span class="p">,</span> <span class="s1">&#39;sumo_dos.mplstyle&#39;</span><span class="p">)</span>
-<span class="n">sumo_bs_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;sumo.plotting&#39;</span><span class="p">,</span> <span class="s1">&#39;sumo_bs.mplstyle&#39;</span><span class="p">)</span>
-<span class="n">sumo_phonon_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;sumo.plotting&#39;</span><span class="p">,</span> <span class="s1">&#39;sumo_phonon.mplstyle&#39;</span><span class="p">)</span>
-<span class="n">sumo_optics_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;sumo.plotting&#39;</span><span class="p">,</span> <span class="s1">&#39;sumo_optics.mplstyle&#39;</span><span class="p">)</span>
+<span class="n">sumo_base_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">,</span> <span class="s2">&quot;sumo_base.mplstyle&quot;</span><span class="p">)</span>
+<span class="n">sumo_dos_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">,</span> <span class="s2">&quot;sumo_dos.mplstyle&quot;</span><span class="p">)</span>
+<span class="n">sumo_bs_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">,</span> <span class="s2">&quot;sumo_bs.mplstyle&quot;</span><span class="p">)</span>
+<span class="n">sumo_phonon_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">,</span> <span class="s2">&quot;sumo_phonon.mplstyle&quot;</span><span class="p">)</span>
+<span class="n">sumo_optics_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">,</span> <span class="s2">&quot;sumo_optics.mplstyle&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="styled_plot"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.styled_plot">[docs]</a><span class="k">def</span> <span class="nf">styled_plot</span><span class="p">(</span><span class="o">*</span><span class="n">style_sheets</span><span class="p">):</span>
@@ -72,10 +71,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">get_plot</span><span class="p">):</span>
-
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">get_plot</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
             <span class="k">if</span> <span class="n">no_base_style</span><span class="p">:</span>
                 <span class="n">list_style</span> <span class="o">=</span> <span class="p">[]</span>
@@ -89,13 +86,13 @@
                     <span class="n">list_style</span> <span class="o">+=</span> <span class="p">[</span><span class="n">style</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">fonts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">list_style</span> <span class="o">+=</span> <span class="p">[{</span><span class="s1">&#39;font.family&#39;</span><span class="p">:</span> <span class="s1">&#39;sans-serif&#39;</span><span class="p">,</span>
-                               <span class="s1">&#39;font.sans-serif&#39;</span><span class="p">:</span> <span class="n">fonts</span><span class="p">}]</span>
+                <span class="n">list_style</span> <span class="o">+=</span> <span class="p">[{</span><span class="s2">&quot;font.family&quot;</span><span class="p">:</span> <span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span> <span class="s2">&quot;font.sans-serif&quot;</span><span class="p">:</span> <span class="n">fonts</span><span class="p">}]</span>
 
             <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">list_style</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">get_plot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">wrapper</span>
+
     <span class="k">return</span> <span class="n">decorator</span></div>
 
 
@@ -118,12 +115,12 @@
     <span class="k">if</span> <span class="n">plt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">plt</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span>
         <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">width</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">height</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">dpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.dpi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpi</span>
+            <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.dpi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpi</span>
 
         <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -131,8 +128,17 @@
     <span class="k">return</span> <span class="n">plt</span></div>
 
 
-<div class="viewcode-block" id="pretty_subplot"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.pretty_subplot">[docs]</a><span class="k">def</span> <span class="nf">pretty_subplot</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                   <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gridspec_kw</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="pretty_subplot"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.pretty_subplot">[docs]</a><span class="k">def</span> <span class="nf">pretty_subplot</span><span class="p">(</span>
+    <span class="n">nrows</span><span class="p">,</span>
+    <span class="n">ncols</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">dpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">gridspec_kw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` subplot object with pretty defaults.</span>
 
 <span class="sd">    Args:</span>
@@ -158,41 +164,48 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">width</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">height</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="c1"># TODO: Make this work if plt is already set...</span>
     <span class="k">if</span> <span class="n">plt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">plt</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">sharex</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="n">sharey</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span>
-                     <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span>
-                     <span class="n">gridspec_kw</span><span class="o">=</span><span class="n">gridspec_kw</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+            <span class="n">nrows</span><span class="p">,</span>
+            <span class="n">ncols</span><span class="p">,</span>
+            <span class="n">sharex</span><span class="o">=</span><span class="n">sharex</span><span class="p">,</span>
+            <span class="n">sharey</span><span class="o">=</span><span class="n">sharey</span><span class="p">,</span>
+            <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span>
+            <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+            <span class="n">gridspec_kw</span><span class="o">=</span><span class="n">gridspec_kw</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">plt</span></div>
 
 
-<div class="viewcode-block" id="curry_power_tick"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.curry_power_tick">[docs]</a><span class="k">def</span> <span class="nf">curry_power_tick</span><span class="p">(</span><span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\times&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="curry_power_tick"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.curry_power_tick">[docs]</a><span class="k">def</span> <span class="nf">curry_power_tick</span><span class="p">(</span><span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\times&quot;</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">power_tick</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">times_sign</span><span class="o">=</span><span class="n">times_sign</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">f</span></div>
 
-<div class="viewcode-block" id="power_tick"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.power_tick">[docs]</a><span class="k">def</span> <span class="nf">power_tick</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;\times&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="power_tick"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.power_tick">[docs]</a><span class="k">def</span> <span class="nf">power_tick</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\times&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Custom power ticker function. &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;$\mathregular</span><span class="si">{0}</span><span class="s1">$&#39;</span>
+        <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;$\mathregular</span><span class="si">{0}</span><span class="s2">$&quot;</span>
     <span class="k">elif</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">exponent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="o">-</span><span class="n">val</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">exponent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
-    <span class="n">coeff</span> <span class="o">=</span> <span class="n">val</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="n">exponent</span>
+    <span class="n">coeff</span> <span class="o">=</span> <span class="n">val</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">exponent</span>
 
-    <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;$\mathregular{{</span><span class="si">{:.1f}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> 10^</span><span class="si">{:2d}</span><span class="s1">}}$&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coeff</span><span class="p">,</span>
-                                                          <span class="n">times_sign</span><span class="p">,</span>
-                                                          <span class="n">exponent</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;$\mathregular{{</span><span class="si">{:.1f}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> 10^</span><span class="si">{:2d}</span><span class="s2">}}$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coeff</span><span class="p">,</span> <span class="n">times_sign</span><span class="p">,</span> <span class="n">exponent</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="rgbline"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.rgbline">[docs]</a><span class="k">def</span> <span class="nf">rgbline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span>
-            <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.5</span><span class="p">):</span>
+
+<div class="viewcode-block" id="rgbline"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.rgbline">[docs]</a><span class="k">def</span> <span class="nf">rgbline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.5</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get a RGB coloured line for plotting.</span>
 
 <span class="sd">    Args:</span>
@@ -229,8 +242,9 @@
         <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nseg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span> <span class="o">*</span> <span class="n">aa</span>
         <span class="n">colours</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)))</span>
 
-    <span class="n">lc</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span> <span class="n">rasterized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="n">linestyles</span><span class="p">)</span>
+    <span class="n">lc</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span>
+        <span class="n">seg</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span> <span class="n">rasterized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="n">linestyles</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="n">lc</span></div>
 </pre></div>
 

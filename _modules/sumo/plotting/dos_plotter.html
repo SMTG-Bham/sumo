@@ -40,16 +40,21 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">itertools</span>
+
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span>
-
 <span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">AutoMinorLocator</span>
+<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Spin</span>
 
 <span class="kn">from</span> <span class="nn">sumo.electronic_structure.dos</span> <span class="kn">import</span> <span class="n">sort_orbitals</span>
-<span class="kn">from</span> <span class="nn">sumo.plotting</span> <span class="kn">import</span> <span class="p">(</span><span class="n">pretty_plot</span><span class="p">,</span> <span class="n">pretty_subplot</span><span class="p">,</span> <span class="n">colour_cache</span><span class="p">,</span>
-                           <span class="n">styled_plot</span><span class="p">,</span> <span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_dos_style</span><span class="p">)</span>
-
-<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Spin</span>
+<span class="kn">from</span> <span class="nn">sumo.plotting</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">colour_cache</span><span class="p">,</span>
+    <span class="n">pretty_plot</span><span class="p">,</span>
+    <span class="n">pretty_subplot</span><span class="p">,</span>
+    <span class="n">styled_plot</span><span class="p">,</span>
+    <span class="n">sumo_base_style</span><span class="p">,</span>
+    <span class="n">sumo_dos_style</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">configparser</span>
@@ -89,9 +94,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_dos</span> <span class="o">=</span> <span class="n">dos</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pdos</span> <span class="o">=</span> <span class="n">pdos</span>
 
-<div class="viewcode-block" id="SDOSPlotter.dos_plot_data"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter.dos_plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">dos_plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                      <span class="n">plot_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">legend_cutoff</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                      <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SDOSPlotter.dos_plot_data"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter.dos_plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">dos_plot_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">xmin</span><span class="o">=-</span><span class="mf">6.0</span><span class="p">,</span>
+        <span class="n">xmax</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
+        <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">plot_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">legend_cutoff</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the plotting data.</span>
 
 <span class="sd">        Args:</span>
@@ -170,11 +185,13 @@
         <span class="n">pdos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pdos</span>
         <span class="n">eners</span> <span class="o">=</span> <span class="n">dos</span><span class="o">.</span><span class="n">energies</span> <span class="o">-</span> <span class="n">dos</span><span class="o">.</span><span class="n">efermi</span> <span class="k">if</span> <span class="n">zero_to_efermi</span> <span class="k">else</span> <span class="n">dos</span><span class="o">.</span><span class="n">energies</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">eners</span> <span class="o">&gt;=</span> <span class="n">xmin</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">eners</span> <span class="o">&lt;=</span> <span class="n">xmax</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">)</span>
-        <span class="n">plot_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mask&#39;</span><span class="p">:</span> <span class="n">mask</span><span class="p">,</span> <span class="s1">&#39;energies&#39;</span><span class="p">:</span> <span class="n">eners</span><span class="p">}</span>
+        <span class="n">plot_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mask&quot;</span><span class="p">:</span> <span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;energies&quot;</span><span class="p">:</span> <span class="n">eners</span><span class="p">}</span>
         <span class="n">spins</span> <span class="o">=</span> <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">spin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Spin-selection only possible with spin-polarised &#39;</span>
-                             <span class="s1">&#39;calculation results&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Spin-selection only possible with spin-polarised &quot;</span>
+                <span class="s2">&quot;calculation results&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># Visibility cutoff based on scale of total plot even if it is hidden</span>
         <span class="k">try</span><span class="p">:</span>
@@ -183,18 +200,22 @@
             <span class="n">dmax</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="n">ymax</span> <span class="o">=</span> <span class="n">dmax</span> <span class="k">if</span> <span class="n">dmax</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
-        <span class="n">cutoff</span> <span class="o">=</span> <span class="p">(</span><span class="n">legend_cutoff</span> <span class="o">/</span> <span class="mf">100.</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ymax</span> <span class="o">/</span> <span class="mf">1.05</span><span class="p">)</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="p">(</span><span class="n">legend_cutoff</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ymax</span> <span class="o">/</span> <span class="mf">1.05</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">plot_total</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;text.color&#39;</span> <span class="ow">in</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">:</span>
-                <span class="n">tdos_colour</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;text.color&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;text.color&quot;</span> <span class="ow">in</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">:</span>
+                <span class="n">tdos_colour</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;text.color&quot;</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">tdos_colour</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">tdos_colour</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span>
+                    <span class="n">tdos_colour</span> <span class="o">=</span> <span class="s2">&quot;k&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">tdos_colour</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span>
+                <span class="n">tdos_colour</span> <span class="o">=</span> <span class="s2">&quot;k&quot;</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">tdos</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;Total DOS&#39;</span><span class="p">,</span> <span class="s1">&#39;dens&#39;</span><span class="p">:</span> <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="p">,</span>
-                    <span class="s1">&#39;colour&#39;</span><span class="p">:</span> <span class="n">tdos_colour</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">}</span>
+            <span class="n">tdos</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Total DOS&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;dens&quot;</span><span class="p">:</span> <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="p">,</span>
+                <span class="s2">&quot;colour&quot;</span><span class="p">:</span> <span class="n">tdos_colour</span><span class="p">,</span>
+                <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
+            <span class="p">}</span>
 
             <span class="c1"># subplot data formatted as a list of lists of dicts, with each</span>
             <span class="c1"># list of dicts being plotted on a separate graph, if only one list</span>
@@ -209,15 +230,18 @@
         <span class="k">for</span> <span class="n">el</span><span class="p">,</span> <span class="n">el_pdos</span> <span class="ow">in</span> <span class="n">pdos</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">el_lines</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">orb</span> <span class="ow">in</span> <span class="n">sort_orbitals</span><span class="p">(</span><span class="n">el_pdos</span><span class="p">):</span>
-                <span class="n">dmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
-                            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">el_pdos</span><span class="p">[</span><span class="n">orb</span><span class="p">]</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+                <span class="n">dmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">el_pdos</span><span class="p">[</span><span class="n">orb</span><span class="p">]</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
                 <span class="n">ymax</span> <span class="o">=</span> <span class="n">dmax</span> <span class="k">if</span> <span class="n">dmax</span> <span class="o">&gt;</span> <span class="n">ymax</span> <span class="k">else</span> <span class="n">ymax</span>
-                <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">dmax</span> <span class="o">&lt;</span> <span class="n">cutoff</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">orb</span><span class="p">)</span>
-                <span class="n">colour</span><span class="p">,</span> <span class="n">cache</span> <span class="o">=</span> <span class="n">get_cached_colour</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">orb</span><span class="p">,</span> <span class="n">colours</span><span class="p">,</span>
-                                                  <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
-                <span class="n">el_lines</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
-                                 <span class="s1">&#39;colour&#39;</span><span class="p">:</span> <span class="n">colour</span><span class="p">,</span>
-                                 <span class="s1">&#39;dens&#39;</span><span class="p">:</span> <span class="n">el_pdos</span><span class="p">[</span><span class="n">orb</span><span class="p">]</span><span class="o">.</span><span class="n">densities</span><span class="p">})</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">dmax</span> <span class="o">&lt;</span> <span class="n">cutoff</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">orb</span><span class="p">)</span>
+                <span class="n">colour</span><span class="p">,</span> <span class="n">cache</span> <span class="o">=</span> <span class="n">get_cached_colour</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">orb</span><span class="p">,</span> <span class="n">colours</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
+                <span class="n">el_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+                        <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
+                        <span class="s2">&quot;colour&quot;</span><span class="p">:</span> <span class="n">colour</span><span class="p">,</span>
+                        <span class="s2">&quot;dens&quot;</span><span class="p">:</span> <span class="n">el_pdos</span><span class="p">[</span><span class="n">orb</span><span class="p">]</span><span class="o">.</span><span class="n">densities</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="n">subplot</span><span class="p">:</span>
                 <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el_lines</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -225,16 +249,34 @@
 
         <span class="n">ymax</span> <span class="o">=</span> <span class="n">ymax</span> <span class="o">*</span> <span class="n">empty_space</span> <span class="o">/</span> <span class="n">yscale</span>
         <span class="n">ymin</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="o">-</span><span class="n">ymax</span>
-        <span class="n">plot_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;lines&#39;</span><span class="p">:</span> <span class="n">lines</span><span class="p">,</span> <span class="s1">&#39;ymax&#39;</span><span class="p">:</span> <span class="n">ymax</span><span class="p">,</span> <span class="s1">&#39;ymin&#39;</span><span class="p">:</span> <span class="n">ymin</span><span class="p">})</span>
+        <span class="n">plot_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;lines&quot;</span><span class="p">:</span> <span class="n">lines</span><span class="p">,</span> <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="n">ymax</span><span class="p">,</span> <span class="s2">&quot;ymin&quot;</span><span class="p">:</span> <span class="n">ymin</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">plot_data</span></div>
 
 <div class="viewcode-block" id="SDOSPlotter.get_plot"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter.get_plot">[docs]</a>    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_dos_style</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=-</span><span class="mf">6.</span><span class="p">,</span>
-                 <span class="n">xmax</span><span class="o">=</span><span class="mf">6.</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">legend_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">legend_frame_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">legend_cutoff</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;Energy (eV)&#39;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Arb. units&#39;</span><span class="p">,</span>
-                 <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">xmin</span><span class="o">=-</span><span class="mf">6.0</span><span class="p">,</span>
+        <span class="n">xmax</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
+        <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">plot_total</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">legend_on</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">num_columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">legend_frame_on</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">legend_cutoff</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">,</span>
+        <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Arb. units&quot;</span><span class="p">,</span>
+        <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+        <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object of the density of states.</span>
 
 <span class="sd">        Args:</span>
@@ -293,31 +335,38 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            :obj:`matplotlib.pyplot`: The density of states plot.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">plot_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dos_plot_data</span><span class="p">(</span><span class="n">yscale</span><span class="o">=</span><span class="n">yscale</span><span class="p">,</span> <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
-                                       <span class="n">colours</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span> <span class="n">plot_total</span><span class="o">=</span><span class="n">plot_total</span><span class="p">,</span>
-                                       <span class="n">legend_cutoff</span><span class="o">=</span><span class="n">legend_cutoff</span><span class="p">,</span>
-                                       <span class="n">subplot</span><span class="o">=</span><span class="n">subplot</span><span class="p">,</span>
-                                       <span class="n">zero_to_efermi</span><span class="o">=</span><span class="n">zero_to_efermi</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
+        <span class="n">plot_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dos_plot_data</span><span class="p">(</span>
+            <span class="n">yscale</span><span class="o">=</span><span class="n">yscale</span><span class="p">,</span>
+            <span class="n">xmin</span><span class="o">=</span><span class="n">xmin</span><span class="p">,</span>
+            <span class="n">xmax</span><span class="o">=</span><span class="n">xmax</span><span class="p">,</span>
+            <span class="n">colours</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span>
+            <span class="n">plot_total</span><span class="o">=</span><span class="n">plot_total</span><span class="p">,</span>
+            <span class="n">legend_cutoff</span><span class="o">=</span><span class="n">legend_cutoff</span><span class="p">,</span>
+            <span class="n">subplot</span><span class="o">=</span><span class="n">subplot</span><span class="p">,</span>
+            <span class="n">zero_to_efermi</span><span class="o">=</span><span class="n">zero_to_efermi</span><span class="p">,</span>
+            <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">subplot</span><span class="p">:</span>
-            <span class="n">nplots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;lines&#39;</span><span class="p">])</span>
-            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_subplot</span><span class="p">(</span><span class="n">nplots</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
-                                 <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
+            <span class="n">nplots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;lines&quot;</span><span class="p">])</span>
+            <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_subplot</span><span class="p">(</span>
+                <span class="n">nplots</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">plt</span> <span class="o">=</span> <span class="n">pretty_plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
 
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">]</span>
-        <span class="n">energies</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;energies&#39;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;mask&quot;</span><span class="p">]</span>
+        <span class="n">energies</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;energies&quot;</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;lines&#39;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;dens&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;lines&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;dens&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">spins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">spin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">spins</span> <span class="o">=</span> <span class="p">[</span><span class="n">spin</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">spins</span> <span class="o">=</span> <span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">,</span> <span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">]</span>
 
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line_set</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;lines&#39;</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line_set</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;lines&quot;</span><span class="p">]):</span>
             <span class="k">if</span> <span class="n">subplot</span><span class="p">:</span>
                 <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
@@ -325,31 +374,34 @@
 
             <span class="k">for</span> <span class="n">line</span><span class="p">,</span> <span class="n">spin</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">line_set</span><span class="p">,</span> <span class="n">spins</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">label</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
-                    <span class="n">densities</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;dens&#39;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+                    <span class="n">densities</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;dens&quot;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
                 <span class="k">elif</span> <span class="n">spin</span> <span class="ow">is</span> <span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">:</span>
-                    <span class="n">label</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
-                    <span class="n">densities</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s1">&#39;dens&#39;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+                    <span class="n">densities</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="s2">&quot;dens&quot;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
                 <span class="k">elif</span> <span class="n">spin</span> <span class="ow">is</span> <span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">:</span>
                     <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                    <span class="n">densities</span> <span class="o">=</span> <span class="o">-</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;dens&#39;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">densities</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                <span class="n">facecolor</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;colour&#39;</span><span class="p">],</span>
-                                <span class="n">alpha</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">])</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">densities</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
-                        <span class="n">color</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s1">&#39;colour&#39;</span><span class="p">])</span>
+                    <span class="n">densities</span> <span class="o">=</span> <span class="o">-</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;dens&quot;</span><span class="p">][</span><span class="n">spin</span><span class="p">][</span><span class="n">mask</span><span class="p">]</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+                    <span class="n">energies</span><span class="p">,</span>
+                    <span class="n">densities</span><span class="p">,</span>
+                    <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">facecolor</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;colour&quot;</span><span class="p">],</span>
+                    <span class="n">alpha</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
+                <span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">densities</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;colour&quot;</span><span class="p">])</span>
 
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;ymax&#39;</span><span class="p">])</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;ymax&quot;</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;ymin&#39;</span><span class="p">],</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;ymax&#39;</span><span class="p">])</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;ymin&quot;</span><span class="p">],</span> <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;ymax&quot;</span><span class="p">])</span>
 
-            <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">labelleft</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 
-            <span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;upper right&#39;</span> <span class="k">if</span> <span class="n">subplot</span> <span class="k">else</span> <span class="s1">&#39;best&#39;</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="s2">&quot;upper right&quot;</span> <span class="k">if</span> <span class="n">subplot</span> <span class="k">else</span> <span class="s2">&quot;best&quot;</span>
             <span class="n">ncol</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">subplot</span> <span class="k">else</span> <span class="n">num_columns</span>
             <span class="k">if</span> <span class="n">legend_on</span><span class="p">:</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">loc</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="n">legend_frame_on</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">)</span>
@@ -358,15 +410,22 @@
         <span class="k">if</span> <span class="n">subplot</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
-                     <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">if</span> <span class="s1">&#39;axes.labelcolor&#39;</span> <span class="ow">in</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">:</span>
-                <span class="n">ylabelcolor</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.labelcolor&#39;</span><span class="p">]</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;axes.labelcolor&quot;</span> <span class="ow">in</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">:</span>
+                <span class="n">ylabelcolor</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.labelcolor&quot;</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ylabelcolor</span> <span class="o">=</span> <span class="kc">None</span>
 
-            <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.08</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">ylabelcolor</span><span class="p">,</span>
-                     <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                <span class="mf">0.08</span><span class="p">,</span>
+                <span class="mf">0.5</span><span class="p">,</span>
+                <span class="n">ylabel</span><span class="p">,</span>
+                <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">ylabelcolor</span><span class="p">,</span>
+                <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                <span class="n">rotation</span><span class="o">=</span><span class="s2">&quot;vertical&quot;</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
@@ -413,46 +472,47 @@
     <span class="k">def</span> <span class="nf">_get_colour_with_cache</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span> <span class="n">cache</span><span class="p">,</span> <span class="n">colour_series</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return cached colour if available, or fetch and cache from cycle&quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+
         <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">orbital</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">[</span><span class="n">element</span><span class="p">]:</span>
             <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">],</span> <span class="n">cache</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Iterate through colours to find one which is unused</span>
             <span class="k">for</span> <span class="n">colour</span> <span class="ow">in</span> <span class="n">colour_series</span><span class="p">:</span>
                 <span class="c1"># Iterate through cache to check if colour already used</span>
-                <span class="k">if</span> <span class="n">colour</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[[</span><span class="n">col</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">orb</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
-                                         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">orb</span> <span class="ow">in</span> <span class="n">cache</span><span class="o">.</span><span class="n">items</span><span class="p">()]):</span>
+                <span class="k">if</span> <span class="n">colour</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span>
+                    <span class="o">*</span><span class="p">[[</span><span class="n">col</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">orb</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">orb</span> <span class="ow">in</span> <span class="n">cache</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+                <span class="p">):</span>
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Not enough colours available for orbitals! &#39;</span>
-                                <span class="s1">&#39;Try a different theme.&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="s2">&quot;Not enough colours available for orbitals! &quot;</span>
+                    <span class="s2">&quot;Try a different theme.&quot;</span>
+                <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
                 <span class="n">cache</span><span class="p">[</span><span class="n">element</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">cache</span><span class="p">[</span><span class="n">element</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">orbital</span><span class="p">:</span> <span class="n">colour</span><span class="p">})</span>
             <span class="k">return</span> <span class="n">colour</span><span class="p">,</span> <span class="n">cache</span>
 
-    <span class="n">colour_series</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
+    <span class="n">colour_series</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.prop_cycle&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colours</span><span class="p">,</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">colours</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">),</span> <span class="n">cache</span>
-        <span class="k">except</span><span class="p">(</span><span class="n">configparser</span><span class="o">.</span><span class="n">NoSectionError</span><span class="p">,</span> <span class="n">configparser</span><span class="o">.</span><span class="n">NoOptionError</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">_get_colour_with_cache</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span>
-                                          <span class="n">cache</span><span class="p">,</span> <span class="n">colour_series</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">configparser</span><span class="o">.</span><span class="n">NoSectionError</span><span class="p">,</span> <span class="n">configparser</span><span class="o">.</span><span class="n">NoOptionError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_get_colour_with_cache</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span> <span class="n">cache</span><span class="p">,</span> <span class="n">colour_series</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">colours</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">colours</span><span class="p">[</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">],</span> <span class="n">cache</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">_get_colour_with_cache</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span>
-                                          <span class="n">cache</span><span class="p">,</span> <span class="n">colour_series</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_get_colour_with_cache</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span> <span class="n">cache</span><span class="p">,</span> <span class="n">colour_series</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">colours</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_get_colour_with_cache</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span> <span class="n">cache</span><span class="p">,</span> <span class="n">colour_series</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Argument &quot;colours&quot; should be dict, &#39;</span>
-                        <span class="s1">&#39;ConfigParser or None.&#39;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Argument &quot;colours&quot; should be dict, &#39;</span> <span class="s2">&quot;ConfigParser or None.&quot;</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
