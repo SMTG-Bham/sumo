@@ -4,6 +4,11 @@ Change Log
 Unreleased
 ----------
 
+v2.2.2
+------
+
+Added Latimer-Munro high-symmetry k-point paths. (@kavanse)
+
 v2.2.1
 ------
 
