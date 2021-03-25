@@ -1,22 +1,23 @@
-from math import ceil
-from itertools import chain, product
 import errno
-import os.path
-from os import makedirs
-from subprocess import Popen, PIPE
-from shutil import which
-import re
 import logging
+import os.path
+import re
+from itertools import chain, product
+from math import ceil
+from os import makedirs
+from shutil import which
+from subprocess import PIPE, Popen
+
 import numpy as np
 from monty.io import zopen
-from pymatgen.core.structure import Structure
 from pymatgen.core.lattice import Lattice
-from pymatgen.electronic_structure.core import Spin, Orbital
+from pymatgen.core.structure import Structure
 from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
-from pymatgen.electronic_structure.dos import Dos, CompleteDos
+from pymatgen.electronic_structure.core import Orbital, Spin
+from pymatgen.electronic_structure.dos import CompleteDos, Dos
 
-from sumo.electronic_structure.optics import kkr
 import sumo.electronic_structure.dos
+from sumo.electronic_structure.optics import kkr
 
 _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009
@@ -30,15 +31,24 @@ class QuestaalSite(object):
 
     """
 
-    def __init__(self, nbas, vn=3., io=15, alat=1., xpos=True, read='fast',
-                 sites=None, plat=[1, 0, 0, 0, 1, 0, 0, 0, 1]):
+    def __init__(
+        self,
+        nbas,
+        vn=3.0,
+        io=15,
+        alat=1.0,
+        xpos=True,
+        read="fast",
+        sites=None,
+        plat=[1, 0, 0, 0, 1, 0, 0, 0, 1],
+    ):
         sites = sites or []
         if nbas != len(sites):
             raise AssertionError()
         if len(plat) != 9:
             raise AssertionError()
 
-        if read != 'fast':
+        if read != "fast":
             raise Exception("Algebraic expressions not supported, use 'fast'")
         if io != 15:
             raise Exception("Only site.ext format 15 supported at present")
@@ -46,9 +56,10 @@ class QuestaalSite(object):
         self.nbas, self.vn, self.io, self.alat = nbas, vn, io, alat
         self.xpos, self.read, self.sites, self.plat = xpos, read, sites, plat
 
-        is_empty = re.compile('E\d*$')
-        empty_sites = [site for site in sites
-                       if is_empty.match(site['species']) is not None]
+        is_empty = re.compile("E\d*$")
+        empty_sites = [
+            site for site in sites if is_empty.match(site["species"]) is not None
+        ]
         self.nbas_empty = len(empty_sites)
 
     @property
@@ -60,61 +71,67 @@ class QuestaalSite(object):
         # Get corresponding lists of species and positions by making a list of
         # pairs and unpacking with zip
         if self.xpos:
-            species_coords = [(site['species'], site['pos'])
-                              for site in self.sites]
+            species_coords = [(site["species"], site["pos"]) for site in self.sites]
             species, coords = zip(*species_coords)
 
-            return Structure(lattice, species, coords,
-                             coords_are_cartesian=False)
+            return Structure(lattice, species, coords, coords_are_cartesian=False)
         else:
-            species_coords = [(site['species'],
-                               [x * self.alat * _bohr_to_angstrom
-                                for x in site['pos']])
-                              for site in self.sites]
+            species_coords = [
+                (
+                    site["species"],
+                    [x * self.alat * _bohr_to_angstrom for x in site["pos"]],
+                )
+                for site in self.sites
+            ]
             species, coords = zip(*species_coords)
 
-            return Structure(lattice, species, coords,
-                             coords_are_cartesian=True)
+            return Structure(lattice, species, coords, coords_are_cartesian=True)
 
     @classmethod
     def from_file(cls, filename):
-        with zopen(filename, 'rt') as f:
+        with zopen(filename, "rt") as f:
             lines = f.readlines()
 
         header = lines[0]
-        sites = [line for line in lines if line[0] not in '#%']
+        sites = [line for line in lines if line[0] not in "#%"]
 
         # Some of the header info does not use '=' so handle separately
         header_items = header.strip().split()
-        if header_items[0] != '%' or header_items[1] != 'site-data':
+        if header_items[0] != "%" or header_items[1] != "site-data":
             raise AssertionError()
 
-        xpos = True if 'xpos' in header_items else False
-        read = 'fast' if 'fast' in header_items else False
+        xpos = True if "xpos" in header_items else False
+        read = "fast" if "fast" in header_items else False
 
-        header_clean = ' '.join(x for x in header_items if x not in
-                                ('%', 'site-data', 'xpos', 'fast'))
+        header_clean = " ".join(
+            x for x in header_items if x not in ("%", "site-data", "xpos", "fast")
+        )
 
-        tags = re.findall(r'(\w+)\s*=', header_clean)  # Find tags
+        tags = re.findall(r"(\w+)\s*=", header_clean)  # Find tags
         # Split on tags to find tag parameters
-        tag_data = re.split(r'\s*\w+\s*=\s*', header_clean)[1:]
+        tag_data = re.split(r"\s*\w+\s*=\s*", header_clean)[1:]
         tag_dict = dict(zip(tags, tag_data))
 
-        vn = float(tag_dict['vn']) if 'vn' in tag_dict else 3.
-        io = int(tag_dict['io']) if 'io' in tag_dict else 15.
-        nbas = int(tag_dict['nbas']) if 'nbas' in tag_dict else 15.
-        alat = float(tag_dict['alat']) if 'alat' in tag_dict else 1.
-        plat = ([float(x) for x in tag_dict['plat'].split()]
-                if 'plat' in tag_dict else [1, 0, 0, 0, 1, 0, 0, 0, 1])
+        vn = float(tag_dict["vn"]) if "vn" in tag_dict else 3.0
+        io = int(tag_dict["io"]) if "io" in tag_dict else 15.0
+        nbas = int(tag_dict["nbas"]) if "nbas" in tag_dict else 15.0
+        alat = float(tag_dict["alat"]) if "alat" in tag_dict else 1.0
+        plat = (
+            [float(x) for x in tag_dict["plat"].split()]
+            if "plat" in tag_dict
+            else [1, 0, 0, 0, 1, 0, 0, 0, 1]
+        )
 
         # Convert sites to structured format
         # (If needed, could support other 'io' options here)
-        sites = [{'species': site.split()[0],
-                  'pos': [float(x) for x in site.split()[1:4]]}
-                 for site in sites]
+        sites = [
+            {"species": site.split()[0], "pos": [float(x) for x in site.split()[1:4]]}
+            for site in sites
+        ]
 
-        return cls(nbas, vn=vn, io=io, alat=alat, xpos=xpos, read=read,
-                   sites=sites, plat=plat)
+        return cls(
+            nbas, vn=vn, io=io, alat=alat, xpos=xpos, read=read, sites=sites, plat=plat
+        )
 
 
 class QuestaalInit(object):
@@ -170,14 +187,16 @@ class QuestaalInit(object):
         self.tol = tol
         self.ignore_units = ignore_units
 
-        cartesian_sites = any('POS' in item for item in site)
-        fractional_sites = any('X' in item for item in site)
-        c_sites = any('C' in item for item in site)
+        cartesian_sites = any("POS" in item for item in site)
+        fractional_sites = any("X" in item for item in site)
+        c_sites = any("C" in item for item in site)
 
         if c_sites:
-            raise NotImplementedError('C position option for Questaal input '
-                                      '(conventional lattice vector fractions)'
-                                      ' not implemented. Life is too short!')
+            raise NotImplementedError(
+                "C position option for Questaal input "
+                "(conventional lattice vector fractions)"
+                " not implemented. Life is too short!"
+            )
         if cartesian_sites and fractional_sites:
             raise ValueError("Cannot mix direct and Cartesian input")
         else:
@@ -185,144 +204,150 @@ class QuestaalInit(object):
 
     @property
     def structure(self):
-        """Pymatgen structure object from Questaal init file
+        """Pymatgen structure object from Questaal init file"""
 
-        """
-
-        if 'SPCGRP' in self.lattice and self.lattice['SPCGRP']:
+        if "SPCGRP" in self.lattice and self.lattice["SPCGRP"]:
             return self._get_structure_from_spcgrp()
         else:
             return self._get_structure_from_lattice()
 
     def _get_species_coords(self):
-        species = [entry['ATOM'] for entry in self.site]
+        species = [entry["ATOM"] for entry in self.site]
 
         if self.cartesian:
-            coords = [entry['POS'] for entry in self.site]
+            coords = [entry["POS"] for entry in self.site]
         else:
-            coords = [entry['X'] for entry in self.site]
+            coords = [entry["X"] for entry in self.site]
 
         return species, coords
 
     def _get_structure_from_spcgrp(self):
-        if 'A' not in self.lattice:
+        if "A" not in self.lattice:
             raise AssertionError()
-        if 'B' not in self.lattice:
-            logging.info('Lattice vector B not given, assume equal to A')
-            self.lattice['B'] = self.lattice['A']
-        if 'C' not in self.lattice:
-            logging.info('Lattice vector C not given, assume equal to A')
-            self.lattice['C'] = self.lattice['C']
-        if 'ALPHA' not in self.lattice:
-            logging.info('Lattice angle ALPHA not given, assume right-angle')
-            self.lattice['ALPHA'] = 90
-        if 'BETA' not in self.lattice:
-            logging.info('Lattice angle BETA not given, assume right-angle')
-            self.lattice['BETA'] = 90
-        if 'GAMMA' not in self.lattice:
+        if "B" not in self.lattice:
+            logging.info("Lattice vector B not given, assume equal to A")
+            self.lattice["B"] = self.lattice["A"]
+        if "C" not in self.lattice:
+            logging.info("Lattice vector C not given, assume equal to A")
+            self.lattice["C"] = self.lattice["C"]
+        if "ALPHA" not in self.lattice:
+            logging.info("Lattice angle ALPHA not given, assume right-angle")
+            self.lattice["ALPHA"] = 90
+        if "BETA" not in self.lattice:
+            logging.info("Lattice angle BETA not given, assume right-angle")
+            self.lattice["BETA"] = 90
+        if "GAMMA" not in self.lattice:
             try:
-                spcgrp_number = int(self.lattice['SPCGRP'])
+                spcgrp_number = int(self.lattice["SPCGRP"])
             except ValueError:
                 spcgrp_number = 0
-            if (167 < spcgrp_number < 195):
-                logging.info('Lattice angle GAMMA not given, '
-                             'hexagonal space group, assume 120')
-                self.lattice['GAMMA'] = 120
+            if 167 < spcgrp_number < 195:
+                logging.info(
+                    "Lattice angle GAMMA not given, "
+                    "hexagonal space group, assume 120"
+                )
+                self.lattice["GAMMA"] = 120
             else:
-                logging.info('Lattice angle GAMMA not given, '
-                             'assume right-angle')
-                self.lattice['GAMMA'] = 90
+                logging.info("Lattice angle GAMMA not given, " "assume right-angle")
+                self.lattice["GAMMA"] = 90
 
         if self.cartesian:
-            logging.info("Warning: Cartesian positions used without "
-                         "explicit lattice vectors")
+            logging.info(
+                "Warning: Cartesian positions used without " "explicit lattice vectors"
+            )
 
-        if 'UNITS' not in self.lattice or self.lattice['UNITS'] is None:
+        if "UNITS" not in self.lattice or self.lattice["UNITS"] is None:
             if self.ignore_units:
                 pass
             else:
-                for length in ('A', 'B', 'C'):
+                for length in ("A", "B", "C"):
                     self.lattice[length] *= _bohr_to_angstrom
 
-        if 'ALAT' not in self.lattice:
+        if "ALAT" not in self.lattice:
             raise AssertionError()
-        for length in ('A', 'B', 'C'):
-            self.lattice[length] *= self.lattice['ALAT']
+        for length in ("A", "B", "C"):
+            self.lattice[length] *= self.lattice["ALAT"]
 
-        lattice = Lattice.from_parameters(self.lattice['A'],
-                                          self.lattice['B'],
-                                          self.lattice['C'],
-                                          self.lattice['ALPHA'],
-                                          self.lattice['BETA'],
-                                          self.lattice['GAMMA'])
+        lattice = Lattice.from_parameters(
+            self.lattice["A"],
+            self.lattice["B"],
+            self.lattice["C"],
+            self.lattice["ALPHA"],
+            self.lattice["BETA"],
+            self.lattice["GAMMA"],
+        )
 
         species, coords = self._get_species_coords()
 
         return Structure.from_spacegroup(
-            self.lattice['SPCGRP'], lattice, species, coords,
+            self.lattice["SPCGRP"],
+            lattice,
+            species,
+            coords,
             coords_are_cartesian=self.cartesian,
-            tol=self.tol)
+            tol=self.tol,
+        )
 
     def _get_structure_from_lattice(self):
-        lattice = Lattice(self.lattice['PLAT'])
-        lattice = Lattice(lattice.matrix * self.lattice['ALAT'])
+        lattice = Lattice(self.lattice["PLAT"])
+        lattice = Lattice(lattice.matrix * self.lattice["ALAT"])
         species, coords = self._get_species_coords()
 
         if self.ignore_units:
             pass
         else:
-            if 'UNITS' not in self.lattice or self.lattice['UNITS'] is None:
+            if "UNITS" not in self.lattice or self.lattice["UNITS"] is None:
                 lattice = Lattice(lattice.matrix * _bohr_to_angstrom)
-                coords = [tuple([x * _bohr_to_angstrom for x in site_coords])
-                          for site_coords in coords]
+                coords = [
+                    tuple([x * _bohr_to_angstrom for x in site_coords])
+                    for site_coords in coords
+                ]
 
-        return Structure(lattice, species, coords,
-                         coords_are_cartesian=self.cartesian)
+        return Structure(lattice, species, coords, coords_are_cartesian=self.cartesian)
 
     def to_file(self, filename):
         """Write QuestaalInit object to init file"""
-        with open(filename, 'w') as f:
+        with open(filename, "w") as f:
 
-            f.write('LATTICE\n')
+            f.write("LATTICE\n")
             for key, value in self.lattice.items():
-                if key == 'PLAT':
+                if key == "PLAT":
                     #  Expand nested lists to one flat list.
                     #  Yes, nested list comprehensions look weird!
-                    lattice_params = [c for row in self.lattice['PLAT']
-                                      for c in row]
+                    lattice_params = [c for row in self.lattice["PLAT"] for c in row]
                     # Write out as string-separated row of 9
-                    f.write('    PLAT= ' + ' '.join(map(str, lattice_params)))
-                    f.write('\n')
+                    f.write("    PLAT= " + " ".join(map(str, lattice_params)))
+                    f.write("\n")
                 else:
-                    f.write('    {0}={1}\n'.format(key, value))
+                    f.write("    {0}={1}\n".format(key, value))
 
-            f.write('SITE\n')
+            f.write("SITE\n")
             for row in self.site:
-                f.write('    ATOM={0:4s}  '.format(row['ATOM']))
-                if 'POS' in self.site:
-                    f.write('POS= {0:11.8f} {1:11.8f} {2:11.8f}'.format(
-                        *row['POS']))
+                f.write("    ATOM={0:4s}  ".format(row["ATOM"]))
+                if "POS" in self.site:
+                    f.write("POS= {0:11.8f} {1:11.8f} {2:11.8f}".format(*row["POS"]))
                 else:
-                    f.write('X= {0:11.8f} {1:11.8f} {2:11.8f}'.format(
-                        *row['X']))
+                    f.write("X= {0:11.8f} {1:11.8f} {2:11.8f}".format(*row["X"]))
                 for key, value in row.items():
-                    if key not in ('ATOM', 'POS', 'X'):
-                        f.write('  {0}= {1}'.format(key, value))
-                f.write('\n')
+                    if key not in ("ATOM", "POS", "X"):
+                        f.write("  {0}= {1}".format(key, value))
+                f.write("\n")
 
             if self.spec is not None:
-                f.write('SPEC')
+                f.write("SPEC")
                 for key, value in self.spec.items():
-                    f.write('  {0}= {1}\n'.format(key, value))
+                    f.write("  {0}= {1}\n".format(key, value))
 
     @staticmethod
     def from_structure(structure):
         """Generate QuestaalInit object from pymatgen structure"""
-        lattice = {'ALAT': 1, 'UNITS': 'A'}
-        lattice['PLAT'] = structure.lattice.matrix
+        lattice = {"ALAT": 1, "UNITS": "A"}
+        lattice["PLAT"] = structure.lattice.matrix
 
-        sites = [{'ATOM': site.species_string, 'X': tuple(site.frac_coords)}
-                 for site in structure.sites]
+        sites = [
+            {"ATOM": site.species_string, "X": tuple(site.frac_coords)}
+            for site in structure.sites
+        ]
         return QuestaalInit(lattice, sites)
 
     @staticmethod
@@ -346,22 +371,22 @@ class QuestaalInit(object):
             :obj:`~sumo.io.questaal.QuestaalInit`"""
 
         if preprocessor is None:
-            if which('rdfile') is not None:
+            if which("rdfile") is not None:
                 preprocessor = True
             else:
                 preprocessor = False
 
         if preprocessor:
-            process = Popen(['rdfile', filename], stdout=PIPE)
+            process = Popen(["rdfile", filename], stdout=PIPE)
             lines = process.stdout.readlines()
             #  Need to decode from bytes. Hard-coding ASCII here - it doesn't
             #  seem likely that Questaal would support unicode?
-            lines = [line.decode('ascii') for line in lines]
+            lines = [line.decode("ascii") for line in lines]
         else:
-            with zopen(filename, 'r') as f:
+            with zopen(filename, "r") as f:
                 lines = f.readlines()
 
-        categories = {'LATTICE', 'SITE', 'SPEC'}
+        categories = {"LATTICE", "SITE", "SPEC"}
 
         # Find which lines begin a new category
         cat_lines = []
@@ -374,16 +399,16 @@ class QuestaalInit(object):
         grouped_lines = {}
         for i in range(len(cat_lines) - 1):
             category = lines[cat_lines[i]].split()[0]
-            grouped_lines[category] = lines[cat_lines[i]:cat_lines[i + 1]]
+            grouped_lines[category] = lines[cat_lines[i] : cat_lines[i + 1]]
 
         # Initial cleanup: - Remove leading/trailing whitespace
         #                  - drop lines beginning with '#'
         #                  - remove category name from first line
 
         for category, lines in grouped_lines.items():
-            lines = [line.strip() for line in lines if line.strip()[0] != '#']
+            lines = [line.strip() for line in lines if line.strip()[0] != "#"]
 
-            category_line_remainder = lines[0][len(category):].strip()
+            category_line_remainder = lines[0][len(category) :].strip()
             lines = [category_line_remainder] + lines[1:]
 
             grouped_lines[category] = lines
@@ -391,9 +416,9 @@ class QuestaalInit(object):
         # Join lines and split into tags
         init_data = {}
         for category, lines in grouped_lines.items():
-            tag_text = ' '.join(lines)
+            tag_text = " ".join(lines)
 
-            if category == 'SITE':
+            if category == "SITE":
                 site_data = []
                 #  Split on regex: ATOM tag will be removed, species is left
                 #  followed by other tags, e.g.
@@ -401,53 +426,52 @@ class QuestaalInit(object):
                 #  is split to
                 #  ['', 'Zn X = 0.0 0.0 0.5', 'S X = 0.0 0.0 0.0']
                 #
-                atom_entries = re.split(r'ATOM\s*=\s*', tag_text)
+                atom_entries = re.split(r"ATOM\s*=\s*", tag_text)
 
                 for line in atom_entries[1:]:  # Drop the empty first line
                     atom = line.split()[0]
-                    tag_dict = {'ATOM': atom}
+                    tag_dict = {"ATOM": atom}
 
-                    line = line[len(atom):]    # Drop species tag from line
-                    tags = re.findall(r'(\w+)\s*=', line)  # Find tags
+                    line = line[len(atom) :]  # Drop species tag from line
+                    tags = re.findall(r"(\w+)\s*=", line)  # Find tags
                     # Split on tags to find tag parameters
-                    tag_data = re.split(r'\s*\w+\s*=\s*', line)[1:]
+                    tag_data = re.split(r"\s*\w+\s*=\s*", line)[1:]
                     tag_dict.update(dict(zip(tags, tag_data)))
 
                     # Cast coordinates to tuple
-                    for key in ('POS', 'X'):
+                    for key in ("POS", "X"):
                         if key in tag_dict:
-                            tag_dict[key] = tuple(map(float,
-                                                      tag_dict[key].split()))
+                            tag_dict[key] = tuple(map(float, tag_dict[key].split()))
 
                     site_data.append(tag_dict)
 
-                init_data['SITE'] = site_data
+                init_data["SITE"] = site_data
 
             else:
-                float_params = ('A', 'B', 'C',
-                                'ALPHA', 'BETA', 'GAMMA',
-                                'ALAT')
+                float_params = ("A", "B", "C", "ALPHA", "BETA", "GAMMA", "ALAT")
 
-                unsupported_params = ('GENS')
+                unsupported_params = "GENS"
 
-                tags = re.findall(r'(\w+)\s*=', tag_text)  # Find tags
+                tags = re.findall(r"(\w+)\s*=", tag_text)  # Find tags
                 # Split on tags to find tag parameters
-                tag_data = re.split(r'\s*\w+\s*=\s*', tag_text)[1:]
+                tag_data = re.split(r"\s*\w+\s*=\s*", tag_text)[1:]
                 tag_dict = dict(zip(tags, tag_data))
 
-                if 'SPCGRP' in tag_dict:
+                if "SPCGRP" in tag_dict:
                     try:
-                        tag_dict['SPCGRP'] = int(tag_dict['SPCGRP'])
+                        tag_dict["SPCGRP"] = int(tag_dict["SPCGRP"])
                     except ValueError:
                         pass
 
-                if 'PLAT' in tag_dict:
-                    lattice = tuple(map(float, tag_dict['PLAT'].split()))
+                if "PLAT" in tag_dict:
+                    lattice = tuple(map(float, tag_dict["PLAT"].split()))
                     if len(lattice) != 9:
                         raise AssertionError()
-                    tag_dict['PLAT'] = [[lattice[0], lattice[1], lattice[2]],
-                                        [lattice[3], lattice[4], lattice[5]],
-                                        [lattice[6], lattice[7], lattice[8]]]
+                    tag_dict["PLAT"] = [
+                        [lattice[0], lattice[1], lattice[2]],
+                        [lattice[3], lattice[4], lattice[5]],
+                        [lattice[6], lattice[7], lattice[8]],
+                    ]
 
                 for float_param in float_params:
                     if float_param in tag_dict:
@@ -456,23 +480,31 @@ class QuestaalInit(object):
                 for unsupported_param in unsupported_params:
                     if unsupported_param in tag_dict:
                         raise NotImplementedError(
-                            'Questaal tag {0}_{1} is not supported'.format(
-                                category, unsupported_param))
+                            "Questaal tag {0}_{1} is not supported".format(
+                                category, unsupported_param
+                            )
+                        )
 
                 init_data[category] = tag_dict
 
-            if 'SPEC' not in init_data or init_data['SPEC'] == {}:
-                init_data['SPEC'] = None
+            if "SPEC" not in init_data or init_data["SPEC"] == {}:
+                init_data["SPEC"] = None
 
-        return QuestaalInit(init_data['LATTICE'],
-                            init_data['SITE'],
-                            spec=init_data['SPEC'],
-                            tol=tol)
+        return QuestaalInit(
+            init_data["LATTICE"], init_data["SITE"], spec=init_data["SPEC"], tol=tol
+        )
 
 
-def write_kpoint_files(filename, kpoints, labels, alat=1,
-                       make_folders=False, directory=None, cart_coords=False,
-                       **kwargs):
+def write_kpoint_files(
+    filename,
+    kpoints,
+    labels,
+    alat=1,
+    make_folders=False,
+    directory=None,
+    cart_coords=False,
+    **kwargs
+):
     """Write syml file for Questaal kpoints
 
     The interface imitates the VASP KPOINTS file writer for simplicity of
@@ -511,11 +543,13 @@ def write_kpoint_files(filename, kpoints, labels, alat=1,
 
     for key, value in kwargs.items():
         if value is not None:
-            logging.info('Ignoring k-point write option "{0}"; not '
-                         'implemented for Questaal calculations.'.format(key))
+            logging.info(
+                'Ignoring k-point write option "{0}"; not '
+                "implemented for Questaal calculations.".format(key)
+            )
 
-    ext = filename.split('.')[-1]
-    logging.info('System id from init filename: {0}'.format(ext))
+    ext = filename.split(".")[-1]
+    logging.info("System id from init filename: {0}".format(ext))
 
     if directory is not None:
         path = directory
@@ -523,50 +557,60 @@ def write_kpoint_files(filename, kpoints, labels, alat=1,
         path = os.path.curdir
 
     if make_folders:
-        path = os.path.join(path, 'band-calc')
+        path = os.path.join(path, "band-calc")
 
         try:
             makedirs(path)
         except OSError as e:
-                if e.errno == errno.EEXIST:
-                    logging.error("\nERROR: Folders already exist, won't "
-                                  "overwrite.")
-                    sys.exit()
-                else:
-                    raise
+            if e.errno == errno.EEXIST:
+                logging.error("\nERROR: Folders already exist, won't " "overwrite.")
+                sys.exit()
+            else:
+                raise
 
     if cart_coords:
-        logging.info('Writing band structure in Cartesian coordinates...\n'
-                     'Remember to run full-potential calc with --band and '
-                     'NOT --band~mq')
+        logging.info(
+            "Writing band structure in Cartesian coordinates...\n"
+            "Remember to run full-potential calc with --band and "
+            "NOT --band~mq"
+        )
     else:
-        logging.info('Writing band structure in direct coordinates...\n'
-                     'Remember to run full-potential calc with --band~mq.')
+        logging.info(
+            "Writing band structure in direct coordinates...\n"
+            "Remember to run full-potential calc with --band~mq."
+        )
     if labels is None:
-        with open(os.path.join(path, 'syml.' + ext), 'w') as f:
+        with open(os.path.join(path, "syml." + ext), "w") as f:
             for kpt in kpoints:
-                f.write('{0:11.8f} {1:11.8f} {2:11.8f}\n'.format(kpt[0],
-                                                                 kpt[1],
-                                                                 kpt[2]))
+                f.write(
+                    "{0:11.8f} {1:11.8f} {2:11.8f}\n".format(kpt[0], kpt[1], kpt[2])
+                )
     else:
-        label_positions = [i for i, l in enumerate(labels) if l != '']
+        label_positions = [i for i, l in enumerate(labels) if l != ""]
         special_points = [kpoints[i] for i in label_positions]
-        segment_samples = [label_positions[i + 1] - label_positions[i] + 1
-                           for i in range(len(label_positions) - 1)]
-        with open(os.path.join(path, 'syml.' + ext), 'w') as f:
+        segment_samples = [
+            label_positions[i + 1] - label_positions[i] + 1
+            for i in range(len(label_positions) - 1)
+        ]
+        with open(os.path.join(path, "syml." + ext), "w") as f:
             for i, samples in enumerate(segment_samples):
                 if samples == 2:
-                    continue   # Don't add segments between branches
-                f.write('{0:5d}    {1:11.8f} {2:11.8f} {3:11.8f}    '
-                        '{4:11.8f} {5:11.8f} {6:11.8f}    {7} to {8}\n'.format(
-                            samples,
-                            special_points[i][0], special_points[i][1],
-                            special_points[i][2],
-                            special_points[i + 1][0], special_points[i + 1][1],
-                            special_points[i + 1][2],
-                            labels[label_positions[i]],
-                            labels[label_positions[i + 1]]))
-            f.write('    0 0 0 0 0 0 0\n')
+                    continue  # Don't add segments between branches
+                f.write(
+                    "{0:5d}    {1:11.8f} {2:11.8f} {3:11.8f}    "
+                    "{4:11.8f} {5:11.8f} {6:11.8f}    {7} to {8}\n".format(
+                        samples,
+                        special_points[i][0],
+                        special_points[i][1],
+                        special_points[i][2],
+                        special_points[i + 1][0],
+                        special_points[i + 1][1],
+                        special_points[i + 1][2],
+                        labels[label_positions[i]],
+                        labels[label_positions[i + 1]],
+                    )
+                )
+            f.write("    0 0 0 0 0 0 0\n")
 
 
 def labels_from_syml(syml_file):
@@ -590,7 +634,7 @@ def labels_from_syml(syml_file):
     """
     labels = {}
 
-    with open(syml_file, 'r') as f:
+    with open(syml_file, "r") as f:
         lines = f.readlines()
     for line in lines:
         npts, x1, y1, z1, x2, y2, z2, *label_text = line.split()
@@ -600,19 +644,29 @@ def labels_from_syml(syml_file):
             kpt1 = tuple(map(float, (x1, y1, z1)))
             kpt2 = tuple(map(float, (x2, y2, z2)))
 
-            label_text = ' '.join(label_text)  # Undo previous split
-            label1_label2 = label_text.split(' to ')
+            label_text = " ".join(label_text)  # Undo previous split
+            label1_label2 = label_text.split(" to ")
             if len(label1_label2) != 2:
-                raise ValueError("Not clear how to interpret labels from "
-                                 "this line: {}".format(line))
+                raise ValueError(
+                    "Not clear how to interpret labels from "
+                    "this line: {}".format(line)
+                )
             label1, label2 = label1_label2
             labels.update({label1: kpt1, label2: kpt2})
     return labels
 
 
-def read_dos(pdos_file=None, tdos_file=None, site_file=None,
-             ry=True, total_only=False, gaussian=None,
-             elements=None, lm_orbitals=None, atoms=None):
+def read_dos(
+    pdos_file=None,
+    tdos_file=None,
+    site_file=None,
+    ry=True,
+    total_only=False,
+    gaussian=None,
+    elements=None,
+    lm_orbitals=None,
+    atoms=None,
+):
     """Read DOS file data
 
     Construct Pymatgen Dos objects for total dos and orbital contributions as
@@ -699,19 +753,21 @@ def read_dos(pdos_file=None, tdos_file=None, site_file=None,
         return list(map(float, chain(*(line.split() for line in lines))))
 
     def _read_dos_data(filename, check_tdos=False):
-        with zopen(filename, 'rt') as f:
-            (emin, emax, ne, nchan,
-             nsp, efermi, delta, fmt) = f.readline().split()
+        with zopen(filename, "rt") as f:
+            (emin, emax, ne, nchan, nsp, efermi, delta, fmt) = f.readline().split()
 
             if check_tdos and int(nchan) != 1:
-                raise ValueError('File {} is not a TDOS: contains {} channels'
-                                 ''.format(filename, nchan))
+                raise ValueError(
+                    "File {} is not a TDOS: contains {} channels"
+                    "".format(filename, nchan)
+                )
 
             ne, nchan, nsp, fmt = map(int, (ne, nchan, nsp, fmt))
             emin, emax, efermi, delta = map(float, (emin, emax, efermi, delta))
             if ry:
-                emin, emax, efermi, delta = [x * _ry_to_ev for x in
-                                             (emin, emax, efermi, delta)]
+                emin, emax, efermi, delta = [
+                    x * _ry_to_ev for x in (emin, emax, efermi, delta)
+                ]
 
             nlines = ceil(ne / 5)
             data = [_read_states(f, nlines) for _ in range(nsp * nchan)]
@@ -721,65 +777,72 @@ def read_dos(pdos_file=None, tdos_file=None, site_file=None,
         return energies, data, efermi, nsp
 
     def _get_tdos(filename):
-        energies, data, efermi, nsp = _read_dos_data(tdos_file,
-                                                     check_tdos=True)
+        energies, data, efermi, nsp = _read_dos_data(tdos_file, check_tdos=True)
 
         if nsp == 1:
             # densities = np.array(data[0]).reshape((ne, 1))
             densities = {Spin.up: data[0]}
         elif nsp == 2:
-            #densities = np.concatenate((data[0], data[1]), axis=1)
+            # densities = np.concatenate((data[0], data[1]), axis=1)
             densities = {Spin.up: data[0], Spin.down: data[1]}
         else:
-            raise ValueError('There can\'t be {} spin channels, that makes '
-                             'no sense!'.format(nsp))
+            raise ValueError(
+                "There can't be {} spin channels, that makes " "no sense!".format(nsp)
+            )
         return Dos(efermi, energies, densities)
 
     def _get_cdos(pdos_file, site_file):
         if not (pdos_file and site_file):
-            raise ValueError('Both dos.ext and site.ext are needed for PDOS')
+            raise ValueError("Both dos.ext and site.ext are needed for PDOS")
         energies, data, efermi, nsp = _read_dos_data(pdos_file)
         if nsp == 1:
             fake_tdos = Dos(efermi, energies, {Spin.up: 0 * energies})
             spins = (Spin.up,)
         elif nsp == 2:
-            fake_tdos = Dos(efermi, energies, {Spin.up: 0 * energies,
-                                               Spin.down: 0 * energies})
+            fake_tdos = Dos(
+                efermi, energies, {Spin.up: 0 * energies, Spin.down: 0 * energies}
+            )
             spins = (Spin.up, Spin.down)
         else:
-            raise ValueError('There can\'t be {} spin channels, that makes '
-                             'no sense!'.format(nsp))
+            raise ValueError(
+                "There can't be {} spin channels, that makes " "no sense!".format(nsp)
+            )
 
         site_data = QuestaalSite.from_file(site_file)
         structure = site_data.structure
 
         pdoss = {}
-        for site, orbital, spin in product(range(len(site_data.sites)),
-                                           range(16),  # forget about g orbs
-                                           range(len(spins))):
+        for site, orbital, spin in product(
+            range(len(site_data.sites)),
+            range(16),  # forget about g orbs
+            range(len(spins)),
+        ):
             if structure.sites[site] not in pdoss:
                 pdoss.update({structure.sites[site]: {}})
             if Orbital(orbital) not in pdoss[structure.sites[site]]:
                 pdoss[structure.sites[site]].update({Orbital(orbital): {}})
 
             pdoss[structure.sites[site]][Orbital(orbital)].update(
-                {spins[spin]: data[site * (25 * nsp) + orbital * nsp + spin]})
+                {spins[spin]: data[site * (25 * nsp) + orbital * nsp + spin]}
+            )
 
         return CompleteDos(structure, fake_tdos, pdoss)
 
     if not (tdos_file or pdos_file):
-        raise ValueError('Need some DOS data: provide a dos.ext')
+        raise ValueError("Need some DOS data: provide a dos.ext")
 
     elif tdos_file and not pdos_file:
         tdos = _get_tdos(tdos_file)
         cdos = None
 
     elif pdos_file and not tdos_file:
-        with zopen(pdos_file, 'rt') as f:
+        with zopen(pdos_file, "rt") as f:
             nchan = int(f.readline().split()[3])
         if nchan == 1:
-            logging.info("No explicit TDOS and file {} contains 1 channel: "
-                         "this is a TDOS.".format(pdos_file))
+            logging.info(
+                "No explicit TDOS and file {} contains 1 channel: "
+                "this is a TDOS.".format(pdos_file)
+            )
 
             tdos = _get_tdos(pdos_file)
             cdos = None
@@ -798,20 +861,21 @@ def read_dos(pdos_file=None, tdos_file=None, site_file=None,
             for site in cdos.pdos:
                 for orbital in cdos.pdos[site]:
                     cdos.pdos[site][orbital] = cdos.get_site_orbital_dos(
-                        site, orbital).get_smeared_densities(gaussian)
+                        site, orbital
+                    ).get_smeared_densities(gaussian)
 
     # Combine data into selected orbitals: default is by species type
     if cdos is None:
         pdos = {}
     else:
         pdos = sumo.electronic_structure.dos.get_pdos(
-            cdos, lm_orbitals=lm_orbitals, atoms=atoms, elements=elements)
+            cdos, lm_orbitals=lm_orbitals, atoms=atoms, elements=elements
+        )
 
     return (tdos, pdos)
 
 
-def band_structure(bnds_file, lattice, labels=None, alat=1,
-                   coords_are_cartesian=False):
+def band_structure(bnds_file, lattice, labels=None, alat=1, coords_are_cartesian=False):
     """Read band structure data
 
     Args:
@@ -838,16 +902,17 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
     # then convert to a numpy array (i.e. with each row for a kpoint)
     # and then transpose the array to obtain desired formats
 
-    with zopen(bnds_file, 'r') as f:
+    with zopen(bnds_file, "r") as f:
         kpoints = []
 
         # Read heading, get metadata and check no orbital projections used
         nbands, efermi, n_color_wts, *_ = f.readline().split()
 
         if int(n_color_wts) > 0:
-            raise NotImplementedError("Band data includes orbital data: "
-                                      "this format is not currently supported."
-                                      )
+            raise NotImplementedError(
+                "Band data includes orbital data: "
+                "this format is not currently supported."
+            )
 
         nbands, efermi = int(nbands), float(efermi)
         eig_lines = ceil(nbands / 10)
@@ -857,8 +922,8 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
         _ = f.readline()
         kpt1 = list(map(float, f.readline().split()))
 
-        for line in range(eig_lines):      # Skip over the eigenvalues
-            _ = f.readline()                     # for now: re-read file later
+        for line in range(eig_lines):  # Skip over the eigenvalues
+            _ = f.readline()  # for now: re-read file later
         kpt2 = list(map(float, f.readline().split()))
         if len(kpt1) != 3 or len(kpt2) != 3:
             raise AssertionError()
@@ -869,8 +934,11 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
             spin_pol = False
 
     logging.info("Reading Questaal band structure header...")
-    logging.info("nbands: {}, efermi / Ry: {}, spin channels: {}".format(
-        nbands, efermi, (2 if spin_pol else 1)))
+    logging.info(
+        "nbands: {}, efermi / Ry: {}, spin channels: {}".format(
+            nbands, efermi, (2 if spin_pol else 1)
+        )
+    )
     logging.info("Reading band structure eigenvalues...")
 
     # Key info has been collected: re-read file for kpts and eigenvalues
@@ -882,7 +950,7 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
         # stored to a list
         return list(map(float, chain(*(line.split() for line in lines))))
 
-    with zopen(bnds_file, 'r') as f:
+    with zopen(bnds_file, "r") as f:
         _ = f.readline()
         if spin_pol:  # Need to read two spin channels
             block_nkpts = int(f.readline().strip()) // 2
@@ -903,7 +971,8 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
                     if spin_down_kpoint != kpoint:
                         raise AssertionError(
                             "File interpreted as spin-polarised, but this"
-                            " kpoint only has one entry: {}".format(kpoint))
+                            " kpoint only has one entry: {}".format(kpoint)
+                        )
                     eigenvals[Spin.down].append(_read_eigenvals(f, eig_lines))
 
             block_nkpts = int(f.readline().strip())
@@ -911,8 +980,7 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
                 block_nkpts = block_nkpts // 2
 
     # Transpose matrix to arrange by band and convert to eV from Ry
-    eigenvals = {key: np.array(data).T * _ry_to_ev
-                 for key, data in eigenvals.items()}
+    eigenvals = {key: np.array(data).T * _ry_to_ev for key, data in eigenvals.items()}
     efermi *= _ry_to_ev
 
     # Convert labels to Cartesian coordinates
@@ -920,8 +988,8 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
     #           |bx, by, bz|
     #           [cx, cy, cz]
 
-    labels = labels or {} # Initialise a dict if null value
-                          # (Avoids oddness with mutable option defaults)
+    labels = labels or {}  # Initialise a dict if null value
+    # (Avoids oddness with mutable option defaults)
     if coords_are_cartesian:
         logging.info("Cartesian coordinates, scaling by ALAT = {}".format(alat))
         for label, coords in labels.items():
@@ -929,14 +997,19 @@ def band_structure(bnds_file, lattice, labels=None, alat=1,
     else:
         for label, coords in labels.items():
             labels[label] = np.dot(
-                coords, lattice.reciprocal_lattice_crystallographic.matrix)
+                coords, lattice.reciprocal_lattice_crystallographic.matrix
+            )
 
     raise Exception(eigenvals)
     # Data in bnds file seems to always be Cartesian
-    return BandStructureSymmLine(kpoints, eigenvals,
-                                 lattice.reciprocal_lattice_crystallographic,
-                                 efermi, labels,
-                                 coords_are_cartesian=True)
+    return BandStructureSymmLine(
+        kpoints,
+        eigenvals,
+        lattice.reciprocal_lattice_crystallographic,
+        efermi,
+        labels,
+        coords_are_cartesian=True,
+    )
 
 
 def dielectric_from_file(filename, out_filename=None):
@@ -953,7 +1026,7 @@ def dielectric_from_file(filename, out_filename=None):
             and a Real component is obtained by the Kramers-Kronig relation.
     """
 
-    if 'eps_BSE' in filename:
+    if "eps_BSE" in filename:
         return dielectric_from_BSE(filename)
     else:
         return dielectric_from_opt(filename, out_filename=out_filename)
@@ -991,20 +1064,22 @@ def dielectric_from_BSE(filename):
 
             [real_1, real_1, real_1, 0, 0, 0]
     """
-    data = np.genfromtxt(filename, comments='#')
+    data = np.genfromtxt(filename, comments="#")
     if data.shape[1] == 3:
         pass
     else:
-        raise ValueError("Not sure how to interpret {}; expected "
-                         "3 columns. "
-                         "If this isn't an eps_BSE file, please don't put"
-                         "eps_BSE in the filename!".format(filename))
+        raise ValueError(
+            "Not sure how to interpret {}; expected "
+            "3 columns. "
+            "If this isn't an eps_BSE file, please don't put"
+            "eps_BSE in the filename!".format(filename)
+        )
 
     energy = list(data[:, 0].T)
     real = [[r, r, r, 0, 0, 0] for r in data[:, 1]]
     imag = [[i, i, i, 0, 0, 0] for i in data[:, 2]]
 
-    return(energy, real, imag)
+    return (energy, real, imag)
 
 
 def dielectric_from_opt(filename, cshift=1e-6, out_filename=None):
@@ -1054,13 +1129,13 @@ def dielectric_from_opt(filename, cshift=1e-6, out_filename=None):
     elif data.shape[1] == 7:
         data = np.hstack(data[:, :1], data[1:4] + data[4:7])
     else:
-        raise ValueError("Not sure how to interpret {}; expected "
-                         "4 or 7 columns.".format(filename))
+        raise ValueError(
+            "Not sure how to interpret {}; expected " "4 or 7 columns.".format(filename)
+        )
 
     data[:, 0] *= _ry_to_ev
     de = data[1, 0] - data[0, 0]
-    eps_imag = [[[row[1], 0, 0], [0, row[2], 0], [0, 0, row[3]]]
-                for row in data]
+    eps_imag = [[[row[1], 0, 0], [0, row[2], 0], [0, 0, row[3]]] for row in data]
     eps_real = kkr(de, eps_imag)
 
     # Re-shape to XX YY ZZ XY YZ XZ format
@@ -1070,9 +1145,9 @@ def dielectric_from_opt(filename, cshift=1e-6, out_filename=None):
     eps_real = eps_real[:, [0, 4, 8, 1, 5, 2]]
 
     if out_filename is not None:
-        with open(out_filename, 'wt') as f:
+        with open(out_filename, "wt") as f:
             for e, r, i in zip(data[:, 0].flatten(), eps_real, eps_imag):
-                f.write((' '.join(['{:10.8f}'] * 7)).format(e, *r[:3], *i[:3]))
-                f.write('\n')
+                f.write((" ".join(["{:10.8f}"] * 7)).format(e, *r[:3], *i[:3]))
+                f.write("\n")
 
     return (data[:, 0].flatten(), eps_real, eps_imag)

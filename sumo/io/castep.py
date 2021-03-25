@@ -6,33 +6,29 @@ import re
 import shutil
 import sys
 from itertools import product
-from monty.io import zopen
+
 import numpy as np
+from castepxbin.pdos import compute_pdos
+from monty.io import zopen
 from pymatgen.core.lattice import Lattice
 from pymatgen.core.structure import Structure
-from pymatgen.electronic_structure.core import Spin
 from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
-from pymatgen.electronic_structure.dos import Dos, CompleteDos
+from pymatgen.electronic_structure.core import Spin
+from pymatgen.electronic_structure.dos import CompleteDos, Dos
 from pymatgen.phonon.bandstructure import PhononBandStructureSymmLine
 
 from sumo.electronic_structure.dos import get_pdos
-
-from castepxbin.pdos import compute_pdos
 
 _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009
 
 # From 2002 CODATA values
-to_angstrom = {'ang': 1,
-               'bohr': 0.5291772108,
-               'm': 1e10,
-               'cm': 1e8,
-               'nm': 10}
+to_angstrom = {"ang": 1, "bohr": 0.5291772108, "m": 1e10, "cm": 1e8, "nm": 10}
 
-Tag = collections.namedtuple('Tag', 'value comment')
-Block = collections.namedtuple('Block', 'values comments')
+Tag = collections.namedtuple("Tag", "value comment")
+Block = collections.namedtuple("Block", "values comments")
 
-unsupported_dosplot_args = {'elements', 'lm_orbitals', 'atoms'}
+unsupported_dosplot_args = {"elements", "lm_orbitals", "atoms"}
 
 
 class CastepCell(object):
@@ -59,100 +55,100 @@ class CastepCell(object):
     @property
     def structure(self):
         # Get lattice vectors
-        if 'lattice_cart' in self.blocks:
-            lattice_cart = self.blocks['lattice_cart'].values
-            if lattice_cart[0][0].lower() in ('ang', 'nm', 'cm',
-                                              'm', 'bohr', 'a0'):
+        if "lattice_cart" in self.blocks:
+            lattice_cart = self.blocks["lattice_cart"].values
+            if lattice_cart[0][0].lower() in ("ang", "nm", "cm", "m", "bohr", "a0"):
                 unit = lattice_cart[0][0].lower()
                 vectors = lattice_cart[1:]
             else:
-                unit = 'ang'
+                unit = "ang"
                 vectors = lattice_cart
             vectors = np.array([list(map(float, row)) for row in vectors])
             if vectors.shape != (3, 3):
-                raise ValueError('lattice_cart should contain a 3x3 matrix')
+                raise ValueError("lattice_cart should contain a 3x3 matrix")
 
             vectors *= to_angstrom[unit]
             lattice = Lattice(vectors)
-        elif 'lattice_abc' in self.blocks:
-            lattice_abc = self.blocks['lattice_abc'].values
-            if lattice_abc[0][0].lower() in ('ang', 'nm', 'cm', 'm',
-                                             'bohr', 'a0'):
+        elif "lattice_abc" in self.blocks:
+            lattice_abc = self.blocks["lattice_abc"].values
+            if lattice_abc[0][0].lower() in ("ang", "nm", "cm", "m", "bohr", "a0"):
                 unit = lattice_abc[0][0].lower()
                 lengths_and_angles = lattice_abc[1:]
             else:
-                unit = 'ang'
+                unit = "ang"
                 lengths_and_angles = lattice_abc[1:]
             if len(lengths_and_angles) != 2:
-                raise ValueError('lattice_abc should have two rows')
-            lengths_and_angles = [list(map(float, row))
-                                  for row in lengths_and_angles]
-            lengths_and_angles[0] = [x * to_angstrom[unit]
-                                     for x in lengths_and_angles[0]]
+                raise ValueError("lattice_abc should have two rows")
+            lengths_and_angles = [list(map(float, row)) for row in lengths_and_angles]
+            lengths_and_angles[0] = [
+                x * to_angstrom[unit] for x in lengths_and_angles[0]
+            ]
             lattice = Lattice.from_lengths_and_angles(*lengths_and_angles)
         else:
             raise ValueError("Couldn't find a lattice in cell file")
 
-        if 'positions_frac' in self.blocks:
-            elements_coords = [(row[0], list(map(float, row[1:4])))
-                               for row in self.blocks['positions_frac'].values]
+        if "positions_frac" in self.blocks:
+            elements_coords = [
+                (row[0], list(map(float, row[1:4])))
+                for row in self.blocks["positions_frac"].values
+            ]
             elements, coords = zip(*elements_coords)
-            return Structure(lattice, elements, coords,
-                             coords_are_cartesian=False)
-        elif 'positions_abs' in self.blocks:
-            positions_abs = self.blocks['positions_abs'].values
-            if positions_abs[0][0].lower() in ('ang', 'nm', 'cm', 'm',
-                                               'bohr', 'a0'):
+            return Structure(lattice, elements, coords, coords_are_cartesian=False)
+        elif "positions_abs" in self.blocks:
+            positions_abs = self.blocks["positions_abs"].values
+            if positions_abs[0][0].lower() in ("ang", "nm", "cm", "m", "bohr", "a0"):
                 unit = positions_abs[0][0].lower()
                 positions_abs = positions_abs[1:]
             else:
-                unit = 'ang'
-            elements_coords = [(row[0], list(map(float, row[1:4])))
-                               for row in positions_abs]
+                unit = "ang"
+            elements_coords = [
+                (row[0], list(map(float, row[1:4]))) for row in positions_abs
+            ]
             elements, coords = zip(*elements_coords)
-            return Structure(lattice, elements, coords,
-                             coords_are_cartesian=True)
+            return Structure(lattice, elements, coords, coords_are_cartesian=True)
         else:
             raise ValueError("Couldn't find any atom positions in cell file")
 
     def to_file(self, filename):
-        with open(filename, 'wt') as f:
+        with open(filename, "wt") as f:
             for tag, content in self.tags.items():
-                if content.comment in (None, ''):
-                    f.write('{0: <24}: {1}\n'.format(tag,
-                                                     ' '.join(content.value)))
+                if content.comment in (None, ""):
+                    f.write("{0: <24}: {1}\n".format(tag, " ".join(content.value)))
                 else:
-                    f.write('{0: <24}: {1: <16} ! {2}\n'.format(
-                        tag, ' '.join(content.value), content.comment))
+                    f.write(
+                        "{0: <24}: {1: <16} ! {2}\n".format(
+                            tag, " ".join(content.value), content.comment
+                        )
+                    )
             for block, content in self.blocks.items():
-                f.write('\n%block {}\n'.format(block))
+                f.write("\n%block {}\n".format(block))
                 if content.comments is None:
-                    comments = [''] * len(content.values)
+                    comments = [""] * len(content.values)
                 else:
                     comments = content.comments
 
                 for row, comment in zip(content.values, comments):
-                    line = ' '.join(map(str, row))
-                    if comment != '':
-                        line = '{0: <30} ! {1}'.format(line, comment)
-                    line = line + '\n'
+                    line = " ".join(map(str, row))
+                    if comment != "":
+                        line = "{0: <30} ! {1}".format(line, comment)
+                    line = line + "\n"
                     f.write(line)
 
-                f.write('%endblock {}\n'.format(block))
+                f.write("%endblock {}\n".format(block))
 
     @classmethod
     def from_file(cls, filename):
 
-        with zopen(filename, 'rt') as f:
+        with zopen(filename, "rt") as f:
             lines = [line.strip() for line in f]
 
         # Remove lines which are entirely commented or empty
         def _is_not_empty_line(line):
             if len(line) == 0:
                 return False
-            elif line[0] in '#;!':
+            elif line[0] in "#;!":
                 return False
-            elif len(line) > 6 and line[:7] == 'COMMENT':
+            elif len(line) > 6 and line[:7] == "COMMENT":
                 return False
             else:
                 return True
@@ -162,33 +158,41 @@ class CastepCell(object):
         tags, blocks = {}, {}
         current_block_values, current_block_comments = [], []
         in_block = False
-        current_block_label = ''
+        current_block_label = ""
 
         for line in lines:
             if len(line.split()) == 0:
                 continue
-            elif line[:6].lower() == '%block':
+            elif line[:6].lower() == "%block":
                 if in_block:
-                    raise IOError('Cell file contains nested blocks. '
-                                  'This possibility was not anticipated.')
+                    raise IOError(
+                        "Cell file contains nested blocks. "
+                        "This possibility was not anticipated."
+                    )
                 else:
                     current_block_label = line.split()[1].lower()
                     in_block = True
                     continue
-            elif line[:9].lower() == '%endblock':
+            elif line[:9].lower() == "%endblock":
                 if line.split()[1].lower() != current_block_label:
-                    raise IOError('Endblock {} does not match current block '
-                                  '{}: cannot interpret cell file.'.format(
-                                      line.split()[1], current_block_label))
+                    raise IOError(
+                        "Endblock {} does not match current block "
+                        "{}: cannot interpret cell file.".format(
+                            line.split()[1], current_block_label
+                        )
+                    )
                 if in_block:
-                    blocks[current_block_label] = Block(current_block_values,
-                                                        current_block_comments)
+                    blocks[current_block_label] = Block(
+                        current_block_values, current_block_comments
+                    )
 
                     current_block_values, current_block_comments = [], []
                     in_block = False
                 else:
-                    raise IOError('Cannot cope with line {}: not currently in '
-                                  'a block.'.format(line))
+                    raise IOError(
+                        "Cannot cope with line {}: not currently in "
+                        "a block.".format(line)
+                    )
             elif in_block:
                 _, data, comment = _data_comment_from_line(line, in_block=True)
                 current_block_values.append(data)
@@ -202,21 +206,37 @@ class CastepCell(object):
 
     @classmethod
     def from_structure(cls, structure):
-        blocks = {'lattice_cart': Block([['ang']]
-                                        + [list(map(str, row))
-                                           for row in
-                                           structure.lattice.matrix],
-                                        ['', '', '', '']),
-                  'positions_frac': Block([[site.species_string,
-                                            *map(str, site.frac_coords)]
-                                           for site in structure.sites],
-                                           ['' for site in structure.sites])}
+        blocks = {
+            "lattice_cart": Block(
+                [["ang"]] + [list(map(str, row)) for row in structure.lattice.matrix],
+                ["", "", "", ""],
+            ),
+            "positions_frac": Block(
+                [
+                    [site.species_string, *map(str, site.frac_coords)]
+                    for site in structure.sites
+                ],
+                ["" for site in structure.sites],
+            ),
+        }
         return cls(blocks=blocks)
 
 
-def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussian=None,
-              padding=None, emin=None, emax=None, efermi_to_vbm=True,
-              lm_orbitals=None, elements=None, atoms=None, total_only=False):
+def read_dos(
+    bands_file,
+    pdos_file=None,
+    cell_file=None,
+    bin_width=0.01,
+    gaussian=None,
+    padding=None,
+    emin=None,
+    emax=None,
+    efermi_to_vbm=True,
+    lm_orbitals=None,
+    elements=None,
+    atoms=None,
+    total_only=False,
+):
     """Convert DOS data from CASTEP .bands file to Pymatgen/Sumo format
 
     The data is binned into a regular series using np.histogram
@@ -250,7 +270,7 @@ def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussia
     logging.info("Reading band eigenvalues...")
     _, weights, eigenvalues = read_bands_eigenvalues(bands_file, header)
 
-    calc_efermi = header['e_fermi'][0] * _ry_to_ev * 2
+    calc_efermi = header["e_fermi"][0] * _ry_to_ev * 2
     if efermi_to_vbm and not _is_metal(eigenvalues, calc_efermi):
         logging.info("Setting energy zero to VBM")
         efermi = _get_vbm(eigenvalues, calc_efermi)
@@ -284,28 +304,34 @@ def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussia
     # Add rows to weights for each band so they are aligned with eigenval data
     weights = weights * np.ones([eigenvalues[Spin.up].shape[0], 1])
 
-    dos_data = {spin: np.histogram(eigenvalue_set, bins=bins,
-                                   weights=weights)[0]
-                for spin, eigenvalue_set in eigenvalues.items()}
+    dos_data = {
+        spin: np.histogram(eigenvalue_set, bins=bins, weights=weights)[0]
+        for spin, eigenvalue_set in eigenvalues.items()
+    }
 
     dos = Dos(efermi, energies, dos_data)
 
     if pdos_file is not None and not total_only:
         if cell_file is None:
-            raise OSError(f'Cell file {cell_file} not found: this must be '
-                          'provided for PDOS.')
+            raise OSError(
+                f"Cell file {cell_file} not found: this must be " "provided for PDOS."
+            )
         pdos_raw = compute_pdos(pdos_file, eigenvalues, weights, bins)
         # Also we, need to read the structure, but have it sorted with increasing
         # atomic numbers
-        structure = CastepCell.from_file(cell_file).structure.get_sorted_structure(key=lambda x: x.species.elements[0].Z)
+        structure = CastepCell.from_file(cell_file).structure.get_sorted_structure(
+            key=lambda x: x.species.elements[0].Z
+        )
         pdoss = {}
         for isite, site in enumerate(structure.sites):
             pdoss[site] = pdos_raw[isite]
         # Get the pdos dictionary for potting
-        pdos = get_pdos(CompleteDos(structure,dos, pdoss),
-                        lm_orbitals=lm_orbitals,
-                        elements=elements,
-                        atoms=atoms)
+        pdos = get_pdos(
+            CompleteDos(structure, dos, pdoss),
+            lm_orbitals=lm_orbitals,
+            elements=elements,
+            atoms=atoms,
+        )
         # Smear the PDOS
         for orbs in pdos.values():
             for dtmp in orbs.values():
@@ -323,6 +349,7 @@ def read_dos(bands_file, pdos_file=None, cell_file=None, bin_width=0.01, gaussia
 def _is_metal(eigenvalues, efermi, tol=1e-5):
     # Detect if material is a metal by checking if bands cross efermi
     from itertools import chain
+
     for band in chain(*eigenvalues.values()):
         if np.any(band < (efermi - tol)) and np.any(band > (efermi + tol)):
             logging.info("Electronic structure appears to be a metal")
@@ -334,8 +361,10 @@ def _is_metal(eigenvalues, efermi, tol=1e-5):
 
 def _get_vbm(eigenvalues, efermi):
     from itertools import chain
-    occupied_states_by_band = (band[band < efermi]
-                               for band in chain(*eigenvalues.values()))
+
+    occupied_states_by_band = (
+        band[band < efermi] for band in chain(*eigenvalues.values())
+    )
     return max(chain(*occupied_states_by_band))
 
 
@@ -357,7 +386,7 @@ def band_structure(bands_file, cell_file=None):
 
     header = _read_bands_header_verbose(bands_file)
 
-    lattice = Lattice(header['lattice_vectors'])
+    lattice = Lattice(header["lattice_vectors"])
     lattice = Lattice(lattice.matrix * _bohr_to_angstrom)
 
     logging.info("Reading band structure eigenvalues...")
@@ -368,11 +397,14 @@ def band_structure(bands_file, cell_file=None):
     else:
         labels = labels_from_cell(cell_file)
 
-    return BandStructureSymmLine(kpoints, eigenvalues,
-                                 lattice.reciprocal_lattice_crystallographic,
-                                 header['e_fermi'][0] * _ry_to_ev * 2,
-                                 labels,
-                                 coords_are_cartesian=False)
+    return BandStructureSymmLine(
+        kpoints,
+        eigenvalues,
+        lattice.reciprocal_lattice_crystallographic,
+        header["e_fermi"][0] * _ry_to_ev * 2,
+        labels,
+        coords_are_cartesian=False,
+    )
 
 
 def labels_from_cell(cell_file, phonon=False):
@@ -405,23 +437,18 @@ def labels_from_cell(cell_file, phonon=False):
     labels = {}
 
     if phonon:
-        blockstart = re.compile(
-            r'^%block\s+phonon(_fine)?_kpoint(s)?_(path|list)')
-        blockend = re.compile(
-            r'^%endblock\s+phonon(_fine)?_kpoint(s)?_(path|list)')
+        blockstart = re.compile(r"^%block\s+phonon(_fine)?_kpoint(s)?_(path|list)")
+        blockend = re.compile(r"^%endblock\s+phonon(_fine)?_kpoint(s)?_(path|list)")
     else:
-        blockstart = re.compile(
-            r'^%block\s+(bs|spectral)_kpoint(s)?_(path|list)')
-        blockend = re.compile(
-            r'^%endblock\s+(bs|spectral)_kpoint(s)?_(path|list)')
+        blockstart = re.compile(r"^%block\s+(bs|spectral)_kpoint(s)?_(path|list)")
+        blockend = re.compile(r"^%endblock\s+(bs|spectral)_kpoint(s)?_(path|list)")
 
-    with zopen(cell_file, 'r') as f:
-        line = ''
+    with zopen(cell_file, "r") as f:
+        line = ""
         while blockstart.match(line.lower()) is None:
             line = f.readline()
-            if line == '':
-                logging.error("Could not find start of k-point block in "
-                              "cell file.")
+            if line == "":
+                logging.error("Could not find start of k-point block in " "cell file.")
                 sys.exit()
 
         line = f.readline()  # Skip past block start line
@@ -429,13 +456,12 @@ def labels_from_cell(cell_file, phonon=False):
             kpt = tuple(map(float, line.split()[:3]))
             if len(line.split()) > 3:
                 label = line.split()[-1]
-                if label.lower() in ('g', 'gamma'):
-                    label = r'\Gamma'
+                if label.lower() in ("g", "gamma"):
+                    label = r"\Gamma"
                 labels[label] = kpt
             line = f.readline()
-            if line == '':
-                logging.error("Could not find end of k-point block in "
-                              "cell file.")
+            if line == "":
+                logging.error("Could not find end of k-point block in " "cell file.")
                 sys.exit()
 
     return labels
@@ -445,21 +471,27 @@ def _read_bands_header_verbose(bands_file):
     logging.info("Reading CASTEP .bands file header...")
     header = read_bands_header(bands_file)
 
-    if header['n_spins'] == 1:
-        logging.info("nbands: {}, efermi / Ry: {}, spin channels: 1".format(
-            header['n_bands'][0],
-            header['e_fermi'][0]))
-    elif header['n_spins'] == 2:
-        logging.info("nbands: {}, efermi / Ry: {}, spin channels: 2".format(
-            header['n_bands'],
-            header['e_fermi']))
+    if header["n_spins"] == 1:
+        logging.info(
+            "nbands: {}, efermi / Ry: {}, spin channels: 1".format(
+                header["n_bands"][0], header["e_fermi"][0]
+            )
+        )
+    elif header["n_spins"] == 2:
+        logging.info(
+            "nbands: {}, efermi / Ry: {}, spin channels: 2".format(
+                header["n_bands"], header["e_fermi"]
+            )
+        )
     else:
-        raise ValueError('Should only be 1 or 2 spin channels!')
+        raise ValueError("Should only be 1 or 2 spin channels!")
 
-    if len(header['e_fermi']) == 2:
-        if abs(header['e_fermi'][1] - header['e_fermi'][1]) > 1e-8:
-            raise NotImplementedError("Different Fermi energy in each channel."
-                                      " I have no idea how to handle that.")
+    if len(header["e_fermi"]) == 2:
+        if abs(header["e_fermi"][1] - header["e_fermi"][1]) > 1e-8:
+            raise NotImplementedError(
+                "Different Fermi energy in each channel."
+                " I have no idea how to handle that."
+            )
     return header
 
 
@@ -483,30 +515,30 @@ def read_bands_header(bands_file):
     """
 
     header = {}
-    with zopen(bands_file, 'r') as f:
+    with zopen(bands_file, "r") as f:
         # Read in header information a line at a time
 
-        header['n_kpoints'] = int(f.readline().split()[-1])
-        header['n_spins'] = int(f.readline().split()[-1])
-        header['n_electrons'] = [float(x) for x in f.readline().split()[3:]]
-        header['n_bands'] = [int(x) for x in f.readline().split()[3:]]
+        header["n_kpoints"] = int(f.readline().split()[-1])
+        header["n_spins"] = int(f.readline().split()[-1])
+        header["n_electrons"] = [float(x) for x in f.readline().split()[3:]]
+        header["n_bands"] = [int(x) for x in f.readline().split()[3:]]
 
         fermi_line = f.readline().split()
-        if fermi_line[3] != 'atomic':
-            raise NotImplementedError('Band data not in atomic units')
-        header['e_fermi'] = [float(x) for x in fermi_line[5:]]
+        if fermi_line[3] != "atomic":
+            raise NotImplementedError("Band data not in atomic units")
+        header["e_fermi"] = [float(x) for x in fermi_line[5:]]
 
         vectors_header = f.readline().strip()
-        if vectors_header != 'Unit cell vectors':
-            raise AssertionError('CASTEP bands file not formatted as expected',
-                                 vectors_header)
+        if vectors_header != "Unit cell vectors":
+            raise AssertionError(
+                "CASTEP bands file not formatted as expected", vectors_header
+            )
 
-        lattice_vectors = [[float(x) for x in f.readline().split()]
-                           for _ in range(3)]
+        lattice_vectors = [[float(x) for x in f.readline().split()] for _ in range(3)]
         for row in lattice_vectors:
             if len(row) != 3:
-                raise AssertionError('Unit cell vectors not read correctly')
-        header['lattice_vectors'] = lattice_vectors
+                raise AssertionError("Unit cell vectors not read correctly")
+        header["lattice_vectors"] = lattice_vectors
 
     return header
 
@@ -540,31 +572,30 @@ def read_bands_eigenvalues(bands_file, header):
     # the k-point indices and re-order the lists before array conversion.
 
     kpoints = []
-    if header['n_spins'] == 1:
+    if header["n_spins"] == 1:
         eigenvals = {Spin.up: []}
     else:
         eigenvals = {Spin.up: [], Spin.down: []}
 
-    with zopen(bands_file, 'r') as f:
+    with zopen(bands_file, "r") as f:
         for _ in range(9):
             f.readline()  # Skip header
 
-        for _ in range(header['n_kpoints']):
+        for _ in range(header["n_kpoints"]):
             # The first "k-point" column is actually the sorting index
             # and the last is the weighting
-            kpoints.append(np.array(
-                [float(x) for x in f.readline().split()[1:]]))
+            kpoints.append(np.array([float(x) for x in f.readline().split()[1:]]))
             f.readline()  # Skip past "Spin component 1"
-            spin1_bands = ([kpoints[-1][0]] +     # Sorting key goes in col 0
-                           [float(f.readline())
-                            for _i in range(header['n_bands'][0])])
+            spin1_bands = [kpoints[-1][0]] + [  # Sorting key goes in col 0
+                float(f.readline()) for _i in range(header["n_bands"][0])
+            ]
             eigenvals[Spin.up].append(spin1_bands)
 
-            if header['n_spins'] == 2:
+            if header["n_spins"] == 2:
                 f.readline()  # Skip past "Spin component 2"
-                spin2_bands = ([kpoints[-1][0]] +  # Sorting key goes in col 0
-                               [float(f.readline())
-                                for _i in range(header['n_bands'][0])])
+                spin2_bands = [kpoints[-1][0]] + [  # Sorting key goes in col 0
+                    float(f.readline()) for _i in range(header["n_bands"][0])
+                ]
                 eigenvals[Spin.down].append(spin2_bands)
 
     # Sort kpoints and trim off sort keys, weights
@@ -577,14 +608,20 @@ def read_bands_eigenvalues(bands_file, header):
         data = np.array(data)
         eigenvals[key] = data[data[:, 0].argsort(), 1:]
     # Transpose matrix to arrange by band and convert to eV from Ha
-    eigenvals = {key: data.T * _ry_to_ev * 2
-                 for key, data in eigenvals.items()}
+    eigenvals = {key: data.T * _ry_to_ev * 2 for key, data in eigenvals.items()}
 
     return kpoints, weights, eigenvals
 
 
-def write_kpoint_files(filename, kpoints, labels, make_folders=False,
-                       kpts_per_split=None, phonon=False, directory=None):
+def write_kpoint_files(
+    filename,
+    kpoints,
+    labels,
+    make_folders=False,
+    kpts_per_split=None,
+    phonon=False,
+    directory=None,
+):
     r"""Write the k-points data to files.
 
     Folders are named as 'split-01', 'split-02', etc ...
@@ -628,13 +665,17 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             of electronic band-structure k-points.
 
         directory (:obj:`str`, optional): The output file directory.
-        """
+    """
 
     if kpts_per_split:
-        kpt_splits = [kpoints[i:i+kpts_per_split] for
-                      i in range(0, len(kpoints), kpts_per_split)]
-        label_splits = [labels[i:i+kpts_per_split] for
-                        i in range(0, len(labels), kpts_per_split)]
+        kpt_splits = [
+            kpoints[i : i + kpts_per_split]
+            for i in range(0, len(kpoints), kpts_per_split)
+        ]
+        label_splits = [
+            labels[i : i + kpts_per_split]
+            for i in range(0, len(labels), kpts_per_split)
+        ]
     else:
         kpt_splits = [kpoints]
         label_splits = [labels]
@@ -642,19 +683,26 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
     kpt_cell_files = []
 
     if phonon:
-        tags = {'task': 'Phonon'}
-        kpoint_tag = 'phonon_fine_kpoint_list'
-        clash_tags = {'phonon_fine_kpoints_list',
-                      'phonon_fine_kpoint_path',
-                      'phonon_fine_kpoints_path'}
+        tags = {"task": "Phonon"}
+        kpoint_tag = "phonon_fine_kpoint_list"
+        clash_tags = {
+            "phonon_fine_kpoints_list",
+            "phonon_fine_kpoint_path",
+            "phonon_fine_kpoints_path",
+        }
     else:
-        tags = {'task': 'Spectral', 'spectral_task': 'BandStructure'}
-        kpoint_tag = 'spectral_kpoint_list'
-        clash_tags = set(['{}_{}_{}'.format(*tag_parts) for tag_parts in
-                          product(('bs', 'spectral'),
-                                  ('kpoint', 'kpoints'),
-                                  ('path', 'list',
-                                   'mp_grid', 'mp_spacing', 'mp_offset'))])
+        tags = {"task": "Spectral", "spectral_task": "BandStructure"}
+        kpoint_tag = "spectral_kpoint_list"
+        clash_tags = set(
+            [
+                "{}_{}_{}".format(*tag_parts)
+                for tag_parts in product(
+                    ("bs", "spectral"),
+                    ("kpoint", "kpoints"),
+                    ("path", "list", "mp_grid", "mp_spacing", "mp_offset"),
+                )
+            ]
+        )
 
     for kpt_split, label_split in zip(kpt_splits, label_splits):
         cellfile = CastepCell.from_file(filename)
@@ -672,31 +720,30 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
     pad = int(math.floor(math.log10(len(kpt_cell_files)))) + 2
     if make_folders:
         # Derive param file name by changing extension from cell file
-        seedname = '.'.join(filename.split('.')[:-1])
-        param_file = seedname + '.param'
-        check_file = seedname + '.check'
+        seedname = ".".join(filename.split(".")[:-1])
+        param_file = seedname + ".param"
+        check_file = seedname + ".check"
 
         for i, cell_file in enumerate(kpt_cell_files):
-            split_folder = 'split-{}'.format(str(i + 1).zfill(pad))
+            split_folder = "split-{}".format(str(i + 1).zfill(pad))
             if directory:
                 split_folder = os.path.join(directory, split_folder)
             os.mkdir(split_folder)
 
             if os.path.isfile(check_file):
                 shutil.copy(check_file, split_folder)
-                tags.update({'reuse': os.path.basename(check_file)})
+                tags.update({"reuse": os.path.basename(check_file)})
 
             copy_param(param_file, split_folder, tags=tags)
 
-            cell_file.to_file(os.path.join(split_folder,
-                                           os.path.basename(filename)))
+            cell_file.to_file(os.path.join(split_folder, os.path.basename(filename)))
 
     else:
         for i, cell_file in enumerate(kpt_cell_files):
             if len(kpt_cell_files) > 1:
-                cell_filename = 'band_split_{:0d}.cell'.format(i + 1)
+                cell_filename = "band_split_{:0d}.cell".format(i + 1)
             else:
-                cell_filename = 'band.cell'
+                cell_filename = "band.cell"
             if directory:
                 cell_filename = os.path.join(directory, cell_filename)
             cell_file.to_file(cell_filename)
@@ -721,17 +768,17 @@ def copy_param(filename, folder, tags=None):
         # Copy tags dict and remove case-sensitive keys
         tags = {key.lower(): value for key, value in tags.items()}
 
-        with open(filename, 'r') as infile:
-            with open(output_filename, 'w') as outfile:
+        with open(filename, "r") as infile:
+            with open(output_filename, "w") as outfile:
                 for line in infile:
                     tag = line.split()[0].lower() if line.split() else None
                     if tag in tags:
-                        outfile.write('{} : {}\n'.format(tag, tags.pop(tag)))
+                        outfile.write("{} : {}\n".format(tag, tags.pop(tag)))
                     else:
                         outfile.write(line)
                 # Write remaining tags
                 for tag, value in tags.items():
-                    outfile.write('{} : {}\n'.format(tag, value))
+                    outfile.write("{} : {}\n".format(tag, value))
     else:
         logging.warning("Cannot find param file {}, skipping".format(filename))
 
@@ -749,25 +796,25 @@ def _data_comment_from_line(line, in_block=False):
         of str and comment is a str
 
     """
-    comment_split_line = re.split('[#;!]', line)
+    comment_split_line = re.split("[#;!]", line)
 
     line_content = comment_split_line[0]
     if len(comment_split_line) == 1:
-        comment = ''
+        comment = ""
     else:
-        comment = line[len(line_content):]
+        comment = line[len(line_content) :]
 
     if in_block:
         tag, data = None, line.split()
     else:
         tag, *data = line_content.split()
         if len(data) == 0:
-            data = ['']
+            data = [""]
 
         # Clean up delimiter: 'TAG DAT' 'TAG= DAT' 'TAG : DAT'
         # are all possible so check both symbols in both places
-        data = [item for item in data if item not in ':=']
-        if tag[-1] in ':=':
+        data = [item for item in data if item not in ":="]
+        if tag[-1] in ":=":
             tag = tag[:-1]
 
     return tag, data, comment
@@ -780,8 +827,8 @@ class CastepPhonon(object):
     :obj:`sumo.io.castep.CastepPhonon.from_file()` method
 
     """
-    def __init__(self, header, qpts, frequencies,
-                 weights=None, eigenvectors=None):
+
+    def __init__(self, header, qpts, frequencies, weights=None, eigenvectors=None):
         """
         Args:
             header (:obj:`dict`):
@@ -825,11 +872,11 @@ class CastepPhonon(object):
             pymatgen.phonon.bandstructure.PhononBandStructure
         """
         header = read_phonon_header(filename)
-        qpts, weights, frequencies, eigenvectors = read_phonon_bands(filename,
-                                                                     header)
+        qpts, weights, frequencies, eigenvectors = read_phonon_bands(filename, header)
 
-        return cls(header, qpts, frequencies,
-                   weights=weights, eigenvectors=eigenvectors)
+        return cls(
+            header, qpts, frequencies, weights=weights, eigenvectors=eigenvectors
+        )
 
     def set_labels_from_file(self, filename):
         """Set dictionary of special-point labels from .cell file comments
@@ -844,22 +891,25 @@ class CastepPhonon(object):
         self.labels = labels_from_cell(filename, phonon=True)
 
     def get_band_structure(self):
-        lattice = Lattice(self.header['cell'])
-        structure = Structure(lattice, species=self.header['symbols'],
-                              coords=self.header['positions'])
+        lattice = Lattice(self.header["cell"])
+        structure = Structure(
+            lattice, species=self.header["symbols"], coords=self.header["positions"]
+        )
 
         # I think this is right? Need to test somehow...
-        mass_weights = 1 / np.sqrt(self.header['masses'])
-        displacements = self.eigenvectors * mass_weights[np.newaxis,
-                                                         np.newaxis,
-                                                         :,
-                                                         np.newaxis]
+        mass_weights = 1 / np.sqrt(self.header["masses"])
+        displacements = (
+            self.eigenvectors * mass_weights[np.newaxis, np.newaxis, :, np.newaxis]
+        )
 
-        return PhononBandStructureSymmLine(self.qpts, self.frequencies,
-                                           lattice.reciprocal_lattice,
-                                           structure=structure,
-                                           eigendisplacements=displacements,
-                                           labels_dict=self.labels)
+        return PhononBandStructureSymmLine(
+            self.qpts,
+            self.frequencies,
+            lattice.reciprocal_lattice,
+            structure=structure,
+            eigendisplacements=displacements,
+            labels_dict=self.labels,
+        )
 
 
 def read_phonon_header(filename):
@@ -887,60 +937,61 @@ def read_phonon_header(filename):
            masses: [m1, m2, ...]}
     """
 
-    int_keys = {'ions': 'n_ions',
-                'branches': 'n_branches',
-                'wavevectors': 'n_qpts'}
+    int_keys = {"ions": "n_ions", "branches": "n_branches", "wavevectors": "n_qpts"}
 
     header = {}
     in_header = False
-    with zopen(filename, 'rt') as f:
+    with zopen(filename, "rt") as f:
         for line in f:
             line = line.strip()
-            if line[:12] == 'BEGIN header':
+            if line[:12] == "BEGIN header":
                 in_header = True
-            elif line[:10] == 'END header':
+            elif line[:10] == "END header":
                 break
             elif not in_header:
                 pass
             else:
                 split_line = line.split()
                 # Get int data e.g. "Number of ions      1"
-                if split_line[0] == 'Number':
+                if split_line[0] == "Number":
                     header[int_keys[split_line[2]]] = int(split_line[3])
 
                 # Lattice vector block: next() will skip lines from for-loop
-                elif split_line[:3] == ['Unit', 'cell', 'vectors']:
+                elif split_line[:3] == ["Unit", "cell", "vectors"]:
                     logging.info("Reading unit cell...")
                     cell = [next(f).split(), next(f).split(), next(f).split()]
-                    header['cell'] = np.array(cell, dtype=float).tolist()
+                    header["cell"] = np.array(cell, dtype=float).tolist()
 
                 # Positions block: pre-allocate arrays and fill line-by-line
-                elif split_line[:2] == ['Fractional', 'Co-ordinates']:
-                    if not header.get('n_ions'):
-                        raise IOError("Could not find number of ions; phonon "
-                                      "file not formatted correctly.")
+                elif split_line[:2] == ["Fractional", "Co-ordinates"]:
+                    if not header.get("n_ions"):
+                        raise IOError(
+                            "Could not find number of ions; phonon "
+                            "file not formatted correctly."
+                        )
 
                     logging.info("Reading structure...")
 
-                    header['positions'] = []
-                    header['symbols'] = []
-                    header['masses'] = []
+                    header["positions"] = []
+                    header["symbols"] = []
+                    header["masses"] = []
 
-                    for _ in range(header['n_ions']):
+                    for _ in range(header["n_ions"]):
                         _, *position, el, m = next(f).split()
-                        header['positions'].append(list(map(float, position)))
-                        header['symbols'].append(el)
-                        header['masses'].append(float(m))
+                        header["positions"].append(list(map(float, position)))
+                        header["symbols"].append(el)
+                        header["masses"].append(float(m))
                 else:
-                    logging.debug(
-                        'Skipping unused header line "{}"'.format(line))
+                    logging.debug('Skipping unused header line "{}"'.format(line))
 
         logging.info("Finished reading header, checking number of entries ...")
-        is_qpt = re.compile(r'^\s+q-pt=\s+')
-        header['n_entries'] = sum(bool(is_qpt.match(line)) for line in f)
-        if header['n_entries'] > header['n_qpts']:
-            logging.info("Found more entries than reported q-points: "
-                         "assume LO-TO splitting was used")
+        is_qpt = re.compile(r"^\s+q-pt=\s+")
+        header["n_entries"] = sum(bool(is_qpt.match(line)) for line in f)
+        if header["n_entries"] > header["n_qpts"]:
+            logging.info(
+                "Found more entries than reported q-points: "
+                "assume LO-TO splitting was used"
+            )
 
     return header
 
@@ -971,23 +1022,27 @@ def read_phonon_bands(filename, header):
     logging.info("Reading phonon qpts, frequencies, weights, eigenvectors...")
 
     # Pre-allocate arrays
-    qpts = np.zeros((header['n_entries'], 3))
-    weights = np.zeros(header['n_entries'])
-    frequencies = np.zeros((header['n_branches'], header['n_entries']))
-    eigenvectors = np.zeros((header['n_branches'], header['n_entries'],
-                             header['n_ions'], 3), dtype=np.complex64)
+    qpts = np.zeros((header["n_entries"], 3))
+    weights = np.zeros(header["n_entries"])
+    frequencies = np.zeros((header["n_branches"], header["n_entries"]))
+    eigenvectors = np.zeros(
+        (header["n_branches"], header["n_entries"], header["n_ions"], 3),
+        dtype=np.complex64,
+    )
 
     # Scan past header
-    with zopen(filename, 'rt') as f:
+    with zopen(filename, "rt") as f:
         for line in f:
-            if line.strip() == 'END header':
+            if line.strip() == "END header":
                 break
         else:
-            raise IOError('Did not find "END header" line in phonon file "{}".'
-                          ' File is not formatted correctly.'.format(filename))
+            raise IOError(
+                'Did not find "END header" line in phonon file "{}".'
+                " File is not formatted correctly.".format(filename)
+            )
 
         # Read data blocks
-        for i_qpt in range(header['n_entries']):
+        for i_qpt in range(header["n_entries"]):
             # Typical q-pt line format:
             # q-pt=   1   0.0000  0.0000  0.000   0.003012
             #
@@ -995,7 +1050,7 @@ def read_phonon_bands(filename, header):
             #  0      1      2      3       4         5
 
             qpt_line = f.readline().split()
-            if not qpt_line[0] == 'q-pt=':
+            if not qpt_line[0] == "q-pt=":
                 raise AssertionError()
 
             # We can't check if the indices are correct because CASTEP gives a
@@ -1006,7 +1061,7 @@ def read_phonon_bands(filename, header):
             weights[i_qpt] = float(qpt_line[5])
 
             # Next come frequencies, typical line   "   1    3.25123"
-            for i_mode in range(header['n_branches']):
+            for i_mode in range(header["n_branches"]):
                 frequencies[i_mode, i_qpt] = float(f.readline().split()[1])
 
             # Next come eigenvectors, with some nice tabulation comments, e.g.
@@ -1015,13 +1070,13 @@ def read_phonon_bands(filename, header):
             #   Mode Ion         X                Y               Z
             #      1   1  0.54308  0.0000  -0.7995  0.0000  0.2564  0.0000
             #      2   1 -0.60969  0.0000  -0.1654  0.0000  0.7751  0.0000
-            if not f.readline().strip() == 'Phonon Eigenvectors':
+            if not f.readline().strip() == "Phonon Eigenvectors":
                 raise AssertionError()
-            if 'X' not in f.readline().split():
+            if "X" not in f.readline().split():
                 raise AssertionError()
-            for i_mode in range(header['n_branches']):
-                for i_ion in range(header['n_ions']):
-                    eigenvector = np.fromstring(f.readline(), sep=' ')[2:]
+            for i_mode in range(header["n_branches"]):
+                for i_ion in range(header["n_ions"]):
+                    eigenvector = np.fromstring(f.readline(), sep=" ")[2:]
                     eigenvector = eigenvector[::2] + 1j * eigenvector[1::2]
                     eigenvectors[i_mode, i_qpt, i_ion, :] = eigenvector
 

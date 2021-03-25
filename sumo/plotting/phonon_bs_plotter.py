@@ -11,15 +11,20 @@ import json
 import logging
 
 from matplotlib import rcParams
-from matplotlib.ticker import MaxNLocator, AutoMinorLocator
 from matplotlib.cbook import flatten
+from matplotlib.ticker import AutoMinorLocator, MaxNLocator
 from matplotlib.transforms import blended_transform_factory
-
-from pymatgen.phonon.plotter import PhononBSPlotter
 from pymatgen.phonon.bandstructure import PhononBandStructureSymmLine
+from pymatgen.phonon.plotter import PhononBSPlotter
 
-from sumo.plotting import (pretty_plot, pretty_subplot, styled_plot,
-                           sumo_base_style, sumo_bs_style, sumo_phonon_style)
+from sumo.plotting import (
+    pretty_plot,
+    pretty_subplot,
+    styled_plot,
+    sumo_base_style,
+    sumo_bs_style,
+    sumo_phonon_style,
+)
 
 dashes = (5, 2)
 
@@ -42,27 +47,46 @@ class SPhononBSPlotter(PhononBSPlotter):
     @staticmethod
     def _plot_phonon_dos(dos, ax=None, color=None, dashline=False):
         if ax is None:
+            import matplotlib.pyplot as plt
             ax = plt.gca()
         if color is None:
-            color = 'C0'
+            color = "C0"
         y, x = dos[:, 0], dos[:, 1]
-        ax.plot(x, y, '-', color=color)
+        ax.plot(x, y, "-", color=color)
         ax.fill_betweenx(y, x, 0, color=color, alpha=0.5)
         ax.set_xticks([])
         ax.set_xlim([0, max(x) * 1.1])
         ax.set_xlabel("DOS")
 
         if dashline:
-            ax.axhline(0, color=rcParams['grid.color'], linestyle='--',
-                       dashes=dashes,
-                       zorder=0,
-                       linewidth=rcParams['ytick.major.width'])
+            ax.axhline(
+                0,
+                color=rcParams["grid.color"],
+                linestyle="--",
+                dashes=dashes,
+                zorder=0,
+                linewidth=rcParams["ytick.major.width"],
+            )
 
     @styled_plot(sumo_base_style, sumo_bs_style, sumo_phonon_style)
-    def get_plot(self, units='THz', ymin=None, ymax=None, width=None,
-                 height=None, dpi=None, plt=None, fonts=None, dos=None,
-                 dos_aspect=3, color=None, style=None, no_base_style=False,
-                 from_json=None, legend=None):
+    def get_plot(
+        self,
+        units="THz",
+        ymin=None,
+        ymax=None,
+        width=None,
+        height=None,
+        dpi=None,
+        plt=None,
+        fonts=None,
+        dos=None,
+        dos_aspect=3,
+        color=None,
+        style=None,
+        no_base_style=False,
+        from_json=None,
+        legend=None,
+    ):
         """Get a :obj:`matplotlib.pyplot` object of the phonon band structure.
 
         Args:
@@ -104,23 +128,30 @@ class SPhononBSPlotter(PhononBSPlotter):
             from_json = []
 
         if legend is None:
-            legend = [''] * (len(from_json) + 1)
+            legend = [""] * (len(from_json) + 1)
         else:
             if len(legend) == 1 + len(from_json):
                 pass
             elif len(legend) == len(from_json):
-                legend = [''] + list(legend)
+                legend = [""] + list(legend)
             else:
-                raise ValueError('Inappropriate number of legend entries')
+                raise ValueError("Inappropriate number of legend entries")
 
         if color is None:
-            color = 'C0'  # Default to first colour in matplotlib series
+            color = "C0"  # Default to first colour in matplotlib series
 
         if dos is not None:
-            plt = pretty_subplot(1, 2, width=width, height=height,
-                                 sharex=False, sharey=True, dpi=dpi, plt=plt,
-                                 gridspec_kw={'width_ratios': [dos_aspect, 1],
-                                              'wspace': 0})
+            plt = pretty_subplot(
+                1,
+                2,
+                width=width,
+                height=height,
+                sharex=False,
+                sharey=True,
+                dpi=dpi,
+                plt=plt,
+                gridspec_kw={"width_ratios": [dos_aspect, 1], "wspace": 0},
+            )
             ax = plt.gcf().axes[0]
         else:
             plt = pretty_plot(width, height, dpi=dpi, plt=plt)
@@ -128,26 +159,25 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         def _plot_lines(data, ax, color=None, alpha=1, zorder=1):
             """Pull data from any PhononBSPlotter and add to axis"""
-            dists = data['distances']
-            freqs = data['frequency']
+            dists = data["distances"]
+            freqs = data["frequency"]
 
             # nd is branch index, nb is band index, nk is kpoint index
-            for nd, nb in itertools.product(range(len(data['distances'])),
-                                            range(self._nb_bands)):
+            for nd, nb in itertools.product(
+                range(len(data["distances"])), range(self._nb_bands)
+            ):
                 f = freqs[nd][nb]
 
                 # plot band data
-                ax.plot(dists[nd], f, ls='-', c=color,
-                        zorder=zorder)
+                ax.plot(dists[nd], f, ls="-", c=color, zorder=zorder)
 
         data = self.bs_plot_data()
         _plot_lines(data, ax, color=color)
 
         for i, bs_json in enumerate(from_json):
-            with open(bs_json, 'rt') as f:
+            with open(bs_json, "rt") as f:
                 json_data = json.load(f)
-                json_data['lattice_rec'] = json.loads(
-                    self._bs.lattice_rec.to_json())
+                json_data["lattice_rec"] = json.loads(self._bs.lattice_rec.to_json())
                 bs = PhononBandStructureSymmLine.from_dict(json_data)
 
                 # bs.lattice_rec = self._bs.lattice_rec
@@ -155,36 +185,56 @@ class SPhononBSPlotter(PhononBSPlotter):
             json_plotter = PhononBSPlotter(bs)
             json_data = json_plotter.bs_plot_data()
             if json_plotter._nb_bands != self._nb_bands:
-                raise Exception('Number of bands in {} does not match '
-                                'main plot'.format(bs_json))
-            _plot_lines(json_data, ax,
-                        color='C{}'.format(i + 1),
-                        zorder=0.5)
+                raise Exception(
+                    "Number of bands in {} does not match " "main plot".format(bs_json)
+                )
+            _plot_lines(json_data, ax, color="C{}".format(i + 1), zorder=0.5)
 
         if any(legend):  # Don't show legend if all entries are empty string
             from matplotlib.lines import Line2D
-            ax.legend([Line2D([0], [0], color='C{}'.format(i))
-                       for i in range(len(legend))],
-                       legend)
+
+            ax.legend(
+                [Line2D([0], [0], color="C{}".format(i)) for i in range(len(legend))],
+                legend,
+            )
 
         self._maketicks(ax, units=units)
-        self._makeplot(ax, plt.gcf(), data, width=width, height=height,
-                       ymin=ymin, ymax=ymax, dos=dos, color=color)
+        self._makeplot(
+            ax,
+            plt.gcf(),
+            data,
+            width=width,
+            height=height,
+            ymin=ymin,
+            ymax=ymax,
+            dos=dos,
+            color=color,
+        )
         plt.tight_layout()
         plt.subplots_adjust(wspace=0)
 
         return plt
 
-    def _makeplot(self, ax, fig, data, ymin=None, ymax=None, height=6,
-                  width=6, dos=None, color=None):
+    def _makeplot(
+        self,
+        ax,
+        fig,
+        data,
+        ymin=None,
+        ymax=None,
+        height=6,
+        width=6,
+        dos=None,
+        color=None,
+    ):
         """Utility method to tidy phonon band structure diagrams. """
         # Define colours
         if color is None:
-            color = 'C0'  # Default to first colour in matplotlib series
+            color = "C0"  # Default to first colour in matplotlib series
 
         # set x and y limits
-        tymax = ymax if (ymax is not None) else max(flatten(data['frequency']))
-        tymin = ymin if (ymin is not None) else min(flatten(data['frequency']))
+        tymax = ymax if (ymax is not None) else max(flatten(data["frequency"]))
+        tymin = ymin if (ymin is not None) else min(flatten(data["frequency"]))
         pad = (tymax - tymin) * 0.05
 
         if ymin is None:
@@ -192,20 +242,23 @@ class SPhononBSPlotter(PhononBSPlotter):
         ymax = ymax if ymax else tymax + pad
 
         ax.set_ylim(ymin, ymax)
-        ax.set_xlim(0, data['distances'][-1][-1])
+        ax.set_xlim(0, data["distances"][-1][-1])
 
         if ymin < 0:
             dashline = True
-            ax.axhline(0, color=rcParams['grid.color'], linestyle='--',
-                       dashes=dashes,
-                       zorder=0,
-                       linewidth=rcParams['ytick.major.width'])
+            ax.axhline(
+                0,
+                color=rcParams["grid.color"],
+                linestyle="--",
+                dashes=dashes,
+                zorder=0,
+                linewidth=rcParams["ytick.major.width"],
+            )
         else:
             dashline = False
 
         if dos is not None:
-            self._plot_phonon_dos(dos, ax=fig.axes[1], color=color,
-                                  dashline=dashline)
+            self._plot_phonon_dos(dos, ax=fig.axes[1], color=color, dashline=dashline)
         else:
 
             # keep correct aspect ratio; match axis to canvas
@@ -213,12 +266,12 @@ class SPhononBSPlotter(PhononBSPlotter):
             y0, y1 = ax.get_ylim()
 
             if width is None:
-                width = rcParams['figure.figsize'][0]
+                width = rcParams["figure.figsize"][0]
             if height is None:
-                height = rcParams['figure.figsize'][1]
-            ax.set_aspect((height/width) * ((x1-x0)/(y1-y0)))
+                height = rcParams["figure.figsize"][1]
+            ax.set_aspect((height / width) * ((x1 - x0) / (y1 - y0)))
 
-    def _maketicks(self, ax, units='THz'):
+    def _maketicks(self, ax, units="THz"):
         """Utility method to add tick marks to a band structure."""
         # set y-ticks
         ax.yaxis.set_major_locator(MaxNLocator(6))
@@ -229,8 +282,8 @@ class SPhononBSPlotter(PhononBSPlotter):
         ticks = self.get_ticks()
         unique_d = []
         unique_l = []
-        if ticks['distance']:
-            temp_ticks = list(zip(ticks['distance'], ticks['label']))
+        if ticks["distance"]:
+            temp_ticks = list(zip(ticks["distance"], ticks["label"]))
             unique_d.append(temp_ticks[0][0])
             unique_l.append(temp_ticks[0][1])
             for i in range(1, len(temp_ticks)):
@@ -238,23 +291,30 @@ class SPhononBSPlotter(PhononBSPlotter):
                     unique_d.append(temp_ticks[i][0])
                     unique_l.append(temp_ticks[i][1])
 
-        logging.info('\nLabel positions:')
+        logging.info("\nLabel positions:")
         for dist, label in list(zip(unique_d, unique_l)):
-            logging.info('\t{:.4f}: {}'.format(dist, label))
+            logging.info("\t{:.4f}: {}".format(dist, label))
 
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
-        ax.xaxis.grid(True, ls='-')
+        ax.xaxis.grid(True, ls="-")
 
-        trans_xdata_yaxes = blended_transform_factory(ax.transData,
-                                                      ax.transAxes)
-        ax.vlines(unique_d, 0, 1,
-                  transform=trans_xdata_yaxes,
-                  colors=rcParams['grid.color'],
-                  linewidth=rcParams['grid.linewidth'])
+        trans_xdata_yaxes = blended_transform_factory(ax.transData, ax.transAxes)
+        ax.vlines(
+            unique_d,
+            0,
+            1,
+            transform=trans_xdata_yaxes,
+            colors=rcParams["grid.color"],
+            linewidth=rcParams["grid.linewidth"],
+        )
 
         # Use a text hyphen instead of a minus sign because some nice fonts
         # like Whitney don't come with a real minus
-        labels = {'thz': 'THz', 'cm-1': r'cm$^{\mathrm{-}\mathregular{1}}$',
-                  'ev': 'eV', 'mev': 'meV'}
-        ax.set_ylabel('Frequency ({0})'.format(labels[units.lower()]))
+        labels = {
+            "thz": "THz",
+            "cm-1": r"cm$^{\mathrm{-}\mathregular{1}}$",
+            "ev": "eV",
+            "mev": "meV",
+        }
+        ax.set_ylabel("Frequency ({0})".format(labels[units.lower()]))

@@ -9,12 +9,11 @@ todo:
   * Extend get projections to allow specifying lm orbitals and atomic sites.
 """
 
-import numpy as np
 import itertools as it
+from collections import defaultdict
 from copy import deepcopy
 
-from collections import defaultdict
-
+import numpy as np
 from pymatgen.electronic_structure.core import Spin
 
 
@@ -71,8 +70,8 @@ def get_projections_by_branches(bs, selection, normalise=None):
 
     branches = []
     for b in bs.branches:
-        s = b['start_index']
-        e = b['end_index'] + 1
+        s = b["start_index"]
+        e = b["end_index"] + 1
 
         branch_proj = deepcopy(projections)
         for spin, i in it.product(spins, range(len(projections))):
@@ -135,7 +134,7 @@ def get_projections(bs, selection, normalise=None):
 
     # if we are to normalise the data later we need access to all projections
     elements = bs.structure.symbol_set
-    all_orbitals = ['s', 'p', 'd', 'f']
+    all_orbitals = ["s", "p", "d", "f"]
 
     # dictio has the form: {'el1': [s, p, d, f], 'el2': [s, p, d, f]...}
     dictio = dict(zip(elements, [all_orbitals] * len(elements)))
@@ -153,12 +152,14 @@ def get_projections(bs, selection, normalise=None):
     for spin, element, orbital in it.product(spins, elements, all_orbitals):
 
         # convert data to [nb][nk]
-        el_orb_proj = [[all_proj[spin][nb][nk][element][orbital] for nk in range(nkpts)]
-                       for nb in range(nbands)]
+        el_orb_proj = [
+            [all_proj[spin][nb][nk][element][orbital] for nk in range(nkpts)]
+            for nb in range(nbands)
+        ]
 
         dict_proj[element][orbital][spin] = np.array(el_orb_proj)
 
-        if normalise == 'all':
+        if normalise == "all":
             sum_proj[spin] += el_orb_proj
 
     # now go through the selected orbitals and extract what's needed
@@ -178,7 +179,7 @@ def get_projections(bs, selection, normalise=None):
         for spin, orbital in it.product(spins, orbitals):
             proj[spin] += dict_proj[element][orbital][spin]
 
-            if normalise == 'select':
+            if normalise == "select":
                 sum_proj[spin] += dict_proj[element][orbital][spin]
 
         spec_proj.append(proj)
@@ -186,7 +187,7 @@ def get_projections(bs, selection, normalise=None):
     if normalise:
         # to prevent warnings/errors relating to divide by zero,
         # catch warnings and surround divide with np.nan_to_num
-        with np.errstate(divide='ignore', invalid='ignore'):
+        with np.errstate(divide="ignore", invalid="ignore"):
             for spin, i in it.product(spins, range(len(spec_proj))):
                 spec_proj[i][spin] = np.nan_to_num(spec_proj[i][spin] / sum_proj[spin])
     return spec_proj
@@ -242,7 +243,7 @@ def get_reconstructed_band_structure(list_bs, efermi=None):
         efermi,
         labels_dict,
         structure=list_bs[0].structure,
-        projections=projections
+        projections=projections,
     )
     return force_branches(bs)
 
@@ -274,8 +275,15 @@ def force_branches(bandstructure):
     high_sym_kpoints = tuple(map(tuple, labels_dict.values()))
     for i, k in enumerate(kpoints):
         dup_ids.append(i)
-        if (tuple(k) in high_sym_kpoints and i != 0 and i != len(kpoints) - 1 and (
-                not np.array_equal(kpoints[i + 1], k) or not np.array_equal(kpoints[i - 1], k))):
+        if (
+            tuple(k) in high_sym_kpoints
+            and i != 0
+            and i != len(kpoints) - 1
+            and (
+                not np.array_equal(kpoints[i + 1], k)
+                or not np.array_equal(kpoints[i - 1], k)
+            )
+        ):
             dup_ids.append(i)
 
     kpoints = kpoints[dup_ids]
@@ -294,16 +302,16 @@ def force_branches(bandstructure):
         bandstructure.efermi,
         labels_dict,
         structure=bandstructure.structure,
-        projections=projections
+        projections=projections,
     )
 
 
 def string_to_spin(spin_string):
     """Function to convert 'spin' cli argument to pymatgen Spin object"""
-    if spin_string in ['up', 'Up', '1', '+1']:
+    if spin_string in ["up", "Up", "1", "+1"]:
         return Spin.up
 
-    elif spin_string in ['down', 'Down', '-1']:
+    elif spin_string in ["down", "Down", "-1"]:
         return Spin.down
 
     elif spin_string is None:

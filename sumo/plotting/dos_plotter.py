@@ -7,16 +7,21 @@ This module provides a class for plotting density of states data.
 """
 
 import itertools
+
 import matplotlib
 import matplotlib.pyplot
-
 from matplotlib.ticker import AutoMinorLocator
+from pymatgen.electronic_structure.core import Spin
 
 from sumo.electronic_structure.dos import sort_orbitals
-from sumo.plotting import (pretty_plot, pretty_subplot, colour_cache,
-                           styled_plot, sumo_base_style, sumo_dos_style)
-
-from pymatgen.electronic_structure.core import Spin
+from sumo.plotting import (
+    colour_cache,
+    pretty_plot,
+    pretty_subplot,
+    styled_plot,
+    sumo_base_style,
+    sumo_dos_style,
+)
 
 try:
     import configparser
@@ -56,9 +61,19 @@ class SDOSPlotter(object):
         self._dos = dos
         self._pdos = pdos
 
-    def dos_plot_data(self, yscale=1, xmin=-6., xmax=6., colours=None,
-                      plot_total=True, legend_cutoff=3, subplot=False,
-                      zero_to_efermi=True, cache=None, spin=None):
+    def dos_plot_data(
+        self,
+        yscale=1,
+        xmin=-6.0,
+        xmax=6.0,
+        colours=None,
+        plot_total=True,
+        legend_cutoff=3,
+        subplot=False,
+        zero_to_efermi=True,
+        cache=None,
+        spin=None,
+    ):
         """Get the plotting data.
 
         Args:
@@ -137,11 +152,13 @@ class SDOSPlotter(object):
         pdos = self._pdos
         eners = dos.energies - dos.efermi if zero_to_efermi else dos.energies
         mask = (eners >= xmin - 0.05) & (eners <= xmax + 0.05)
-        plot_data = {'mask': mask, 'energies': eners}
+        plot_data = {"mask": mask, "energies": eners}
         spins = dos.densities.keys()
         if spin is not None and len(spins) == 1:
-            raise ValueError('Spin-selection only possible with spin-polarised '
-                             'calculation results')
+            raise ValueError(
+                "Spin-selection only possible with spin-polarised "
+                "calculation results"
+            )
 
         # Visibility cutoff based on scale of total plot even if it is hidden
         try:
@@ -150,18 +167,22 @@ class SDOSPlotter(object):
             dmax = 0
 
         ymax = dmax if dmax > 0 else 0
-        cutoff = (legend_cutoff / 100.) * (ymax / 1.05)
+        cutoff = (legend_cutoff / 100.0) * (ymax / 1.05)
 
         if plot_total:
-            if 'text.color' in matplotlib.rcParams:
-                tdos_colour = matplotlib.rcParams['text.color']
+            if "text.color" in matplotlib.rcParams:
+                tdos_colour = matplotlib.rcParams["text.color"]
                 if tdos_colour is None:
-                    tdos_colour = 'k'
+                    tdos_colour = "k"
             else:
-                tdos_colour = 'k'
+                tdos_colour = "k"
             lines = []
-            tdos = {'label': 'Total DOS', 'dens': dos.densities,
-                    'colour': tdos_colour, 'alpha': 0.15}
+            tdos = {
+                "label": "Total DOS",
+                "dens": dos.densities,
+                "colour": tdos_colour,
+                "alpha": 0.15,
+            }
 
             # subplot data formatted as a list of lists of dicts, with each
             # list of dicts being plotted on a separate graph, if only one list
@@ -176,15 +197,18 @@ class SDOSPlotter(object):
         for el, el_pdos in pdos.items():
             el_lines = []
             for orb in sort_orbitals(el_pdos):
-                dmax = max([max(d[mask])
-                            for d in el_pdos[orb].densities.values()])
+                dmax = max([max(d[mask]) for d in el_pdos[orb].densities.values()])
                 ymax = dmax if dmax > ymax else ymax
-                label = None if dmax < cutoff else '{} ({})'.format(el, orb)
-                colour, cache = get_cached_colour(el, orb, colours,
-                                                  cache=cache)
-                el_lines.append({'label': label, 'alpha': 0.25,
-                                 'colour': colour,
-                                 'dens': el_pdos[orb].densities})
+                label = None if dmax < cutoff else "{} ({})".format(el, orb)
+                colour, cache = get_cached_colour(el, orb, colours, cache=cache)
+                el_lines.append(
+                    {
+                        "label": label,
+                        "alpha": 0.25,
+                        "colour": colour,
+                        "dens": el_pdos[orb].densities,
+                    }
+                )
             if subplot:
                 lines.append(el_lines)
             else:
@@ -192,16 +216,34 @@ class SDOSPlotter(object):
 
         ymax = ymax * empty_space / yscale
         ymin = 0 if len(spins) == 1 else -ymax
-        plot_data.update({'lines': lines, 'ymax': ymax, 'ymin': ymin})
+        plot_data.update({"lines": lines, "ymax": ymax, "ymin": ymin})
         return plot_data
 
     @styled_plot(sumo_base_style, sumo_dos_style)
-    def get_plot(self, subplot=False, width=None, height=None, xmin=-6.,
-                 xmax=6., yscale=1, colours=None, plot_total=True,
-                 legend_on=True, num_columns=2, legend_frame_on=False,
-                 legend_cutoff=3, xlabel='Energy (eV)', ylabel='Arb. units',
-                 zero_to_efermi=True, dpi=400, fonts=None, plt=None,
-                 style=None, no_base_style=False, spin=None):
+    def get_plot(
+        self,
+        subplot=False,
+        width=None,
+        height=None,
+        xmin=-6.0,
+        xmax=6.0,
+        yscale=1,
+        colours=None,
+        plot_total=True,
+        legend_on=True,
+        num_columns=2,
+        legend_frame_on=False,
+        legend_cutoff=3,
+        xlabel="Energy (eV)",
+        ylabel="Arb. units",
+        zero_to_efermi=True,
+        dpi=400,
+        fonts=None,
+        plt=None,
+        style=None,
+        no_base_style=False,
+        spin=None,
+    ):
         """Get a :obj:`matplotlib.pyplot` object of the density of states.
 
         Args:
@@ -260,31 +302,38 @@ class SDOSPlotter(object):
         Returns:
             :obj:`matplotlib.pyplot`: The density of states plot.
         """
-        plot_data = self.dos_plot_data(yscale=yscale, xmin=xmin, xmax=xmax,
-                                       colours=colours, plot_total=plot_total,
-                                       legend_cutoff=legend_cutoff,
-                                       subplot=subplot,
-                                       zero_to_efermi=zero_to_efermi, spin=spin)
+        plot_data = self.dos_plot_data(
+            yscale=yscale,
+            xmin=xmin,
+            xmax=xmax,
+            colours=colours,
+            plot_total=plot_total,
+            legend_cutoff=legend_cutoff,
+            subplot=subplot,
+            zero_to_efermi=zero_to_efermi,
+            spin=spin,
+        )
 
         if subplot:
-            nplots = len(plot_data['lines'])
-            plt = pretty_subplot(nplots, 1, width=width, height=height,
-                                 dpi=dpi, plt=plt)
+            nplots = len(plot_data["lines"])
+            plt = pretty_subplot(
+                nplots, 1, width=width, height=height, dpi=dpi, plt=plt
+            )
         else:
             plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt)
 
-        mask = plot_data['mask']
-        energies = plot_data['energies'][mask]
+        mask = plot_data["mask"]
+        energies = plot_data["energies"][mask]
         fig = plt.gcf()
-        lines = plot_data['lines']
-        if len(lines[0][0]['dens']) == 1:
+        lines = plot_data["lines"]
+        if len(lines[0][0]["dens"]) == 1:
             spins = [Spin.up]
         elif spin is not None:
             spins = [spin]
         else:
             spins = [Spin.up, Spin.down]
 
-        for i, line_set in enumerate(plot_data['lines']):
+        for i, line_set in enumerate(plot_data["lines"]):
             if subplot:
                 ax = fig.axes[i]
             else:
@@ -292,31 +341,34 @@ class SDOSPlotter(object):
 
             for line, spin in itertools.product(line_set, spins):
                 if len(spins) == 1:
-                    label = line['label']
-                    densities = line['dens'][spin][mask]
+                    label = line["label"]
+                    densities = line["dens"][spin][mask]
                 elif spin is Spin.up:
-                    label = line['label']
-                    densities = line['dens'][spin][mask]
+                    label = line["label"]
+                    densities = line["dens"][spin][mask]
                 elif spin is Spin.down:
                     label = ""
-                    densities = -line['dens'][spin][mask]
-                ax.fill_between(energies, densities, lw=0,
-                                facecolor=line['colour'],
-                                alpha=line['alpha'])
-                ax.plot(energies, densities, label=label,
-                        color=line['colour'])
+                    densities = -line["dens"][spin][mask]
+                ax.fill_between(
+                    energies,
+                    densities,
+                    lw=0,
+                    facecolor=line["colour"],
+                    alpha=line["alpha"],
+                )
+                ax.plot(energies, densities, label=label, color=line["colour"])
 
             ax.set_xlim(xmin, xmax)
             if len(spins) == 1:
-                ax.set_ylim(0, plot_data['ymax'])
+                ax.set_ylim(0, plot_data["ymax"])
             else:
-                ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
+                ax.set_ylim(plot_data["ymin"], plot_data["ymax"])
 
-            ax.tick_params(axis='y', labelleft=False)
+            ax.tick_params(axis="y", labelleft=False)
             ax.yaxis.set_minor_locator(AutoMinorLocator(2))
             ax.xaxis.set_minor_locator(AutoMinorLocator(2))
 
-            loc = 'upper right' if subplot else 'best'
+            loc = "upper right" if subplot else "best"
             ncol = 1 if subplot else num_columns
             if legend_on:
                 ax.legend(loc=loc, frameon=legend_frame_on, ncol=ncol)
@@ -325,15 +377,22 @@ class SDOSPlotter(object):
         if subplot:
             ax.set_xlabel(xlabel)
             fig.subplots_adjust(hspace=0)
-            plt.setp([a.get_xticklabels() for a in fig.axes[:-1]],
-                     visible=False)
-            if 'axes.labelcolor' in matplotlib.rcParams:
-                ylabelcolor = matplotlib.rcParams['axes.labelcolor']
+            plt.setp([a.get_xticklabels() for a in fig.axes[:-1]], visible=False)
+            if "axes.labelcolor" in matplotlib.rcParams:
+                ylabelcolor = matplotlib.rcParams["axes.labelcolor"]
             else:
                 ylabelcolor = None
 
-            fig.text(0.08, 0.5, ylabel, ha='left', color=ylabelcolor,
-                     va='center', rotation='vertical', transform=ax.transAxes)
+            fig.text(
+                0.08,
+                0.5,
+                ylabel,
+                ha="left",
+                color=ylabelcolor,
+                va="center",
+                rotation="vertical",
+                transform=ax.transAxes,
+            )
         else:
             ax.set_xlabel(xlabel)
             ax.set_ylabel(ylabel)
@@ -380,43 +439,44 @@ def get_cached_colour(element, orbital, colours=None, cache=None):
     def _get_colour_with_cache(element, orbital, cache, colour_series):
         """Return cached colour if available, or fetch and cache from cycle"""
         from itertools import chain
+
         if element in cache and orbital in cache[element]:
             return cache[element][orbital], cache
         else:
             # Iterate through colours to find one which is unused
             for colour in colour_series:
                 # Iterate through cache to check if colour already used
-                if colour not in chain(*[[col for _, col in orb.items()]
-                                         for _, orb in cache.items()]):
+                if colour not in chain(
+                    *[[col for _, col in orb.items()] for _, orb in cache.items()]
+                ):
                     break
             else:
-                raise Exception('Not enough colours available for orbitals! '
-                                'Try a different theme.')
+                raise Exception(
+                    "Not enough colours available for orbitals! "
+                    "Try a different theme."
+                )
 
             if element not in cache:
                 cache[element] = {}
             cache[element].update({orbital: colour})
             return colour, cache
 
-    colour_series = matplotlib.rcParams['axes.prop_cycle'].by_key()['color']
+    colour_series = matplotlib.rcParams["axes.prop_cycle"].by_key()["color"]
 
     if isinstance(colours, configparser.ConfigParser):
         try:
             return colours.get(element, orbital), cache
-        except(configparser.NoSectionError, configparser.NoOptionError):
-            return _get_colour_with_cache(element, orbital,
-                                          cache, colour_series)
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return _get_colour_with_cache(element, orbital, cache, colour_series)
 
     elif isinstance(colours, dict):
         try:
             return colours[element][orbital], cache
         except KeyError:
-            return _get_colour_with_cache(element, orbital,
-                                          cache, colour_series)
+            return _get_colour_with_cache(element, orbital, cache, colour_series)
 
     elif colours is None:
         return _get_colour_with_cache(element, orbital, cache, colour_series)
 
     else:
-        raise TypeError('Argument "colours" should be dict, '
-                        'ConfigParser or None.')
+        raise TypeError('Argument "colours" should be dict, ' "ConfigParser or None.")

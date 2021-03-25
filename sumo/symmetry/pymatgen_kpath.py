@@ -6,9 +6,9 @@
 Module containing class for generating k-points along paths from pymatgen.
 """
 
-from sumo.symmetry import Kpath
-
 from pymatgen.symmetry.bandstructure import HighSymmKpath
+
+from sumo.symmetry import Kpath
 
 
 class PymatgenKpath(Kpath):

@@ -10,8 +10,8 @@ TODO:
 """
 
 import os
-import numpy as np
 
+import numpy as np
 from scipy.ndimage.filters import gaussian_filter1d
 
 
@@ -49,16 +49,19 @@ def broaden_eps(dielectric, sigma):
     e = dielectric[0]
     diff = [e[i + 1] - e[i] for i in range(len(e) - 1)]
     diff_avg = sum(diff) / len(diff)
-    real = [gaussian_filter1d(np.array(dielectric[1])[:, x], sigma / diff_avg)
-            for x in range(6)]
-    imag = [gaussian_filter1d(np.array(dielectric[2])[:, x], sigma / diff_avg)
-            for x in range(6)]
+    real = [
+        gaussian_filter1d(np.array(dielectric[1])[:, x], sigma / diff_avg)
+        for x in range(6)
+    ]
+    imag = [
+        gaussian_filter1d(np.array(dielectric[2])[:, x], sigma / diff_avg)
+        for x in range(6)
+    ]
 
     return e, np.array(real).T, np.array(imag).T
 
 
-def calculate_dielectric_properties(dielectric, properties,
-                                    average=True):
+def calculate_dielectric_properties(dielectric, properties, average=True):
     r"""Calculate optical properties from the dielectric function
 
     Supported properties:
@@ -130,9 +133,13 @@ def calculate_dielectric_properties(dielectric, properties,
 
     def _update_results(keys_vals):
         """Update results dict with selected properties only"""
-        results.update({prop: (energies, data)
-                        for prop, data in keys_vals.items()
-                        if (prop in properties)})
+        results.update(
+            {
+                prop: (energies, data)
+                for prop, data in keys_vals.items()
+                if (prop in properties)
+            }
+        )
         return results
 
     energies = np.array(dielectric[0])
@@ -143,23 +150,21 @@ def calculate_dielectric_properties(dielectric, properties,
         real_eps = np.average(real_eps[:, :3], axis=1)
         imag_eps = np.average(imag_eps[:, :3], axis=1)
 
-        results = _update_results({'eps_real': real_eps,
-                                   'eps_imag': imag_eps})
+        results = _update_results({"eps_real": real_eps, "eps_imag": imag_eps})
 
         eps = real_eps + 1j * imag_eps
 
-        if 'loss' in properties:
-            loss = -np.imag(1/eps)
-            _update_results({'loss': loss})
+        if "loss" in properties:
+            loss = -np.imag(1 / eps)
+            _update_results({"loss": loss})
 
-        if properties.intersection({'n_real', 'n_imag', 'absorption'}):
+        if properties.intersection({"n_real", "n_imag", "absorption"}):
             n = np.sqrt(eps)
-            _update_results({'n_real': n.real,
-                             'n_imag': n.imag})
+            _update_results({"n_real": n.real, "n_imag": n.imag})
 
-        if 'absorption' in properties:
-            alpha = n.imag * energies * 4 * np.pi / 1.23984212E-4
-            _update_results({'absorption': alpha})
+        if "absorption" in properties:
+            alpha = n.imag * energies * 4 * np.pi / 1.23984212e-4
+            _update_results({"absorption": alpha})
 
     else:
         # Work with eps as complex numbers in 9-column 'flattened' matrix
@@ -168,24 +173,36 @@ def calculate_dielectric_properties(dielectric, properties,
         # Indices     0  1  2  3  4  5
         n_rows = real_eps.shape[0]
         eps = real_eps + 1j * imag_eps
-        eps = np.array([eps[:, 0], eps[:, 3], eps[:, 5],
-                        eps[:, 3], eps[:, 1], eps[:, 4],
-                        eps[:, 5], eps[:, 4], eps[:, 2]]).T
+        eps = np.array(
+            [
+                eps[:, 0],
+                eps[:, 3],
+                eps[:, 5],
+                eps[:, 3],
+                eps[:, 1],
+                eps[:, 4],
+                eps[:, 5],
+                eps[:, 4],
+                eps[:, 2],
+            ]
+        ).T
 
         _update_results(
-            {'eps_real': eps.real[:, [0, 4, 8]],
-             'eps_imag': eps.imag[:, [0, 4, 8]]})
+            {"eps_real": eps.real[:, [0, 4, 8]], "eps_imag": eps.imag[:, [0, 4, 8]]}
+        )
         # Invert epsilon to obtain energy-loss function
-        if 'loss' in properties:
+        if "loss" in properties:
+
             def matrix_loss_func(eps_row):
                 eps_matrix = eps_row.reshape(3, 3)
                 return -np.linalg.inv(eps_matrix).imag.flatten()
 
             loss = np.array([matrix_loss_func(row) for row in eps])
 
-            _update_results({'loss': loss[:, [0, 4, 8]]})
+            _update_results({"loss": loss[:, [0, 4, 8]]})
 
-        if properties.intersection({'n_real', 'n_imag', 'absorption'}):
+        if properties.intersection({"n_real", "n_imag", "absorption"}):
+
             def matrix_n(eps_row):
                 eps_matrix = eps_row.reshape(3, 3)
                 eigenvals, v = np.linalg.eig(eps_matrix)
@@ -195,18 +212,18 @@ def calculate_dielectric_properties(dielectric, properties,
 
             n = np.array([matrix_n(row) for row in eps])
 
-            _update_results({'n_real': n.real[:, [0, 4, 8]],
-                             'n_imag': n.imag[:, [0, 4, 8]]})
+            _update_results(
+                {"n_real": n.real[:, [0, 4, 8]], "n_imag": n.imag[:, [0, 4, 8]]}
+            )
 
-        if 'absorption' in properties:
-            alpha = (n.imag * energies.reshape(n_rows, 1) *
-                     4 * np.pi / 1.23984212E-4)
-            _update_results({'absorption': alpha[:, [0, 4, 8]]})
+        if "absorption" in properties:
+            alpha = n.imag * energies.reshape(n_rows, 1) * 4 * np.pi / 1.23984212e-4
+            _update_results({"absorption": alpha[:, [0, 4, 8]]})
 
     return results
 
 
-def write_files(abs_data, basename='absorption', prefix=None, directory=None):
+def write_files(abs_data, basename="absorption", prefix=None, directory=None):
     """Write the absorption or loss spectra to a file.
 
     Note that this function expects to receive an iterable series of spectra.
@@ -228,20 +245,19 @@ def write_files(abs_data, basename='absorption', prefix=None, directory=None):
     """
 
     for i, absorption in enumerate(abs_data):
-        num_txt = '_{}'.format(i + 1) if len(abs_data) > 1 else ''
-        prefix_txt = '{}_'.format(prefix) if prefix else ''
-        filename = prefix_txt + basename + num_txt + '.dat'
+        num_txt = "_{}".format(i + 1) if len(abs_data) > 1 else ""
+        prefix_txt = "{}_".format(prefix) if prefix else ""
+        filename = prefix_txt + basename + num_txt + ".dat"
 
         if directory:
             filename = os.path.join(directory, filename)
 
-        header = 'energy(eV)'
+        header = "energy(eV)"
         if len(absorption[1].shape) == 2:
-            header += ' alpha_xx alpha_yy alpha_zz'
-            data = np.concatenate((absorption[0][:, None], absorption[1]),
-                                  axis=1)
+            header += " alpha_xx alpha_yy alpha_zz"
+            data = np.concatenate((absorption[0][:, None], absorption[1]), axis=1)
         else:
-            header += ' alpha'
+            header += " alpha"
             data = np.stack((absorption[0], absorption[1]), axis=1)
 
         np.savetxt(filename, data, header=header)
@@ -267,12 +283,12 @@ def kkr(de, eps_imag, cshift=1e-6):
     eps_imag = np.array(eps_imag)
     nedos = eps_imag.shape[0]
     cshift = complex(0, cshift)
-    w_i = np.arange(0, (nedos - 0.5)*de, de, dtype=np.complex_)
+    w_i = np.arange(0, (nedos - 0.5) * de, de, dtype=np.complex_)
     w_i = np.reshape(w_i, (nedos, 1, 1))
 
     def integration_element(w_r):
-        factor = w_i / (w_i**2 - w_r**2 + cshift)
+        factor = w_i / (w_i ** 2 - w_r ** 2 + cshift)
         total = np.sum(eps_imag * factor, axis=0)
-        return total * (2/np.pi) * de + np.diag([1, 1, 1])
+        return total * (2 / np.pi) * de + np.diag([1, 1, 1])
 
     return np.real([integration_element(w_r) for w_r in w_i[:, 0, 0]])

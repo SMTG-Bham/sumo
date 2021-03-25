@@ -6,9 +6,9 @@
 Class for generating k-points along Latimer & Munro high-symmetry paths.
 """
 
-from sumo.symmetry import Kpath
-
 from pymatgen.symmetry.bandstructure import HighSymmKpath
+
+from sumo.symmetry import Kpath
 
 
 class LatimerKpath(Kpath):

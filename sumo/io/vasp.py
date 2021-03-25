@@ -4,11 +4,20 @@ import math
 import os
 import shutil
 import sys
+
 from pymatgen.io.vasp.inputs import Kpoints
 
-def write_kpoint_files(filename, kpoints, labels, make_folders=False,
-                       ibzkpt=None, kpts_per_split=None, directory=None,
-                       cart_coords=False):
+
+def write_kpoint_files(
+    filename,
+    kpoints,
+    labels,
+    make_folders=False,
+    ibzkpt=None,
+    kpts_per_split=None,
+    directory=None,
+    cart_coords=False,
+):
     r"""Write the k-points data to files.
 
     Folders are named as 'split-01', 'split-02', etc ...
@@ -45,19 +54,23 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             (fractional coordinates).
     """
     if kpts_per_split:
-        kpt_splits = [kpoints[i:i+kpts_per_split] for
-                      i in range(0, len(kpoints), kpts_per_split)]
-        label_splits = [labels[i:i+kpts_per_split] for
-                        i in range(0, len(labels), kpts_per_split)]
+        kpt_splits = [
+            kpoints[i : i + kpts_per_split]
+            for i in range(0, len(kpoints), kpts_per_split)
+        ]
+        label_splits = [
+            labels[i : i + kpts_per_split]
+            for i in range(0, len(labels), kpts_per_split)
+        ]
     else:
         kpt_splits = [kpoints]
         label_splits = [labels]
 
     if cart_coords:
-        coord_type = 'cartesian'
+        coord_type = "cartesian"
         style = Kpoints.supported_modes.Cartesian
     else:
-        coord_type = 'reciprocal'
+        coord_type = "reciprocal"
         style = Kpoints.supported_modes.Reciprocal
 
     kpt_files = []
@@ -66,22 +79,27 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
             # hybrid calculation so set k-point weights to 0
             kpt_weights = ibzkpt.kpts_weights + [0] * len(kpt_split)
             kpt_split = ibzkpt.kpts + kpt_split
-            label_split = [''] * len(ibzkpt.labels) + label_split
+            label_split = [""] * len(ibzkpt.labels) + label_split
         else:
             # non-SCF calculation so set k-point weights to 1
             kpt_weights = [1] * len(kpt_split)
 
-        segment = ' -> '.join([label for label in label_split if label])
-        kpt_file = Kpoints(comment=segment, num_kpts=len(kpt_split),
-                           kpts=kpt_split, kpts_weights=kpt_weights,
-                           style=style, coord_type=coord_type,
-                           labels=label_split)
+        segment = " -> ".join([label for label in label_split if label])
+        kpt_file = Kpoints(
+            comment=segment,
+            num_kpts=len(kpt_split),
+            kpts=kpt_split,
+            kpts_weights=kpt_weights,
+            style=style,
+            coord_type=coord_type,
+            labels=label_split,
+        )
         kpt_files.append(kpt_file)
 
     pad = int(math.floor(math.log10(len(kpt_files)))) + 2
     if make_folders:
         for i, kpt_file in enumerate(kpt_files):
-            folder = 'split-{}'.format(str(i + 1).zfill(pad))
+            folder = "split-{}".format(str(i + 1).zfill(pad))
             if directory:
                 folder = os.path.join(directory, folder)
 
@@ -89,24 +107,23 @@ def write_kpoint_files(filename, kpoints, labels, make_folders=False,
                 os.makedirs(folder)
             except OSError as e:
                 if e.errno == errno.EEXIST:
-                    logging.error("\nERROR: Folders already exist, won't "
-                                  "overwrite.")
+                    logging.error("\nERROR: Folders already exist, won't " "overwrite.")
                     sys.exit()
                 else:
                     raise
 
-            kpt_file.write_file(os.path.join(folder, 'KPOINTS'))
+            kpt_file.write_file(os.path.join(folder, "KPOINTS"))
             vasp_files = [filename, "INCAR", "POTCAR", "job"]
-            vasp_files += [] if ibzkpt else ['CHGCAR']
+            vasp_files += [] if ibzkpt else ["CHGCAR"]
             for vasp_file in vasp_files:
                 if os.path.isfile(vasp_file):
                     shutil.copyfile(vasp_file, os.path.join(folder, vasp_file))
     else:
         for i, kpt_file in enumerate(kpt_files):
             if len(kpt_files) > 1:
-                kpt_filename = 'KPOINTS_band_split_{:0d}'.format(i + 1)
+                kpt_filename = "KPOINTS_band_split_{:0d}".format(i + 1)
             else:
-                kpt_filename = 'KPOINTS_band'
+                kpt_filename = "KPOINTS_band"
             if directory:
                 kpt_filename = os.path.join(directory, kpt_filename)
             kpt_file.write_file(kpt_filename)
