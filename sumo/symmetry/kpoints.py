@@ -31,6 +31,9 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
 
             pymatgen
                 Use the paths from pymatgen. See [curt]_.
+                
+            latimer-munro
+                Use the paths from Latimer & Munro. See [lm]_.
 
             seekpath
                 Use the paths from SeeK-path. See [seek]_.
@@ -105,7 +108,7 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
                     ['\Gamma', 'X', 'Y']
     """
     from sumo.symmetry import (BradCrackKpath, SeekpathKpath, PymatgenKpath,
-                               CustomKpath)
+                               CustomKpath, LatimerKpath)
     spg = _get_space_group_object(spg, mode)
 
     if kpt_list:
@@ -116,6 +119,8 @@ def get_path_data(structure, mode='bradcrack', symprec=0.01, spg=None,
         kpath = SeekpathKpath(structure, symprec=symprec)
     elif mode == 'pymatgen':
         kpath = PymatgenKpath(structure, symprec=symprec)
+    elif mode == 'latimer-munro':
+        kpath = LatimerKpath(structure, symprec=symprec)
 
     kpoints, labels = kpath.get_kpoints(line_density=line_density,
                                         phonopy=phonopy,

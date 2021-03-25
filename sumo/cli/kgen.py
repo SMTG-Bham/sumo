@@ -87,6 +87,9 @@ def kgen(filename='POSCAR', code='vasp',
 
             pymatgen
                 Use the paths from pymatgen. See [curt]_.
+                
+            latimer-munro
+                Use the paths from Latimer & Munro. See [lm]_.
 
             seekpath
                 Use the paths from SeeK-path. See [seek]_.
@@ -257,6 +260,8 @@ def _get_parser():
                         help='use seekpath to generate the high-symmetry path')
     parser.add_argument('--pymatgen', action='store_true',
                         help='use pymatgen to generate the high-symmetry path')
+    parser.add_argument('--latimer-munro', action='store_true',
+                        help='use Latimer & Munro method to generate the high-symmetry path')
     parser.add_argument('--cartesian', action='store_true',
                         help='use cartesian k-point coordinates')
     parser.add_argument('--kpoints', type=str, default=None,
@@ -284,6 +289,8 @@ def main():
         mode = 'seekpath'
     elif args.pymatgen:
         mode = 'pymatgen'
+    elif args.latimer_munro: # argparse converts hyphens in CLI arguments to underscore
+        mode = 'latimer-munro'
 
     ibzkpt = 'IBZKPT' if args.hybrid else None
 

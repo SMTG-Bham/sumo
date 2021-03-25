@@ -10,4 +10,5 @@ from sumo.symmetry.kpath import Kpath
 from sumo.symmetry.brad_crack_kpath import BradCrackKpath
 from sumo.symmetry.pymatgen_kpath import PymatgenKpath
 from sumo.symmetry.seekpath_kpath import SeekpathKpath
+from sumo.symmetry.latimer_munro_kpath import LatimerKpath
 from sumo.symmetry.custom_kpath import CustomKpath
