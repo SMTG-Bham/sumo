@@ -1000,7 +1000,6 @@ def band_structure(bnds_file, lattice, labels=None, alat=1, coords_are_cartesian
                 coords, lattice.reciprocal_lattice_crystallographic.matrix
             )
 
-    raise Exception(eigenvals)
     # Data in bnds file seems to always be Cartesian
     return BandStructureSymmLine(
         kpoints,
