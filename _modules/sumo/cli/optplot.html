@@ -92,6 +92,7 @@
     <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
     <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A script to plot optical absorption spectra from VASP calculations.</span>
 
@@ -114,7 +115,7 @@
 <span class="sd">        directory (:obj:`str`, optional): The directory in which to save files.</span>
 <span class="sd">        gaussian (:obj:`float`): Standard deviation for gaussian broadening.</span>
 <span class="sd">        band_gaps (:obj:`float`, :obj:`str` or :obj:`list`, optional): The band</span>
-<span class="sd">            gap as a :obj:`float`, plotted as a dashed line. If plotting</span>
+<span class="sd">            gap as a :obj:`float`, in eV, plotted as a dashed line. If plotting</span>
 <span class="sd">            multiple spectra then a :obj:`list` of band gaps can be provided.</span>
 <span class="sd">            Band gaps can be provided as a floating-point number or as a path</span>
 <span class="sd">            to a *vasprun.xml* file. To skip over a line, set its bandgap to</span>
@@ -149,6 +150,10 @@
 <span class="sd">        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a</span>
 <span class="sd">            a single font, specified as a :obj:`str`, or several fonts,</span>
 <span class="sd">            specified as a :obj:`list` of :obj:`str`.</span>
+<span class="sd">        units (:obj:`str`, optional): X-axis units for the plot. &#39;eV&#39; for</span>
+<span class="sd">           energy in electronvolts or &#39;nm&#39; for wavelength in nanometers.</span>
+<span class="sd">           Defaults to &#39;eV&#39;.</span>
+
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A matplotlib pyplot object.</span>
@@ -283,6 +288,7 @@
         <span class="n">fonts</span><span class="o">=</span><span class="n">fonts</span><span class="p">,</span>
         <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
         <span class="n">no_base_style</span><span class="o">=</span><span class="n">no_base_style</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="n">units</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">save_files</span><span class="p">:</span>
@@ -448,6 +454,9 @@
         <span class="s2">&quot;--dpi&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;pixel density for image file&quot;</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--font&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;font to use&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--units&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;x-axis units (options: eV or nm)&#39;</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span>
 
 
@@ -502,6 +511,7 @@
         <span class="n">style</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">style</span><span class="p">,</span>
         <span class="n">no_base_style</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">no_base_style</span><span class="p">,</span>
         <span class="n">fonts</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">font</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">units</span>
     <span class="p">)</span>
 
 
