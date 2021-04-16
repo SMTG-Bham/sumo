@@ -7,6 +7,7 @@ This module provides a class for plotting optical absorption spectra.
 """
 
 import numpy as np
+import scipy.constants as scpc
 from matplotlib import rcParams
 from matplotlib.font_manager import FontProperties, findfont
 from matplotlib.ticker import AutoMinorLocator, FuncFormatter, MaxNLocator
@@ -19,6 +20,9 @@ from sumo.plotting import (
     sumo_optics_style,
 )
 
+
+def ev_to_nm(energy_ev):  # convert energy in eV to wavelength in nm
+    return 1e9*(scpc.h*scpc.c) / (energy_ev*scpc.electron_volt)
 
 class SOpticsPlotter(object):
     """Class for plotting optical spectra.
@@ -124,6 +128,7 @@ class SOpticsPlotter(object):
         fonts=None,
         style=None,
         no_base_style=False,
+        units='eV'
     ):
         """Get a :obj:`matplotlib.pyplot` object of the optical spectra.
 
@@ -152,6 +157,10 @@ class SOpticsPlotter(object):
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.
+            units (:obj:`str`, optional): X-axis units for the plot. 'eV' for
+                energy in electronvolts or 'nm' for wavelength in nanometers.
+                Defaults to 'eV'.
+
 
         Returns:
             :obj:`matplotlib.pyplot`: The plot of optical spectra.
@@ -204,9 +213,15 @@ class SOpticsPlotter(object):
             range(n_plots), self._spec_data.items(), ymin_series, ymax_series
         ):
             ax = fig.axes[i]
-            _plot_spectrum(data, self._label, self._band_gap, ax, optics_colours)
+            _plot_spectrum(data, self._label, self._band_gap, ax, optics_colours, units)
 
-            xmax = xmax if xmax else self._xmax
+            if units in ['ev', 'eV'] and xmax is not None:
+                xmax = self._xmax  # use sumo-determined energy limits
+            elif units == 'nm':
+                # use default minimum energy (max wavelength) of 2500 nm
+                xmax = xmax if xmax is not None else 2500
+                # convert sumo-determined max energy to min wavelength
+                xmin = xmin if xmin else ev_to_nm(self._xmax)
             ax.set_xlim(xmin, xmax)
 
             if ymin is None and spectrum_key in (
@@ -251,7 +266,8 @@ class SOpticsPlotter(object):
                 ):
                     ax.legend(loc="best", frameon=False, ncol=1)
 
-        ax.set_xlabel("Energy (eV)")
+        xlabel = 'Energy (eV)' if units == 'eV' else 'Wavelength (nm)'
+        ax.set_xlabel(xlabel)
 
         # If only one plot, fix aspect ratio to match canvas
         if len(self._spec_data) == 1:
@@ -268,11 +284,15 @@ class SOpticsPlotter(object):
         return plt
 
 
-def _plot_spectrum(data, label, band_gap, ax, optics_colours):
+def _plot_spectrum(data, label, band_gap, ax, optics_colours, units):
     for (ener, alpha), abs_label, bg, c in zip(data, label, band_gap, optics_colours):
         if len(alpha.shape) == 1:
             # if averaged optics only plot one line
-            ax.plot(ener, alpha, label=abs_label, c=c)
+            if units == 'eV':
+                ax.plot(ener, alpha, label=abs_label, c=c)
+            elif units == 'nm':  # only for energies greater than 1 meV, to avoid RuntimeWarnings
+                # when converting to nm
+                ax.plot(ev_to_nm(ener[ener > 0.001]), alpha[ener > 0.001], label=abs_label, c=c)
 
         else:
             data = zip(range(3), ["xx", "yy", "zz"], ["-", "--", "-."])
@@ -284,7 +304,16 @@ def _plot_spectrum(data, label, band_gap, ax, optics_colours):
                     label = r"{}$_\mathregular{{{}}}$"
                     label = label.format(abs_label, direction_label)
 
-                ax.plot(ener, alpha[:, direction_id], ls=ls, label=label, c=c)
+                if units == 'eV':
+                    ax.plot(ener, alpha[:, direction_id], ls=ls,
+                            label=label, c=c)
+                elif units == 'nm':  # only for energies greater than 1 meV,
+                    # to avoid RuntimeWarnings when converting to nm
+                    ax.plot(ev_to_nm(ener[ener > 0.001]), alpha[ener > 0.001, direction_id],
+                            ls=ls, label=label, c=c)
         if bg:
             # plot band gap line
-            ax.axvline(bg, ls=":", c=c)
+            if units == 'eV':
+                ax.axvline(bg, ls=':', c=c)
+            elif units == 'nm':
+                ax.axvline(ev_to_nm(bg), ls=':', c=c)
