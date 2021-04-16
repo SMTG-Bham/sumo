@@ -59,6 +59,7 @@ def optplot(
     dpi=400,
     plt=None,
     fonts=None,
+    units='eV'
 ):
     """A script to plot optical absorption spectra from VASP calculations.
 
@@ -116,6 +117,10 @@ def optplot(
         fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
             a single font, specified as a :obj:`str`, or several fonts,
             specified as a :obj:`list` of :obj:`str`.
+        units (:obj:`str`, optional): X-axis units for the plot. 'eV' for
+           energy in electronvolts or 'nm' for wavelength in nanometers.
+           Defaults to 'eV'.
+
 
     Returns:
         A matplotlib pyplot object.
@@ -250,6 +255,7 @@ def optplot(
         fonts=fonts,
         style=style,
         no_base_style=no_base_style,
+        units=units
     )
 
     if save_files:
@@ -415,6 +421,9 @@ def _get_parser():
         "--dpi", type=int, default=400, help="pixel density for image file"
     )
     parser.add_argument("--font", default=None, help="font to use")
+    parser.add_argument(
+        "--units", type=str, default='eV', help='x-axis units (options: eV or nm)'
+    )
     return parser
 
 
@@ -469,6 +478,7 @@ def main():
         style=args.style,
         no_base_style=args.no_base_style,
         fonts=args.font,
+        units=args.units
     )
 
 
