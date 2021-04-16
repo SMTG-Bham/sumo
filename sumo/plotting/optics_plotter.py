@@ -7,6 +7,7 @@ This module provides a class for plotting optical absorption spectra.
 """
 
 import numpy as np
+import scipy.constants as scpc
 from matplotlib import rcParams
 from matplotlib.font_manager import FontProperties, findfont
 from matplotlib.ticker import AutoMinorLocator, FuncFormatter, MaxNLocator
@@ -21,7 +22,7 @@ from sumo.plotting import (
 
 
 def ev_to_nm(energy_ev):  # convert energy in eV to wavelength in nm
-    return 1239.84193 / energy_ev
+    return 1e9*(scpc.h*scpc.c) / (energy_ev*scpc.electron_volt)
 
 class SOpticsPlotter(object):
     """Class for plotting optical spectra.
@@ -214,13 +215,13 @@ class SOpticsPlotter(object):
             ax = fig.axes[i]
             _plot_spectrum(data, self._label, self._band_gap, ax, optics_colours, units)
 
-            if units in ['ev', 'eV'] and not xmax:
+            if units in ['ev', 'eV'] and xmax is not None:
                 xmax = self._xmax  # use sumo-determined energy limits
             elif units == 'nm':
-                xmax = xmax if xmax else 2500  # use default minimum energy (max wavelength) of
-                # 2500 nm
-                xmin = xmin if xmin else ev_to_nm(
-                    self._xmax)  # convert sumo-determined max energy to min wavelength
+                # use default minimum energy (max wavelength) of 2500 nm
+                xmax = xmax if xmax is not None else 2500
+                # convert sumo-determined max energy to min wavelength
+                xmin = xmin if xmin else ev_to_nm(self._xmax)
             ax.set_xlim(xmin, xmax)
 
             if ymin is None and spectrum_key in (
