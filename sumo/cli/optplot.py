@@ -82,7 +82,7 @@ def optplot(
         directory (:obj:`str`, optional): The directory in which to save files.
         gaussian (:obj:`float`): Standard deviation for gaussian broadening.
         band_gaps (:obj:`float`, :obj:`str` or :obj:`list`, optional): The band
-            gap as a :obj:`float`, plotted as a dashed line. If plotting
+            gap as a :obj:`float`, in eV, plotted as a dashed line. If plotting
             multiple spectra then a :obj:`list` of band gaps can be provided.
             Band gaps can be provided as a floating-point number or as a path
             to a *vasprun.xml* file. To skip over a line, set its bandgap to
