@@ -131,7 +131,7 @@ class CastepCell:
                     line = " ".join(map(str, row))
                     if comment != "":
                         line = f"{line: <30} ! {comment}"
-                    line = line + "\n"
+                    line += "\n"
                     f.write(line)
 
                 f.write(f"%endblock {block}\n")
@@ -244,8 +244,6 @@ def read_dos(
     Args:
         bands_file (:obj:`str`): Path to CASTEP prefix.bands output file. The
             k-point positions, weights and eigenvalues are read from this file.
-        pdos_bin (:obj:`str`): Path to CASTEP prefix.pdos_bin output file. The
-            weights of projected density of states are read from this file.
         bin_width (:obj:`float`, optional): Spacing for DOS energy axis
         gaussian (:obj:`float` or None, optional): Width of Gaussian broadening
             function
@@ -256,6 +254,42 @@ def read_dos(
         efermi_to_vbm (:obj:`bool`, optional):
             If a bandgap is detected, modify the stored Fermi energy
             so that it lies at the VBM.
+        elements (:obj:`dict`, optional): The elements and orbitals to extract
+            from the projected density of states. Should be provided as a
+            :obj:`dict` with the keys as the element names and corresponding
+            values as a :obj:`tuple` of orbitals. For example, the following
+            would extract the Bi s, px, py and d orbitals::
+
+                {'Bi': ('s', 'px', 'py', 'd')}
+
+            If an element is included with an empty :obj:`tuple`, all orbitals
+            for that species will be extracted. If ``elements`` is not set or
+            set to ``None``, all elements for all species will be extracted.
+        lm_orbitals (:obj:`dict`, optional): The orbitals to decompose into
+            their lm contributions (e.g. p -> px, py, pz). Should be provided
+            as a :obj:`dict`, with the elements names as keys and a
+            :obj:`tuple` of orbitals as the corresponding values. For example,
+            the following would be used to decompose the oxygen p and d
+            orbitals::
+
+                {'O': ('p', 'd')}
+
+        atoms (:obj:`dict`, optional): Which atomic sites to use when
+            calculating the projected density of states. Should be provided as
+            a :obj:`dict`, with the element names as keys and a :obj:`tuple` of
+            :obj:`int` specifying the atomic indices as the corresponding
+            values. The elemental projected density of states will be summed
+            only over the atom indices specified. If an element is included
+            with an empty :obj:`tuple`, then all sites for that element will
+            be included. The indices are 0 based for each element specified in
+            the POSCAR. For example, the following will calculate the density
+            of states for the first 4 Sn atoms and all O atoms in the
+            structure::
+
+                {'Sn': (1, 2, 3, 4), 'O': (, )}
+
+            If ``atoms`` is not set or set to ``None`` then all atomic sites
+            for all elements will be considered.
 
     Returns:
         (:obj:`pymatgen.electronic_structure.dos.Dos`, dict)
@@ -1078,4 +1112,4 @@ def read_phonon_bands(filename, header):
                     eigenvector = eigenvector[::2] + 1j * eigenvector[1::2]
                     eigenvectors[i_mode, i_qpt, i_ion, :] = eigenvector
 
-        return (qpts, weights, frequencies, eigenvectors)
+        return qpts, weights, frequencies, eigenvectors

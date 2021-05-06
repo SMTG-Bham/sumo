@@ -40,7 +40,7 @@ class QuestaalSite:
         xpos=True,
         read="fast",
         sites=None,
-        plat=[1, 0, 0, 0, 1, 0, 0, 0, 1],
+        plat=(1, 0, 0, 0, 1, 0, 0, 0, 1),
     ):
         sites = sites or []
         if nbas != len(sites):
@@ -341,9 +341,7 @@ class QuestaalInit:
     @staticmethod
     def from_structure(structure):
         """Generate QuestaalInit object from pymatgen structure"""
-        lattice = {"ALAT": 1, "UNITS": "A"}
-        lattice["PLAT"] = structure.lattice.matrix
-
+        lattice = {"ALAT": 1, "UNITS": "A", "PLAT": structure.lattice.matrix}
         sites = [
             {"ATOM": site.species_string, "X": tuple(site.frac_coords)}
             for site in structure.sites
@@ -499,7 +497,6 @@ def write_kpoint_files(
     filename,
     kpoints,
     labels,
-    alat=1,
     make_folders=False,
     directory=None,
     cart_coords=False,
@@ -943,7 +940,7 @@ def band_structure(bnds_file, lattice, labels=None, alat=1, coords_are_cartesian
 
     # Key info has been collected: re-read file for kpts and eigenvalues
     def _read_eigenvals(f, nlines):
-        lines = [f.readline() for i in range(nlines)]
+        lines = [f.readline() for _ in range(nlines)]
         # This statement is very "functional programming"; read it
         # backwards.  List of split lines is "flattened" by chain into
         # iterator of values; this is fed into map to make floats and
@@ -977,7 +974,7 @@ def band_structure(bnds_file, lattice, labels=None, alat=1, coords_are_cartesian
 
             block_nkpts = int(f.readline().strip())
             if spin_pol:
-                block_nkpts = block_nkpts // 2
+                block_nkpts //= 2
 
     # Transpose matrix to arrange by band and convert to eV from Ry
     eigenvals = {key: np.array(data).T * _ry_to_ev for key, data in eigenvals.items()}
@@ -1026,12 +1023,12 @@ def dielectric_from_file(filename, out_filename=None):
     """
 
     if "eps_BSE" in filename:
-        return dielectric_from_BSE(filename)
+        return dielectric_from_bse(filename)
     else:
         return dielectric_from_opt(filename, out_filename=out_filename)
 
 
-def dielectric_from_BSE(filename):
+def dielectric_from_bse(filename):
     """Read a Questaal eps_BSE.out file and return dielectric function
 
     eps_BSE files only provide a scalar complex number; this is converted to a
@@ -1078,7 +1075,7 @@ def dielectric_from_BSE(filename):
     real = [[r, r, r, 0, 0, 0] for r in data[:, 1]]
     imag = [[i, i, i, 0, 0, 0] for i in data[:, 2]]
 
-    return (energy, real, imag)
+    return energy, real, imag
 
 
 def dielectric_from_opt(filename, cshift=1e-6, out_filename=None):
@@ -1135,7 +1132,7 @@ def dielectric_from_opt(filename, cshift=1e-6, out_filename=None):
     data[:, 0] *= _ry_to_ev
     de = data[1, 0] - data[0, 0]
     eps_imag = [[[row[1], 0, 0], [0, row[2], 0], [0, 0, row[3]]] for row in data]
-    eps_real = kkr(de, eps_imag)
+    eps_real = kkr(de, eps_imag, cshift=cshift)
 
     # Re-shape to XX YY ZZ XY YZ XZ format
     eps_imag = np.array(eps_imag).reshape(len(eps_imag), 9)
@@ -1149,4 +1146,4 @@ def dielectric_from_opt(filename, cshift=1e-6, out_filename=None):
                 f.write((" ".join(["{:10.8f}"] * 7)).format(e, *r[:3], *i[:3]))
                 f.write("\n")
 
-    return (data[:, 0].flatten(), eps_real, eps_imag)
+    return data[:, 0].flatten(), eps_real, eps_imag
