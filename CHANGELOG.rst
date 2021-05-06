@@ -4,6 +4,11 @@ Change Log
 Unreleased
 ----------
 
+v2.2.3
+------
+
+Bugfix: Questaal band structure import was consistently raising unnecessary Exception
+
 v2.2.2
 ------
 

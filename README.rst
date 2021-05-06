@@ -19,7 +19,6 @@ Sumo
     :target: https://doi.org/10.5281/zenodo.1338124
     :alt: Zenodo Repository
 
-
 Sumo is a Python toolkit for plotting and analysis of ab initio
 solid-state calculation data,
 built on existing Python packages from the solid-state
