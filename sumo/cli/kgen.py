@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -11,7 +10,6 @@ TODO:
   * Return a list of filenames/folders
 """
 
-from __future__ import unicode_literals
 
 import argparse
 import logging
@@ -156,7 +154,7 @@ def kgen(
             )
         structure = CastepCell.from_file(filename).structure
     else:
-        raise ValueError('Code "{0}" not recognized.'.format(code))
+        raise ValueError(f'Code "{code}" not recognized.')
 
     if phonon and (code.lower() not in phonon_supported_codes):
         logging.error(
@@ -181,12 +179,12 @@ def kgen(
     logging.info("\nk-point label indices:")
     for i, label in enumerate(labels):
         if label:
-            logging.info("\t{}: {}".format(label, i + 1))
+            logging.info(f"\t{label}: {i + 1}")
 
     if not kpt_list and not np.allclose(
         structure.lattice.matrix, kpath.prim.lattice.matrix
     ):
-        prim_filename = "{}_prim".format(os.path.basename(filename))
+        prim_filename = f"{os.path.basename(filename)}_prim"
         if code.lower() == "questaal":
             QuestaalInit.from_structure(kpath.prim).to_file(prim_filename)
         elif code.lower() == "castep":
@@ -204,7 +202,7 @@ def kgen(
 
     ibz = _parse_ibzkpt(ibzkpt)
 
-    if make_folders and ibz and kpts_per_split is None:
+    if ibz and kpts_per_split is None:
         logging.info(
             "\nFound {} total kpoints in path, do you want to "
             "split them up? (y/n)".format(len(kpoints))
@@ -240,7 +238,7 @@ def kgen(
         if cart_coords:
             kpoints = [kpoint / (2 * np.pi) for kpoint in kpoints]
             if alat is not None:
-                logging.info("Multiplying kpoint values by ALAT = {} Bohr".format(alat))
+                logging.info(f"Multiplying kpoint values by ALAT = {alat} Bohr")
                 _bohr_to_angstrom = 0.5291772
                 kpoints = [kpoint * alat * _bohr_to_angstrom for kpoint in kpoints]
         sumo.io.questaal.write_kpoint_files(
@@ -260,7 +258,7 @@ def _parse_ibzkpt(ibzkpt):
             if ibz.tet_number != 0:
                 logging.error("\nERROR: IBZKPT contains tetrahedron " "information.")
                 sys.exit()
-        except IOError:
+        except OSError:
             logging.error("\nERROR: Hybrid specified but no IBZKPT file " "found.")
             sys.exit()
     else:
