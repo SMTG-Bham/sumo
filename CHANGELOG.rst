@@ -4,6 +4,12 @@ Change Log
 Unreleased
 ----------
 
+v2.2.4
+------
+
+Bugfix: ``sumo-kgen`` with ``--hybrid`` but without ``--folders`` now asks whether to
+split up the k-points.
+
 v2.2.3
 ------
 

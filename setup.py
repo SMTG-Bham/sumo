@@ -44,7 +44,11 @@ setup(
         "seekpath",
         "castepxbin==0.1.0",
     ],
-    extras_require={"docs": ["sphinx", "sphinx-argparse"], "tests": ["pytest"]},
+    extras_require={
+        "docs": ["sphinx", "sphinx-argparse"],
+        "tests": ["pytest"],
+        "dev": ["pre-commit"],
+    },
     package_data={
         "sumo": [
             "symmetry/bradcrack.json",
