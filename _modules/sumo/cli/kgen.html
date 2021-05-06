@@ -31,8 +31,7 @@
           <div class="body" role="main">
             
   <h1>Source code for sumo.cli.kgen</h1><div class="highlight"><pre>
-<span></span><span class="c1"># coding: utf-8</span>
-<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -44,7 +43,6 @@
 <span class="sd">  * Return a list of filenames/folders</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">unicode_literals</span>
 
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -189,7 +187,7 @@
             <span class="p">)</span>
         <span class="n">structure</span> <span class="o">=</span> <span class="n">CastepCell</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">structure</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Code &quot;</span><span class="si">{0}</span><span class="s1">&quot; not recognized.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">code</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Code &quot;</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s1">&quot; not recognized.&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">phonon</span> <span class="ow">and</span> <span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">phonon_supported_codes</span><span class="p">):</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
@@ -214,12 +212,12 @@
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">k-point label indices:&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">label</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">kpt_list</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
         <span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="n">kpath</span><span class="o">.</span><span class="n">prim</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span>
     <span class="p">):</span>
-        <span class="n">prim_filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_prim&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+        <span class="n">prim_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="si">}</span><span class="s2">_prim&quot;</span>
         <span class="k">if</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;questaal&quot;</span><span class="p">:</span>
             <span class="n">QuestaalInit</span><span class="o">.</span><span class="n">from_structure</span><span class="p">(</span><span class="n">kpath</span><span class="o">.</span><span class="n">prim</span><span class="p">)</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="n">prim_filename</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">code</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;castep&quot;</span><span class="p">:</span>
@@ -237,7 +235,7 @@
 
     <span class="n">ibz</span> <span class="o">=</span> <span class="n">_parse_ibzkpt</span><span class="p">(</span><span class="n">ibzkpt</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">make_folders</span> <span class="ow">and</span> <span class="n">ibz</span> <span class="ow">and</span> <span class="n">kpts_per_split</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">ibz</span> <span class="ow">and</span> <span class="n">kpts_per_split</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Found </span><span class="si">{}</span><span class="s2"> total kpoints in path, do you want to &quot;</span>
             <span class="s2">&quot;split them up? (y/n)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">kpoints</span><span class="p">))</span>
@@ -273,7 +271,7 @@
         <span class="k">if</span> <span class="n">cart_coords</span><span class="p">:</span>
             <span class="n">kpoints</span> <span class="o">=</span> <span class="p">[</span><span class="n">kpoint</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="k">for</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="n">kpoints</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">alat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Multiplying kpoint values by ALAT = </span><span class="si">{}</span><span class="s2"> Bohr&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">alat</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Multiplying kpoint values by ALAT = </span><span class="si">{</span><span class="n">alat</span><span class="si">}</span><span class="s2"> Bohr&quot;</span><span class="p">)</span>
                 <span class="n">_bohr_to_angstrom</span> <span class="o">=</span> <span class="mf">0.5291772</span>
                 <span class="n">kpoints</span> <span class="o">=</span> <span class="p">[</span><span class="n">kpoint</span> <span class="o">*</span> <span class="n">alat</span> <span class="o">*</span> <span class="n">_bohr_to_angstrom</span> <span class="k">for</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="n">kpoints</span><span class="p">]</span>
         <span class="n">sumo</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">questaal</span><span class="o">.</span><span class="n">write_kpoint_files</span><span class="p">(</span>
@@ -293,7 +291,7 @@
             <span class="k">if</span> <span class="n">ibz</span><span class="o">.</span><span class="n">tet_number</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ERROR: IBZKPT contains tetrahedron &quot;</span> <span class="s2">&quot;information.&quot;</span><span class="p">)</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ERROR: Hybrid specified but no IBZKPT file &quot;</span> <span class="s2">&quot;found.&quot;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>

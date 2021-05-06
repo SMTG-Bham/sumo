@@ -31,8 +31,7 @@
           <div class="body" role="main">
             
   <h1>Source code for sumo.plotting</h1><div class="highlight"><pre>
-<span></span><span class="c1"># coding: utf-8</span>
-<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -42,7 +41,7 @@
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rc</span><span class="p">,</span> <span class="n">rcParams</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
 <span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">LineCollection</span>
 <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 
@@ -193,7 +192,7 @@
 
 
 <div class="viewcode-block" id="power_tick"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.power_tick">[docs]</a><span class="k">def</span> <span class="nf">power_tick</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\times&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Custom power ticker function. &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Custom power ticker function.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;$\mathregular</span><span class="si">{0}</span><span class="s2">$&quot;</span>
     <span class="k">elif</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -202,7 +201,7 @@
         <span class="n">exponent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
     <span class="n">coeff</span> <span class="o">=</span> <span class="n">val</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">exponent</span>
 
-    <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;$\mathregular{{</span><span class="si">{:.1f}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> 10^</span><span class="si">{:2d}</span><span class="s2">}}$&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coeff</span><span class="p">,</span> <span class="n">times_sign</span><span class="p">,</span> <span class="n">exponent</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="sa">fr</span><span class="s2">&quot;$\mathregular</span><span class="se">{{</span><span class="si">{</span><span class="n">coeff</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">times_sign</span><span class="si">}</span><span class="s2"> 10^</span><span class="si">{</span><span class="n">exponent</span><span class="si">:</span><span class="s2">2d</span><span class="se">}}</span><span class="si">}</span><span class="s2">$&quot;</span></div>
 
 
 <div class="viewcode-block" id="rgbline"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.rgbline">[docs]</a><span class="k">def</span> <span class="nf">rgbline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.5</span><span class="p">):</span>

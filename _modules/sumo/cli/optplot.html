@@ -31,8 +31,7 @@
           <div class="body" role="main">
             
   <h1>Source code for sumo.cli.optplot</h1><div class="highlight"><pre>
-<span></span><span class="c1"># coding: utf-8</span>
-<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -92,7 +91,7 @@
     <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
     <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">units</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;eV&quot;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A script to plot optical absorption spectra from VASP calculations.</span>
 
@@ -162,7 +161,7 @@
     <span class="c1"># Don&#39;t write files if this is being done to manipulate existing plt</span>
     <span class="n">save_files</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">plt</span> <span class="k">else</span> <span class="kc">True</span>
 
-    <span class="c1">##### BUILD LIST OF FILES AUTOMATICALLY IF NECESSARY #####</span>
+    <span class="c1"># BUILD LIST OF FILES AUTOMATICALLY IF NECESSARY</span>
 
     <span class="k">if</span> <span class="n">codes</span> <span class="o">==</span> <span class="s2">&quot;vasp&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filenames</span><span class="p">:</span>
@@ -191,7 +190,7 @@
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">codes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">codes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">codes</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span>
 
-    <span class="c1">#### ITERATE OVER FILES READING DIELECTRIC DATA ####</span>
+    <span class="c1"># ITERATE OVER FILES READING DIELECTRIC DATA</span>
 
     <span class="n">dielectrics</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">auto_labels</span> <span class="o">=</span> <span class="p">[]</span>
@@ -203,7 +202,7 @@
 
             <span class="n">auto_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">latexify</span><span class="p">(</span><span class="n">vr</span><span class="o">.</span><span class="n">final_structure</span><span class="o">.</span><span class="n">composition</span><span class="o">.</span><span class="n">reduced_formula</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                    <span class="s2">&quot;$_&quot;</span><span class="p">,</span> <span class="s2">&quot;$_\mathregular&quot;</span>
+                    <span class="s2">&quot;$_&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$_\mathregular&quot;</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -219,7 +218,7 @@
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">out_filename</span> <span class="o">=</span> <span class="s2">&quot;dielectric.dat&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">out_filename</span> <span class="o">=</span> <span class="s2">&quot;dielectric_</span><span class="si">{0}</span><span class="s2">.dat&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">out_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;dielectric_</span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">.dat&quot;</span>
 
             <span class="n">dielectrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">questaal</span><span class="o">.</span><span class="n">dielectric_from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">out_filename</span><span class="p">))</span>
 
@@ -232,12 +231,12 @@
                 <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Code selection &quot;</span><span class="si">{}</span><span class="s1">&quot; not recognised&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">code</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Code selection &quot;</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s1">&quot; not recognised&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">labels</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="n">auto_labels</span>
 
-    <span class="c1">#### PROCESS DIELECTRIC DATA: BROADENING AND DERIVED PROPERTIES ####</span>
+    <span class="c1"># PROCESS DIELECTRIC DATA: BROADENING AND DERIVED PROPERTIES</span>
 
     <span class="k">if</span> <span class="n">gaussian</span><span class="p">:</span>
         <span class="n">dielectrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">broaden_eps</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">gaussian</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dielectrics</span><span class="p">]</span>
@@ -288,14 +287,14 @@
         <span class="n">fonts</span><span class="o">=</span><span class="n">fonts</span><span class="p">,</span>
         <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">,</span>
         <span class="n">no_base_style</span><span class="o">=</span><span class="n">no_base_style</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="n">units</span>
+        <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">save_files</span><span class="p">:</span>
         <span class="n">basename</span> <span class="o">=</span> <span class="s2">&quot;absorption&quot;</span>
         <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
-            <span class="n">basename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span>
-        <span class="n">image_filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">basename</span><span class="p">,</span> <span class="n">image_format</span><span class="p">)</span>
+            <span class="n">basename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">image_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">image_format</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="k">if</span> <span class="n">directory</span><span class="p">:</span>
             <span class="n">image_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">image_filename</span><span class="p">)</span>
@@ -455,7 +454,7 @@
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--font&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;font to use&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--units&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;x-axis units (options: eV or nm)&#39;</span>
+        <span class="s2">&quot;--units&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;eV&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;x-axis units (options: eV or nm)&quot;</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span>
 
@@ -511,7 +510,7 @@
         <span class="n">style</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">style</span><span class="p">,</span>
         <span class="n">no_base_style</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">no_base_style</span><span class="p">,</span>
         <span class="n">fonts</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">font</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">units</span>
+        <span class="n">units</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
     <span class="p">)</span>
 
 

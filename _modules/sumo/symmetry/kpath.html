@@ -31,8 +31,7 @@
           <div class="body" role="main">
             
   <h1>Source code for sumo.symmetry.kpath</h1><div class="highlight"><pre>
-<span></span><span class="c1"># coding: utf-8</span>
-<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -46,7 +45,7 @@
 <span class="kn">from</span> <span class="nn">pymatgen.symmetry.analyzer</span> <span class="kn">import</span> <span class="n">SpacegroupAnalyzer</span>
 
 
-<div class="viewcode-block" id="Kpath"><a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath">[docs]</a><span class="k">class</span> <span class="nc">Kpath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Kpath"><a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath">[docs]</a><span class="k">class</span> <span class="nc">Kpath</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class providing helper functions for generating k-point paths.</span>
 
 <span class="sd">    This class should not be used directly. Instead, one of the</span>
@@ -210,7 +209,7 @@
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">path_branch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path_branch</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="n">sym_point_labels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="s2">&quot; | </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+                        <span class="n">sym_point_labels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; | </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">sym_point_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
 
@@ -287,7 +286,10 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The lattice crystal system.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">number</span> <span class="o">&lt;=</span> <span class="n">j</span>
+
+        <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">number</span> <span class="o">&lt;=</span> <span class="n">j</span>
+
         <span class="n">cs</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;triclinic&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
             <span class="s2">&quot;monoclinic&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>

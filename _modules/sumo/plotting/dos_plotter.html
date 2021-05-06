@@ -31,8 +31,7 @@
           <div class="body" role="main">
             
   <h1>Source code for sumo.plotting.dos_plotter</h1><div class="highlight"><pre>
-<span></span><span class="c1"># coding: utf-8</span>
-<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -64,7 +63,7 @@
 <span class="n">empty_space</span> <span class="o">=</span> <span class="mf">1.05</span>
 
 
-<div class="viewcode-block" id="SDOSPlotter"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter">[docs]</a><span class="k">class</span> <span class="nc">SDOSPlotter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SDOSPlotter"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter">[docs]</a><span class="k">class</span> <span class="nc">SDOSPlotter</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class for plotting density of states data.</span>
 
 <span class="sd">    This class should be initialised with the total and partial density</span>
@@ -232,7 +231,7 @@
             <span class="k">for</span> <span class="n">orb</span> <span class="ow">in</span> <span class="n">sort_orbitals</span><span class="p">(</span><span class="n">el_pdos</span><span class="p">):</span>
                 <span class="n">dmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">el_pdos</span><span class="p">[</span><span class="n">orb</span><span class="p">]</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
                 <span class="n">ymax</span> <span class="o">=</span> <span class="n">dmax</span> <span class="k">if</span> <span class="n">dmax</span> <span class="o">&gt;</span> <span class="n">ymax</span> <span class="k">else</span> <span class="n">ymax</span>
-                <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">dmax</span> <span class="o">&lt;</span> <span class="n">cutoff</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">orb</span><span class="p">)</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">dmax</span> <span class="o">&lt;</span> <span class="n">cutoff</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">el</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">orb</span><span class="si">}</span><span class="s2">)&quot;</span>
                 <span class="n">colour</span><span class="p">,</span> <span class="n">cache</span> <span class="o">=</span> <span class="n">get_cached_colour</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">orb</span><span class="p">,</span> <span class="n">colours</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
                 <span class="n">el_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="p">{</span>

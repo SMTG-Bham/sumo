@@ -31,8 +31,7 @@
           <div class="body" role="main">
             
   <h1>Source code for sumo.plotting.optics_plotter</h1><div class="highlight"><pre>
-<span></span><span class="c1"># coding: utf-8</span>
-<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -55,10 +54,12 @@
 
 
 <div class="viewcode-block" id="ev_to_nm"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.optics_plotter.ev_to_nm">[docs]</a><span class="k">def</span> <span class="nf">ev_to_nm</span><span class="p">(</span><span class="n">energy_ev</span><span class="p">):</span>  <span class="c1"># convert energy in eV to wavelength in nm</span>
-    <span class="k">return</span> <span class="mf">1e9</span><span class="o">*</span><span class="p">(</span><span class="n">scpc</span><span class="o">.</span><span class="n">h</span><span class="o">*</span><span class="n">scpc</span><span class="o">.</span><span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">energy_ev</span><span class="o">*</span><span class="n">scpc</span><span class="o">.</span><span class="n">electron_volt</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="mf">1e9</span> <span class="o">*</span> <span class="p">(</span><span class="n">scpc</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="n">scpc</span><span class="o">.</span><span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">energy_ev</span> <span class="o">*</span> <span class="n">scpc</span><span class="o">.</span><span class="n">electron_volt</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SOpticsPlotter"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.optics_plotter.SOpticsPlotter">[docs]</a><span class="k">class</span> <span class="nc">SOpticsPlotter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SOpticsPlotter"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.optics_plotter.SOpticsPlotter">[docs]</a><span class="k">class</span> <span class="nc">SOpticsPlotter</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class for plotting optical spectra.</span>
+
 
 <span class="sd">    The easiest way to initialise this class is using the output from the</span>
 <span class="sd">    :obj:`sumo.electronic_structure.optics.calculate_alpha()` method.</span>
@@ -121,7 +122,7 @@
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">label</span><span class="p">:</span>
             <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_datasets</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">n_datasets</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">band_gap</span><span class="p">)]))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">({</span><span class="nb">len</span><span class="p">(</span><span class="n">label</span><span class="p">),</span> <span class="n">n_datasets</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">band_gap</span><span class="p">)})</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;spec_data, band_gap, and label not same size&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;absorption&quot;</span> <span class="ow">in</span> <span class="n">spec_data</span><span class="p">:</span>
@@ -149,6 +150,7 @@
 <div class="viewcode-block" id="SOpticsPlotter.get_plot"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.optics_plotter.SOpticsPlotter.get_plot">[docs]</a>    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_optics_style</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="s2">&quot;eV&quot;</span><span class="p">,</span>
         <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">xmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
@@ -161,11 +163,13 @@
         <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">units</span><span class="o">=</span><span class="s1">&#39;eV&#39;</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object of the optical spectra.</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            units (:obj:`str`, optional): X-axis units for the plot. &#39;eV&#39; for</span>
+<span class="sd">                energy in electronvolts or &#39;nm&#39; for wavelength in nanometers.</span>
+<span class="sd">                Defaults to &#39;eV&#39;.</span>
 <span class="sd">            width (:obj:`float`, optional): The width of the plot.</span>
 <span class="sd">            height (:obj:`float`, optional): The height of the plot.</span>
 <span class="sd">            xmin (:obj:`float`, optional): The minimum energy on the x-axis.</span>
@@ -190,10 +194,6 @@
 <span class="sd">            no_base_style (:obj:`bool`, optional): Prevent use of sumo base</span>
 <span class="sd">                style. This can make alternative styles behave more</span>
 <span class="sd">                predictably.</span>
-<span class="sd">            units (:obj:`str`, optional): X-axis units for the plot. &#39;eV&#39; for</span>
-<span class="sd">                energy in electronvolts or &#39;nm&#39; for wavelength in nanometers.</span>
-<span class="sd">                Defaults to &#39;eV&#39;.</span>
-
 
 <span class="sd">        Returns:</span>
 <span class="sd">            :obj:`matplotlib.pyplot`: The plot of optical spectra.</span>
@@ -248,9 +248,9 @@
             <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">_plot_spectrum</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_band_gap</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">optics_colours</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">units</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ev&#39;</span><span class="p">,</span> <span class="s1">&#39;eV&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">xmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">units</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ev&quot;</span><span class="p">,</span> <span class="s2">&quot;eV&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">xmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">xmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xmax</span>  <span class="c1"># use sumo-determined energy limits</span>
-            <span class="k">elif</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;nm&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;nm&quot;</span><span class="p">:</span>
                 <span class="c1"># use default minimum energy (max wavelength) of 2500 nm</span>
                 <span class="n">xmax</span> <span class="o">=</span> <span class="n">xmax</span> <span class="k">if</span> <span class="n">xmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">2500</span>
                 <span class="c1"># convert sumo-determined max energy to min wavelength</span>
@@ -299,7 +299,7 @@
                 <span class="p">):</span>
                     <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-        <span class="n">xlabel</span> <span class="o">=</span> <span class="s1">&#39;Energy (eV)&#39;</span> <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;eV&#39;</span> <span class="k">else</span> <span class="s1">&#39;Wavelength (nm)&#39;</span>
+        <span class="n">xlabel</span> <span class="o">=</span> <span class="s2">&quot;Energy (eV)&quot;</span> <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;eV&quot;</span> <span class="k">else</span> <span class="s2">&quot;Wavelength (nm)&quot;</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
 
         <span class="c1"># If only one plot, fix aspect ratio to match canvas</span>
@@ -321,11 +321,18 @@
     <span class="k">for</span> <span class="p">(</span><span class="n">ener</span><span class="p">,</span> <span class="n">alpha</span><span class="p">),</span> <span class="n">abs_label</span><span class="p">,</span> <span class="n">bg</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">band_gap</span><span class="p">,</span> <span class="n">optics_colours</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># if averaged optics only plot one line</span>
-            <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;eV&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;eV&quot;</span><span class="p">:</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ener</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">abs_label</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;nm&#39;</span><span class="p">:</span>  <span class="c1"># only for energies greater than 1 meV, to avoid RuntimeWarnings</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;nm&quot;</span>
+            <span class="p">):</span>  <span class="c1"># only for energies greater than 1 meV, to avoid RuntimeWarnings</span>
                 <span class="c1"># when converting to nm</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ev_to_nm</span><span class="p">(</span><span class="n">ener</span><span class="p">[</span><span class="n">ener</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">]),</span> <span class="n">alpha</span><span class="p">[</span><span class="n">ener</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">abs_label</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">ev_to_nm</span><span class="p">(</span><span class="n">ener</span><span class="p">[</span><span class="n">ener</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">]),</span>
+                    <span class="n">alpha</span><span class="p">[</span><span class="n">ener</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">],</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">abs_label</span><span class="p">,</span>
+                    <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
+                <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="p">[</span><span class="s2">&quot;xx&quot;</span><span class="p">,</span> <span class="s2">&quot;yy&quot;</span><span class="p">,</span> <span class="s2">&quot;zz&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="s2">&quot;-.&quot;</span><span class="p">])</span>
@@ -337,19 +344,23 @@
                     <span class="n">label</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">$_\mathregular{{</span><span class="si">{}</span><span class="s2">}}$&quot;</span>
                     <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">abs_label</span><span class="p">,</span> <span class="n">direction_label</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;eV&#39;</span><span class="p">:</span>
-                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ener</span><span class="p">,</span> <span class="n">alpha</span><span class="p">[:,</span> <span class="n">direction_id</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="n">ls</span><span class="p">,</span>
-                            <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;nm&#39;</span><span class="p">:</span>  <span class="c1"># only for energies greater than 1 meV,</span>
+                <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;eV&quot;</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ener</span><span class="p">,</span> <span class="n">alpha</span><span class="p">[:,</span> <span class="n">direction_id</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="n">ls</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;nm&quot;</span><span class="p">:</span>  <span class="c1"># only for energies greater than 1 meV,</span>
                     <span class="c1"># to avoid RuntimeWarnings when converting to nm</span>
-                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ev_to_nm</span><span class="p">(</span><span class="n">ener</span><span class="p">[</span><span class="n">ener</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">]),</span> <span class="n">alpha</span><span class="p">[</span><span class="n">ener</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">,</span> <span class="n">direction_id</span><span class="p">],</span>
-                            <span class="n">ls</span><span class="o">=</span><span class="n">ls</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                        <span class="n">ev_to_nm</span><span class="p">(</span><span class="n">ener</span><span class="p">[</span><span class="n">ener</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">]),</span>
+                        <span class="n">alpha</span><span class="p">[</span><span class="n">ener</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">,</span> <span class="n">direction_id</span><span class="p">],</span>
+                        <span class="n">ls</span><span class="o">=</span><span class="n">ls</span><span class="p">,</span>
+                        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                        <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
+                    <span class="p">)</span>
         <span class="k">if</span> <span class="n">bg</span><span class="p">:</span>
             <span class="c1"># plot band gap line</span>
-            <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;eV&#39;</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">bg</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;nm&#39;</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">ev_to_nm</span><span class="p">(</span><span class="n">bg</span><span class="p">),</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;eV&quot;</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">bg</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;nm&quot;</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">ev_to_nm</span><span class="p">(</span><span class="n">bg</span><span class="p">),</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">)</span>
 </pre></div>
 
           </div>

@@ -31,8 +31,7 @@
           <div class="body" role="main">
             
   <h1>Source code for sumo.symmetry.brad_crack_kpath</h1><div class="highlight"><pre>
-<span></span><span class="c1"># coding: utf-8</span>
-<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -113,7 +112,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">json_file</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;bradcrack.json&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">bradcrack_data</span> <span class="o">=</span> <span class="n">load_json</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">bradcrack_data</span><span class="p">[</span><span class="n">bravais</span><span class="p">]</span>
 

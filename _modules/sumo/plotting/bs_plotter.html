@@ -31,8 +31,7 @@
           <div class="body" role="main">
             
   <h1>Source code for sumo.plotting.bs_plotter</h1><div class="highlight"><pre>
-<span></span><span class="c1"># coding: utf-8</span>
-<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -766,7 +765,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_sanitise_label_group</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">labelgroup</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @</span>
 
 <span class="sd">        Labels split with $\mid$ symbol will be treated for each part.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -774,7 +773,7 @@
         <span class="k">if</span> <span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span> <span class="ow">in</span> <span class="n">labelgroup</span><span class="p">:</span>
             <span class="n">label_components</span> <span class="o">=</span> <span class="n">labelgroup</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span><span class="p">)</span>
             <span class="n">good_labels</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_sanitise_label</span><span class="p">,</span> <span class="n">label_components</span><span class="p">)</span> <span class="k">if</span> <span class="n">l</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_sanitise_label</span><span class="p">,</span> <span class="n">label_components</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="p">]</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
@@ -803,7 +802,7 @@
                     <span class="c1"># If a branch connection, check all parts of label</span>
                     <span class="k">if</span> <span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span> <span class="ow">in</span> <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
                         <span class="n">label_components</span> <span class="o">=</span> <span class="n">temp_ticks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span><span class="p">)</span>
-                        <span class="n">good_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">label_components</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;@&quot;</span><span class="p">]</span>
+                        <span class="n">good_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">label_components</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;@&quot;</span><span class="p">]</span>
                         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                             <span class="k">continue</span>
                         <span class="k">else</span><span class="p">:</span>
@@ -822,7 +821,7 @@
 
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Label positions:&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">dist</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">unique_d</span><span class="p">,</span> <span class="n">unique_l</span><span class="p">)):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{:.4f}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">label</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="n">dist</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">unique_d</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">unique_l</span><span class="p">)</span>

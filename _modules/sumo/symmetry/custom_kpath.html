@@ -31,8 +31,7 @@
           <div class="body" role="main">
             
   <h1>Source code for sumo.symmetry.custom_kpath</h1><div class="highlight"><pre>
-<span></span><span class="c1"># coding: utf-8</span>
-<span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -123,7 +122,7 @@
             <span class="k">if</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">kpt</span><span class="p">)</span> <span class="ow">in</span> <span class="n">kpt_labels</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">kpt_labels</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="nb">tuple</span><span class="p">(</span><span class="n">kpt</span><span class="p">):</span> <span class="s2">&quot;(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">label_i</span><span class="p">)})</span>
+                <span class="n">kpt_labels</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="nb">tuple</span><span class="p">(</span><span class="n">kpt</span><span class="p">):</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">label_i</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">})</span>
                 <span class="n">label_i</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="c1"># Read out into nested lists</span>
