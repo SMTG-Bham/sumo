@@ -214,14 +214,14 @@ existing file if present.
 
 To plot with Sumo, provide either file. If a single-channel file is
 provided, Sumo will plot a TDOS, e.g.::
-  
+
   sumo-dosplot --code questaal -f tdos.ext
 
 If a multichannel PDOS file is provided, this will be interpreted as
 if decomposed by site, l, and m. The *site.ext* file is read in, and
 if present a file named *tdos.ext* will also be used to add the total
 DOS.::
-  
+
   sumo-dosplot --code questaal -f dos.ext
 
 The `--elements` and `--orbitals` options may be used to specify which

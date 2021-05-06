@@ -2,10 +2,11 @@ import unittest
 from os.path import join as path_join
 
 import numpy as np
-import sumo.phonon.phonopy
 from phonopy import Phonopy
 from pkg_resources import resource_filename
 from pymatgen.io.vasp.inputs import Poscar
+
+import sumo.phonon.phonopy
 
 
 class PhonopyTestCase(unittest.TestCase):

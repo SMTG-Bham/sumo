@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -31,7 +30,7 @@ except ImportError:
 empty_space = 1.05
 
 
-class SDOSPlotter(object):
+class SDOSPlotter:
     """Class for plotting density of states data.
 
     This class should be initialised with the total and partial density
@@ -199,7 +198,7 @@ class SDOSPlotter(object):
             for orb in sort_orbitals(el_pdos):
                 dmax = max([max(d[mask]) for d in el_pdos[orb].densities.values()])
                 ymax = dmax if dmax > ymax else ymax
-                label = None if dmax < cutoff else "{} ({})".format(el, orb)
+                label = None if dmax < cutoff else f"{el} ({orb})"
                 colour, cache = get_cached_colour(el, orb, colours, cache=cache)
                 el_lines.append(
                     {

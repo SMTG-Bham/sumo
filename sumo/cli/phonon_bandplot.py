@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -214,7 +213,7 @@ def phonon_bandplot(
             logging.info(
                 "No input data, using file {} " "to construct plot".format(from_json[0])
             )
-            with open(from_json[0], "r") as f:
+            with open(from_json[0]) as f:
                 bs = PhononBandStructureSymmLine.from_dict(json.load(f))
             from_json = from_json[1:]
             phonon = None
@@ -236,12 +235,12 @@ def phonon_bandplot(
         )
 
     if to_json is not None:
-        logging.info("Writing symmetry lines to {}".format(to_json))
+        logging.info(f"Writing symmetry lines to {to_json}")
         with open(to_json, "wt") as f:
             f.write(bs.to_json())
 
     if to_web is not None:
-        logging.info("Writing visualisation JSON to {}".format(to_web))
+        logging.info(f"Writing visualisation JSON to {to_web}")
         bs.write_phononwebsite(to_web)
 
     # Replace dos filename with data array
@@ -281,8 +280,8 @@ def phonon_bandplot(
     )
 
     if save_files:
-        basename = "phonon_band.{}".format(image_format)
-        filename = "{}_{}".format(prefix, basename) if prefix else basename
+        basename = f"phonon_band.{image_format}"
+        filename = f"{prefix}_{basename}" if prefix else basename
 
         if directory:
             filename = os.path.join(directory, filename)
@@ -310,7 +309,7 @@ def save_data_files(bs, prefix=None, directory=None):
         str: The filename of the written data file.
     """
     filename = "phonon_band.dat"
-    filename = "{}_phonon_band.dat".format(prefix) if prefix else filename
+    filename = f"{prefix}_phonon_band.dat" if prefix else filename
     directory = directory if directory else "."
     filename = os.path.join(directory, filename)
 
@@ -320,7 +319,7 @@ def save_data_files(bs, prefix=None, directory=None):
 
         for band in bs.bands:
             for d, e in zip(bs.distance, band):
-                f.write("{:.8f} {:.8f}\n".format(d, e))
+                f.write(f"{d:.8f} {e:.8f}\n")
             f.write("\n")
 
     return filename
@@ -354,9 +353,9 @@ def _bs_from_filename(
         try:
             poscar = poscar if poscar else "POSCAR"
             poscar = Poscar.from_file(poscar)
-        except IOError:
+        except OSError:
             msg = "Cannot find POSCAR file, cannot generate symmetry path."
-            logging.error("\n {}".format(msg))
+            logging.error(f"\n {msg}")
             sys.exit()
 
     elif (
@@ -365,9 +364,9 @@ def _bs_from_filename(
         try:
             poscar = poscar if poscar else "POSCAR"
             poscar = Poscar.from_file(poscar)
-        except IOError:
+        except OSError:
             msg = "Cannot find POSCAR file, cannot generate symmetry path."
-            logging.error("\n {}".format(msg))
+            logging.error(f"\n {msg}")
             sys.exit()
 
         if not dim:
@@ -377,9 +376,9 @@ def _bs_from_filename(
             )
             try:
                 sposcar = Poscar.from_file("SPOSCAR")
-            except IOError:
+            except OSError:
                 msg = "Could not determine supercell size (use --dim flag)."
-                logging.error("\n {}".format(msg))
+                logging.error(f"\n {msg}")
                 sys.exit()
 
             dim = sposcar.structure.lattice.matrix * poscar.structure.lattice.inv_matrix
@@ -437,8 +436,8 @@ def _bs_from_filename(
         return bs, None
 
     else:
-        msg = "Do not recognise file type of {}".format(filename)
-        logging.error("\n {}".format(msg))
+        msg = f"Do not recognise file type of {filename}"
+        logging.error(f"\n {msg}")
         sys.exit()
 
     # calculate band structure

@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -90,7 +89,7 @@ class CustomKpath(Kpath):
             if tuple(kpt) in kpt_labels:
                 continue
             else:
-                kpt_labels.update({tuple(kpt): "({})".format(label_i)})
+                kpt_labels.update({tuple(kpt): f"({label_i})"})
                 label_i += 1
 
         # Read out into nested lists

@@ -4,6 +4,7 @@ from os.path import join as path_join
 
 import pkg_resources
 from pymatgen.core.structure import Structure
+
 from sumo.symmetry.custom_kpath import CustomKpath
 
 
@@ -66,7 +67,7 @@ class CustomKpathTestCase(unittest.TestCase):
 
     def test_custom_path_init(self):
         """Setup a custom Kpath"""
-        path_labels = [["\Gamma", "X", "K"], ["U", "W", "L", "K"]]
+        path_labels = [[r"\Gamma", "X", "K"], ["U", "W", "L", "K"]]
         kpt_list = [
             [[0.0, 0.0, 0.0], [0.5, 0.0, 0.5], [0.375, 0.375, 0.75]],
             [
@@ -80,7 +81,7 @@ class CustomKpathTestCase(unittest.TestCase):
 
         self.assertEqual(path_labels, kpath._kpath["path"])
         for label, point in {
-            "\Gamma": [0.0, 0.0, 0.0],
+            r"\Gamma": [0.0, 0.0, 0.0],
             "X": [0.5, 0.0, 0.5],
             "K": [0.375, 0.375, 0.75],
             "U": [0.625, 0.25, 0.625],

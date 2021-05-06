@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -9,7 +8,6 @@ TODO:
     * Add ability to scale an orbitals density of states
 """
 
-from __future__ import unicode_literals
 
 import argparse
 import logging
@@ -270,12 +268,12 @@ def dosplot(
             else:
                 raise ValueError("No questaal dos file found")
 
-        if os.path.exists("tdos.{}".format(ext)):
-            tdos_file = "tdos.{}".format(ext)
+        if os.path.exists(f"tdos.{ext}"):
+            tdos_file = f"tdos.{ext}"
         else:
             tdos_file = None
-        if os.path.exists("site.{}".format(ext)):
-            site_file = "site.{}".format(ext)
+        if os.path.exists(f"site.{ext}"):
+            site_file = f"site.{ext}"
         else:
             site_file = None
 
@@ -297,7 +295,7 @@ def dosplot(
         )
 
     else:
-        logging.error("ERROR: Unrecognised code: {}".format(code))
+        logging.error(f"ERROR: Unrecognised code: {code}")
         return
 
     save_files = False if plt else True  # don't save if pyplot object provided
@@ -328,8 +326,8 @@ def dosplot(
     )
 
     if save_files:
-        basename = "dos.{}".format(image_format)
-        filename = "{}_{}".format(prefix, basename) if prefix else basename
+        basename = f"dos.{image_format}"
+        filename = f"{prefix}_{basename}" if prefix else basename
         if directory:
             filename = os.path.join(directory, filename)
         plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches="tight")

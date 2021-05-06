@@ -1,5 +1,3 @@
-from __future__ import division
-
 import unittest
 from os.path import abspath
 
@@ -11,6 +9,7 @@ except ImportError:
     import ConfigParser as configparser
 
 import matplotlib.pyplot
+
 import sumo.plotting
 import sumo.plotting.dos_plotter
 from sumo.plotting.dos_plotter import get_cached_colour

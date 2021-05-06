@@ -99,7 +99,7 @@ def write_kpoint_files(
     pad = int(math.floor(math.log10(len(kpt_files)))) + 2
     if make_folders:
         for i, kpt_file in enumerate(kpt_files):
-            folder = "split-{}".format(str(i + 1).zfill(pad))
+            folder = f"split-{str(i + 1).zfill(pad)}"
             if directory:
                 folder = os.path.join(directory, folder)
 
@@ -121,7 +121,7 @@ def write_kpoint_files(
     else:
         for i, kpt_file in enumerate(kpt_files):
             if len(kpt_files) > 1:
-                kpt_filename = "KPOINTS_band_split_{:0d}".format(i + 1)
+                kpt_filename = f"KPOINTS_band_split_{i + 1:0d}"
             else:
                 kpt_filename = "KPOINTS_band"
             if directory:

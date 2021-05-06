@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -8,7 +7,6 @@ Module containing helper functions for dealing with
 :obj:`~pymatgen.electronic_structure.dos.CompleteDos` objects.
 """
 
-from __future__ import unicode_literals
 
 import logging
 import os
@@ -107,7 +105,7 @@ def load_dos(
     else:
         if log:
             logging.info("Band gap: {:.3f}".format(band.get_band_gap()["energy"]))
-            logging.info("DOS band gap: {:.3f}".format(dos.get_gap()))
+            logging.info(f"DOS band gap: {dos.get_gap():.3f}")
         zero_point = band.get_vbm()["energy"]
 
     if adjust_fermi:
@@ -308,11 +306,11 @@ def write_files(dos, pdos, prefix=None, directory=None, zero_to_efermi=True):
     eners = dos.energies - dos.efermi if zero_to_efermi else dos.energies
     tdos_data = [eners]
     for spin, sign, label in sdata:
-        header.append("dos{}".format(label))
+        header.append(f"dos{label}")
         tdos_data.append(dos.densities[spin] * sign)
     tdos_data = np.stack(tdos_data, axis=1)
 
-    filename = "{}_total_dos.dat".format(prefix) if prefix else "total_dos.dat"
+    filename = f"{prefix}_total_dos.dat" if prefix else "total_dos.dat"
     if directory:
         filename = os.path.join(directory, filename)
     np.savetxt(filename, tdos_data, header=" ".join(header))
@@ -323,14 +321,14 @@ def write_files(dos, pdos, prefix=None, directory=None, zero_to_efermi=True):
         pdos_data = [eners]
         for orb in sort_orbitals(el_pdos):
             for spin, sign, label in sdata:
-                header.append("{}{}".format(orb, label))
+                header.append(f"{orb}{label}")
                 pdos_data.append(el_pdos[orb].densities[spin] * sign)
         pdos_data = np.stack(pdos_data, axis=1)
 
         if prefix:
-            filename = "{}_{}_dos.dat".format(prefix, el)
+            filename = f"{prefix}_{el}_dos.dat"
         else:
-            filename = "{}_dos.dat".format(el)
+            filename = f"{el}_dos.dat"
         if directory:
             filename = os.path.join(directory, filename)
         np.savetxt(filename, pdos_data, header=" ".join(header))

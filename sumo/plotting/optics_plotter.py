@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -20,7 +19,7 @@ from sumo.plotting import (
 )
 
 
-class SOpticsPlotter(object):
+class SOpticsPlotter:
     """Class for plotting optical spectra.
 
     The easiest way to initialise this class is using the output from the
@@ -84,7 +83,7 @@ class SOpticsPlotter(object):
         elif not label:
             label = [""] * n_datasets
 
-        if len(set([len(label), n_datasets, len(band_gap)])) > 1:
+        if len({len(label), n_datasets, len(band_gap)}) > 1:
             raise ValueError("spec_data, band_gap, and label not same size")
 
         if "absorption" in spec_data:

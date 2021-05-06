@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -146,15 +145,15 @@ def get_path_data(
     logging.info("Structure information:")
     logging.info("\tSpace group number: {}".format(kpath._spg_data["number"]))
 
-    logging.info("\tInternational symbol: {}".format(kpath.spg_symbol))
-    logging.info("\tLattice type: {}".format(kpath.lattice_type))
+    logging.info(f"\tInternational symbol: {kpath.spg_symbol}")
+    logging.info(f"\tLattice type: {kpath.lattice_type}")
 
-    logging.info("\nk-point path:\n\t{}".format(path_str))
+    logging.info(f"\nk-point path:\n\t{path_str}")
     logging.info("\nk-points:")
 
     for label, kpoint in iter(kpt_dict.items()):
-        coord_str = " ".join(["{}".format(c) for c in kpoint])
-        logging.info("\t{}: {}".format(label, coord_str))
+        coord_str = " ".join([f"{c}" for c in kpoint])
+        logging.info(f"\t{label}: {coord_str}")
 
     return kpath, kpoints, labels
 

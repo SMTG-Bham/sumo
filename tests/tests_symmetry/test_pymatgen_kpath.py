@@ -4,6 +4,7 @@ from os.path import join as path_join
 
 import pkg_resources
 from pymatgen.core.structure import Structure
+
 from sumo.symmetry.brad_crack_kpath import BradCrackKpath
 from sumo.symmetry.pymatgen_kpath import PymatgenKpath
 
@@ -29,7 +30,7 @@ class SeekpathKpathTestCase(unittest.TestCase):
         self.assertEqual(
             kpath.path,
             [
-                [r"\Gamma", "M", "K", "\Gamma", "A", "L", "H", "A"],
+                [r"\Gamma", "M", "K", r"\Gamma", "A", "L", "H", "A"],
                 ["L", "M"],
                 ["K", "H"],
             ],

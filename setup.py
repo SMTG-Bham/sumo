@@ -2,9 +2,9 @@
 sumo: Heavy weight plotting tools.
 """
 
-from setuptools import setup, find_packages
-from sumo import __version__
+from setuptools import find_packages, setup
 
+from sumo import __version__
 
 with open("README.rst", "r") as file:
     long_description = file.read()
@@ -32,7 +32,7 @@ setup(
     ],
     keywords="chemistry pymatgen dft vasp dos band",
     packages=find_packages(),
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     install_requires=[
         "spglib",
         "numpy",
@@ -44,10 +44,7 @@ setup(
         "seekpath",
         "castepxbin==0.1.0",
     ],
-    extras_require={
-        "docs": ["sphinx", "sphinx-argparse"],
-        "tests": ["pytest"]
-    },
+    extras_require={"docs": ["sphinx", "sphinx-argparse"], "tests": ["pytest"]},
     package_data={
         "sumo": [
             "symmetry/bradcrack.json",

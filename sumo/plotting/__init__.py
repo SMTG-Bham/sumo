@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -9,7 +8,7 @@ from functools import wraps
 
 import matplotlib.pyplot
 import numpy as np
-from matplotlib import rc, rcParams
+from matplotlib import rcParams
 from matplotlib.collections import LineCollection
 from pkg_resources import resource_filename
 
@@ -160,7 +159,7 @@ def curry_power_tick(times_sign=r"\times"):
 
 
 def power_tick(val, pos, times_sign=r"\times"):
-    """Custom power ticker function. """
+    """Custom power ticker function."""
     if val == 0:
         return r"$\mathregular{0}$"
     elif val < 0:
@@ -169,7 +168,7 @@ def power_tick(val, pos, times_sign=r"\times"):
         exponent = int(np.log10(val))
     coeff = val / 10 ** exponent
 
-    return r"$\mathregular{{{:.1f} {} 10^{:2d}}}$".format(coeff, times_sign, exponent)
+    return fr"$\mathregular{{{coeff:.1f} {times_sign} 10^{exponent:2d}}}$"
 
 
 def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid", linewidth=2.5):

@@ -4,6 +4,7 @@ from os.path import join as path_join
 import numpy as np
 from pkg_resources import resource_filename
 from pymatgen.core.lattice import Lattice
+
 from sumo.io.questaal import QuestaalInit, dielectric_from_file
 
 
@@ -69,7 +70,7 @@ class QuestaalInitTestCase(unittest.TestCase):
 
         init_plat = QuestaalInit(lattice, site)
 
-        structure = init_plat.structure
+        init_plat.structure
         self.assertFalse(init_plat.cartesian)
 
         init_plat_alat = QuestaalInit(lattice, site)

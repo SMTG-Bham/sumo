@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -124,7 +123,7 @@ def optplot(
     # Don't write files if this is being done to manipulate existing plt
     save_files = False if plt else True
 
-    ##### BUILD LIST OF FILES AUTOMATICALLY IF NECESSARY #####
+    # BUILD LIST OF FILES AUTOMATICALLY IF NECESSARY
 
     if codes == "vasp":
         if not filenames:
@@ -153,7 +152,7 @@ def optplot(
     elif len(codes) == 1:
         codes = list(codes) * len(filenames)
 
-    #### ITERATE OVER FILES READING DIELECTRIC DATA ####
+    # ITERATE OVER FILES READING DIELECTRIC DATA
 
     dielectrics = []
     auto_labels = []
@@ -165,7 +164,7 @@ def optplot(
 
             auto_labels.append(
                 latexify(vr.final_structure.composition.reduced_formula).replace(
-                    "$_", "$_\mathregular"
+                    "$_", r"$_\mathregular"
                 )
             )
 
@@ -181,7 +180,7 @@ def optplot(
             elif len(filenames) == 1:
                 out_filename = "dielectric.dat"
             else:
-                out_filename = "dielectric_{0}.dat".format(i + 1)
+                out_filename = f"dielectric_{i + 1}.dat"
 
             dielectrics.append(questaal.dielectric_from_file(filename, out_filename))
 
@@ -194,12 +193,12 @@ def optplot(
                 )
 
         else:
-            raise Exception('Code selection "{}" not recognised'.format(code))
+            raise Exception(f'Code selection "{code}" not recognised')
 
     if not labels and len(filenames) > 1:
         labels = auto_labels
 
-    #### PROCESS DIELECTRIC DATA: BROADENING AND DERIVED PROPERTIES ####
+    # PROCESS DIELECTRIC DATA: BROADENING AND DERIVED PROPERTIES
 
     if gaussian:
         dielectrics = [broaden_eps(d, gaussian) for d in dielectrics]
@@ -255,8 +254,8 @@ def optplot(
     if save_files:
         basename = "absorption"
         if prefix:
-            basename = "{}_{}".format(prefix, basename)
-        image_filename = "{}.{}".format(basename, image_format)
+            basename = f"{prefix}_{basename}"
+        image_filename = f"{basename}.{image_format}"
 
         if directory:
             image_filename = os.path.join(directory, image_filename)

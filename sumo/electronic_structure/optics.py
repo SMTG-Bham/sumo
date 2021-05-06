@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -245,8 +244,8 @@ def write_files(abs_data, basename="absorption", prefix=None, directory=None):
     """
 
     for i, absorption in enumerate(abs_data):
-        num_txt = "_{}".format(i + 1) if len(abs_data) > 1 else ""
-        prefix_txt = "{}_".format(prefix) if prefix else ""
+        num_txt = f"_{i + 1}" if len(abs_data) > 1 else ""
+        prefix_txt = f"{prefix}_" if prefix else ""
         filename = prefix_txt + basename + num_txt + ".dat"
 
         if directory:

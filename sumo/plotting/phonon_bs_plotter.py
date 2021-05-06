@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -48,6 +47,7 @@ class SPhononBSPlotter(PhononBSPlotter):
     def _plot_phonon_dos(dos, ax=None, color=None, dashline=False):
         if ax is None:
             import matplotlib.pyplot as plt
+
             ax = plt.gca()
         if color is None:
             color = "C0"
@@ -175,7 +175,7 @@ class SPhononBSPlotter(PhononBSPlotter):
         _plot_lines(data, ax, color=color)
 
         for i, bs_json in enumerate(from_json):
-            with open(bs_json, "rt") as f:
+            with open(bs_json) as f:
                 json_data = json.load(f)
                 json_data["lattice_rec"] = json.loads(self._bs.lattice_rec.to_json())
                 bs = PhononBandStructureSymmLine.from_dict(json_data)
@@ -188,13 +188,13 @@ class SPhononBSPlotter(PhononBSPlotter):
                 raise Exception(
                     "Number of bands in {} does not match " "main plot".format(bs_json)
                 )
-            _plot_lines(json_data, ax, color="C{}".format(i + 1), zorder=0.5)
+            _plot_lines(json_data, ax, color=f"C{i + 1}", zorder=0.5)
 
         if any(legend):  # Don't show legend if all entries are empty string
             from matplotlib.lines import Line2D
 
             ax.legend(
-                [Line2D([0], [0], color="C{}".format(i)) for i in range(len(legend))],
+                [Line2D([0], [0], color=f"C{i}") for i in range(len(legend))],
                 legend,
             )
 
@@ -227,7 +227,7 @@ class SPhononBSPlotter(PhononBSPlotter):
         dos=None,
         color=None,
     ):
-        """Utility method to tidy phonon band structure diagrams. """
+        """Utility method to tidy phonon band structure diagrams."""
         # Define colours
         if color is None:
             color = "C0"  # Default to first colour in matplotlib series
@@ -293,7 +293,7 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         logging.info("\nLabel positions:")
         for dist, label in list(zip(unique_d, unique_l)):
-            logging.info("\t{:.4f}: {}".format(dist, label))
+            logging.info(f"\t{dist:.4f}: {label}")
 
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)
@@ -317,4 +317,4 @@ class SPhononBSPlotter(PhononBSPlotter):
             "ev": "eV",
             "mev": "meV",
         }
-        ax.set_ylabel("Frequency ({0})".format(labels[units.lower()]))
+        ax.set_ylabel(f"Frequency ({labels[units.lower()]})")

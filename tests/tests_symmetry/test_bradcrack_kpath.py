@@ -4,6 +4,7 @@ from os.path import join as path_join
 
 import pkg_resources
 from pymatgen.core.structure import Structure
+
 from sumo.symmetry.brad_crack_kpath import BradCrackKpath
 from sumo.symmetry.seekpath_kpath import SeekpathKpath
 

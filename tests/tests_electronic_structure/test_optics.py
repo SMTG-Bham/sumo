@@ -6,6 +6,7 @@ import numpy as np
 from numpy.testing import assert_almost_equal
 from pkg_resources import resource_filename
 from pymatgen.io.vasp import Vasprun
+
 from sumo.electronic_structure.optics import calculate_dielectric_properties, kkr
 
 
@@ -14,13 +15,13 @@ class AbsorptionTestCase(unittest.TestCase):
         diel_path = resource_filename(
             __name__, path_join("..", "data", "Ge", "ge_diel.json")
         )
-        with open(diel_path, "r") as f:
+        with open(diel_path) as f:
             self.ge_diel = json.load(f)
 
         absorption_path = resource_filename(
             __name__, path_join("..", "data", "Ge", "ge_alpha.json")
         )
-        with open(absorption_path, "r") as f:
+        with open(absorption_path) as f:
             self.ge_abs = json.load(f)
 
     def test_absorption(self):

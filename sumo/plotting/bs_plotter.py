@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -733,7 +732,7 @@ class SBSPlotter(BSPlotter):
 
     @classmethod
     def _sanitise_label_group(cls, labelgroup):
-        """Implement label hacks: Hide trailing @, remove label with leading @
+        r"""Implement label hacks: Hide trailing @, remove label with leading @
 
         Labels split with $\mid$ symbol will be treated for each part.
         """
@@ -741,7 +740,7 @@ class SBSPlotter(BSPlotter):
         if r"$\mid$" in labelgroup:
             label_components = labelgroup.split(r"$\mid$")
             good_labels = [
-                l for l in map(cls._sanitise_label, label_components) if l is not None
+                i for i in map(cls._sanitise_label, label_components) if i is not None
             ]
             if len(good_labels) == 0:
                 return None
@@ -770,7 +769,7 @@ class SBSPlotter(BSPlotter):
                     # If a branch connection, check all parts of label
                     if r"$\mid$" in temp_ticks[i][1]:
                         label_components = temp_ticks[i][1].split(r"$\mid$")
-                        good_labels = [l for l in label_components if l[0] != "@"]
+                        good_labels = [i for i in label_components if i[0] != "@"]
                         if len(good_labels) == 0:
                             continue
                         else:
@@ -789,7 +788,7 @@ class SBSPlotter(BSPlotter):
 
         logging.info("Label positions:")
         for dist, label in list(zip(unique_d, unique_l)):
-            logging.info("\t{:.4f}: {}".format(dist, label))
+            logging.info(f"\t{dist:.4f}: {label}")
 
         ax.set_xticks(unique_d)
         ax.set_xticklabels(unique_l)

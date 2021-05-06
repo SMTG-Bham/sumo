@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -13,7 +12,7 @@ from pymatgen.core.structure import Structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
 
-class Kpath(object):
+class Kpath:
     r"""Base class providing helper functions for generating k-point paths.
 
     This class should not be used directly. Instead, one of the
@@ -177,7 +176,7 @@ class Kpath(object):
             for i, path_branch in enumerate(self.path):
                 for n, label in enumerate(path_branch):
                     if i != 0 and n == 0:
-                        sym_point_labels[-1] += " | {}".format(label)
+                        sym_point_labels[-1] += f" | {label}"
                     else:
                         sym_point_labels.append(label)
 
@@ -254,7 +253,10 @@ class Kpath(object):
         Returns:
             str: The lattice crystal system.
         """
-        f = lambda i, j: i <= number <= j
+
+        def f(i, j):
+            return i <= number <= j
+
         cs = {
             "triclinic": (1, 2),
             "monoclinic": (3, 15),

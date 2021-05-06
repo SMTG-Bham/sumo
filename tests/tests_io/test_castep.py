@@ -8,6 +8,7 @@ from numpy.testing import assert_array_almost_equal
 from pkg_resources import resource_filename
 from pymatgen.core.structure import Structure
 from pymatgen.electronic_structure.core import Spin
+
 from sumo.io.castep import (
     CastepCell,
     CastepPhonon,
@@ -45,12 +46,12 @@ class CastepCellTestCase(unittest.TestCase):
         self.assertEqual(null_cell.tags, {})
 
         with self.assertRaises(ValueError):
-            structure = null_cell.structure
+            null_cell.structure
 
     def test_castep_cell_from_singlepoint_file(self):
         cc = CastepCell.from_file(self.zns_singlepoint_cell)
         self.assertEqual(
-            set(cc.blocks.keys()), set(("lattice_cart", "positions_abs", "species_pot"))
+            set(cc.blocks.keys()), {"lattice_cart", "positions_abs", "species_pot"}
         )
         self.assertEqual(
             {k: v.value for k, v in cc.tags.items()},
@@ -173,12 +174,12 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
 
     def test_castep_bands_read_header(self):
         header = read_bands_header(self.si_bands)
-        with open(self.si_header_ref, "r") as f:
+        with open(self.si_header_ref) as f:
             ref_header = json.load(f)
         self.assertEqual(header, ref_header)
 
     def test_castep_bands_read_eigenvalues(self):
-        with open(self.si_header_ref, "r") as f:
+        with open(self.si_header_ref) as f:
             ref_header = json.load(f)
         kpoints, weights, eigenvals = read_bands_eigenvalues(self.si_bands, ref_header)
 
@@ -235,7 +236,7 @@ class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
 
     def test_castep_bands_read_header(self):
         header = read_bands_header(self.fe_bands)
-        with open(self.fe_header_ref, "r") as f:
+        with open(self.fe_header_ref) as f:
             ref_header = json.load(f)
         self.assertEqual(header, ref_header)
 
@@ -263,7 +264,7 @@ class CastepPhononTestCaseZincblende(unittest.TestCase):
         bs = castep_phonon.get_band_structure()
         bs_dict = bs.as_dict()
 
-        with open(self.zns_phonon_ref, "r") as f:
+        with open(self.zns_phonon_ref) as f:
             ref_dict = json.load(f)
 
         for key in bs_dict.keys():

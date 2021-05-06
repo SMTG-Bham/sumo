@@ -275,4 +275,3 @@ Added
   - sumo-bandstats
   - sumo-optplot
   - sumo-phonon-bandplot
-

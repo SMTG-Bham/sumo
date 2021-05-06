@@ -23,7 +23,7 @@ _bohr_to_angstrom = 0.5291772
 _ry_to_ev = 13.605693009
 
 
-class QuestaalSite(object):
+class QuestaalSite:
     """Structure information: Questaal site.ext file
 
     Usually this will be instantiated with the
@@ -56,7 +56,7 @@ class QuestaalSite(object):
         self.nbas, self.vn, self.io, self.alat = nbas, vn, io, alat
         self.xpos, self.read, self.sites, self.plat = xpos, read, sites, plat
 
-        is_empty = re.compile("E\d*$")
+        is_empty = re.compile(r"E\d*$")
         empty_sites = [
             site for site in sites if is_empty.match(site["species"]) is not None
         ]
@@ -134,7 +134,7 @@ class QuestaalSite(object):
         )
 
 
-class QuestaalInit(object):
+class QuestaalInit:
     """Structure information: Questaal init.ext file
 
     Usually this will be instantiated with the
@@ -319,24 +319,24 @@ class QuestaalInit(object):
                     f.write("    PLAT= " + " ".join(map(str, lattice_params)))
                     f.write("\n")
                 else:
-                    f.write("    {0}={1}\n".format(key, value))
+                    f.write(f"    {key}={value}\n")
 
             f.write("SITE\n")
             for row in self.site:
-                f.write("    ATOM={0:4s}  ".format(row["ATOM"]))
+                f.write("    ATOM={:4s}  ".format(row["ATOM"]))
                 if "POS" in self.site:
-                    f.write("POS= {0:11.8f} {1:11.8f} {2:11.8f}".format(*row["POS"]))
+                    f.write("POS= {:11.8f} {:11.8f} {:11.8f}".format(*row["POS"]))
                 else:
-                    f.write("X= {0:11.8f} {1:11.8f} {2:11.8f}".format(*row["X"]))
+                    f.write("X= {:11.8f} {:11.8f} {:11.8f}".format(*row["X"]))
                 for key, value in row.items():
                     if key not in ("ATOM", "POS", "X"):
-                        f.write("  {0}= {1}".format(key, value))
+                        f.write(f"  {key}= {value}")
                 f.write("\n")
 
             if self.spec is not None:
                 f.write("SPEC")
                 for key, value in self.spec.items():
-                    f.write("  {0}= {1}\n".format(key, value))
+                    f.write(f"  {key}= {value}\n")
 
     @staticmethod
     def from_structure(structure):
@@ -480,7 +480,7 @@ class QuestaalInit(object):
                 for unsupported_param in unsupported_params:
                     if unsupported_param in tag_dict:
                         raise NotImplementedError(
-                            "Questaal tag {0}_{1} is not supported".format(
+                            "Questaal tag {}_{} is not supported".format(
                                 category, unsupported_param
                             )
                         )
@@ -503,9 +503,9 @@ def write_kpoint_files(
     make_folders=False,
     directory=None,
     cart_coords=False,
-    **kwargs
+    **kwargs,
 ):
-    """Write syml file for Questaal kpoints
+    r"""Write syml file for Questaal kpoints
 
     The interface imitates the VASP KPOINTS file writer for simplicity of
     integration into Sumo, but there are some conceptual differences:
@@ -544,12 +544,12 @@ def write_kpoint_files(
     for key, value in kwargs.items():
         if value is not None:
             logging.info(
-                'Ignoring k-point write option "{0}"; not '
+                'Ignoring k-point write option "{}"; not '
                 "implemented for Questaal calculations.".format(key)
             )
 
     ext = filename.split(".")[-1]
-    logging.info("System id from init filename: {0}".format(ext))
+    logging.info(f"System id from init filename: {ext}")
 
     if directory is not None:
         path = directory
@@ -563,6 +563,8 @@ def write_kpoint_files(
             makedirs(path)
         except OSError as e:
             if e.errno == errno.EEXIST:
+                import sys
+
                 logging.error("\nERROR: Folders already exist, won't " "overwrite.")
                 sys.exit()
             else:
@@ -582,11 +584,9 @@ def write_kpoint_files(
     if labels is None:
         with open(os.path.join(path, "syml." + ext), "w") as f:
             for kpt in kpoints:
-                f.write(
-                    "{0:11.8f} {1:11.8f} {2:11.8f}\n".format(kpt[0], kpt[1], kpt[2])
-                )
+                f.write(f"{kpt[0]:11.8f} {kpt[1]:11.8f} {kpt[2]:11.8f}\n")
     else:
-        label_positions = [i for i, l in enumerate(labels) if l != ""]
+        label_positions = [i for i, label in enumerate(labels) if label != ""]
         special_points = [kpoints[i] for i in label_positions]
         segment_samples = [
             label_positions[i + 1] - label_positions[i] + 1
@@ -597,8 +597,8 @@ def write_kpoint_files(
                 if samples == 2:
                     continue  # Don't add segments between branches
                 f.write(
-                    "{0:5d}    {1:11.8f} {2:11.8f} {3:11.8f}    "
-                    "{4:11.8f} {5:11.8f} {6:11.8f}    {7} to {8}\n".format(
+                    "{:5d}    {:11.8f} {:11.8f} {:11.8f}    "
+                    "{:11.8f} {:11.8f} {:11.8f}    {} to {}\n".format(
                         samples,
                         special_points[i][0],
                         special_points[i][1],
@@ -634,7 +634,7 @@ def labels_from_syml(syml_file):
     """
     labels = {}
 
-    with open(syml_file, "r") as f:
+    with open(syml_file) as f:
         lines = f.readlines()
     for line in lines:
         npts, x1, y1, z1, x2, y2, z2, *label_text = line.split()
@@ -872,14 +872,14 @@ def read_dos(
             cdos, lm_orbitals=lm_orbitals, atoms=atoms, elements=elements
         )
 
-    return (tdos, pdos)
+    return tdos, pdos
 
 
 def band_structure(bnds_file, lattice, labels=None, alat=1, coords_are_cartesian=False):
     """Read band structure data
 
     Args:
-        bands_file (:obj:`str`): Path to questaal bnds.ext output file. The
+        bnds_file (:obj:`str`): Path to questaal bnds.ext output file. The
             k-point positions and eigenvalues are read from this file.
         labels (:obj:`dict`): Dict of special point locations and labels. This
             is generally obtained from a syml.ext file using
@@ -991,7 +991,7 @@ def band_structure(bnds_file, lattice, labels=None, alat=1, coords_are_cartesian
     labels = labels or {}  # Initialise a dict if null value
     # (Avoids oddness with mutable option defaults)
     if coords_are_cartesian:
-        logging.info("Cartesian coordinates, scaling by ALAT = {}".format(alat))
+        logging.info(f"Cartesian coordinates, scaling by ALAT = {alat}")
         for label, coords in labels.items():
             labels[label] = np.array(coords) / (alat * _bohr_to_angstrom)
     else:

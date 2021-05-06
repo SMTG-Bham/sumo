@@ -5,7 +5,6 @@ TODO:
  - Replace the elements and project formats with the dream syntax
 """
 
-from __future__ import unicode_literals
 
 import argparse
 import glob
@@ -278,9 +277,9 @@ def bandplot(
         for bands_file in filenames:
             cell_file = _replace_ext(bands_file, "cell")
             if os.path.isfile(cell_file):
-                logging.info("Found cell file {}...".format(cell_file))
+                logging.info(f"Found cell file {cell_file}...")
             else:
-                logging.info("Did not find cell file {}...".format(cell_file))
+                logging.info(f"Did not find cell file {cell_file}...")
                 cell_file = None
             bs = castep_band_structure(bands_file, cell_file=cell_file)
             bandstructures.append(bs)
@@ -290,7 +289,7 @@ def bandplot(
         ext = bnds_file.split(".")[-1]
         bnds_folder = os.path.join(bnds_file, os.path.pardir)
 
-        site_file = os.path.abspath(os.path.join(bnds_folder, "site.{}".format(ext)))
+        site_file = os.path.abspath(os.path.join(bnds_folder, f"site.{ext}"))
 
         if os.path.isfile(site_file):
             logging.info("site file found, reading lattice...")
@@ -298,12 +297,12 @@ def bandplot(
             bnds_lattice = site_data.structure.lattice
             alat = site_data.alat
         else:
-            raise IOError(
+            raise OSError(
                 "Site file {} not found: "
                 "needed to determine lattice".format(site_file)
             )
 
-        syml_file = os.path.abspath(os.path.join(bnds_folder, "syml.{}".format(ext)))
+        syml_file = os.path.abspath(os.path.join(bnds_folder, f"syml.{ext}"))
         if os.path.isfile(syml_file):
             logging.info("syml file found, reading special-point labels...")
             bnds_labels = labels_from_syml(syml_file)
@@ -430,8 +429,8 @@ def bandplot(
         )
 
     if save_files:
-        basename = "band.{}".format(image_format)
-        filename = "{}_{}".format(prefix, basename) if prefix else basename
+        basename = f"band.{image_format}"
+        filename = f"{prefix}_{basename}" if prefix else basename
         if directory:
             filename = os.path.join(directory, filename)
         plt.savefig(filename, format=image_format, dpi=dpi, bbox_inches="tight")
@@ -468,7 +467,7 @@ def find_vasprun_files():
         elif os.path.exists(vr_file_gz):
             filenames.append(vr_file_gz)
         else:
-            logging.error("ERROR: No vasprun.xml found in {}!".format(fol))
+            logging.error(f"ERROR: No vasprun.xml found in {fol}!")
             sys.exit()
 
     return filenames
@@ -485,7 +484,7 @@ def save_data_files(bs, prefix=None, directory=None):
     Returns:
         The filename of the written data file.
     """
-    filename = "{}_band.dat".format(prefix) if prefix else "band.dat"
+    filename = f"{prefix}_band.dat" if prefix else "band.dat"
     directory = directory if directory else "."
     filename = os.path.join(directory, filename)
 
@@ -501,14 +500,14 @@ def save_data_files(bs, prefix=None, directory=None):
         # write the spin up eigenvalues
         for band in bs.bands[Spin.up]:
             for d, e in zip(bs.distance, band):
-                f.write("{:.8f} {:.8f}\n".format(d, e - zero))
+                f.write(f"{d:.8f} {e - zero:.8f}\n")
             f.write("\n")
 
         # calculation is spin polarised, write spin down bands at end of file
         if bs.is_spin_polarized:
             for band in bs.bands[Spin.down]:
                 for d, e in zip(bs.distance, band):
-                    f.write("{:.8f} {:.8f}\n".format(d, e - zero))
+                    f.write(f"{d:.8f} {e - zero:.8f}\n")
                 f.write("\n")
     return filename
 

@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -80,7 +79,7 @@ class BradCrackKpath(Kpath):
 
         """
         json_file = pkg_resources.resource_filename(__name__, "bradcrack.json")
-        with open(json_file, "r") as f:
+        with open(json_file) as f:
             bradcrack_data = load_json(f)
             return bradcrack_data[bravais]
 

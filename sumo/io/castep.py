@@ -31,7 +31,7 @@ Block = collections.namedtuple("Block", "values comments")
 unsupported_dosplot_args = {"elements", "lm_orbitals", "atoms"}
 
 
-class CastepCell(object):
+class CastepCell:
     """Structure information and more: CASTEP seedname.cell file
 
     Usually this will be instantiated with the
@@ -113,15 +113,15 @@ class CastepCell(object):
         with open(filename, "wt") as f:
             for tag, content in self.tags.items():
                 if content.comment in (None, ""):
-                    f.write("{0: <24}: {1}\n".format(tag, " ".join(content.value)))
+                    f.write("{: <24}: {}\n".format(tag, " ".join(content.value)))
                 else:
                     f.write(
-                        "{0: <24}: {1: <16} ! {2}\n".format(
+                        "{: <24}: {: <16} ! {}\n".format(
                             tag, " ".join(content.value), content.comment
                         )
                     )
             for block, content in self.blocks.items():
-                f.write("\n%block {}\n".format(block))
+                f.write(f"\n%block {block}\n")
                 if content.comments is None:
                     comments = [""] * len(content.values)
                 else:
@@ -130,11 +130,11 @@ class CastepCell(object):
                 for row, comment in zip(content.values, comments):
                     line = " ".join(map(str, row))
                     if comment != "":
-                        line = "{0: <30} ! {1}".format(line, comment)
+                        line = f"{line: <30} ! {comment}"
                     line = line + "\n"
                     f.write(line)
 
-                f.write("%endblock {}\n".format(block))
+                f.write(f"%endblock {block}\n")
 
     @classmethod
     def from_file(cls, filename):
@@ -165,7 +165,7 @@ class CastepCell(object):
                 continue
             elif line[:6].lower() == "%block":
                 if in_block:
-                    raise IOError(
+                    raise OSError(
                         "Cell file contains nested blocks. "
                         "This possibility was not anticipated."
                     )
@@ -175,7 +175,7 @@ class CastepCell(object):
                     continue
             elif line[:9].lower() == "%endblock":
                 if line.split()[1].lower() != current_block_label:
-                    raise IOError(
+                    raise OSError(
                         "Endblock {} does not match current block "
                         "{}: cannot interpret cell file.".format(
                             line.split()[1], current_block_label
@@ -189,7 +189,7 @@ class CastepCell(object):
                     current_block_values, current_block_comments = [], []
                     in_block = False
                 else:
-                    raise IOError(
+                    raise OSError(
                         "Cannot cope with line {}: not currently in "
                         "a block.".format(line)
                     )
@@ -693,16 +693,14 @@ def write_kpoint_files(
     else:
         tags = {"task": "Spectral", "spectral_task": "BandStructure"}
         kpoint_tag = "spectral_kpoint_list"
-        clash_tags = set(
-            [
-                "{}_{}_{}".format(*tag_parts)
-                for tag_parts in product(
-                    ("bs", "spectral"),
-                    ("kpoint", "kpoints"),
-                    ("path", "list", "mp_grid", "mp_spacing", "mp_offset"),
-                )
-            ]
-        )
+        clash_tags = {
+            "{}_{}_{}".format(*tag_parts)
+            for tag_parts in product(
+                ("bs", "spectral"),
+                ("kpoint", "kpoints"),
+                ("path", "list", "mp_grid", "mp_spacing", "mp_offset"),
+            )
+        }
 
     for kpt_split, label_split in zip(kpt_splits, label_splits):
         cellfile = CastepCell.from_file(filename)
@@ -725,7 +723,7 @@ def write_kpoint_files(
         check_file = seedname + ".check"
 
         for i, cell_file in enumerate(kpt_cell_files):
-            split_folder = "split-{}".format(str(i + 1).zfill(pad))
+            split_folder = f"split-{str(i + 1).zfill(pad)}"
             if directory:
                 split_folder = os.path.join(directory, split_folder)
             os.mkdir(split_folder)
@@ -741,7 +739,7 @@ def write_kpoint_files(
     else:
         for i, cell_file in enumerate(kpt_cell_files):
             if len(kpt_cell_files) > 1:
-                cell_filename = "band_split_{:0d}.cell".format(i + 1)
+                cell_filename = f"band_split_{i + 1:0d}.cell"
             else:
                 cell_filename = "band.cell"
             if directory:
@@ -768,19 +766,19 @@ def copy_param(filename, folder, tags=None):
         # Copy tags dict and remove case-sensitive keys
         tags = {key.lower(): value for key, value in tags.items()}
 
-        with open(filename, "r") as infile:
+        with open(filename) as infile:
             with open(output_filename, "w") as outfile:
                 for line in infile:
                     tag = line.split()[0].lower() if line.split() else None
                     if tag in tags:
-                        outfile.write("{} : {}\n".format(tag, tags.pop(tag)))
+                        outfile.write(f"{tag} : {tags.pop(tag)}\n")
                     else:
                         outfile.write(line)
                 # Write remaining tags
                 for tag, value in tags.items():
-                    outfile.write("{} : {}\n".format(tag, value))
+                    outfile.write(f"{tag} : {value}\n")
     else:
-        logging.warning("Cannot find param file {}, skipping".format(filename))
+        logging.warning(f"Cannot find param file {filename}, skipping")
 
 
 def _data_comment_from_line(line, in_block=False):
@@ -820,7 +818,7 @@ def _data_comment_from_line(line, in_block=False):
     return tag, data, comment
 
 
-class CastepPhonon(object):
+class CastepPhonon:
     """Data from CASTEP phonon calculation: seedname.phonon file
 
     Usually this will be instantiated with the
@@ -965,7 +963,7 @@ def read_phonon_header(filename):
                 # Positions block: pre-allocate arrays and fill line-by-line
                 elif split_line[:2] == ["Fractional", "Co-ordinates"]:
                     if not header.get("n_ions"):
-                        raise IOError(
+                        raise OSError(
                             "Could not find number of ions; phonon "
                             "file not formatted correctly."
                         )
@@ -982,7 +980,7 @@ def read_phonon_header(filename):
                         header["symbols"].append(el)
                         header["masses"].append(float(m))
                 else:
-                    logging.debug('Skipping unused header line "{}"'.format(line))
+                    logging.debug(f'Skipping unused header line "{line}"')
 
         logging.info("Finished reading header, checking number of entries ...")
         is_qpt = re.compile(r"^\s+q-pt=\s+")
@@ -1036,7 +1034,7 @@ def read_phonon_bands(filename, header):
             if line.strip() == "END header":
                 break
         else:
-            raise IOError(
+            raise OSError(
                 'Did not find "END header" line in phonon file "{}".'
                 " File is not formatted correctly.".format(filename)
             )
