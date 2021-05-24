@@ -782,7 +782,7 @@ def main():
 
     if args.config is None:
         config_path = resource_filename(
-            Requirement.parse("sumo"), "sumo.plotting/orbital_colours.conf"
+            Requirement.parse("sumo"), "sumo/plotting/orbital_colours.conf"
         )
     else:
         config_path = args.config
