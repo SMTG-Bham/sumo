@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>sumo-bandplot &#8212; sumo 2.2.4 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="sumo-bandplot">
+  <section id="sumo-bandplot">
 <h1>sumo-bandplot<a class="headerlink" href="#sumo-bandplot" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> is a program for generating publication-ready band structure diagrams.
 A large number of features are provided, including the ability to project orbital
@@ -57,7 +58,7 @@ contributions on to the band structure.</p>
 </li>
 </ul>
 </div>
-<div class="section" id="usage">
+<section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>The full range of options supported by <code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> are detailed in the <a class="reference internal" href="#command-line-interface">Command-Line Interface</a> section,
 and be can be accessed using the command:</p>
@@ -73,7 +74,7 @@ and be can be accessed using the command:</p>
 <p>For example, if we run the command in the <code class="docutils literal notranslate"><span class="pre">sumo/tests/data/Cs2SnI6/bandstructure</span></code> directory, the band structure
 should look like:</p>
 <a class="reference internal image-reference" href="_images/band_basic.png"><img alt="_images/band_basic.png" class="align-center" src="_images/band_basic.png" style="height: 400px;" /></a>
-<div class="section" id="file-searching">
+<section id="file-searching">
 <h3>File Searching<a class="headerlink" href="#file-searching" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> will automatically look for <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> or <code class="docutils literal notranslate"><span class="pre">vasprun.xml.gz</span></code> files in the current
 directory. If the band structure has been broken up into multiple parts (as is common
@@ -90,8 +91,8 @@ the splits. For example, if the file structure is as follows:</p>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> should be run in the <code class="docutils literal notranslate"><span class="pre">bandstructure</span></code> directory.</p>
-</div>
-<div class="section" id="basic-options">
+</section>
+<section id="basic-options">
 <h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this headline">¶</a></h3>
 <p>To specify a particular <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> to plot, the <code class="docutils literal notranslate"><span class="pre">--filenames</span></code> option can be used.
 If multiple <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> files are provided, they will be combined into a single band
@@ -104,8 +105,8 @@ made more appealing using the following command:</p>
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/band_rectangle.png"><img alt="_images/band_rectangle.png" class="align-center" src="_images/band_rectangle.png" style="height: 400px;" /></a>
-</div>
-<div class="section" id="combined-band-structure-and-density-of-states-plots">
+</section>
+<section id="combined-band-structure-and-density-of-states-plots">
 <h3>Combined Band Structure and Density of States Plots<a class="headerlink" href="#combined-band-structure-and-density-of-states-plots" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> can be used to simultaneously plot a band structure and density of states,
 using the <code class="docutils literal notranslate"><span class="pre">--dos</span></code> option. A <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> to use for the density of states information
@@ -123,8 +124,8 @@ the <a class="reference internal" href="sumo-dosplot.html#sumo-dosplot"><span cl
 <a class="reference internal" href="sumo-dosplot.html#selective-plotting-of-specific-orbitals-and-atoms"><span class="std std-ref">Selective Plotting of Specific Orbitals and Atoms</span></a>.</p>
 <p>Furthermore, the colours of the lines in the density of states can be controlled
 by a configuration file (<code class="docutils literal notranslate"><span class="pre">--config</span></code>). See <a class="reference internal" href="sumo-dosplot.html#custom-line-colours"><span class="std std-ref">Custom Line Colours</span></a> for more details.</p>
-</div>
-<div class="section" id="projected-band-structures">
+</section>
+<section id="projected-band-structures">
 <h3>Projected Band Structures<a class="headerlink" href="#projected-band-structures" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> can produce projected band structures, where the orbital contributions
 to a band are plotted. This behaviour is accessed using the <code class="docutils literal notranslate"><span class="pre">--project</span></code> option.
@@ -169,8 +170,8 @@ the output should look like:</p>
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/band_projected_stacked.png"><img alt="_images/band_projected_stacked.png" class="align-center" src="_images/band_projected_stacked.png" style="height: 400px;" /></a>
-</div>
-<div class="section" id="advanced-example">
+</section>
+<section id="advanced-example">
 <h3>Advanced Example<a class="headerlink" href="#advanced-example" title="Permalink to this headline">¶</a></h3>
 <p>It is possible to combine both the <code class="docutils literal notranslate"><span class="pre">--density</span></code> and <code class="docutils literal notranslate"><span class="pre">--project</span></code> keywords. For best results,
 it is advised to use a configuration file (see <a class="reference internal" href="sumo-dosplot.html#custom-line-colours"><span class="std std-ref">Custom Line Colours</span></a>) to ensure the colours
@@ -193,8 +194,8 @@ example as <code class="docutils literal notranslate"><span class="pre">my_colou
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/band_projected_advanced.png"><img alt="_images/band_projected_advanced.png" class="align-center" src="_images/band_projected_advanced.png" style="height: 400px;" /></a>
-</div>
-<div class="section" id="questaal">
+</section>
+<section id="questaal">
 <h3>Questaal<a class="headerlink" href="#questaal" title="Permalink to this headline">¶</a></h3>
 <p>Basic band structure plotting is supported for LMTO calculations with
 Questaal using <code class="docutils literal notranslate"><span class="pre">lmf</span></code>. (Orbital projection is not currently included.)</p>
@@ -205,9 +206,9 @@ directory with the same <em>ext</em> identifier. You can then plot with Sumo:</p
 </pre></div>
 </div>
 <p>The usual appearance options are supported.</p>
-</div>
-</div>
-<div class="section" id="command-line-interface">
+</section>
+</section>
+<section id="command-line-interface">
 <h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
 <p><blockquote>
 <div><p>bandplot is a script to produce publication-ready band
@@ -227,7 +228,7 @@ structure diagrams</p>
                      <span class="p">[</span><span class="o">--</span><span class="n">dpi</span> <span class="n">DPI</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">font</span> <span class="n">FONT</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
+<section id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filenames</kbd></dt>
@@ -350,15 +351,15 @@ structure diagrams</p>
 <dd><p>font to use</p>
 </dd>
 </dl>
-</div>
+</section>
 <p><blockquote>
 <div><p>Author: Alex Ganose
 Version: 1.0
 Last updated: July 18, 2017</p>
 </div></blockquote>
 </p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -429,7 +430,7 @@ Last updated: July 18, 2017</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

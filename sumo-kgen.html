@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>sumo-kgen &#8212; sumo 2.2.4 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="sumo-kgen">
+  <section id="sumo-kgen">
 <h1>sumo-kgen<a class="headerlink" href="#sumo-kgen" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> is a program for generating input files containing k-points along high-symmetry
 k-point paths, for electronic band structure calculations (e.g. <code class="docutils literal notranslate"><span class="pre">KPOINTS</span></code> file for VASP).
@@ -63,7 +64,7 @@ literature, <code class="docutils literal notranslate"><span class="pre">sumo-kg
 </li>
 </ul>
 </div>
-<div class="section" id="usage">
+<section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p><em>For simplicity, this tutorial will initially assume you are using VASP. Details for other codes are provided at the end.</em></p>
 <p>The full range of options supported by <code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> are detailed in the <a class="reference internal" href="#command-line-interface">Command-Line Interface</a> section,
@@ -104,7 +105,7 @@ a file called <code class="docutils literal notranslate"><span class="pre">KPOIN
    <span class="n">A</span><span class="p">:</span> <span class="mi">293</span>
 </pre></div>
 </div>
-<div class="section" id="basic-options">
+<section id="basic-options">
 <h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this headline">¶</a></h3>
 <p>As the path depends on the symmetry of the lattice, it is important that the symmetry is determined
 correctly. The tolerance used for symmetry detection can be controlled using the <code class="docutils literal notranslate"><span class="pre">--symprec</span></code> option.
@@ -115,8 +116,8 @@ SeeK-path <a class="reference internal" href="sumo.symmetry.html#seek" id="id2">
 file can be specified using the <code class="docutils literal notranslate"><span class="pre">--poscar</span></code> option.</p>
 <p>The density of the k-points along the path can be controlled using the <code class="docutils literal notranslate"><span class="pre">--density</span></code> option. The default is
 60.</p>
-</div>
-<div class="section" id="hybrid-band-structures">
+</section>
+<section id="hybrid-band-structures">
 <h3>Hybrid Band Structures<a class="headerlink" href="#hybrid-band-structures" title="Permalink to this headline">¶</a></h3>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> generates <code class="docutils literal notranslate"><span class="pre">KPOINTS</span></code> files for use in non-self-consistent band structure calculations
 (e.g. for use with generalised-gradient approximation functionals). To perform hybrid band structures, the
@@ -131,8 +132,8 @@ due to the cost of hybrid band structures which often cannot finish under standa
 Bear in mind that the total number of k-points per file you choose will not include the addition k-points
 included in the <code class="docutils literal notranslate"><span class="pre">IBZKPT</span></code> file. To skip this prompt, the number of k-points per file can be specified
 via the <code class="docutils literal notranslate"><span class="pre">--split</span></code> option.</p>
-</div>
-<div class="section" id="folder-generation">
+</section>
+<section id="folder-generation">
 <h3>Folder Generation<a class="headerlink" href="#folder-generation" title="Permalink to this headline">¶</a></h3>
 <p>Often it is desirable to generate a new folder in which to run the band structure. <code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> can automate
 this procedure using the <code class="docutils literal notranslate"><span class="pre">--folders</span></code> (or <code class="docutils literal notranslate"><span class="pre">-f</span></code>) option. The script will also copy in the required VASP
@@ -143,8 +144,8 @@ will be copied.  For hybrid band structures, only the <code class="docutils lite
 generated for each file. These will be named <code class="docutils literal notranslate"><span class="pre">split-01</span></code>, <code class="docutils literal notranslate"><span class="pre">split-02</span></code>, etc…</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code> command can automatically detect the presence of these folders and will
 reconstruct the full band structure from the individual splits.</p>
-</div>
-<div class="section" id="custom-k-point-paths">
+</section>
+<section id="custom-k-point-paths">
 <h3>Custom k-Point Paths<a class="headerlink" href="#custom-k-point-paths" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> also supports generating k-points along custom k-point paths. This is controlled using the
 <code class="docutils literal notranslate"><span class="pre">--kpoints</span></code> option. The custom k-point path is specified as a string with commas separating the k-points.
@@ -163,11 +164,11 @@ For example, the path <code class="docutils literal notranslate"><span class="pr
 </pre></div>
 </div>
 <p>Note: in all cases the arguments are surrounded in parentheses.</p>
-</div>
-</div>
-<div class="section" id="other-codes">
+</section>
+</section>
+<section id="other-codes">
 <h2>Other codes<a class="headerlink" href="#other-codes" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="castep">
+<section id="castep">
 <h3>CASTEP<a class="headerlink" href="#castep" title="Permalink to this headline">¶</a></h3>
 <p>In CASTEP, band structure calculations also include SCF convergence so
 two sets of k-points are set: a mesh for the SCF and a path for the
@@ -184,8 +185,8 @@ special-point labels included as comments. (These comments will help
 <code class="docutils literal notranslate"><span class="pre">--hybrid</span></code> and <code class="docutils literal notranslate"><span class="pre">--cartesian</span></code> options are not relevant.
 An extra feature is provided to aid phonon calculations with CASTEP: the
 <code class="docutils literal notranslate"><span class="pre">--phonon</span></code> option will write a <em>PHONON_FINE_KPOINT_LIST</em> block instead.</p>
-</div>
-<div class="section" id="questaal">
+</section>
+<section id="questaal">
 <h3>Questaal<a class="headerlink" href="#questaal" title="Permalink to this headline">¶</a></h3>
 <p>To perform LMTO band structure calculations the <code class="docutils literal notranslate"><span class="pre">lmf</span></code> program can be
 given a file defining the band structure path. The crystal structure
@@ -208,9 +209,9 @@ calculation, specify this file with e.g.:</p>
 coordinates. We recommend avoiding Cartesian coordinates for Questaal
 band structures; it is tested and should work but between ALAT scaling
 and Bohr units it can get a bit confusing.</p>
-</div>
-</div>
-<div class="section" id="command-line-interface">
+</section>
+</section>
+<section id="command-line-interface">
 <h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
 <p><blockquote>
 <div><p>kgen generates KPOINTS files for running band structure calculations in
@@ -223,7 +224,7 @@ VASP</p>
                  <span class="p">[</span><span class="o">--</span><span class="n">kpoints</span> <span class="n">KPOINTS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">labels</span> <span class="n">LABELS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">phonon</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
+<section id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-p, --poscar</kbd></dt>
@@ -286,15 +287,15 @@ VASP</p>
 <p>Default: False</p>
 </dd>
 </dl>
-</div>
+</section>
 <p><blockquote>
 <div><p>Author: Alex Ganose
 Version: 1.0
 Last updated: July 6, 2017</p>
 </div></blockquote>
 </p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -365,7 +366,7 @@ Last updated: July 6, 2017</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

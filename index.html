@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Sumo &#8212; sumo 2.2.4 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -31,7 +32,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="sumo">
+  <section id="sumo">
 <h1>Sumo<a class="headerlink" href="#sumo" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="https://github.com/SMTG-UCL/sumo/actions?query=workflow%3A%22Run+tests%22"><img alt="Build Status" src="https://img.shields.io/github/workflow/status/smtg-ucl/sumo/Run%20tests" /></a>
 <a class="reference external image-reference" href="http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d"><img alt="JOSS Paper" src="http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d/status.svg" /></a>
@@ -77,7 +78,7 @@ are welcome.</p>
 <p>Sumo is free to use, however, we ask that you cite the code if you use
 it in your research. See the “contributing” section for information
 about reporting bugs and getting involved.</p>
-<div class="section" id="usage">
+<section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>Sumo is intended to be used via the command-line, however, a
 fully-documented python API is also provided. A manual, including
@@ -105,7 +106,7 @@ from a band structure.</p></li>
 </ul>
 <p>Information on how to tweak the style of sumo plots is provided on the
 <a class="reference external" href="https://smtg-ucl.github.io/sumo/customising-plots.html">Customising Sumo Plots page</a>.</p>
-<div class="section" id="feature-support-for-different-codes">
+<section id="feature-support-for-different-codes">
 <h3>Feature support for different codes<a class="headerlink" href="#feature-support-for-different-codes" title="Permalink to this headline">¶</a></h3>
 <table class="docutils align-default">
 <colgroup>
@@ -165,9 +166,9 @@ generation</p></td>
 <li><p>Brillouin-zone path can also be written for CASTEP phonon calculation</p></li>
 <li><p>VASP phonons are plotted from Phonopy output files</p></li>
 </ol>
-</div>
-</div>
-<div class="section" id="installation">
+</section>
+</section>
+<section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Sumo is a Python 3 package and requires a
 <a class="reference external" href="https://www.scipy.org/about.html">typical scientific Python stack</a>;
@@ -183,7 +184,7 @@ which will automatically setup other Python packages as required:</p>
 <p>If this is your first entry to the scientific Python ecosystem, be
 aware that the full stack including Scipy with need several hundred MB
 of disk space.</p>
-<div class="section" id="developer-installation">
+<section id="developer-installation">
 <h3>Developer installation<a class="headerlink" href="#developer-installation" title="Permalink to this headline">¶</a></h3>
 <p><em>Regular users can skip this section!</em></p>
 <p>Sumo can also be installed from a copy of the source repository
@@ -202,7 +203,7 @@ reflected on the PATH.
 The <code class="docutils literal notranslate"><span class="pre">--user</span></code> flag installs to a directory in your home folder
 (usually under the hidden directory <em>~/.local</em>),
 preventing interference with your root Python installation.</p>
-<div class="section" id="tests">
+<section id="tests">
 <h4>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h4>
 <p>From a developer installation, the unit tests can be
 run (from the root directory of the project) using:</p>
@@ -211,8 +212,8 @@ run (from the root directory of the project) using:</p>
 </div>
 <p>Automatic testing is run on the master branch of Sumo and proposed
 features using GitHub Actions.</p>
-</div>
-<div class="section" id="documentation">
+</section>
+<section id="documentation">
 <h4>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h4>
 <p>To build the documentation from the project files, install
 sumo with extra Sphinx dependencies before compiling with <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code>.</p>
@@ -221,21 +222,21 @@ sphinx-build docs/src docs_build
 </pre></div>
 </div>
 <p>The user guide can then be explored from <em>docs/build/html/index.html</em>.</p>
-</div>
-</div>
-</div>
-<div class="section" id="how-to-cite-sumo">
+</section>
+</section>
+</section>
+<section id="how-to-cite-sumo">
 <h2>How to cite sumo<a class="headerlink" href="#how-to-cite-sumo" title="Permalink to this headline">¶</a></h2>
 <p>If you use sumo in your research, please consider citing the following work:</p>
 <blockquote>
 <div><p>Alex M. Ganose, Adam J. Jackson, David O. Scanlon. <em>sumo: Command-line tools for plotting and analysis of periodic ab initio calculations.</em> Journal of Open Source Software, 2018 3 (28), 717, <a class="reference external" href="https://doi.org/10.21105/joss.00717">doi:10.21105/joss.00717</a>.</p>
 </div></blockquote>
-</div>
-<div class="section" id="license">
+</section>
+<section id="license">
 <h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
 <p>Sumo is made available under the MIT License.</p>
-</div>
-<div class="section" id="detailed-requirements">
+</section>
+<section id="detailed-requirements">
 <h2>Detailed requirements<a class="headerlink" href="#detailed-requirements" title="Permalink to this headline">¶</a></h2>
 <p>Sumo is currently compatible with Python 3.5+ and relies on a number of
 open-source python packages, specifically:</p>
@@ -249,10 +250,10 @@ open-source python packages, specifically:</p>
 <li><p><a class="reference external" href="https://github.com/giovannipizzi/seekpath">SeeK-path</a></p></li>
 <li><p><a class="reference external" href="https://www.h5py.org">H5py</a></p></li>
 </ul>
-</div>
-<div class="section" id="contributing">
+</section>
+<section id="contributing">
 <h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="bugs-reports-and-feature-requests">
+<section id="bugs-reports-and-feature-requests">
 <h3>Bugs reports and feature requests<a class="headerlink" href="#bugs-reports-and-feature-requests" title="Permalink to this headline">¶</a></h3>
 <p>There are probably still some bugs. If you think you’ve found
 one, please report it on the <a class="reference external" href="https://github.com/SMTG-UCL/sumo/issues">Issue Tracker</a>.
@@ -260,8 +261,8 @@ This is also the place to propose ideas for new features or ask
 questions about the design of Sumo.
 Poor documentation is considered a bug, but please be as specific as
 possible when asking for improvements.</p>
-</div>
-<div class="section" id="code-contributions">
+</section>
+<section id="code-contributions">
 <h3>Code contributions<a class="headerlink" href="#code-contributions" title="Permalink to this headline">¶</a></h3>
 <p>We welcome your help in improving and extending the package with your
 own contributions. This is managed through Github pull requests;
@@ -282,9 +283,9 @@ the changes are accepted.</p></li>
 </div></blockquote>
 <div class="toctree-wrapper compound">
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -346,7 +347,7 @@ the changes are accepted.</p></li>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

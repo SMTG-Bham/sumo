@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>sumo-phonon-bandplot &#8212; sumo 2.2.4 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -32,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="sumo-phonon-bandplot">
+  <section id="sumo-phonon-bandplot">
 <h1>sumo-phonon-bandplot<a class="headerlink" href="#sumo-phonon-bandplot" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code> is a program for generating publication-ready phonon band
 structure diagrams based on <code class="docutils literal notranslate"><span class="pre">phonopy</span></code> calculations.</p>
@@ -54,7 +55,7 @@ structure diagrams based on <code class="docutils literal notranslate"><span cla
 </li>
 </ul>
 </div>
-<div class="section" id="usage">
+<section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <p>The full range of options supported by <code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code> are detailed in the
 <a class="reference internal" href="#command-line-interface">Command-Line Interface</a> section, and be can be accessed using the command:</p>
@@ -71,7 +72,7 @@ data written to <code class="docutils literal notranslate"><span class="pre">pho
 <p>For example, if we run the command in the <code class="docutils literal notranslate"><span class="pre">sumo/tests/data/Rb2SnI6/phonopy</span></code> directory, the band structure
 should look like:</p>
 <a class="reference internal image-reference" href="_images/phonon_band_basic.png"><img alt="_images/phonon_band_basic.png" class="align-center" src="_images/phonon_band_basic.png" style="height: 400px;" /></a>
-<div class="section" id="supercell-size">
+<section id="supercell-size">
 <h3>Supercell Size<a class="headerlink" href="#supercell-size" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code> will attempt to extract the supercell size from the structure information, however,
 sometimes it will fail and an error occurs. In this case, the supercell size should be specified manually using
@@ -80,8 +81,8 @@ command would be:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">dim</span> <span class="mi">3</span> <span class="mi">3</span> <span class="mi">3</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="supported-inputs">
+</section>
+<section id="supported-inputs">
 <h3>Supported Inputs<a class="headerlink" href="#supported-inputs" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code> will automatically look for a <code class="docutils literal notranslate"><span class="pre">FORCE_SETS</span></code> file in the current directory,
 however, other input types are supported. The input can be specified using the <code class="docutils literal notranslate"><span class="pre">--filename</span></code> option.
@@ -93,8 +94,8 @@ in the current directory.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">band.yaml</span></code>: <code class="docutils literal notranslate"><span class="pre">phonopy</span></code>-type band structure yaml file. Please note that when using this mode,
 the high-symmetry path cannot be altered.</p></li>
 </ul>
-</div>
-<div class="section" id="basic-options">
+</section>
+<section id="basic-options">
 <h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this headline">¶</a></h3>
 <p>The height, and width of the graphic, along with the y-axis limits, can be controlled via the
 <code class="docutils literal notranslate"><span class="pre">--width</span></code>, <code class="docutils literal notranslate"><span class="pre">--height</span></code>, <code class="docutils literal notranslate"><span class="pre">--ymax</span></code>, and <code class="docutils literal notranslate"><span class="pre">--ymin</span></code> options.</p>
@@ -112,8 +113,8 @@ cell to primitive cell, the usage would be:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">primitive</span><span class="o">-</span><span class="n">axis</span> <span class="mi">0</span> <span class="mf">0.5</span> <span class="mf">0.5</span>  <span class="mf">0.5</span> <span class="mi">0</span> <span class="mf">0.5</span>  <span class="mf">0.5</span> <span class="mf">0.5</span> <span class="mi">0</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="high-symmetry-k-point-path">
+</section>
+<section id="high-symmetry-k-point-path">
 <h3>High-Symmetry k-Point Path<a class="headerlink" href="#high-symmetry-k-point-path" title="Permalink to this headline">¶</a></h3>
 <p>By default, the paths used are those from Bradley and Cracknell <a class="reference internal" href="sumo.symmetry.html#brad" id="id1"><span>[brad]</span></a>. To use the k-point paths provided
 SeeK-path <a class="reference internal" href="sumo.symmetry.html#seek" id="id2"><span>[seek]</span></a> or pymatgen <a class="reference internal" href="sumo.symmetry.html#curt" id="id3"><span>[curt]</span></a>. The options <code class="docutils literal notranslate"><span class="pre">--seekpath</span></code> or <code class="docutils literal notranslate"><span class="pre">--pymatgen</span></code> can be used.</p>
@@ -136,9 +137,9 @@ For example, the path <code class="docutils literal notranslate"><span class="pr
 </pre></div>
 </div>
 <p>Note: in all cases the arguments are surrounded in parentheses.</p>
-</div>
-</div>
-<div class="section" id="command-line-interface">
+</section>
+</section>
+<section id="command-line-interface">
 <h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
 <p><blockquote>
 <div><p>phonon-bandplot is a script to produce publication ready phonon band
@@ -160,7 +161,7 @@ structure diagrams</p>
                             <span class="p">[</span><span class="o">--</span><span class="n">to</span><span class="o">-</span><span class="n">web</span> <span class="n">TO_WEB</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">legend</span> <span class="p">[</span><span class="n">LEGEND</span> <span class="p">[</span><span class="n">LEGEND</span> <span class="o">...</span><span class="p">]]]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments">
+<section id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filename</kbd></dt>
@@ -276,15 +277,15 @@ structure diagrams</p>
 <dd><p>Legend labels. With no args, label json inputs with filenames. With one arg per json file, label json inputs only. With one extra arg, label all lines beginning with new plot.</p>
 </dd>
 </dl>
-</div>
+</section>
 <p><blockquote>
 <div><p>Author: Alex Ganose
 Version: 1.0
 Last updated: Jan 17, 2018</p>
 </div></blockquote>
 </p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -355,7 +356,7 @@ Last updated: Jan 17, 2018</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
