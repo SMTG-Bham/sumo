@@ -4,6 +4,11 @@ Change Log
 Unreleased
 ----------
 
+v2.2.5
+------
+
+Bugfix: Fixed colour parsing for BS + DOS plots. (@kavanse)
+
 v2.2.4
 ------
 
