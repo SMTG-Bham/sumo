@@ -215,7 +215,7 @@ class SOpticsPlotter:
             ax = fig.axes[i]
             _plot_spectrum(data, self._label, self._band_gap, ax, optics_colours, units)
 
-            if units in ["ev", "eV"] and xmax is not None:
+            if units in ["ev", "eV"] and xmax is None:
                 xmax = self._xmax  # use sumo-determined energy limits
             elif units == "nm":
                 # use default minimum energy (max wavelength) of 2500 nm
