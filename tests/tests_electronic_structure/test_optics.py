@@ -25,13 +25,11 @@ class AbsorptionTestCase(unittest.TestCase):
             self.ge_abs = json.load(f)
 
     def test_absorption(self):
-        energy, alpha = calculate_dielectric_properties(
+        energy, properties = calculate_dielectric_properties(
             self.ge_diel,
-            {
-                "absorption",
-            },
-        )["absorption"]
-        self.assertIsNone(assert_almost_equal(alpha, self.ge_abs))
+            {"absorption"},
+        )
+        self.assertIsNone(assert_almost_equal(properties["absorption"], self.ge_abs))
 
 
 class KramersKronigTestCase(unittest.TestCase):
