@@ -161,18 +161,22 @@ def calculate_dielectric_properties(dielectric, properties, mode="average"):
 
     if mode == "average":
         eps = np.linalg.eigvals(eps_full).mean(axis=1)
+        n = np.linalg.eigvals(n).mean(axis=1)
         loss = np.linalg.eigvalsh(loss).mean(axis=1)
         alpha = np.linalg.eigvalsh(alpha).mean(axis=1)
     elif mode == "eigs":
         eps = eigvals
+        n = np.linalg.eigvals(n)
         loss = np.linalg.eigvalsh(loss)
         alpha = np.linalg.eigvalsh(alpha)
     elif mode == "full":
         eps = eps_full.reshape(-1, 9)
+        n = n.reshape(-1, 9)
         loss = loss.reshape(-1, 9)
         alpha = alpha.reshape(-1, 9)
     elif mode == "trace":
         eps = np.diagonal(eps_full.T)
+        n = np.diagonal(n.T)
         loss = np.diagonal(loss.T)
         alpha = np.diagonal(alpha.T)
     else:
