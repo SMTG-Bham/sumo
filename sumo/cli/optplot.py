@@ -120,7 +120,6 @@ def optplot(
            energy in electronvolts or 'nm' for wavelength in nanometers.
            Defaults to 'eV'.
 
-
     Returns:
         A matplotlib pyplot object.
     """
@@ -216,10 +215,12 @@ def optplot(
 
     # for each calculation, get all required properties and append to data
     for d in dielectrics:
-        for mode, spectrum in calculate_dielectric_properties(
-            d, set(modes), average=average
-        ).items():
-            abs_data[mode].append(spectrum)
+        # TODO: add support for other eigs and full modes
+        energies, properties = calculate_dielectric_properties(
+            d, set(modes), mode="average" if average else "trace"
+        )
+        for mode, spectrum in properties.items():
+            abs_data[mode].append((energies, spectrum))
 
     if isinstance(band_gaps, list) and not band_gaps:
         # empty list therefore use bandgaps collected from vasprun files
@@ -237,7 +238,7 @@ def optplot(
                 )
             else:
                 raise ValueError(
-                    "Format not recognised for auto bandgap: " "{}.".format(item)
+                    "Format not recognised for auto bandgap: {}.".format(item)
                 )
 
     plotter = SOpticsPlotter(abs_data, band_gap=band_gaps, label=labels)
