@@ -200,8 +200,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">exponent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
     <span class="n">coeff</span> <span class="o">=</span> <span class="n">val</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">exponent</span>
+    <span class="n">prec</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">coeff</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
 
-    <span class="k">return</span> <span class="sa">fr</span><span class="s2">&quot;$\mathregular</span><span class="se">{{</span><span class="si">{</span><span class="n">coeff</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">times_sign</span><span class="si">}</span><span class="s2"> 10^</span><span class="si">{</span><span class="n">exponent</span><span class="si">:</span><span class="s2">2d</span><span class="se">}}</span><span class="si">}</span><span class="s2">$&quot;</span></div>
+    <span class="k">return</span> <span class="sa">fr</span><span class="s2">&quot;$\mathregular</span><span class="se">{{</span><span class="si">{</span><span class="n">coeff</span><span class="si">:</span><span class="s2">.</span><span class="si">{</span><span class="n">prec</span><span class="si">}</span><span class="s2">f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">times_sign</span><span class="si">}</span><span class="s2"> 10^</span><span class="si">{</span><span class="n">exponent</span><span class="si">:</span><span class="s2">2d</span><span class="se">}}</span><span class="si">}</span><span class="s2">$&quot;</span></div>
 
 
 <div class="viewcode-block" id="rgbline"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.rgbline">[docs]</a><span class="k">def</span> <span class="nf">rgbline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">red</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">blue</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.5</span><span class="p">):</span>
@@ -284,7 +285,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -306,7 +307,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

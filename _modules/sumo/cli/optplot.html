@@ -153,7 +153,6 @@
 <span class="sd">           energy in electronvolts or &#39;nm&#39; for wavelength in nanometers.</span>
 <span class="sd">           Defaults to &#39;eV&#39;.</span>
 
-
 <span class="sd">    Returns:</span>
 <span class="sd">        A matplotlib pyplot object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -249,10 +248,12 @@
 
     <span class="c1"># for each calculation, get all required properties and append to data</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dielectrics</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">mode</span><span class="p">,</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="n">calculate_dielectric_properties</span><span class="p">(</span>
-            <span class="n">d</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">modes</span><span class="p">),</span> <span class="n">average</span><span class="o">=</span><span class="n">average</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">abs_data</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+        <span class="c1"># TODO: add support for other eigs and full modes</span>
+        <span class="n">energies</span><span class="p">,</span> <span class="n">properties</span> <span class="o">=</span> <span class="n">calculate_dielectric_properties</span><span class="p">(</span>
+            <span class="n">d</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">modes</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;average&quot;</span> <span class="k">if</span> <span class="n">average</span> <span class="k">else</span> <span class="s2">&quot;trace&quot;</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">mode</span><span class="p">,</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">abs_data</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">energies</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">band_gaps</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">band_gaps</span><span class="p">:</span>
         <span class="c1"># empty list therefore use bandgaps collected from vasprun files</span>
@@ -270,7 +271,7 @@
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Format not recognised for auto bandgap: &quot;</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="s2">&quot;Format not recognised for auto bandgap: </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
                 <span class="p">)</span>
 
     <span class="n">plotter</span> <span class="o">=</span> <span class="n">SOpticsPlotter</span><span class="p">(</span><span class="n">abs_data</span><span class="p">,</span> <span class="n">band_gap</span><span class="o">=</span><span class="n">band_gaps</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
@@ -555,7 +556,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -577,7 +578,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

@@ -93,7 +93,7 @@
     <span class="k">return</span> <span class="n">e</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">real</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">imag</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div>
 
 
-<div class="viewcode-block" id="calculate_dielectric_properties"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.optics.calculate_dielectric_properties">[docs]</a><span class="k">def</span> <span class="nf">calculate_dielectric_properties</span><span class="p">(</span><span class="n">dielectric</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="calculate_dielectric_properties"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.optics.calculate_dielectric_properties">[docs]</a><span class="k">def</span> <span class="nf">calculate_dielectric_properties</span><span class="p">(</span><span class="n">dielectric</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate optical properties from the dielectric function</span>
 
 <span class="sd">    Supported properties:</span>
@@ -134,125 +134,99 @@
 
 <span class="sd">        properties (set):</span>
 <span class="sd">            The set of properties to return. Intermediate properties will be</span>
-<span class="sd">            calculated as needed. Accepted values: &#39;eps_real&#39;, &#39;eps_im&#39;,</span>
+<span class="sd">            calculated as needed. Accepted values: &#39;eps_real&#39;, &#39;eps_imag&#39;,</span>
 <span class="sd">            &#39;absorption&#39;, &#39;loss&#39;, &#39;n_real&#39;, &#39;n_imag&#39;</span>
 
-<span class="sd">        average (:obj:`bool`, optional): Average the dielectric response across</span>
-<span class="sd">            the xx, yy, zz directions and calculate properties with scalar</span>
-<span class="sd">            maths. Defaults to ``True``. If False, solve dielectric matrix to</span>
-<span class="sd">            obtain directional properties, returning xx, yy, zz components.</span>
-<span class="sd">            This may be significantly slower!</span>
+<span class="sd">        mode (str): The format of the results: Options are:</span>
+
+<span class="sd">            - &quot;average&quot;: Average the dielectric response for all directions.</span>
+<span class="sd">            - &quot;trace&quot;: The trace of the dielectric tensor (i.e., along xx, yy, zz).</span>
+<span class="sd">            - &quot;full&quot;: The full dielectric tensor (i.e., xx, xy, xz, yx, yy, yz, zx, zy,</span>
+<span class="sd">              zz).</span>
+<span class="sd">            - &quot;eigs&quot;: Calculate the eigenvalues of the dielectric response. The</span>
+<span class="sd">              eigenvalues are sorted from smallest to largest.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        dict of :obj:`tuple` of :obj:`list` of :obj:`float`: The optical</span>
-<span class="sd">        absorption in :math:`\mathrm{cm}^{-1}`. If ``average`` is ``True``, the</span>
-<span class="sd">        data will be returned as::</span>
+<span class="sd">        tuple of ``(energies, {property_name: property_value})``: The optical absorption is given in</span>
+<span class="sd">        :math:`\mathrm{cm}^{-1}`. If ``mode`` is ``&quot;average&quot;``, the</span>
+<span class="sd">        property_value will be returned as::</span>
 
-<span class="sd">            ([energies], [property]).</span>
+<span class="sd">            [property]</span>
 
-<span class="sd">        If ``average`` is ``False``, the data will be returned as::</span>
+<span class="sd">        If ``mode`` is ``&quot;trace&quot;``, the data will be returned as::</span>
 
-<span class="sd">            ([energies], [property_xx, property_yy, property_zz]).</span>
+<span class="sd">            [property_xx, property_yy, property_zz]</span>
 
-<span class="sd">        In both cases these are collected in a results dictionary with keys</span>
+<span class="sd">        If ``mode`` is ``&quot;full&quot;``, the data will be returned as::</span>
+
+<span class="sd">            [xx, xy, xz, yx, yy, yz, zx, zy, zz]</span>
+
+<span class="sd">        If ``mode`` is ``&quot;eigs&quot;``, the data will be returned as::</span>
+
+<span class="sd">            [eig_1, eig_2, eig_3]</span>
+
+<span class="sd">        In all cases these are collected in a results dictionary with keys</span>
 <span class="sd">        corresponding to the selected properties, e.g.::</span>
 
-<span class="sd">            {&#39;absorption&#39;: ([energies], [absorption]),</span>
-<span class="sd">             &#39;eps_real&#39;: ([energies], [eps_real])}</span>
+<span class="sd">            {&#39;absorption&#39;: [absorption], &#39;eps_real&#39;: [eps_real]}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">def</span> <span class="nf">_update_results</span><span class="p">(</span><span class="n">keys_vals</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update results dict with selected properties only&quot;&quot;&quot;</span>
-        <span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="n">prop</span><span class="p">:</span> <span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">prop</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">keys_vals</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">prop</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">results</span>
-
     <span class="n">energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dielectric</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">real_eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dielectric</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">imag_eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dielectric</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="n">average</span><span class="p">:</span>
-        <span class="n">real_eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">real_eps</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">imag_eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">imag_eps</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Work with eps as complex numbers in Nx3x3 matrix</span>
+    <span class="c1"># First interpret 6-column data as symmetric matrix</span>
+    <span class="c1"># Input form xx yy zz xy yz xz</span>
+    <span class="c1"># Indices     0  1  2  3  4  5</span>
+    <span class="n">real_eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dielectric</span><span class="p">[</span><span class="mi">1</span><span class="p">])[:,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]]</span>
+    <span class="n">imag_eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dielectric</span><span class="p">[</span><span class="mi">2</span><span class="p">])[:,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]]</span>
+    <span class="n">eps_full</span> <span class="o">=</span> <span class="n">real_eps</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">imag_eps</span>
 
-        <span class="n">results</span> <span class="o">=</span> <span class="n">_update_results</span><span class="p">({</span><span class="s2">&quot;eps_real&quot;</span><span class="p">:</span> <span class="n">real_eps</span><span class="p">,</span> <span class="s2">&quot;eps_imag&quot;</span><span class="p">:</span> <span class="n">imag_eps</span><span class="p">})</span>
+    <span class="c1"># take sqrt of eps matrix; if eps = V S V^-1; then eps^1/2 = V S^{1/2} V^-1;</span>
+    <span class="n">eigvals</span><span class="p">,</span> <span class="n">eigvecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">eps_full</span><span class="p">)</span>
 
-        <span class="n">eps</span> <span class="o">=</span> <span class="n">real_eps</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">imag_eps</span>
+    <span class="c1"># fancy einsum to calculate V S^{1/2} V^-1 at every energy</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ik,ikl-&gt;ijl&quot;</span><span class="p">,</span> <span class="n">eigvecs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">eigvals</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">eigvecs</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="s2">&quot;loss&quot;</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
-            <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">eps</span><span class="p">)</span>
-            <span class="n">_update_results</span><span class="p">({</span><span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">})</span>
+    <span class="c1"># calculate optical absorption</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">imag</span> <span class="o">*</span> <span class="n">energies</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">1.23984212e-4</span>
 
-        <span class="k">if</span> <span class="n">properties</span><span class="o">.</span><span class="n">intersection</span><span class="p">({</span><span class="s2">&quot;n_real&quot;</span><span class="p">,</span> <span class="s2">&quot;n_imag&quot;</span><span class="p">,</span> <span class="s2">&quot;absorption&quot;</span><span class="p">}):</span>
-            <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">eps</span><span class="p">)</span>
-            <span class="n">_update_results</span><span class="p">({</span><span class="s2">&quot;n_real&quot;</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="s2">&quot;n_imag&quot;</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">imag</span><span class="p">})</span>
+    <span class="c1"># Invert epsilon to obtain energy-loss function</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">eps_full</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span>
 
-        <span class="k">if</span> <span class="s2">&quot;absorption&quot;</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
-            <span class="n">alpha</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">imag</span> <span class="o">*</span> <span class="n">energies</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">1.23984212e-4</span>
-            <span class="n">_update_results</span><span class="p">({</span><span class="s2">&quot;absorption&quot;</span><span class="p">:</span> <span class="n">alpha</span><span class="p">})</span>
-
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;average&quot;</span><span class="p">:</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">eps_full</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;eigs&quot;</span><span class="p">:</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">eigvals</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;full&quot;</span><span class="p">:</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">eps_full</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;trace&quot;</span><span class="p">:</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">eps_full</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">alpha</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Work with eps as complex numbers in 9-column &#39;flattened&#39; matrix</span>
-        <span class="c1"># First interpret 6-column data as symmetric matrix</span>
-        <span class="c1"># Input form xx yy zz xy yz xz</span>
-        <span class="c1"># Indices     0  1  2  3  4  5</span>
-        <span class="n">n_rows</span> <span class="o">=</span> <span class="n">real_eps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">eps</span> <span class="o">=</span> <span class="n">real_eps</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">imag_eps</span>
-        <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">eps</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
-                <span class="n">eps</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span>
-                <span class="n">eps</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">],</span>
-                <span class="n">eps</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span>
-                <span class="n">eps</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-                <span class="n">eps</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">],</span>
-                <span class="n">eps</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">],</span>
-                <span class="n">eps</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">],</span>
-                <span class="n">eps</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
-            <span class="p">]</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">T</span>
-
-        <span class="n">_update_results</span><span class="p">(</span>
-            <span class="p">{</span><span class="s2">&quot;eps_real&quot;</span><span class="p">:</span> <span class="n">eps</span><span class="o">.</span><span class="n">real</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]],</span> <span class="s2">&quot;eps_imag&quot;</span><span class="p">:</span> <span class="n">eps</span><span class="o">.</span><span class="n">imag</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]]}</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unsupported mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">. Options are &#39;average&#39;, &#39;eigs&#39;, &#39;full&#39;, &#39;trace&#39;&quot;</span>
         <span class="p">)</span>
-        <span class="c1"># Invert epsilon to obtain energy-loss function</span>
-        <span class="k">if</span> <span class="s2">&quot;loss&quot;</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
 
-            <span class="k">def</span> <span class="nf">matrix_loss_func</span><span class="p">(</span><span class="n">eps_row</span><span class="p">):</span>
-                <span class="n">eps_matrix</span> <span class="o">=</span> <span class="n">eps_row</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-                <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">eps_matrix</span><span class="p">)</span><span class="o">.</span><span class="n">imag</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;eps_real&quot;</span><span class="p">:</span> <span class="n">eps</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+        <span class="s2">&quot;eps_imag&quot;</span><span class="p">:</span> <span class="n">eps</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span>
+        <span class="s2">&quot;n_real&quot;</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+        <span class="s2">&quot;n_imag&quot;</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span>
+        <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span>
+        <span class="s2">&quot;absorption&quot;</span><span class="p">:</span> <span class="n">alpha</span><span class="p">,</span>
+    <span class="p">}</span>
 
-            <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">matrix_loss_func</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">eps</span><span class="p">])</span>
-
-            <span class="n">_update_results</span><span class="p">({</span><span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]]})</span>
-
-        <span class="k">if</span> <span class="n">properties</span><span class="o">.</span><span class="n">intersection</span><span class="p">({</span><span class="s2">&quot;n_real&quot;</span><span class="p">,</span> <span class="s2">&quot;n_imag&quot;</span><span class="p">,</span> <span class="s2">&quot;absorption&quot;</span><span class="p">}):</span>
-
-            <span class="k">def</span> <span class="nf">matrix_n</span><span class="p">(</span><span class="n">eps_row</span><span class="p">):</span>
-                <span class="n">eps_matrix</span> <span class="o">=</span> <span class="n">eps_row</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-                <span class="n">eigenvals</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">eps_matrix</span><span class="p">)</span>
-                <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">eigenvals</span><span class="p">)</span>
-                <span class="n">n</span> <span class="o">=</span> <span class="n">v</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>  <span class="c1"># Py3.5 matrix mult @ =D</span>
-                <span class="k">return</span> <span class="n">n</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-
-            <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">matrix_n</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">eps</span><span class="p">])</span>
-
-            <span class="n">_update_results</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;n_real&quot;</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">real</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]],</span> <span class="s2">&quot;n_imag&quot;</span><span class="p">:</span> <span class="n">n</span><span class="o">.</span><span class="n">imag</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]]}</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="s2">&quot;absorption&quot;</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
-            <span class="n">alpha</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">imag</span> <span class="o">*</span> <span class="n">energies</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n_rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">1.23984212e-4</span>
-            <span class="n">_update_results</span><span class="p">({</span><span class="s2">&quot;absorption&quot;</span><span class="p">:</span> <span class="n">alpha</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]]})</span>
-
-    <span class="k">return</span> <span class="n">results</span></div>
+    <span class="k">return</span> <span class="n">energies</span><span class="p">,</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="write_files"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.optics.write_files">[docs]</a><span class="k">def</span> <span class="nf">write_files</span><span class="p">(</span><span class="n">abs_data</span><span class="p">,</span> <span class="n">basename</span><span class="o">=</span><span class="s2">&quot;absorption&quot;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -363,7 +337,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -385,7 +359,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
