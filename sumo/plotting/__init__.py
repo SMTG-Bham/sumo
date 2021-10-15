@@ -167,8 +167,9 @@ def power_tick(val, pos, times_sign=r"\times"):
     else:
         exponent = int(np.log10(val))
     coeff = val / 10 ** exponent
+    prec = 0 if coeff % 1 == 0 else 1
 
-    return fr"$\mathregular{{{coeff:.1f} {times_sign} 10^{exponent:2d}}}$"
+    return fr"$\mathregular{{{coeff:.{prec}f} {times_sign} 10^{exponent:2d}}}$"
 
 
 def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid", linewidth=2.5):

@@ -60,7 +60,7 @@ def broaden_eps(dielectric, sigma):
     return e, np.array(real).T, np.array(imag).T
 
 
-def calculate_dielectric_properties(dielectric, properties, average=True):
+def calculate_dielectric_properties(dielectric, properties, mode="average"):
     r"""Calculate optical properties from the dielectric function
 
     Supported properties:
@@ -101,125 +101,99 @@ def calculate_dielectric_properties(dielectric, properties, average=True):
 
         properties (set):
             The set of properties to return. Intermediate properties will be
-            calculated as needed. Accepted values: 'eps_real', 'eps_im',
+            calculated as needed. Accepted values: 'eps_real', 'eps_imag',
             'absorption', 'loss', 'n_real', 'n_imag'
 
-        average (:obj:`bool`, optional): Average the dielectric response across
-            the xx, yy, zz directions and calculate properties with scalar
-            maths. Defaults to ``True``. If False, solve dielectric matrix to
-            obtain directional properties, returning xx, yy, zz components.
-            This may be significantly slower!
+        mode (str): The format of the results: Options are:
+
+            - "average": Average the dielectric response for all directions.
+            - "trace": The trace of the dielectric tensor (i.e., along xx, yy, zz).
+            - "full": The full dielectric tensor (i.e., xx, xy, xz, yx, yy, yz, zx, zy,
+              zz).
+            - "eigs": Calculate the eigenvalues of the dielectric response. The
+              eigenvalues are sorted from smallest to largest.
 
     Returns:
-        dict of :obj:`tuple` of :obj:`list` of :obj:`float`: The optical
-        absorption in :math:`\mathrm{cm}^{-1}`. If ``average`` is ``True``, the
-        data will be returned as::
+        tuple of ``(energies, {property_name: property_value})``: The optical absorption is given in
+        :math:`\mathrm{cm}^{-1}`. If ``mode`` is ``"average"``, the
+        property_value will be returned as::
 
-            ([energies], [property]).
+            [property]
 
-        If ``average`` is ``False``, the data will be returned as::
+        If ``mode`` is ``"trace"``, the data will be returned as::
 
-            ([energies], [property_xx, property_yy, property_zz]).
+            [property_xx, property_yy, property_zz]
 
-        In both cases these are collected in a results dictionary with keys
+        If ``mode`` is ``"full"``, the data will be returned as::
+
+            [xx, xy, xz, yx, yy, yz, zx, zy, zz]
+
+        If ``mode`` is ``"eigs"``, the data will be returned as::
+
+            [eig_1, eig_2, eig_3]
+
+        In all cases these are collected in a results dictionary with keys
         corresponding to the selected properties, e.g.::
 
-            {'absorption': ([energies], [absorption]),
-             'eps_real': ([energies], [eps_real])}
+            {'absorption': [absorption], 'eps_real': [eps_real]}
     """
-
-    results = {}
-
-    def _update_results(keys_vals):
-        """Update results dict with selected properties only"""
-        results.update(
-            {
-                prop: (energies, data)
-                for prop, data in keys_vals.items()
-                if (prop in properties)
-            }
-        )
-        return results
-
     energies = np.array(dielectric[0])
-    real_eps = np.array(dielectric[1])
-    imag_eps = np.array(dielectric[2])
 
-    if average:
-        real_eps = np.average(real_eps[:, :3], axis=1)
-        imag_eps = np.average(imag_eps[:, :3], axis=1)
+    # Work with eps as complex numbers in Nx3x3 matrix
+    # First interpret 6-column data as symmetric matrix
+    # Input form xx yy zz xy yz xz
+    # Indices     0  1  2  3  4  5
+    real_eps = np.array(dielectric[1])[:, [[0, 3, 5], [3, 1, 4], [5, 4, 2]]]
+    imag_eps = np.array(dielectric[2])[:, [[0, 3, 5], [3, 1, 4], [5, 4, 2]]]
+    eps_full = real_eps + 1j * imag_eps
 
-        results = _update_results({"eps_real": real_eps, "eps_imag": imag_eps})
+    # take sqrt of eps matrix; if eps = V S V^-1; then eps^1/2 = V S^{1/2} V^-1;
+    eigvals, eigvecs = np.linalg.eig(eps_full)
 
-        eps = real_eps + 1j * imag_eps
+    # fancy einsum to calculate V S^{1/2} V^-1 at every energy
+    n = np.einsum("ijk,ik,ikl->ijl", eigvecs, np.sqrt(eigvals), np.linalg.inv(eigvecs))
 
-        if "loss" in properties:
-            loss = -np.imag(1 / eps)
-            _update_results({"loss": loss})
+    # calculate optical absorption
+    alpha = n.imag * energies[:, None, None] * 4 * np.pi / 1.23984212e-4
 
-        if properties.intersection({"n_real", "n_imag", "absorption"}):
-            n = np.sqrt(eps)
-            _update_results({"n_real": n.real, "n_imag": n.imag})
+    # Invert epsilon to obtain energy-loss function
+    loss = -np.linalg.inv(eps_full).imag
 
-        if "absorption" in properties:
-            alpha = n.imag * energies * 4 * np.pi / 1.23984212e-4
-            _update_results({"absorption": alpha})
-
+    if mode == "average":
+        eps = np.linalg.eigvals(eps_full).mean(axis=1)
+        n = np.linalg.eigvals(n).mean(axis=1)
+        loss = np.linalg.eigvalsh(loss).mean(axis=1)
+        alpha = np.linalg.eigvalsh(alpha).mean(axis=1)
+    elif mode == "eigs":
+        eps = eigvals
+        n = np.linalg.eigvals(n)
+        loss = np.linalg.eigvalsh(loss)
+        alpha = np.linalg.eigvalsh(alpha)
+    elif mode == "full":
+        eps = eps_full.reshape(-1, 9)
+        n = n.reshape(-1, 9)
+        loss = loss.reshape(-1, 9)
+        alpha = alpha.reshape(-1, 9)
+    elif mode == "trace":
+        eps = np.diagonal(eps_full.T)
+        n = np.diagonal(n.T)
+        loss = np.diagonal(loss.T)
+        alpha = np.diagonal(alpha.T)
     else:
-        # Work with eps as complex numbers in 9-column 'flattened' matrix
-        # First interpret 6-column data as symmetric matrix
-        # Input form xx yy zz xy yz xz
-        # Indices     0  1  2  3  4  5
-        n_rows = real_eps.shape[0]
-        eps = real_eps + 1j * imag_eps
-        eps = np.array(
-            [
-                eps[:, 0],
-                eps[:, 3],
-                eps[:, 5],
-                eps[:, 3],
-                eps[:, 1],
-                eps[:, 4],
-                eps[:, 5],
-                eps[:, 4],
-                eps[:, 2],
-            ]
-        ).T
-
-        _update_results(
-            {"eps_real": eps.real[:, [0, 4, 8]], "eps_imag": eps.imag[:, [0, 4, 8]]}
+        raise ValueError(
+            f"Unsupported mode: {mode}. Options are 'average', 'eigs', 'full', 'trace'"
         )
-        # Invert epsilon to obtain energy-loss function
-        if "loss" in properties:
 
-            def matrix_loss_func(eps_row):
-                eps_matrix = eps_row.reshape(3, 3)
-                return -np.linalg.inv(eps_matrix).imag.flatten()
+    data = {
+        "eps_real": eps.real,
+        "eps_imag": eps.imag,
+        "n_real": n.real,
+        "n_imag": n.imag,
+        "loss": loss,
+        "absorption": alpha,
+    }
 
-            loss = np.array([matrix_loss_func(row) for row in eps])
-
-            _update_results({"loss": loss[:, [0, 4, 8]]})
-
-        if properties.intersection({"n_real", "n_imag", "absorption"}):
-
-            def matrix_n(eps_row):
-                eps_matrix = eps_row.reshape(3, 3)
-                eigenvals, v = np.linalg.eig(eps_matrix)
-                d = np.diag(eigenvals)
-                n = v @ np.sqrt(d) @ np.linalg.inv(v)  # Py3.5 matrix mult @ =D
-                return n.flatten()
-
-            n = np.array([matrix_n(row) for row in eps])
-
-            _update_results(
-                {"n_real": n.real[:, [0, 4, 8]], "n_imag": n.imag[:, [0, 4, 8]]}
-            )
-
-        if "absorption" in properties:
-            alpha = n.imag * energies.reshape(n_rows, 1) * 4 * np.pi / 1.23984212e-4
-            _update_results({"absorption": alpha[:, [0, 4, 8]]})
-
-    return results
+    return energies, {k: data[k] for k in properties}
 
 
 def write_files(abs_data, basename="absorption", prefix=None, directory=None):
