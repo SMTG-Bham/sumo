@@ -56,7 +56,7 @@ provided in a different format than kgen.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – <p>Method used for calculating the
 high-symmetry path. The options are:</p>
 <dl class="simple">
@@ -72,7 +72,7 @@ high-symmetry path. The options are:</p>
 </p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
-<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
+<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
 group used to override the symmetry determined by spglib. This is
 not recommended and only provided for testing purposes.
 This option will only take effect when <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">'bradcrack'</span></code>.</p></li>
@@ -172,7 +172,7 @@ particular branch may be repeated. For example:</p>
 <p>Module containing the base class for high-symmetry k-point path determination.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="sumo.symmetry.kpath.Kpath">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">sumo.symmetry.kpath.</span></span><span class="sig-name descname"><span class="pre">Kpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/kpath.html#Kpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.kpath.Kpath" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo.symmetry.kpath.</span></span><span class="sig-name descname"><span class="pre">Kpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/kpath.html#Kpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.kpath.Kpath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base class providing helper functions for generating k-point paths.</p>
 <p>This class should not be used directly. Instead, one of the
@@ -184,7 +184,7 @@ differing k-point path generation classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 </ul>
@@ -197,7 +197,7 @@ crystal symmetry.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -209,7 +209,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -308,7 +308,7 @@ For example:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo.symmetry.kpath.Kpath.get_lattice_type">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_lattice_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/kpath.html#Kpath.get_lattice_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.get_lattice_type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_lattice_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/kpath.html#Kpath.get_lattice_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.get_lattice_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the lattice crystal system.</p>
 <p>Hexagonal cells are differentiated into rhombohedral and hexagonal
 lattices.</p>
@@ -327,7 +327,7 @@ lattices.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.kpath.Kpath.kpoints">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">kpoints</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.kpoints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kpoints</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.kpoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point labels and their fractional
 coordinates. Formatted as <code class="docutils literal notranslate"><span class="pre">{label:</span> <span class="pre">coords}</span></code>. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;\Gamma&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.</span> <span class="mf">0.</span><span class="p">]}</span>
@@ -342,7 +342,7 @@ coordinates. Formatted as <code class="docutils literal notranslate"><span class
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.kpath.Kpath.lattice_type">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">lattice_type</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.lattice_type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lattice_type</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.lattice_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Bravais lattice system. Hexagonal cells are separated into
 rhombohedral and hexagonal lattices.</p>
 <dl class="field-list simple">
@@ -354,7 +354,7 @@ rhombohedral and hexagonal lattices.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.kpath.Kpath.path">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.path" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.path" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point path. Each subpath is provided
 as a list. For example, the following covers the path <code class="docutils literal notranslate"><span class="pre">\Gamma</span> <span class="pre">-&gt;</span>
 <span class="pre">X</span> <span class="pre">-&gt;</span> <span class="pre">C</span> <span class="pre">|</span> <span class="pre">\Gamma</span> <span class="pre">-&gt;</span> <span class="pre">Y</span></code>:</p>
@@ -370,7 +370,7 @@ as a list. For example, the following covers the path <code class="docutils lite
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.kpath.Kpath.path_string">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path_string</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.path_string" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_string</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.path_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point path formatted with arrows and
 showing disconnections between subpaths. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;X -&gt; Gamma | Y -&gt; Z&quot;</span>
@@ -385,7 +385,7 @@ showing disconnections between subpaths. For example:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.kpath.Kpath.spg_number">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">spg_number</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.spg_number" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spg_number</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.spg_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>The international space group number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -396,7 +396,7 @@ showing disconnections between subpaths. For example:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.kpath.Kpath.spg_symbol">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">spg_symbol</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.spg_symbol" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spg_symbol</span></span><a class="headerlink" href="#sumo.symmetry.kpath.Kpath.spg_symbol" title="Permalink to this definition">¶</a></dt>
 <dd><p>The international space group symbol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -413,7 +413,7 @@ showing disconnections between subpaths. For example:</p>
 <p>Module containing class for generating Bradley and Cracknell k-point paths.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="sumo.symmetry.brad_crack_kpath.BradCrackKpath">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">sumo.symmetry.brad_crack_kpath.</span></span><span class="sig-name descname"><span class="pre">BradCrackKpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/brad_crack_kpath.html#BradCrackKpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo.symmetry.brad_crack_kpath.</span></span><span class="sig-name descname"><span class="pre">BradCrackKpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/brad_crack_kpath.html#BradCrackKpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#sumo.symmetry.kpath.Kpath" title="sumo.symmetry.kpath.Kpath"><code class="xref py py-class docutils literal notranslate"><span class="pre">sumo.symmetry.kpath.Kpath</span></code></a></p>
 <p>Class to generate k-points along paths from Bradley and Cracknell.</p>
 <p>The paths used are based on Brillouin zones depicted in reference <a class="reference internal" href="#brad" id="id5"><span>[brad]</span></a>.</p>
@@ -433,10 +433,10 @@ between the provided structure and standardised structure checked using the
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
-<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
+<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
 group used to override the symmetry determined by spglib. This is
 not recommended and only provided for testing purposes.</p></li>
 </ul>
@@ -449,7 +449,7 @@ not recommended and only provided for testing purposes.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -461,7 +461,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -560,7 +560,7 @@ For example:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo.symmetry.brad_crack_kpath.BradCrackKpath.get_lattice_type">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_lattice_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.get_lattice_type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_lattice_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.get_lattice_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the lattice crystal system.</p>
 <p>Hexagonal cells are differentiated into rhombohedral and hexagonal
 lattices.</p>
@@ -579,7 +579,7 @@ lattices.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.brad_crack_kpath.BradCrackKpath.kpoints">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">kpoints</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.kpoints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kpoints</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.kpoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point labels and their fractional
 coordinates. Formatted as <code class="docutils literal notranslate"><span class="pre">{label:</span> <span class="pre">coords}</span></code>. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;\Gamma&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.</span> <span class="mf">0.</span><span class="p">]}</span>
@@ -594,7 +594,7 @@ coordinates. Formatted as <code class="docutils literal notranslate"><span class
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.brad_crack_kpath.BradCrackKpath.lattice_type">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">lattice_type</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.lattice_type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lattice_type</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.lattice_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Bravais lattice system. Hexagonal cells are separated into
 rhombohedral and hexagonal lattices.</p>
 <dl class="field-list simple">
@@ -606,7 +606,7 @@ rhombohedral and hexagonal lattices.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.brad_crack_kpath.BradCrackKpath.path">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.path" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.path" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point path. Each subpath is provided
 as a list. For example, the following covers the path <code class="docutils literal notranslate"><span class="pre">\Gamma</span> <span class="pre">-&gt;</span>
 <span class="pre">X</span> <span class="pre">-&gt;</span> <span class="pre">C</span> <span class="pre">|</span> <span class="pre">\Gamma</span> <span class="pre">-&gt;</span> <span class="pre">Y</span></code>:</p>
@@ -622,7 +622,7 @@ as a list. For example, the following covers the path <code class="docutils lite
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.brad_crack_kpath.BradCrackKpath.path_string">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path_string</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.path_string" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_string</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.path_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point path formatted with arrows and
 showing disconnections between subpaths. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;X -&gt; Gamma | Y -&gt; Z&quot;</span>
@@ -637,7 +637,7 @@ showing disconnections between subpaths. For example:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.brad_crack_kpath.BradCrackKpath.spg_number">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">spg_number</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.spg_number" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spg_number</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.spg_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>The international space group number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -648,7 +648,7 @@ showing disconnections between subpaths. For example:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.brad_crack_kpath.BradCrackKpath.spg_symbol">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">spg_symbol</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.spg_symbol" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spg_symbol</span></span><a class="headerlink" href="#sumo.symmetry.brad_crack_kpath.BradCrackKpath.spg_symbol" title="Permalink to this definition">¶</a></dt>
 <dd><p>The international space group symbol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -665,7 +665,7 @@ showing disconnections between subpaths. For example:</p>
 <p>Module containing class for generating k-points along paths from pymatgen.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="sumo.symmetry.pymatgen_kpath.PymatgenKpath">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">sumo.symmetry.pymatgen_kpath.</span></span><span class="sig-name descname"><span class="pre">PymatgenKpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/pymatgen_kpath.html#PymatgenKpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo.symmetry.pymatgen_kpath.</span></span><span class="sig-name descname"><span class="pre">PymatgenKpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/pymatgen_kpath.html#PymatgenKpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#sumo.symmetry.kpath.Kpath" title="sumo.symmetry.kpath.Kpath"><code class="xref py py-class docutils literal notranslate"><span class="pre">sumo.symmetry.kpath.Kpath</span></code></a></p>
 <p>Class to generate k-points along paths from pymatgen.</p>
 <p>More detail on the paths generated by can be found in the pymatgen
@@ -686,7 +686,7 @@ standardised structure checked using the <code class="docutils literal notransla
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 </ul>
@@ -699,7 +699,7 @@ crystal symmetry.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -711,7 +711,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -810,7 +810,7 @@ For example:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo.symmetry.pymatgen_kpath.PymatgenKpath.get_lattice_type">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_lattice_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.get_lattice_type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_lattice_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.get_lattice_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the lattice crystal system.</p>
 <p>Hexagonal cells are differentiated into rhombohedral and hexagonal
 lattices.</p>
@@ -829,7 +829,7 @@ lattices.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.pymatgen_kpath.PymatgenKpath.kpoints">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">kpoints</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.kpoints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kpoints</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.kpoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point labels and their fractional
 coordinates. Formatted as <code class="docutils literal notranslate"><span class="pre">{label:</span> <span class="pre">coords}</span></code>. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;\Gamma&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.</span> <span class="mf">0.</span><span class="p">]}</span>
@@ -844,7 +844,7 @@ coordinates. Formatted as <code class="docutils literal notranslate"><span class
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.pymatgen_kpath.PymatgenKpath.lattice_type">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">lattice_type</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.lattice_type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lattice_type</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.lattice_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Bravais lattice system. Hexagonal cells are separated into
 rhombohedral and hexagonal lattices.</p>
 <dl class="field-list simple">
@@ -856,7 +856,7 @@ rhombohedral and hexagonal lattices.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.pymatgen_kpath.PymatgenKpath.path">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.path" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.path" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point path. Each subpath is provided
 as a list. For example, the following covers the path <code class="docutils literal notranslate"><span class="pre">\Gamma</span> <span class="pre">-&gt;</span>
 <span class="pre">X</span> <span class="pre">-&gt;</span> <span class="pre">C</span> <span class="pre">|</span> <span class="pre">\Gamma</span> <span class="pre">-&gt;</span> <span class="pre">Y</span></code>:</p>
@@ -872,7 +872,7 @@ as a list. For example, the following covers the path <code class="docutils lite
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.pymatgen_kpath.PymatgenKpath.path_string">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path_string</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.path_string" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_string</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.path_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point path formatted with arrows and
 showing disconnections between subpaths. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;X -&gt; Gamma | Y -&gt; Z&quot;</span>
@@ -887,7 +887,7 @@ showing disconnections between subpaths. For example:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.pymatgen_kpath.PymatgenKpath.spg_number">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">spg_number</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.spg_number" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spg_number</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.spg_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>The international space group number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -898,7 +898,7 @@ showing disconnections between subpaths. For example:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.pymatgen_kpath.PymatgenKpath.spg_symbol">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">spg_symbol</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.spg_symbol" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spg_symbol</span></span><a class="headerlink" href="#sumo.symmetry.pymatgen_kpath.PymatgenKpath.spg_symbol" title="Permalink to this definition">¶</a></dt>
 <dd><p>The international space group symbol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -915,7 +915,7 @@ showing disconnections between subpaths. For example:</p>
 <p>Module containing class for generating k-points along paths from SeeK-path.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="sumo.symmetry.seekpath_kpath.SeekpathKpath">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">sumo.symmetry.seekpath_kpath.</span></span><span class="sig-name descname"><span class="pre">SeekpathKpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/seekpath_kpath.html#SeekpathKpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo.symmetry.seekpath_kpath.</span></span><span class="sig-name descname"><span class="pre">SeekpathKpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/seekpath_kpath.html#SeekpathKpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#sumo.symmetry.kpath.Kpath" title="sumo.symmetry.kpath.Kpath"><code class="xref py py-class docutils literal notranslate"><span class="pre">sumo.symmetry.kpath.Kpath</span></code></a></p>
 <p>Class to generate k-points along paths from SeeK-path.</p>
 <p>More detail on the paths generated by SeeK-path can be found in
@@ -934,7 +934,7 @@ standardised structure checked using the <code class="docutils literal notransla
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 </ul>
@@ -947,7 +947,7 @@ crystal symmetry.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -959,7 +959,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1058,7 +1058,7 @@ For example:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo.symmetry.seekpath_kpath.SeekpathKpath.get_lattice_type">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_lattice_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.get_lattice_type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_lattice_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.get_lattice_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the lattice crystal system.</p>
 <p>Hexagonal cells are differentiated into rhombohedral and hexagonal
 lattices.</p>
@@ -1077,7 +1077,7 @@ lattices.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo.symmetry.seekpath_kpath.SeekpathKpath.kpath_from_seekpath">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">kpath_from_seekpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seekpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_coords</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/seekpath_kpath.html#SeekpathKpath.kpath_from_seekpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.kpath_from_seekpath" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kpath_from_seekpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seekpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_coords</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/seekpath_kpath.html#SeekpathKpath.kpath_from_seekpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.kpath_from_seekpath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert seekpath-formatted kpoints path to sumo-preferred format.</p>
 <p>If ‘GAMMA’ is used as a label this will be replaced by ‘Gamma’.</p>
 <dl class="field-list simple">
@@ -1121,7 +1121,7 @@ labels:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.seekpath_kpath.SeekpathKpath.kpoints">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">kpoints</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.kpoints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kpoints</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.kpoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point labels and their fractional
 coordinates. Formatted as <code class="docutils literal notranslate"><span class="pre">{label:</span> <span class="pre">coords}</span></code>. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;\Gamma&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.</span> <span class="mf">0.</span><span class="p">]}</span>
@@ -1136,7 +1136,7 @@ coordinates. Formatted as <code class="docutils literal notranslate"><span class
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.seekpath_kpath.SeekpathKpath.lattice_type">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">lattice_type</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.lattice_type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lattice_type</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.lattice_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Bravais lattice system. Hexagonal cells are separated into
 rhombohedral and hexagonal lattices.</p>
 <dl class="field-list simple">
@@ -1148,7 +1148,7 @@ rhombohedral and hexagonal lattices.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.seekpath_kpath.SeekpathKpath.path">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.path" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.path" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point path. Each subpath is provided
 as a list. For example, the following covers the path <code class="docutils literal notranslate"><span class="pre">\Gamma</span> <span class="pre">-&gt;</span>
 <span class="pre">X</span> <span class="pre">-&gt;</span> <span class="pre">C</span> <span class="pre">|</span> <span class="pre">\Gamma</span> <span class="pre">-&gt;</span> <span class="pre">Y</span></code>:</p>
@@ -1164,7 +1164,7 @@ as a list. For example, the following covers the path <code class="docutils lite
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.seekpath_kpath.SeekpathKpath.path_string">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path_string</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.path_string" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_string</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.path_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point path formatted with arrows and
 showing disconnections between subpaths. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;X -&gt; Gamma | Y -&gt; Z&quot;</span>
@@ -1179,7 +1179,7 @@ showing disconnections between subpaths. For example:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.seekpath_kpath.SeekpathKpath.spg_number">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">spg_number</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.spg_number" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spg_number</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.spg_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>The international space group number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1190,7 +1190,7 @@ showing disconnections between subpaths. For example:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.seekpath_kpath.SeekpathKpath.spg_symbol">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">spg_symbol</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.spg_symbol" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spg_symbol</span></span><a class="headerlink" href="#sumo.symmetry.seekpath_kpath.SeekpathKpath.spg_symbol" title="Permalink to this definition">¶</a></dt>
 <dd><p>The international space group symbol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1207,13 +1207,13 @@ showing disconnections between subpaths. For example:</p>
 <p>Module containing class for generating custom k-point paths.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="sumo.symmetry.custom_kpath.CustomKpath">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">sumo.symmetry.custom_kpath.</span></span><span class="sig-name descname"><span class="pre">CustomKpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpt_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/custom_kpath.html#CustomKpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo.symmetry.custom_kpath.</span></span><span class="sig-name descname"><span class="pre">CustomKpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpt_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/symmetry/custom_kpath.html#CustomKpath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#sumo.symmetry.kpath.Kpath" title="sumo.symmetry.kpath.Kpath"><code class="xref py py-class docutils literal notranslate"><span class="pre">sumo.symmetry.kpath.Kpath</span></code></a></p>
 <p>Class to generate k-points along custom k-point paths.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 <li><p><strong>kpt_list</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – <p>List of k-points to use, formatted as a list of
@@ -1246,7 +1246,7 @@ A -&gt; Z will be used instead.</p>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1258,7 +1258,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1357,7 +1357,7 @@ For example:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo.symmetry.custom_kpath.CustomKpath.get_lattice_type">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_lattice_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.get_lattice_type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_lattice_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.get_lattice_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the lattice crystal system.</p>
 <p>Hexagonal cells are differentiated into rhombohedral and hexagonal
 lattices.</p>
@@ -1376,7 +1376,7 @@ lattices.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.custom_kpath.CustomKpath.kpoints">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">kpoints</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.kpoints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kpoints</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.kpoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point labels and their fractional
 coordinates. Formatted as <code class="docutils literal notranslate"><span class="pre">{label:</span> <span class="pre">coords}</span></code>. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;\Gamma&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.</span> <span class="mf">0.</span><span class="p">]}</span>
@@ -1391,7 +1391,7 @@ coordinates. Formatted as <code class="docutils literal notranslate"><span class
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.custom_kpath.CustomKpath.lattice_type">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">lattice_type</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.lattice_type" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lattice_type</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.lattice_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Bravais lattice system. Hexagonal cells are separated into
 rhombohedral and hexagonal lattices.</p>
 <dl class="field-list simple">
@@ -1403,7 +1403,7 @@ rhombohedral and hexagonal lattices.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.custom_kpath.CustomKpath.path">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.path" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.path" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point path. Each subpath is provided
 as a list. For example, the following covers the path <code class="docutils literal notranslate"><span class="pre">\Gamma</span> <span class="pre">-&gt;</span>
 <span class="pre">X</span> <span class="pre">-&gt;</span> <span class="pre">C</span> <span class="pre">|</span> <span class="pre">\Gamma</span> <span class="pre">-&gt;</span> <span class="pre">Y</span></code>:</p>
@@ -1419,7 +1419,7 @@ as a list. For example, the following covers the path <code class="docutils lite
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.custom_kpath.CustomKpath.path_string">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path_string</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.path_string" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_string</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.path_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>The high-symmetry k-point path formatted with arrows and
 showing disconnections between subpaths. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;X -&gt; Gamma | Y -&gt; Z&quot;</span>
@@ -1434,7 +1434,7 @@ showing disconnections between subpaths. For example:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.custom_kpath.CustomKpath.spg_number">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">spg_number</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.spg_number" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spg_number</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.spg_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>The international space group number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1445,7 +1445,7 @@ showing disconnections between subpaths. For example:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo.symmetry.custom_kpath.CustomKpath.spg_symbol">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">spg_symbol</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.spg_symbol" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spg_symbol</span></span><a class="headerlink" href="#sumo.symmetry.custom_kpath.CustomKpath.spg_symbol" title="Permalink to this definition">¶</a></dt>
 <dd><p>The international space group symbol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1522,7 +1522,7 @@ showing disconnections between subpaths. For example:</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
