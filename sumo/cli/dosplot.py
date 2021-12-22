@@ -316,6 +316,7 @@ def dosplot(
         legend_frame_on=legend_frame_on,
         xlabel=xlabel,
         ylabel=ylabel,
+        zero_to_efermi=shift,
         legend_cutoff=legend_cutoff,
         dpi=dpi,
         plt=plt,
