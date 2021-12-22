@@ -4,6 +4,8 @@ Change Log
 Unreleased
 ----------
 
+Bugfix: VBM shift argument was not correctly passed in DOS plots.  (@pzarabadip)
+
 v2.2.5
 ------
 
