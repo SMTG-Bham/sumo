@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -6,8 +5,9 @@
 Module containing class for generating k-points along paths from SeeK-path.
 """
 
-from sumo.symmetry import Kpath
 from itertools import chain
+
+from sumo.symmetry import Kpath
 
 
 class SeekpathKpath(Kpath):
@@ -41,8 +41,9 @@ class SeekpathKpath(Kpath):
     def __init__(self, structure, symprec=1e-3):
         Kpath.__init__(self, structure, symprec=symprec)
 
-        self._kpath = self.kpath_from_seekpath(self._seek_data['path'],
-                                               self._seek_data['point_coords'])
+        self._kpath = self.kpath_from_seekpath(
+            self._seek_data["path"], self._seek_data["point_coords"]
+        )
 
     @classmethod
     def kpath_from_seekpath(cls, seekpath, point_coords):
@@ -88,9 +89,10 @@ class SeekpathKpath(Kpath):
         kpoints = {p: point_coords[p] for p in set(chain(*path))}
 
         # Every path should include Gamma-point. Change the label to \Gamma
-        assert 'GAMMA' in kpoints
-        kpoints[r'\Gamma'] = kpoints.pop('GAMMA')
-        path = [[label.replace('GAMMA', r'\Gamma') for label in subpath]
-                for subpath in path]
+        assert "GAMMA" in kpoints
+        kpoints[r"\Gamma"] = kpoints.pop("GAMMA")
+        path = [
+            [label.replace("GAMMA", r"\Gamma") for label in subpath] for subpath in path
+        ]
 
-        return {'kpoints': kpoints, 'path': path}
+        return {"kpoints": kpoints, "path": path}

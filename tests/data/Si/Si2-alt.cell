@@ -1,0 +1,47 @@
+!
+!  Lattice vectors of simulation cell.
+!  in order  a(x)  a(y)  a(z)
+!            b(x)  b(y)  b(z)
+!            c(x)  c(y)  c(z)
+!
+!  N.B. These are the vectors of the *primitive* rhombohedral
+!  cell of Si2 in the diamond structure.
+%block lattice_cart
+2.6954645 2.6954645 0.0 
+2.6954645 0.0       2.6954645
+0.0       2.6954645 2.6954645
+%endblock lattice_cart
+!
+! Atomic co-ordinates for each species.
+! These are in fractional co-ordinates wrt to the cell.
+!
+%block positions_frac
+Si 0.00 0.00 0.00
+Si 0.25 0.25 0.25
+%endblock positions_frac
+!
+! Analyse structure to determine symmetry
+!
+symmetry_generate
+!
+! Choose which pseudopotentials to use
+! Either specify external files, or omit to generate a pseudopotential
+!
+%block species_pot
+Si C17
+%endblock species_pot
+!
+! Specify a path through the Brillouin Zone to compute the band structure.
+!
+%BLOCK BS_KPOINTS_PATH 
+0.5 0.25 0.75    ! W
+0.5 0.5 0.5      ! L
+0.0 0.0  0.0     ! Gamma
+0.5 0.0 0.5      ! X
+0.5 0.25 0.75    ! W
+0.375 0.375 0.75 ! K
+%ENDBLOCK BS_KPOINTS_PATH
+!
+! Specify M-P grid dimensions for electron wavevectors (K-points)
+!
+kpoint_mp_grid 4 4 4

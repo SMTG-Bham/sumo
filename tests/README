@@ -7,4 +7,3 @@ The tests can be run from the root directory of the project (i.e. one
 level above this file) using:
 
   python3 -m unittest discover tests
-

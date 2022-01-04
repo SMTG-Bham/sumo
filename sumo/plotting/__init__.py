@@ -1,25 +1,24 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
 """
 Subpackage providing helper functions for generating publication ready plots.
 """
-
-import numpy as np
+from functools import wraps
 
 import matplotlib.pyplot
-from matplotlib.collections import LineCollection
+import numpy as np
 from matplotlib import rcParams
+from matplotlib.collections import LineCollection
 from pkg_resources import resource_filename
 
 colour_cache = {}
 
-sumo_base_style = resource_filename('sumo.plotting', 'sumo_base.mplstyle')
-sumo_dos_style = resource_filename('sumo.plotting', 'sumo_dos.mplstyle')
-sumo_bs_style = resource_filename('sumo.plotting', 'sumo_bs.mplstyle')
-sumo_phonon_style = resource_filename('sumo.plotting', 'sumo_phonon.mplstyle')
-sumo_optics_style = resource_filename('sumo.plotting', 'sumo_optics.mplstyle')
+sumo_base_style = resource_filename("sumo.plotting", "sumo_base.mplstyle")
+sumo_dos_style = resource_filename("sumo.plotting", "sumo_dos.mplstyle")
+sumo_bs_style = resource_filename("sumo.plotting", "sumo_bs.mplstyle")
+sumo_phonon_style = resource_filename("sumo.plotting", "sumo_phonon.mplstyle")
+sumo_optics_style = resource_filename("sumo.plotting", "sumo_optics.mplstyle")
 
 
 def styled_plot(*style_sheets):
@@ -38,9 +37,8 @@ def styled_plot(*style_sheets):
     """
 
     def decorator(get_plot):
-
-        def wrapper(*args, fonts=None, style=None, no_base_style=False,
-                    **kwargs):
+        @wraps(get_plot)
+        def wrapper(*args, fonts=None, style=None, no_base_style=False, **kwargs):
 
             if no_base_style:
                 list_style = []
@@ -54,13 +52,13 @@ def styled_plot(*style_sheets):
                     list_style += [style]
 
             if fonts is not None:
-                list_style += [{'font.family': 'sans-serif',
-                               'font.sans-serif': fonts}]
+                list_style += [{"font.family": "sans-serif", "font.sans-serif": fonts}]
 
             matplotlib.pyplot.style.use(list_style)
             return get_plot(*args, **kwargs)
 
         return wrapper
+
     return decorator
 
 
@@ -83,12 +81,12 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None):
     if plt is None:
         plt = matplotlib.pyplot
         if width is None:
-            width = matplotlib.rcParams['figure.figsize'][0]
+            width = matplotlib.rcParams["figure.figsize"][0]
         if height is None:
-            height = matplotlib.rcParams['figure.figsize'][1]
+            height = matplotlib.rcParams["figure.figsize"][1]
 
         if dpi is not None:
-            matplotlib.rcParams['figure.dpi'] = dpi
+            matplotlib.rcParams["figure.dpi"] = dpi
 
         fig = plt.figure(figsize=(width, height))
         fig.add_subplot(1, 1, 1)
@@ -96,8 +94,17 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None):
     return plt
 
 
-def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
-                   sharey=True, dpi=None, plt=None, gridspec_kw=None):
+def pretty_subplot(
+    nrows,
+    ncols,
+    width=None,
+    height=None,
+    sharex=True,
+    sharey=True,
+    dpi=None,
+    plt=None,
+    gridspec_kw=None,
+):
     """Get a :obj:`matplotlib.pyplot` subplot object with pretty defaults.
 
     Args:
@@ -123,43 +130,49 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
     """
 
     if width is None:
-        width = rcParams['figure.figsize'][0]
+        width = rcParams["figure.figsize"][0]
     if height is None:
-        height = rcParams['figure.figsize'][1]
+        height = rcParams["figure.figsize"][1]
 
     # TODO: Make this work if plt is already set...
     if plt is None:
         plt = matplotlib.pyplot
-        plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey, dpi=dpi,
-                     figsize=(width, height), facecolor='w',
-                     gridspec_kw=gridspec_kw)
+        plt.subplots(
+            nrows,
+            ncols,
+            sharex=sharex,
+            sharey=sharey,
+            dpi=dpi,
+            figsize=(width, height),
+            facecolor="w",
+            gridspec_kw=gridspec_kw,
+        )
 
     return plt
 
 
-def curry_power_tick(times_sign=r'\times'):
+def curry_power_tick(times_sign=r"\times"):
     def f(val, pos):
         return power_tick(val, pos, times_sign=times_sign)
+
     return f
 
 
-def power_tick(val, pos, times_sign=r'\times'):
-    """Custom power ticker function. """
+def power_tick(val, pos, times_sign=r"\times"):
+    """Custom power ticker function."""
     if val == 0:
-        return r'$\mathregular{0}$'
+        return r"$\mathregular{0}$"
     elif val < 0:
         exponent = int(np.log10(-val))
     else:
         exponent = int(np.log10(val))
-    coeff = val / 10**exponent
+    coeff = val / 10 ** exponent
+    prec = 0 if coeff % 1 == 0 else 1
 
-    return r'$\mathregular{{{:.1f} {} 10^{:2d}}}$'.format(coeff,
-                                                          times_sign,
-                                                          exponent)
+    return fr"$\mathregular{{{coeff:.{prec}f} {times_sign} 10^{exponent:2d}}}$"
 
 
-def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",
-            linewidth=2.5):
+def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid", linewidth=2.5):
     """Get a RGB coloured line for plotting.
 
     Args:
@@ -196,8 +209,9 @@ def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",
         a = np.ones(nseg, np.float) * aa
         colours.extend(list(zip(r, g, b, a)))
 
-    lc = LineCollection(seg, colors=colours, rasterized=True,
-                        linewidth=linewidth, linestyles=linestyles)
+    lc = LineCollection(
+        seg, colors=colours, rasterized=True, linewidth=linewidth, linestyles=linestyles
+    )
     return lc
 
 

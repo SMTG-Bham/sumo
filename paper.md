@@ -90,7 +90,7 @@ semiconductor band structures, including direct and indirect band gaps,
 band edge locations, and parabolic and non-parabolic effective masses.
 
 ![Diagrams produced by `sumo`. a) Density of states, b) projected band
-structure, and c) optical absorption spectra.](docs/source/figures/sumo_plots.pdf)
+structure, and c) optical absorption spectra.](docs/src/figures/sumo_plots.pdf)
 
 
 # Acknowledgements

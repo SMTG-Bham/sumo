@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -11,19 +10,19 @@ TODO:
  - Sample custom k-point, band, spin combinations.
 """
 
-import sys
-import logging
 import argparse
+import logging
+import sys
 
-from sumo.electronic_structure.bandstructure import \
-    get_reconstructed_band_structure
-from sumo.electronic_structure.effective_mass import (get_fitting_data,
-                                                      fit_effective_mass)
-from sumo.cli.bandplot import find_vasprun_files
-
-from pymatgen.io.vasp.outputs import BSVasprun
 from pymatgen.electronic_structure.core import Spin
+from pymatgen.io.vasp.outputs import BSVasprun
 
+from sumo.cli.bandplot import find_vasprun_files
+from sumo.electronic_structure.bandstructure import get_reconstructed_band_structure
+from sumo.electronic_structure.effective_mass import (
+    fit_effective_mass,
+    get_fitting_data,
+)
 
 __author__ = "Alex Ganose"
 __version__ = "1.0"
@@ -32,11 +31,16 @@ __email__ = "alexganose@googlemail.com"
 __date__ = "March 4, 2018"
 
 
-kpt_str = '[{k[0]:.2f}, {k[1]:.2f}, {k[2]:.2f}]'
+kpt_str = "[{k[0]:.2f}, {k[1]:.2f}, {k[2]:.2f}]"
 
 
-def bandstats(filenames=None, num_sample_points=3, temperature=None,
-              degeneracy_tol=1e-4, parabolic=True):
+def bandstats(
+    filenames=None,
+    num_sample_points=3,
+    temperature=None,
+    degeneracy_tol=1e-4,
+    parabolic=True,
+):
     """Calculate the effective masses of the bands of a semiconductor.
 
     Args:
@@ -95,7 +99,7 @@ def bandstats(filenames=None, num_sample_points=3, temperature=None,
     bs = get_reconstructed_band_structure(bandstructures)
 
     if bs.is_metal():
-        logging.error('ERROR: System is metallic!')
+        logging.error("ERROR: System is metallic!")
         sys.exit()
 
     _log_band_gap_information(bs)
@@ -103,19 +107,19 @@ def bandstats(filenames=None, num_sample_points=3, temperature=None,
     vbm_data = bs.get_vbm()
     cbm_data = bs.get_cbm()
 
-    logging.info('\nValence band maximum:')
+    logging.info("\nValence band maximum:")
     _log_band_edge_information(bs, vbm_data)
 
-    logging.info('\nConduction band minimum:')
+    logging.info("\nConduction band minimum:")
     _log_band_edge_information(bs, cbm_data)
 
     if parabolic:
-        logging.info('\nUsing parabolic fitting of the band edges')
+        logging.info("\nUsing parabolic fitting of the band edges")
     else:
-        logging.info('\nUsing nonparabolic fitting of the band edges')
+        logging.info("\nUsing nonparabolic fitting of the band edges")
 
     if temperature:
-        logging.error('ERROR: This feature is not yet supported!')
+        logging.error("ERROR: This feature is not yet supported!")
 
     else:
         # Work out where the hole and electron band edges are.
@@ -123,42 +127,56 @@ def bandstats(filenames=None, num_sample_points=3, temperature=None,
         # the effective mass are identified as a tuple of:
         # (spin, band_index, kpoint_index)
         hole_extrema = []
-        for spin, bands in vbm_data['band_index'].items():
-            hole_extrema.extend([(spin, band, kpoint) for band in bands
-                                 for kpoint in vbm_data['kpoint_index']])
+        for spin, bands in vbm_data["band_index"].items():
+            hole_extrema.extend(
+                [
+                    (spin, band, kpoint)
+                    for band in bands
+                    for kpoint in vbm_data["kpoint_index"]
+                ]
+            )
 
         elec_extrema = []
-        for spin, bands in cbm_data['band_index'].items():
-            elec_extrema.extend([(spin, band, kpoint) for band in bands
-                                 for kpoint in cbm_data['kpoint_index']])
+        for spin, bands in cbm_data["band_index"].items():
+            elec_extrema.extend(
+                [
+                    (spin, band, kpoint)
+                    for band in bands
+                    for kpoint in cbm_data["kpoint_index"]
+                ]
+            )
 
         # extract the data we need for fitting from the band structure
         hole_data = []
         for extrema in hole_extrema:
-            hole_data.extend(get_fitting_data(bs, *extrema,
-                             num_sample_points=num_sample_points))
+            hole_data.extend(
+                get_fitting_data(bs, *extrema, num_sample_points=num_sample_points)
+            )
 
         elec_data = []
         for extrema in elec_extrema:
-            elec_data.extend(get_fitting_data(bs, *extrema,
-                             num_sample_points=num_sample_points))
+            elec_data.extend(
+                get_fitting_data(bs, *extrema, num_sample_points=num_sample_points)
+            )
 
     # calculate the effective masses and log the information
-    logging.info('\nHole effective masses:')
+    logging.info("\nHole effective masses:")
     for data in hole_data:
-        eff_mass = fit_effective_mass(data['distances'], data['energies'],
-                                      parabolic=parabolic)
-        data['effective_mass'] = eff_mass
-        _log_effective_mass_data(data, bs.is_spin_polarized, mass_type='m_h')
+        eff_mass = fit_effective_mass(
+            data["distances"], data["energies"], parabolic=parabolic
+        )
+        data["effective_mass"] = eff_mass
+        _log_effective_mass_data(data, bs.is_spin_polarized, mass_type="m_h")
 
-    logging.info('\nElectron effective masses:')
+    logging.info("\nElectron effective masses:")
     for data in elec_data:
-        eff_mass = fit_effective_mass(data['distances'], data['energies'],
-                                      parabolic=parabolic)
-        data['effective_mass'] = eff_mass
+        eff_mass = fit_effective_mass(
+            data["distances"], data["energies"], parabolic=parabolic
+        )
+        data["effective_mass"] = eff_mass
         _log_effective_mass_data(data, bs.is_spin_polarized)
 
-    return {'hole_data': hole_data, 'electron_data': elec_data}
+    return {"hole_data": hole_data, "electron_data": elec_data}
 
 
 def _log_band_gap_information(bs):
@@ -168,44 +186,43 @@ def _log_band_gap_information(bs):
         bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):
     """
     bg_data = bs.get_band_gap()
-    if not bg_data['direct']:
-        logging.info('Indirect band gap: {:.3f} eV'.format(bg_data['energy']))
+    if not bg_data["direct"]:
+        logging.info("Indirect band gap: {:.3f} eV".format(bg_data["energy"]))
 
     direct_data = bs.get_direct_band_gap_dict()
     if bs.is_spin_polarized:
-        direct_bg = min((spin_data['value']
-                         for spin_data in direct_data.values()))
-        logging.info('Direct band gap: {:.3f} eV'.format(direct_bg))
+        direct_bg = min(spin_data["value"] for spin_data in direct_data.values())
+        logging.info(f"Direct band gap: {direct_bg:.3f} eV")
 
         for spin, spin_data in direct_data.items():
-            direct_kindex = spin_data['kpoint_index']
+            direct_kindex = spin_data["kpoint_index"]
             direct_kpoint = bs.kpoints[direct_kindex].frac_coords
             direct_kpoint = kpt_str.format(k=direct_kpoint)
             eq_kpoints = bs.get_equivalent_kpoints(direct_kindex)
-            k_indices = ', '.join(map(str, eq_kpoints))
+            k_indices = ", ".join(map(str, eq_kpoints))
 
             # add 1 to band indices to be consistent with VASP band numbers.
-            b_indices = ', '.join([str(i+1) for i in spin_data['band_indices']])
+            b_indices = ", ".join([str(i + 1) for i in spin_data["band_indices"]])
 
-            logging.info('  {}:'.format(spin.name.capitalize()))
-            logging.info('    k-point: {}'.format(direct_kpoint))
-            logging.info('    k-point indices: {}'.format(k_indices))
-            logging.info('    Band indices: {}'.format(b_indices))
+            logging.info(f"  {spin.name.capitalize()}:")
+            logging.info(f"    k-point: {direct_kpoint}")
+            logging.info(f"    k-point indices: {k_indices}")
+            logging.info(f"    Band indices: {b_indices}")
 
     else:
-        direct_bg = direct_data[Spin.up]['value']
-        logging.info('Direct band gap: {:.3f} eV'.format(direct_bg))
+        direct_bg = direct_data[Spin.up]["value"]
+        logging.info(f"Direct band gap: {direct_bg:.3f} eV")
 
-        direct_kindex = direct_data[Spin.up]['kpoint_index']
+        direct_kindex = direct_data[Spin.up]["kpoint_index"]
         direct_kpoint = kpt_str.format(k=bs.kpoints[direct_kindex].frac_coords)
-        k_indices = ', '.join(map(str,
-                                  bs.get_equivalent_kpoints(direct_kindex)))
-        b_indices = ', '.join([str(i+1) for i in
-                               direct_data[Spin.up]['band_indices']])
+        k_indices = ", ".join(map(str, bs.get_equivalent_kpoints(direct_kindex)))
+        b_indices = ", ".join(
+            [str(i + 1) for i in direct_data[Spin.up]["band_indices"]]
+        )
 
-        logging.info('  k-point: {}'.format(direct_kpoint))
-        logging.info('  k-point indices: {}'.format(k_indices))
-        logging.info('  Band indices: {}'.format(b_indices))
+        logging.info(f"  k-point: {direct_kpoint}")
+        logging.info(f"  k-point indices: {k_indices}")
+        logging.info(f"  Band indices: {b_indices}")
 
 
 def _log_band_edge_information(bs, edge_data):
@@ -218,33 +235,34 @@ def _log_band_edge_information(bs, edge_data):
             ``bs.get_cbm()``
     """
     if bs.is_spin_polarized:
-        spins = edge_data['band_index'].keys()
-        b_indices = [', '.join([str(i+1) for i in
-                                edge_data['band_index'][spin]])
-                     + '({})'.format(spin.name.capitalize()) for spin in spins]
-        b_indices = ', '.join(b_indices)
+        spins = edge_data["band_index"].keys()
+        b_indices = [
+            ", ".join([str(i + 1) for i in edge_data["band_index"][spin]])
+            + f"({spin.name.capitalize()})"
+            for spin in spins
+        ]
+        b_indices = ", ".join(b_indices)
     else:
-        b_indices = ', '.join([str(i+1) for i in
-                               edge_data['band_index'][Spin.up]])
+        b_indices = ", ".join([str(i + 1) for i in edge_data["band_index"][Spin.up]])
 
-    kpoint = edge_data['kpoint']
+    kpoint = edge_data["kpoint"]
     kpoint_str = kpt_str.format(k=kpoint.frac_coords)
-    k_indices = ', '.join(map(str, edge_data['kpoint_index']))
+    k_indices = ", ".join(map(str, edge_data["kpoint_index"]))
 
     if kpoint.label:
         k_loc = kpoint.label
     else:
-        branch = bs.get_branch(edge_data['kpoint_index'][0])[0]
-        k_loc = 'between {}'.format(branch['name'])
+        branch = bs.get_branch(edge_data["kpoint_index"][0])[0]
+        k_loc = "between {}".format(branch["name"])
 
-    logging.info('  Energy: {:.3f} eV'.format(edge_data['energy']))
-    logging.info('  k-point: {}'.format(kpoint_str))
-    logging.info('  k-point location: {}'.format(k_loc))
-    logging.info('  k-point indices: {}'.format(k_indices))
-    logging.info('  Band indices: {}'.format(b_indices))
+    logging.info("  Energy: {:.3f} eV".format(edge_data["energy"]))
+    logging.info(f"  k-point: {kpoint_str}")
+    logging.info(f"  k-point location: {k_loc}")
+    logging.info(f"  k-point indices: {k_indices}")
+    logging.info(f"  Band indices: {b_indices}")
 
 
-def _log_effective_mass_data(data, is_spin_polarized, mass_type='m_e'):
+def _log_effective_mass_data(data, is_spin_polarized, mass_type="m_e"):
     """Log data about the effective masses and their directions.
 
     Args:
@@ -271,59 +289,83 @@ def _log_effective_mass_data(data, is_spin_polarized, mass_type='m_e'):
 
         is_spin_polarized (bool): Whether the system is spin polarized.
     """
-    s = ' ({})'.format(data['spin'].name) if is_spin_polarized else ''
+    s = " ({})".format(data["spin"].name) if is_spin_polarized else ""
 
     # add 1 to band id to be consistent with VASP
-    band_str = 'band {}{}'.format(data['band_id'] + 1, s)
+    band_str = "band {}{}".format(data["band_id"] + 1, s)
 
-    start_kpoint = data['start_kpoint']
-    end_kpoint = data['end_kpoint']
-    eff_mass = data['effective_mass']
+    start_kpoint = data["start_kpoint"]
+    end_kpoint = data["end_kpoint"]
+    eff_mass = data["effective_mass"]
 
     kpoint_str = kpt_str.format(k=start_kpoint.frac_coords)
     if start_kpoint.label:
-        kpoint_str += ' ({})'.format(start_kpoint.label)
-    kpoint_str += ' -> '
+        kpoint_str += f" ({start_kpoint.label})"
+    kpoint_str += " -> "
     kpoint_str += kpt_str.format(k=end_kpoint.frac_coords)
     if end_kpoint.label:
-        kpoint_str += ' ({})'.format(end_kpoint.label)
+        kpoint_str += f" ({end_kpoint.label})"
 
-    logging.info('  {}: {:.3f} | {} | {}'.format(mass_type, eff_mass,
-                                                 band_str, kpoint_str))
+    logging.info(f"  {mass_type}: {eff_mass:.3f} | {band_str} | {kpoint_str}")
 
 
 def _get_parser():
-    parser = argparse.ArgumentParser(description="""
+    parser = argparse.ArgumentParser(
+        description="""
     bandstats provides information on the band gap and effective
     masses of semiconductors.""",
-                                     epilog="""
+        epilog="""
     Author: {}
     Version: {}
-    Last updated: {}""".format(__author__, __version__, __date__))
+    Last updated: {}""".format(
+            __author__, __version__, __date__
+        ),
+    )
 
-    parser.add_argument('-f', '--filenames', default=None, nargs='+',
-                        metavar='F',
-                        help="one or more vasprun.xml files to plot")
-    parser.add_argument('-n', '--nonparabolic', default=True,
-                        action='store_false',
-                        help=('use a nonparabolic model to fit the '
-                              'effective masses'))
-    parser.add_argument('-s', '--sample-points', default=3, type=int,
-                        dest='sample_points', metavar='N',
-                        help="number of k-points to sample in fitting")
+    parser.add_argument(
+        "-f",
+        "--filenames",
+        default=None,
+        nargs="+",
+        metavar="F",
+        help="one or more vasprun.xml files to plot",
+    )
+    parser.add_argument(
+        "-n",
+        "--nonparabolic",
+        default=True,
+        action="store_false",
+        help=("use a nonparabolic model to fit the " "effective masses"),
+    )
+    parser.add_argument(
+        "-s",
+        "--sample-points",
+        default=3,
+        type=int,
+        dest="sample_points",
+        metavar="N",
+        help="number of k-points to sample in fitting",
+    )
     return parser
 
 
 def main():
     args = _get_parser().parse_args()
-    logging.basicConfig(filename='sumo-bandstats.log', level=logging.INFO,
-                        filemode='w', format='%(message)s')
+    logging.basicConfig(
+        filename="sumo-bandstats.log",
+        level=logging.INFO,
+        filemode="w",
+        format="%(message)s",
+    )
     console = logging.StreamHandler()
     logging.info(" ".join(sys.argv[:]))
-    logging.getLogger('').addHandler(console)
+    logging.getLogger("").addHandler(console)
 
-    bandstats(filenames=args.filenames, num_sample_points=args.sample_points,
-              parabolic=args.nonparabolic)
+    bandstats(
+        filenames=args.filenames,
+        num_sample_points=args.sample_points,
+        parabolic=args.nonparabolic,
+    )
 
 
 if __name__ == "__main__":
