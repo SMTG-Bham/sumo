@@ -12,7 +12,6 @@ Major changes:
 
 New features:
 
-- When plotting spin-polarised DOS, can choose to plot one channel only by specifying spin (@kavanase)
 - Fermi level may be chosen as energy zero in DOS or band structure (YWF, AJJ)
 - Horizontal line may be requested at energy zero in DOS or band structure (YWF, AJJ)
 
