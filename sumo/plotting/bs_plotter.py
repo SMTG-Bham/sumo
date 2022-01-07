@@ -65,11 +65,53 @@ class SBSPlotter(BSPlotter):
             self.bs = self._bs
             self.nbands = self._nb_bands
 
+    @staticmethod
+    def _reset_zero_energy(bs_plot_data, zero_energy=0.):
+        """Modify reference energy of data from bs_plot_data
+
+        This method is defined in Pymatgen and obtains plotting data with zero
+        set to 0. (if zero_to_efermi=False), self.efermi (if
+        zero_to_efermi=True and metallic) or the absolute VBM energy
+        (zero_to_efermi=False and insulating).
+
+        Sumo allows other reference energies to be specified (e.g. from
+        sc-fermi); conveniently the data dictionary from Pymatgen contains a
+        "zero_energy" field so the data can always be related to absolute (DFT)
+        values.
+
+        Args:
+            bs_plot_data (:obj:`dict`): data dictionary from
+                pymatgen.electronicstructure.plotter.BSPlotter.bs_plot_data()
+            zero_energy (:obj:`float`, Optional): New reference energy
+
+        Returns:
+            dict in format of bs_plot_data.
+        """
+
+        shifted_data = {}
+        energy_shift = bs_plot_data["zero_energy"] - zero_energy
+
+        for key, value in bs_plot_data.items():
+            if key in ("vbm", "cbm"):
+                shifted_data[key] = [(pt[0], pt[1] + energy_shift)
+                                     for pt in value]
+            elif key == "energy":
+                shifted_data["energy"] = {}
+                for spin, energies in value.items():
+                    shifted_data["energy"][spin] = [array + energy_shift
+                                                    for array in energies]
+            elif key == "zero_energy":
+                shifted_data[key] = zero_energy
+            else:
+                shifted_data[key] = value
+        return shifted_data
+
     @styled_plot(sumo_base_style, sumo_bs_style)
     def get_plot(
         self,
         zero_to_efermi=True,
         zero_line=False,
+        zero_energy=None,
         ymin=-6.0,
         ymax=6.0,
         width=None,
@@ -103,6 +145,8 @@ class SBSPlotter(BSPlotter):
                 not reflect the actual Fermi level; in Sumo it has usually
                 already been shifted to the VBM.
             zero_line (:obj:`bool`, optional): Draw a horizontal line at zero
+            zero_energy (:obj:`float`, optional): Zero energy reference. (If
+                unset, defaults to VBM or Fermi Energy as appropriate.)
             ymin (:obj:`float`, optional): The minimum energy on the y-axis.
             ymax (:obj:`float`, optional): The maximum energy on the y-axis.
             width (:obj:`float`, optional): The width of the plot.
@@ -200,7 +244,10 @@ class SBSPlotter(BSPlotter):
             plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt)
             ax = plt.gca()
 
-        data = self.bs_plot_data(zero_to_efermi)
+        data = self.bs_plot_data(zero_to_efermi=True)
+        if zero_energy is not None:
+            data = self._reset_zero_energy(data, zero_energy=zero_energy)
+
         dists = data["distances"]
         eners = data["energy"]
 
@@ -280,6 +327,7 @@ class SBSPlotter(BSPlotter):
         interpolate_factor=4,
         circle_size=150,
         projection_cutoff=0.001,
+        zero_energy=None,
         zero_to_efermi=True,
         zero_line=False,
         ymin=-6.0,
@@ -370,6 +418,8 @@ class SBSPlotter(BSPlotter):
             zero_to_efermi (:obj:`bool`): Normalise the plot such that the
                 valence band maximum is set as 0 eV.
             zero_line (:obj:`bool`, optional): Draw a horizontal line at zero
+            zero_energy (:obj:`float`, optional): Zero energy reference. (If
+                unset, defaults to VBM or Fermi Energy as appropriate.)
             ymin (:obj:`float`, optional): The minimum energy on the y-axis.
             ymax (:obj:`float`, optional): The maximum energy on the y-axis.
             width (:obj:`float`, optional): The width of the plot.
@@ -470,7 +520,10 @@ class SBSPlotter(BSPlotter):
             plt = pretty_plot(width, height, dpi=dpi, plt=plt)
             ax = plt.gca()
 
-        data = self.bs_plot_data(zero_to_efermi)
+        data = self.bs_plot_data(zero_to_efermi=zero_to_efermi)
+        if zero_energy is not None:
+            data = self._reset_zero_energy(data, zero_energy=zero_energy)
+
         nbranches = len(data["distances"])
 
         # Ensure we do spin up first, then spin down

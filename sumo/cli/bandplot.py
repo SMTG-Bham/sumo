@@ -61,6 +61,7 @@ def bandplot(
     ylabel="Energy (eV)",
     dos_label=None,
     zero_line=False,
+    ref_energy=None,
     elements=None,
     lm_orbitals=None,
     atoms=None,
@@ -168,9 +169,14 @@ def bandplot(
             ``False`` (fractional coordinates).
         scissor (:obj:`float`, optional): Apply a scissor operator (rigid shift
             of the CBM), use with caution if applying to metals.
-        dos_file (:obj:'str', optional): Path to vasprun.xml file from which to
+        dos_file (:obj:`str`, optional): Path to vasprun.xml file from which to
             read the density of states information. If set, the density of
             states will be plotted alongside the bandstructure.
+        zero_line (:obj:`bool`, optional): If true, draw a horizontal line at
+            zero energy. (To adjust where zero energy sits, use ref_energy.)
+        ref_energy (:obj:`float`, optional): Energy offset determining position
+            of zero energy. By default, this is the VBM. It may be useful to
+            set this to e.g. a calculated self-consistent Fermi energy.
         elements (:obj:`dict`, optional): The elements and orbitals to extract
             from the projected density of states. Should be provided as a
             :obj:`dict` with the keys as the element names and corresponding
@@ -396,6 +402,7 @@ def bandplot(
             circle_size=circle_size,
             zero_to_efermi=True,
             zero_line=zero_line,
+            zero_energy=ref_energy,
             ymin=ymin,
             ymax=ymax,
             height=height,
@@ -415,6 +422,7 @@ def bandplot(
         plt = plotter.get_plot(
             zero_to_efermi=True,
             zero_line=zero_line,
+            zero_energy=ref_energy,
             ymin=ymin,
             ymax=ymax,
             height=height,
@@ -666,6 +674,14 @@ def _get_parser():
         help="Plot horizontal line at energy zero")
 
     parser.add_argument(
+        "--ref-energy",
+        type=float,
+        dest="ref_energy",
+        default=None,
+        help=("Reference energy: energy will be shifted to place this energy "
+              "at zero. If not specified, zero will be set to the VBM.")
+    )
+    parser.add_argument(
         "--elements",
         type=_el_orb,
         metavar="E",
@@ -820,6 +836,7 @@ def main():
         dos_label=args.dos_label,
         dos_file=args.dos,
         zero_line=args.zero_line,
+        ref_energy=args.ref_energy,
         elements=args.elements,
         lm_orbitals=args.orbitals,
         atoms=args.atoms,
