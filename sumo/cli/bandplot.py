@@ -61,7 +61,7 @@ def bandplot(
     ylabel="Energy (eV)",
     dos_label=None,
     zero_line=False,
-    ref_energy=None,
+    zero_energy=None,
     elements=None,
     lm_orbitals=None,
     atoms=None,
@@ -173,8 +173,8 @@ def bandplot(
             read the density of states information. If set, the density of
             states will be plotted alongside the bandstructure.
         zero_line (:obj:`bool`, optional): If true, draw a horizontal line at
-            zero energy. (To adjust where zero energy sits, use ref_energy.)
-        ref_energy (:obj:`float`, optional): Energy offset determining position
+            zero energy. (To adjust where zero energy sits, use zero_energy.)
+        zero_energy (:obj:`float`, optional): Energy offset determining position
             of zero energy. By default, this is the VBM. It may be useful to
             set this to e.g. a calculated self-consistent Fermi energy.
         elements (:obj:`dict`, optional): The elements and orbitals to extract
@@ -402,7 +402,7 @@ def bandplot(
             circle_size=circle_size,
             zero_to_efermi=True,
             zero_line=zero_line,
-            zero_energy=ref_energy,
+            zero_energy=zero_energy,
             ymin=ymin,
             ymax=ymax,
             height=height,
@@ -422,7 +422,7 @@ def bandplot(
         plt = plotter.get_plot(
             zero_to_efermi=True,
             zero_line=zero_line,
-            zero_energy=ref_energy,
+            zero_energy=zero_energy,
             ymin=ymin,
             ymax=ymax,
             height=height,
@@ -674,9 +674,9 @@ def _get_parser():
         help="Plot horizontal line at energy zero")
 
     parser.add_argument(
-        "--ref-energy",
+        "--zero-energy",
         type=float,
-        dest="ref_energy",
+        dest="zero_energy",
         default=None,
         help=("Reference energy: energy will be shifted to place this energy "
               "at zero. If not specified, zero will be set to the VBM.")
@@ -836,7 +836,7 @@ def main():
         dos_label=args.dos_label,
         dos_file=args.dos,
         zero_line=args.zero_line,
-        ref_energy=args.ref_energy,
+        zero_energy=args.zero_energy,
         elements=args.elements,
         lm_orbitals=args.orbitals,
         atoms=args.atoms,

@@ -71,6 +71,7 @@ class SDOSPlotter:
         legend_cutoff=3,
         subplot=False,
         zero_to_efermi=True,
+        zero_energy=None,
         cache=None,
         spin=None,
     ):
@@ -104,6 +105,9 @@ class SDOSPlotter:
                 each element on separate subplots. Defaults to ``False``.
             zero_to_efermi (:obj:`bool`, optional): Normalise the plot such
                 that the Fermi level is set as 0 eV.
+            zero_energy (:obj:`float`, optional): If provided, this value is
+                used as the 0 eV reference. Otherwise, behaviour depends on
+                zero_to_efermi.
             cache (:obj:`dict`, optional): Cache object tracking how colours
                 have been assigned to orbitals. The format is the same as the
                 "colours" dict. This defaults to the module-level
@@ -147,10 +151,19 @@ class SDOSPlotter:
         if cache is None:
             cache = colour_cache
 
-        # mask needed to prevent unwanted data in pdf and for finding y limit
         dos = self._dos
         pdos = self._pdos
-        eners = dos.energies - dos.efermi if zero_to_efermi else dos.energies
+
+        if zero_energy is None:
+            energy_shift = -dos.efermi if zero_to_efermi else 0.
+        elif zero_to_efermi:
+            raise ValueError("Cannot use zero_energy and "
+                             "zero_to_efermi simultaneously.")
+        else:
+            energy_shift = -zero_energy
+        eners = dos.energies + energy_shift
+
+        # mask needed to prevent unwanted data in pdf and for finding y limit
         mask = (eners >= xmin - 0.05) & (eners <= xmax + 0.05)
         plot_data = {"mask": mask, "energies": eners}
         spins = dos.densities.keys()
@@ -238,6 +251,7 @@ class SDOSPlotter:
         ylabel="Arb. units",
         zero_to_efermi=True,
         zero_line=False,
+        zero_energy=None,
         dpi=400,
         fonts=None,
         plt=None,
@@ -284,6 +298,9 @@ class SDOSPlotter:
             zero_to_efermi (:obj:`bool`, optional): Normalise the plot such
                 that the Fermi level is set as 0 eV.
             zero_line (:obj:`bool`, optional): Draw a line at 0 eV.
+            zero_energy (:obj:`float`, optional): If provided, this value is
+                used as the 0 eV reference. Otherwise, behaviour depends on
+                zero_to_efermi.
             dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for
                 the image.
             fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a
@@ -313,6 +330,7 @@ class SDOSPlotter:
             legend_cutoff=legend_cutoff,
             subplot=subplot,
             zero_to_efermi=zero_to_efermi,
+            zero_energy=zero_energy,
             spin=spin,
         )
 

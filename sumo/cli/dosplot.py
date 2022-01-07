@@ -66,6 +66,7 @@ def dosplot(
     xlabel="Energy (eV)",
     ylabel="Arb. units",
     yscale=1,
+    zero_energy=None,
     zero_line=False,
     style=None,
     no_base_style=False,
@@ -167,6 +168,9 @@ def dosplot(
         ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)
         yscale (:obj:`float`, optional): Scaling factor for the y-axis.
         zero_line (:obj:`bool`, optional): Plot vertical line at energy zero.
+        zero_energy (:obj:`float`, optional): Zero energy reference (e.g. Fermi
+            energy from sc-fermi.) If not given, behaviour is determined by
+            boolean ``shift``.
         style (:obj:`list` or :obj:`str`, optional): (List of) matplotlib style
             specifications, to be composed on top of Sumo base style.
         no_base_style (:obj:`bool`, optional): Prevent use of sumo base style.
@@ -321,6 +325,7 @@ def dosplot(
         ylabel=ylabel,
         zero_line=zero_line,
         zero_to_efermi=shift,
+        zero_energy=zero_energy,
         legend_cutoff=legend_cutoff,
         dpi=dpi,
         plt=plt,
@@ -505,12 +510,22 @@ def _get_parser():
         dest="legend_frame",
         help="display a box around the legend",
     )
-    parser.add_argument(
+
+    shift = parser.add_mutually_exclusive_group()
+
+    shift.add_argument(
         "--no-shift",
         action="store_false",
         dest="shift",
         help="don't shift the VBM/Fermi level to 0 eV",
     )
+    shift.add_argument(
+        "--zero-energy",
+        type=float,
+        default=None,
+        dest="zero_energy",
+        help="Plot vertical line at energy zero")
+
     parser.add_argument(
         "--total-only",
         action="store_true",
@@ -609,6 +624,11 @@ def main():
     warnings.filterwarnings("ignore", category=UnicodeWarning, module="matplotlib")
     warnings.filterwarnings("ignore", category=UserWarning, module="pymatgen")
 
+    if args.zero_energy is not None:
+        shift = False
+    else:
+        shift = args.shift
+
     dosplot(
         filename=args.filename,
         code=args.code,
@@ -619,7 +639,7 @@ def main():
         atoms=args.atoms,
         spin=args.spin,
         subplot=args.subplot,
-        shift=args.shift,
+        shift=shift,
         total_only=args.total_only,
         plot_total=args.total,
         legend_on=args.legend,
@@ -638,6 +658,7 @@ def main():
         ylabel=args.ylabel,
         yscale=args.yscale,
         zero_line=args.zero_line,
+        zero_energy=args.zero_energy,
         image_format=args.image_format,
         dpi=args.dpi,
         fonts=args.font,

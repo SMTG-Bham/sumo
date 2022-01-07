@@ -720,7 +720,9 @@ class SBSPlotter(BSPlotter):
             if not dos_options:
                 dos_options = {}
 
-            dos_options.update({"xmin": ymin, "xmax": ymax})
+            dos_options.update({"xmin": ymin, "xmax": ymax,
+                                "zero_energy": data["zero_energy"],
+                                "zero_to_efermi": False})
             self._makedos(
                 ax,
                 dos_plotter,
