@@ -4,6 +4,17 @@ Change Log
 Unreleased
 ----------
 
+Major changes:
+
+- DOS energies are no longer shifted by SIGMA in smeared calculations;
+  this will cause the DOS line to extend slightly beyond the VBM, but
+  will ensure peaks are in the right positions. (@yw-fang & @ajjackson)
+
+New features:
+
+- Fermi level may be chosen as energy zero in DOS or band structure (YWF, AJJ)
+- Horizontal line may be requested at energy zero in DOS or band structure (YWF, AJJ)
+
 Bugfix: VBM shift argument was not correctly passed in DOS plots.  (@pzarabadip)
 
 v2.2.5

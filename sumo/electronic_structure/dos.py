@@ -111,9 +111,6 @@ def load_dos(
     if adjust_fermi:
         dos.efermi -= dos.efermi - zero_point
 
-    if vr.parameters["ISMEAR"] in [-1, 0, 1]:
-        dos.energies -= vr.parameters["SIGMA"]
-
     if gaussian:
         dos.densities = dos.get_smeared_densities(gaussian)
         for site in dos.pdos:

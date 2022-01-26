@@ -17,6 +17,7 @@ from pymatgen.phonon.bandstructure import PhononBandStructureSymmLine
 from pymatgen.phonon.plotter import PhononBSPlotter
 
 from sumo.plotting import (
+    draw_themed_line,
     pretty_plot,
     pretty_subplot,
     styled_plot,
@@ -24,8 +25,6 @@ from sumo.plotting import (
     sumo_bs_style,
     sumo_phonon_style,
 )
-
-dashes = (5, 2)
 
 
 class SPhononBSPlotter(PhononBSPlotter):
@@ -59,14 +58,7 @@ class SPhononBSPlotter(PhononBSPlotter):
         ax.set_xlabel("DOS")
 
         if dashline:
-            ax.axhline(
-                0,
-                color=rcParams["grid.color"],
-                linestyle="--",
-                dashes=dashes,
-                zorder=0,
-                linewidth=rcParams["ytick.major.width"],
-            )
+            draw_themed_line(0, ax)
 
     @styled_plot(sumo_base_style, sumo_bs_style, sumo_phonon_style)
     def get_plot(
@@ -192,7 +184,6 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         if any(legend):  # Don't show legend if all entries are empty string
             from matplotlib.lines import Line2D
-
             ax.legend(
                 [Line2D([0], [0], color=f"C{i}") for i in range(len(legend))],
                 legend,
@@ -246,14 +237,8 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         if ymin < 0:
             dashline = True
-            ax.axhline(
-                0,
-                color=rcParams["grid.color"],
-                linestyle="--",
-                dashes=dashes,
-                zorder=0,
-                linewidth=rcParams["ytick.major.width"],
-            )
+            draw_themed_line(0, ax)
+
         else:
             dashline = False
 

@@ -11,6 +11,7 @@ import logging
 import numpy as np
 from matplotlib import cycler, rcParams
 from matplotlib.style import context
+from sumo.plotting import draw_themed_line
 from matplotlib.ticker import AutoMinorLocator, MaxNLocator
 from pymatgen.electronic_structure.core import Spin
 from pymatgen.electronic_structure.plotter import BSPlotter
@@ -21,6 +22,7 @@ from sumo.electronic_structure.bandstructure import (
     get_projections_by_branches,
 )
 from sumo.plotting import (
+    draw_themed_line,
     pretty_plot,
     pretty_subplot,
     rgbline,
@@ -63,10 +65,53 @@ class SBSPlotter(BSPlotter):
             self.bs = self._bs
             self.nbands = self._nb_bands
 
+    @staticmethod
+    def _reset_zero_energy(bs_plot_data, zero_energy=0.):
+        """Modify reference energy of data from bs_plot_data
+
+        This method is defined in Pymatgen and obtains plotting data with zero
+        set to 0. (if zero_to_efermi=False), self.efermi (if
+        zero_to_efermi=True and metallic) or the absolute VBM energy
+        (zero_to_efermi=False and insulating).
+
+        Sumo allows other reference energies to be specified (e.g. from
+        sc-fermi); conveniently the data dictionary from Pymatgen contains a
+        "zero_energy" field so the data can always be related to absolute (DFT)
+        values.
+
+        Args:
+            bs_plot_data (:obj:`dict`): data dictionary from
+                pymatgen.electronicstructure.plotter.BSPlotter.bs_plot_data()
+            zero_energy (:obj:`float`, Optional): New reference energy
+
+        Returns:
+            dict in format of bs_plot_data.
+        """
+
+        shifted_data = {}
+        energy_shift = bs_plot_data["zero_energy"] - zero_energy
+
+        for key, value in bs_plot_data.items():
+            if key in ("vbm", "cbm"):
+                shifted_data[key] = [(pt[0], pt[1] + energy_shift)
+                                     for pt in value]
+            elif key == "energy":
+                shifted_data["energy"] = {}
+                for spin, energies in value.items():
+                    shifted_data["energy"][spin] = [array + energy_shift
+                                                    for array in energies]
+            elif key == "zero_energy":
+                shifted_data[key] = zero_energy
+            else:
+                shifted_data[key] = value
+        return shifted_data
+
     @styled_plot(sumo_base_style, sumo_bs_style)
     def get_plot(
         self,
         zero_to_efermi=True,
+        zero_line=False,
+        zero_energy=None,
         ymin=-6.0,
         ymax=6.0,
         width=None,
@@ -94,8 +139,14 @@ class SBSPlotter(BSPlotter):
         valence bands and orange lines indicates conduction bands.
 
         Args:
-            zero_to_efermi (:obj:`bool`): Normalise the plot such that the
-                valence band maximum is set as 0 eV.
+            zero_to_efermi (:obj:`bool`): Shift the plot such that the
+                Fermi energy of the band structure data is plotted at 0 eV.
+                Note that this "efermi" is for the benefit of Pymatgen and may
+                not reflect the actual Fermi level; in Sumo it has usually
+                already been shifted to the VBM.
+            zero_line (:obj:`bool`, optional): Draw a horizontal line at zero
+            zero_energy (:obj:`float`, optional): Zero energy reference. (If
+                unset, defaults to VBM or Fermi Energy as appropriate.)
             ymin (:obj:`float`, optional): The minimum energy on the y-axis.
             ymax (:obj:`float`, optional): The maximum energy on the y-axis.
             width (:obj:`float`, optional): The width of the plot.
@@ -193,7 +244,10 @@ class SBSPlotter(BSPlotter):
             plt = pretty_plot(width=width, height=height, dpi=dpi, plt=plt)
             ax = plt.gca()
 
-        data = self.bs_plot_data(zero_to_efermi)
+        data = self.bs_plot_data(zero_to_efermi=True)
+        if zero_energy is not None:
+            data = self._reset_zero_energy(data, zero_energy=zero_energy)
+
         dists = data["distances"]
         eners = data["energy"]
 
@@ -244,11 +298,13 @@ class SBSPlotter(BSPlotter):
                 ax.plot(dists[nd], e, c="C0", linestyle="--", zorder=2)
 
         self._maketicks(ax, ylabel=ylabel)
+
         self._makeplot(
             ax,
             plt.gcf(),
             data,
             zero_to_efermi=zero_to_efermi,
+            zero_line=zero_line,
             vbm_cbm_marker=vbm_cbm_marker,
             width=width,
             height=height,
@@ -271,7 +327,9 @@ class SBSPlotter(BSPlotter):
         interpolate_factor=4,
         circle_size=150,
         projection_cutoff=0.001,
+        zero_energy=None,
         zero_to_efermi=True,
+        zero_line=False,
         ymin=-6.0,
         ymax=6.0,
         width=None,
@@ -359,6 +417,9 @@ class SBSPlotter(BSPlotter):
                 stacked plots, where small projections clutter the plot.
             zero_to_efermi (:obj:`bool`): Normalise the plot such that the
                 valence band maximum is set as 0 eV.
+            zero_line (:obj:`bool`, optional): Draw a horizontal line at zero
+            zero_energy (:obj:`float`, optional): Zero energy reference. (If
+                unset, defaults to VBM or Fermi Energy as appropriate.)
             ymin (:obj:`float`, optional): The minimum energy on the y-axis.
             ymax (:obj:`float`, optional): The maximum energy on the y-axis.
             width (:obj:`float`, optional): The width of the plot.
@@ -431,8 +492,8 @@ class SBSPlotter(BSPlotter):
                 style. This can make alternative styles behave more
                 predictably.
             spin (:obj:`Spin`, optional): Plot a spin-polarised band structure,
-                "up" or "1" for spin up only, "down" or "-1" for spin down only.
-                Defaults to ``None``.
+                "up" or "1" for spin up only, "down" or "-1" for spin down
+                only. Defaults to ``None``.
 
         Returns:
             :obj:`matplotlib.pyplot`: The projected electronic band structure
@@ -459,7 +520,10 @@ class SBSPlotter(BSPlotter):
             plt = pretty_plot(width, height, dpi=dpi, plt=plt)
             ax = plt.gca()
 
-        data = self.bs_plot_data(zero_to_efermi)
+        data = self.bs_plot_data(zero_to_efermi=zero_to_efermi)
+        if zero_energy is not None:
+            data = self._reset_zero_energy(data, zero_energy=zero_energy)
+
         nbranches = len(data["distances"])
 
         # Ensure we do spin up first, then spin down
@@ -469,6 +533,7 @@ class SBSPlotter(BSPlotter):
                 "Spin-selection only possible with spin-polarised "
                 "calculation results"
             )
+
         if spin is Spin.up:
             spins = [spins[0]]
         elif spin is Spin.down:
@@ -595,6 +660,7 @@ class SBSPlotter(BSPlotter):
             plt.gcf(),
             data,
             zero_to_efermi=zero_to_efermi,
+            zero_line=zero_line,
             vbm_cbm_marker=vbm_cbm_marker,
             width=width,
             height=height,
@@ -614,6 +680,7 @@ class SBSPlotter(BSPlotter):
         fig,
         data,
         zero_to_efermi=True,
+        zero_line=False,
         vbm_cbm_marker=False,
         ymin=-6.0,
         ymax=6.0,
@@ -626,11 +693,13 @@ class SBSPlotter(BSPlotter):
         aspect=None,
     ):
         """Tidy the band structure & add the density of states if required."""
-        # draw line at Fermi level if not zeroing to e-Fermi
-        if not zero_to_efermi:
-            ytick_color = rcParams["ytick.color"]
+        if zero_line:
+            draw_themed_line(0, ax)
+
+        # Draw line at Fermi level if not zeroing to e-Fermi
+        elif not zero_to_efermi:
             ef = self.bs.efermi
-            ax.axhline(ef, color=ytick_color)
+            draw_themed_line(ef, ax)
 
         # set x and y limits
         ax.set_xlim(0, data["distances"][-1][-1])
@@ -651,13 +720,16 @@ class SBSPlotter(BSPlotter):
             if not dos_options:
                 dos_options = {}
 
-            dos_options.update({"xmin": ymin, "xmax": ymax})
+            dos_options.update({"xmin": ymin, "xmax": ymax,
+                                "zero_energy": data["zero_energy"],
+                                "zero_to_efermi": False})
             self._makedos(
                 ax,
                 dos_plotter,
                 dos_options,
                 dos_label=dos_label,
                 plot_legend=plot_dos_legend,
+                zero_line=zero_line
             )
         else:
             # keep correct aspect ratio for axes based on canvas size
@@ -674,7 +746,9 @@ class SBSPlotter(BSPlotter):
 
                 ax.set_aspect(aspect * ((x1 - x0) / (y1 - y0)))
 
-    def _makedos(self, ax, dos_plotter, dos_options, dos_label=None, plot_legend=True):
+    @staticmethod
+    def _makedos(ax, dos_plotter, dos_options,
+                 dos_label=None, plot_legend=True, zero_line=False):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
         # don't use first 4 colours; these are the band structure line colours
@@ -711,6 +785,9 @@ class SBSPlotter(BSPlotter):
             # x and y axis reversed versus normal dos plotting
             ax.set_ylim(dos_options["xmin"], dos_options["xmax"])
             ax.set_xlim(plot_data["ymin"], plot_data["ymax"])
+
+            if zero_line:
+                draw_themed_line(0, ax)
 
             if dos_label is not None:
                 ax.set_xlabel(dos_label)
