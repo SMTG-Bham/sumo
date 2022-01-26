@@ -56,7 +56,7 @@ provided in a different format than kgen.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, optional) – <p>Method used for calculating the
 high-symmetry path. The options are:</p>
 <dl class="simple">
@@ -72,7 +72,7 @@ high-symmetry path. The options are:</p>
 </p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
-<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
+<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
 group used to override the symmetry determined by spglib. This is
 not recommended and only provided for testing purposes.
 This option will only take effect when <code class="docutils literal notranslate"><span class="pre">mode</span> <span class="pre">=</span> <span class="pre">'bradcrack'</span></code>.</p></li>
@@ -115,7 +115,7 @@ whether <code class="docutils literal notranslate"><span class="pre">kpt_list</s
 <blockquote>
 <div><ul>
 <li><dl>
-<dt><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point</dt><dd><p>coordinates along the high-symmetry path. For example:</p>
+<dt><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point</dt><dd><p>coordinates along the high-symmetry path. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
 <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]]</span>
 </pre></div>
@@ -138,7 +138,7 @@ no label). For example:</p>
 <blockquote>
 <div><ul>
 <li><dl>
-<dt><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></dt><dd><p>containing the k-points for each branch of the band
+<dt><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></dt><dd><p>containing the k-points for each branch of the band
 structure. This means that the first and last k-points of a
 particular branch may be repeated. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span>
@@ -184,7 +184,7 @@ differing k-point path generation classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 </ul>
@@ -197,7 +197,7 @@ crystal symmetry.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -209,7 +209,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -262,7 +262,7 @@ and k-point labels. Returned as <code class="docutils literal notranslate"><span
 <p>If <code class="docutils literal notranslate"><span class="pre">phonopy</span> <span class="pre">==</span> <span class="pre">False</span></code>, then:</p>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point
+<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point
 coordinates along the high-symmetry path. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
  <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]]</span>
@@ -281,7 +281,7 @@ no label). For example:</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">phonopy</span> <span class="pre">==</span> <span class="pre">True</span></code>, then:</p>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
+<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
 containing the k-points for each branch of the band
 structure. This means that the first and last k-points of a
 particular branch may be repeated. For example:</p>
@@ -433,10 +433,10 @@ between the provided structure and standardised structure checked using the
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
-<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
+<li><p><strong>spg</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.symmetry.groups.html#pymatgen.symmetry.groups.SpaceGroup" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpaceGroup</span></code></a>, optional) – Space
 group used to override the symmetry determined by spglib. This is
 not recommended and only provided for testing purposes.</p></li>
 </ul>
@@ -449,7 +449,7 @@ not recommended and only provided for testing purposes.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -461,7 +461,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -514,7 +514,7 @@ and k-point labels. Returned as <code class="docutils literal notranslate"><span
 <p>If <code class="docutils literal notranslate"><span class="pre">phonopy</span> <span class="pre">==</span> <span class="pre">False</span></code>, then:</p>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point
+<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point
 coordinates along the high-symmetry path. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
  <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]]</span>
@@ -533,7 +533,7 @@ no label). For example:</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">phonopy</span> <span class="pre">==</span> <span class="pre">True</span></code>, then:</p>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
+<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
 containing the k-points for each branch of the band
 structure. This means that the first and last k-points of a
 particular branch may be repeated. For example:</p>
@@ -686,7 +686,7 @@ standardised structure checked using the <code class="docutils literal notransla
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 </ul>
@@ -699,7 +699,7 @@ crystal symmetry.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -711,7 +711,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -764,7 +764,7 @@ and k-point labels. Returned as <code class="docutils literal notranslate"><span
 <p>If <code class="docutils literal notranslate"><span class="pre">phonopy</span> <span class="pre">==</span> <span class="pre">False</span></code>, then:</p>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point
+<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point
 coordinates along the high-symmetry path. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
  <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]]</span>
@@ -783,7 +783,7 @@ no label). For example:</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">phonopy</span> <span class="pre">==</span> <span class="pre">True</span></code>, then:</p>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
+<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
 containing the k-points for each branch of the band
 structure. This means that the first and last k-points of a
 particular branch may be repeated. For example:</p>
@@ -934,7 +934,7 @@ standardised structure checked using the <code class="docutils literal notransla
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 </ul>
@@ -947,7 +947,7 @@ crystal symmetry.</p></li>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -959,7 +959,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1012,7 +1012,7 @@ and k-point labels. Returned as <code class="docutils literal notranslate"><span
 <p>If <code class="docutils literal notranslate"><span class="pre">phonopy</span> <span class="pre">==</span> <span class="pre">False</span></code>, then:</p>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point
+<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point
 coordinates along the high-symmetry path. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
  <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]]</span>
@@ -1031,7 +1031,7 @@ no label). For example:</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">phonopy</span> <span class="pre">==</span> <span class="pre">True</span></code>, then:</p>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
+<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
 containing the k-points for each branch of the band
 structure. This means that the first and last k-points of a
 particular branch may be repeated. For example:</p>
@@ -1213,7 +1213,7 @@ showing disconnections between subpaths. For example:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The structure.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
 crystal symmetry.</p></li>
 <li><p><strong>kpt_list</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – <p>List of k-points to use, formatted as a list of
@@ -1246,7 +1246,7 @@ A -&gt; Z will be used instead.</p>
 primitive cell structure for the generated k-point path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1258,7 +1258,7 @@ primitive cell structure for the generated k-point path.</p>
 conventional cell structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.0.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1311,7 +1311,7 @@ and k-point labels. Returned as <code class="docutils literal notranslate"><span
 <p>If <code class="docutils literal notranslate"><span class="pre">phonopy</span> <span class="pre">==</span> <span class="pre">False</span></code>, then:</p>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point
+<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> of the k-point
 coordinates along the high-symmetry path. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
  <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]]</span>
@@ -1330,7 +1330,7 @@ no label). For example:</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">phonopy</span> <span class="pre">==</span> <span class="pre">True</span></code>, then:</p>
 <blockquote>
 <div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
+<li><p><code class="docutils literal notranslate"><span class="pre">kpoints</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
 containing the k-points for each branch of the band
 structure. This means that the first and last k-points of a
 particular branch may be repeated. For example:</p>
@@ -1522,7 +1522,7 @@ showing disconnections between subpaths. For example:</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -37,6 +37,17 @@
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
 <section id="unreleased">
 <h2>Unreleased<a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
+<p>Major changes:</p>
+<ul class="simple">
+<li><p>DOS energies are no longer shifted by SIGMA in smeared calculations;
+this will cause the DOS line to extend slightly beyond the VBM, but
+will ensure peaks are in the right positions. (&#64;yw-fang &amp; &#64;ajjackson)</p></li>
+</ul>
+<p>New features:</p>
+<ul class="simple">
+<li><p>Fermi level may be chosen as energy zero in DOS or band structure (YWF, AJJ)</p></li>
+<li><p>Horizontal line may be requested at energy zero in DOS or band structure (YWF, AJJ)</p></li>
+</ul>
 <p>Bugfix: VBM shift argument was not correctly passed in DOS plots.  (&#64;pzarabadip)</p>
 </section>
 <section id="v2-2-5">
@@ -408,7 +419,7 @@ Enables plots to be customised based on user settings.</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

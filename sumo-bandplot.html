@@ -219,7 +219,8 @@ structure diagrams</p>
                      <span class="p">[</span><span class="o">--</span><span class="n">project</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mode</span> <span class="n">MODE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">normalise</span> <span class="n">NORMALISE</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">interpolate</span><span class="o">-</span><span class="n">factor</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">circle</span><span class="o">-</span><span class="n">size</span> <span class="n">S</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">ylabel</span> <span class="n">YLABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dos</span><span class="o">-</span><span class="n">label</span> <span class="n">DOS_LABEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dos</span> <span class="n">DOS</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">elements</span> <span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">orbitals</span> <span class="n">O</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">atoms</span> <span class="n">A</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spin</span> <span class="n">SPIN</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">zero</span><span class="o">-</span><span class="n">line</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zero</span><span class="o">-</span><span class="n">energy</span> <span class="n">ZERO_ENERGY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">elements</span> <span class="n">E</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">orbitals</span> <span class="n">O</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">atoms</span> <span class="n">A</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spin</span> <span class="n">SPIN</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">scissor</span> <span class="n">SCISSOR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">total</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">total</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">legend</span><span class="o">-</span><span class="n">cutoff</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">g</span> <span class="n">G</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">scale</span> <span class="n">SCALE</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">height</span> <span class="n">HEIGHT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">width</span> <span class="n">WIDTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ymin</span> <span class="n">YMIN</span><span class="p">]</span>
@@ -280,6 +281,13 @@ structure diagrams</p>
 </dd>
 <dt><kbd>--dos</kbd></dt>
 <dd><p>path to density of states vasprun.xml</p>
+</dd>
+<dt><kbd>--zero-line</kbd></dt>
+<dd><p>Plot horizontal line at energy zero</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--zero-energy</kbd></dt>
+<dd><p>Reference energy: energy will be shifted to place this energy at zero. If not specified, zero will be set to the VBM.</p>
 </dd>
 <dt><kbd>--elements</kbd></dt>
 <dd><p>elemental orbitals to plot (e.g. “C.s.p,O”)</p>
@@ -430,7 +438,7 @@ Last updated: July 18, 2017</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

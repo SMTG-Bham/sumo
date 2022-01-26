@@ -93,6 +93,8 @@
     <span class="n">scissor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">,</span>
     <span class="n">dos_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">zero_line</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">zero_energy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">elements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -200,9 +202,14 @@
 <span class="sd">            ``False`` (fractional coordinates).</span>
 <span class="sd">        scissor (:obj:`float`, optional): Apply a scissor operator (rigid shift</span>
 <span class="sd">            of the CBM), use with caution if applying to metals.</span>
-<span class="sd">        dos_file (:obj:&#39;str&#39;, optional): Path to vasprun.xml file from which to</span>
+<span class="sd">        dos_file (:obj:`str`, optional): Path to vasprun.xml file from which to</span>
 <span class="sd">            read the density of states information. If set, the density of</span>
 <span class="sd">            states will be plotted alongside the bandstructure.</span>
+<span class="sd">        zero_line (:obj:`bool`, optional): If true, draw a horizontal line at</span>
+<span class="sd">            zero energy. (To adjust where zero energy sits, use zero_energy.)</span>
+<span class="sd">        zero_energy (:obj:`float`, optional): Energy offset determining position</span>
+<span class="sd">            of zero energy. By default, this is the VBM. It may be useful to</span>
+<span class="sd">            set this to e.g. a calculated self-consistent Fermi energy.</span>
 <span class="sd">        elements (:obj:`dict`, optional): The elements and orbitals to extract</span>
 <span class="sd">            from the projected density of states. Should be provided as a</span>
 <span class="sd">            :obj:`dict` with the keys as the element names and corresponding</span>
@@ -427,6 +434,8 @@
             <span class="n">interpolate_factor</span><span class="o">=</span><span class="n">interpolate_factor</span><span class="p">,</span>
             <span class="n">circle_size</span><span class="o">=</span><span class="n">circle_size</span><span class="p">,</span>
             <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">zero_line</span><span class="o">=</span><span class="n">zero_line</span><span class="p">,</span>
+            <span class="n">zero_energy</span><span class="o">=</span><span class="n">zero_energy</span><span class="p">,</span>
             <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span>
             <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span>
             <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
@@ -445,6 +454,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">plt</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_plot</span><span class="p">(</span>
             <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">zero_line</span><span class="o">=</span><span class="n">zero_line</span><span class="p">,</span>
+            <span class="n">zero_energy</span><span class="o">=</span><span class="n">zero_energy</span><span class="p">,</span>
             <span class="n">ymin</span><span class="o">=</span><span class="n">ymin</span><span class="p">,</span>
             <span class="n">ymax</span><span class="o">=</span><span class="n">ymax</span><span class="p">,</span>
             <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
@@ -689,6 +700,20 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--dos&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to density of states vasprun.xml&quot;</span>
     <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--zero-line&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;zero_line&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plot horizontal line at energy zero&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--zero-energy&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;zero_energy&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Reference energy: energy will be shifted to place this energy &quot;</span>
+              <span class="s2">&quot;at zero. If not specified, zero will be set to the VBM.&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--elements&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">_el_orb</span><span class="p">,</span>
@@ -843,6 +868,8 @@
         <span class="n">ylabel</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ylabel</span><span class="p">,</span>
         <span class="n">dos_label</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dos_label</span><span class="p">,</span>
         <span class="n">dos_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dos</span><span class="p">,</span>
+        <span class="n">zero_line</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">zero_line</span><span class="p">,</span>
+        <span class="n">zero_energy</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">zero_energy</span><span class="p">,</span>
         <span class="n">elements</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span>
         <span class="n">lm_orbitals</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">orbitals</span><span class="p">,</span>
         <span class="n">atoms</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span>
@@ -927,7 +954,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

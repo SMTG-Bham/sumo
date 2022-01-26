@@ -144,9 +144,6 @@
     <span class="k">if</span> <span class="n">adjust_fermi</span><span class="p">:</span>
         <span class="n">dos</span><span class="o">.</span><span class="n">efermi</span> <span class="o">-=</span> <span class="n">dos</span><span class="o">.</span><span class="n">efermi</span> <span class="o">-</span> <span class="n">zero_point</span>
 
-    <span class="k">if</span> <span class="n">vr</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;ISMEAR&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
-        <span class="n">dos</span><span class="o">.</span><span class="n">energies</span> <span class="o">-=</span> <span class="n">vr</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;SIGMA&quot;</span><span class="p">]</span>
-
     <span class="k">if</span> <span class="n">gaussian</span><span class="p">:</span>
         <span class="n">dos</span><span class="o">.</span><span class="n">densities</span> <span class="o">=</span> <span class="n">dos</span><span class="o">.</span><span class="n">get_smeared_densities</span><span class="p">(</span><span class="n">gaussian</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">dos</span><span class="o">.</span><span class="n">pdos</span><span class="p">:</span>
@@ -473,7 +470,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

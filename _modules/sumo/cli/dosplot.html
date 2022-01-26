@@ -96,9 +96,11 @@
     <span class="n">xmin</span><span class="o">=-</span><span class="mf">6.0</span><span class="p">,</span>
     <span class="n">xmax</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
     <span class="n">num_columns</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">,</span>
     <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Arb. units&quot;</span><span class="p">,</span>
+    <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">zero_energy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">zero_line</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">image_format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
@@ -198,6 +200,10 @@
 <span class="sd">        xlabel (:obj:`str`, optional): Label/units for x-axis (i.e. energy)</span>
 <span class="sd">        ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)</span>
 <span class="sd">        yscale (:obj:`float`, optional): Scaling factor for the y-axis.</span>
+<span class="sd">        zero_line (:obj:`bool`, optional): Plot vertical line at energy zero.</span>
+<span class="sd">        zero_energy (:obj:`float`, optional): Zero energy reference (e.g. Fermi</span>
+<span class="sd">            energy from sc-fermi.) If not given, behaviour is determined by</span>
+<span class="sd">            boolean ``shift``.</span>
 <span class="sd">        style (:obj:`list` or :obj:`str`, optional): (List of) matplotlib style</span>
 <span class="sd">            specifications, to be composed on top of Sumo base style.</span>
 <span class="sd">        no_base_style (:obj:`bool`, optional): Prevent use of sumo base style.</span>
@@ -335,6 +341,7 @@
 
     <span class="n">spin</span> <span class="o">=</span> <span class="n">string_to_spin</span><span class="p">(</span><span class="n">spin</span><span class="p">)</span>  <span class="c1"># Convert spin name to pymatgen Spin object</span>
     <span class="n">plotter</span> <span class="o">=</span> <span class="n">SDOSPlotter</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span><span class="p">)</span>
+
     <span class="n">plt</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_plot</span><span class="p">(</span>
         <span class="n">subplot</span><span class="o">=</span><span class="n">subplot</span><span class="p">,</span>
         <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
@@ -349,7 +356,9 @@
         <span class="n">legend_frame_on</span><span class="o">=</span><span class="n">legend_frame_on</span><span class="p">,</span>
         <span class="n">xlabel</span><span class="o">=</span><span class="n">xlabel</span><span class="p">,</span>
         <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">,</span>
+        <span class="n">zero_line</span><span class="o">=</span><span class="n">zero_line</span><span class="p">,</span>
         <span class="n">zero_to_efermi</span><span class="o">=</span><span class="n">shift</span><span class="p">,</span>
+        <span class="n">zero_energy</span><span class="o">=</span><span class="n">zero_energy</span><span class="p">,</span>
         <span class="n">legend_cutoff</span><span class="o">=</span><span class="n">legend_cutoff</span><span class="p">,</span>
         <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span>
         <span class="n">plt</span><span class="o">=</span><span class="n">plt</span><span class="p">,</span>
@@ -534,12 +543,22 @@
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;legend_frame&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;display a box around the legend&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+    <span class="n">shift</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
+
+    <span class="n">shift</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--no-shift&quot;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_false&quot;</span><span class="p">,</span>
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;shift&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t shift the VBM/Fermi level to 0 eV&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">shift</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--zero-energy&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;zero_energy&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plot vertical line at energy zero&quot;</span><span class="p">)</span>
+
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--total-only&quot;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
@@ -585,11 +604,19 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;x-axis (i.e. energy) label/units&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--ylabel&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Arb. units&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;y-axis (i.e. DOS) label/units&quot;</span>
+        <span class="s2">&quot;--ylabel&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Arb. units&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;y-axis (i.e. DOS) label/units&quot;</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--yscale&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;scaling factor for the y-axis&quot;</span>
     <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--zero-line&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;zero_line&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Plot vertical line at energy zero&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--format&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
@@ -630,6 +657,11 @@
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UnicodeWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">)</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;pymatgen&quot;</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">zero_energy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">shift</span>
+
     <span class="n">dosplot</span><span class="p">(</span>
         <span class="n">filename</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
         <span class="n">code</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
@@ -640,7 +672,7 @@
         <span class="n">atoms</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span>
         <span class="n">spin</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">spin</span><span class="p">,</span>
         <span class="n">subplot</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">subplot</span><span class="p">,</span>
-        <span class="n">shift</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">shift</span><span class="p">,</span>
+        <span class="n">shift</span><span class="o">=</span><span class="n">shift</span><span class="p">,</span>
         <span class="n">total_only</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">total_only</span><span class="p">,</span>
         <span class="n">plot_total</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">total</span><span class="p">,</span>
         <span class="n">legend_on</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">legend</span><span class="p">,</span>
@@ -658,6 +690,8 @@
         <span class="n">xlabel</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xlabel</span><span class="p">,</span>
         <span class="n">ylabel</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ylabel</span><span class="p">,</span>
         <span class="n">yscale</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">yscale</span><span class="p">,</span>
+        <span class="n">zero_line</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">zero_line</span><span class="p">,</span>
+        <span class="n">zero_energy</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">zero_energy</span><span class="p">,</span>
         <span class="n">image_format</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">image_format</span><span class="p">,</span>
         <span class="n">dpi</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span>
         <span class="n">fonts</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">font</span><span class="p">,</span>
@@ -727,7 +761,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

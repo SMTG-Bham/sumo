@@ -48,6 +48,7 @@
 <span class="kn">from</span> <span class="nn">sumo.electronic_structure.dos</span> <span class="kn">import</span> <span class="n">sort_orbitals</span>
 <span class="kn">from</span> <span class="nn">sumo.plotting</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">colour_cache</span><span class="p">,</span>
+    <span class="n">draw_themed_line</span><span class="p">,</span>
     <span class="n">pretty_plot</span><span class="p">,</span>
     <span class="n">pretty_subplot</span><span class="p">,</span>
     <span class="n">styled_plot</span><span class="p">,</span>
@@ -103,6 +104,7 @@
         <span class="n">legend_cutoff</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="n">subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">zero_energy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -136,6 +138,9 @@
 <span class="sd">                each element on separate subplots. Defaults to ``False``.</span>
 <span class="sd">            zero_to_efermi (:obj:`bool`, optional): Normalise the plot such</span>
 <span class="sd">                that the Fermi level is set as 0 eV.</span>
+<span class="sd">            zero_energy (:obj:`float`, optional): If provided, this value is</span>
+<span class="sd">                used as the 0 eV reference. Otherwise, behaviour depends on</span>
+<span class="sd">                zero_to_efermi.</span>
 <span class="sd">            cache (:obj:`dict`, optional): Cache object tracking how colours</span>
 <span class="sd">                have been assigned to orbitals. The format is the same as the</span>
 <span class="sd">                &quot;colours&quot; dict. This defaults to the module-level</span>
@@ -179,10 +184,19 @@
         <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">cache</span> <span class="o">=</span> <span class="n">colour_cache</span>
 
-        <span class="c1"># mask needed to prevent unwanted data in pdf and for finding y limit</span>
         <span class="n">dos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dos</span>
         <span class="n">pdos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pdos</span>
-        <span class="n">eners</span> <span class="o">=</span> <span class="n">dos</span><span class="o">.</span><span class="n">energies</span> <span class="o">-</span> <span class="n">dos</span><span class="o">.</span><span class="n">efermi</span> <span class="k">if</span> <span class="n">zero_to_efermi</span> <span class="k">else</span> <span class="n">dos</span><span class="o">.</span><span class="n">energies</span>
+
+        <span class="k">if</span> <span class="n">zero_energy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">energy_shift</span> <span class="o">=</span> <span class="o">-</span><span class="n">dos</span><span class="o">.</span><span class="n">efermi</span> <span class="k">if</span> <span class="n">zero_to_efermi</span> <span class="k">else</span> <span class="mf">0.</span>
+        <span class="k">elif</span> <span class="n">zero_to_efermi</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot use zero_energy and &quot;</span>
+                             <span class="s2">&quot;zero_to_efermi simultaneously.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">energy_shift</span> <span class="o">=</span> <span class="o">-</span><span class="n">zero_energy</span>
+        <span class="n">eners</span> <span class="o">=</span> <span class="n">dos</span><span class="o">.</span><span class="n">energies</span> <span class="o">+</span> <span class="n">energy_shift</span>
+
+        <span class="c1"># mask needed to prevent unwanted data in pdf and for finding y limit</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">eners</span> <span class="o">&gt;=</span> <span class="n">xmin</span> <span class="o">-</span> <span class="mf">0.05</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">eners</span> <span class="o">&lt;=</span> <span class="n">xmax</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">)</span>
         <span class="n">plot_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mask&quot;</span><span class="p">:</span> <span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;energies&quot;</span><span class="p">:</span> <span class="n">eners</span><span class="p">}</span>
         <span class="n">spins</span> <span class="o">=</span> <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -269,6 +283,8 @@
         <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">,</span>
         <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Arb. units&quot;</span><span class="p">,</span>
         <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">zero_line</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">zero_energy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
         <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -314,6 +330,10 @@
 <span class="sd">            ylabel (:obj:`str`, optional): Label/units for y-axis (i.e. DOS)</span>
 <span class="sd">            zero_to_efermi (:obj:`bool`, optional): Normalise the plot such</span>
 <span class="sd">                that the Fermi level is set as 0 eV.</span>
+<span class="sd">            zero_line (:obj:`bool`, optional): Draw a line at 0 eV.</span>
+<span class="sd">            zero_energy (:obj:`float`, optional): If provided, this value is</span>
+<span class="sd">                used as the 0 eV reference. Otherwise, behaviour depends on</span>
+<span class="sd">                zero_to_efermi.</span>
 <span class="sd">            dpi (:obj:`int`, optional): The dots-per-inch (pixel density) for</span>
 <span class="sd">                the image.</span>
 <span class="sd">            fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a</span>
@@ -327,9 +347,9 @@
 <span class="sd">            no_base_style (:obj:`bool`, optional): Prevent use of sumo base</span>
 <span class="sd">                style. This can make alternative styles behave more</span>
 <span class="sd">                predictably.</span>
-<span class="sd">            spin (:obj:`Spin`, optional): Plot a spin-polarised density of states,</span>
-<span class="sd">            &quot;up&quot; or &quot;1&quot; for spin up only, &quot;down&quot; or &quot;-1&quot; for spin down only.</span>
-<span class="sd">            Defaults to ``None``.</span>
+<span class="sd">            spin (:obj:`Spin`, optional): Plot a spin-polarised density of</span>
+<span class="sd">                states, &quot;up&quot; or &quot;1&quot; for spin up only, &quot;down&quot; or &quot;-1&quot; for spin</span>
+<span class="sd">                down only.  Defaults to ``None``.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            :obj:`matplotlib.pyplot`: The density of states plot.</span>
@@ -343,6 +363,7 @@
             <span class="n">legend_cutoff</span><span class="o">=</span><span class="n">legend_cutoff</span><span class="p">,</span>
             <span class="n">subplot</span><span class="o">=</span><span class="n">subplot</span><span class="p">,</span>
             <span class="n">zero_to_efermi</span><span class="o">=</span><span class="n">zero_to_efermi</span><span class="p">,</span>
+            <span class="n">zero_energy</span><span class="o">=</span><span class="n">zero_energy</span><span class="p">,</span>
             <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -390,6 +411,10 @@
                 <span class="p">)</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">energies</span><span class="p">,</span> <span class="n">densities</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line</span><span class="p">[</span><span class="s2">&quot;colour&quot;</span><span class="p">])</span>
 
+            <span class="k">if</span> <span class="n">zero_line</span><span class="p">:</span>
+                <span class="n">draw_themed_line</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;ymin&#39;</span><span class="p">],</span> <span class="n">plot_data</span><span class="p">[</span><span class="s1">&#39;ymax&#39;</span><span class="p">])</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spins</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;ymax&quot;</span><span class="p">])</span>
@@ -573,7 +598,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
