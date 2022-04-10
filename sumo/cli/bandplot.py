@@ -345,6 +345,7 @@ def bandplot(
 
     # don't save if pyplot object provided
     save_files = False if plt else True
+    spin = string_to_spin(spin)  # Convert spin name to pymatgen Spin object
 
     dos_plotter = None
     dos_opts = None
@@ -391,7 +392,6 @@ def bandplot(
     if scissor:
         bs = bs.apply_scissor(scissor)
 
-    spin = string_to_spin(spin)  # Convert spin name to pymatgen Spin object
     plotter = SBSPlotter(bs)
     if projection_selection:
         plt = plotter.get_projected_plot(

@@ -315,6 +315,7 @@ class SBSPlotter(BSPlotter):
             plot_dos_legend=plot_dos_legend,
             dos_label=dos_label,
             aspect=aspect,
+            spin=spin,
         )
         return plt
 
@@ -671,6 +672,7 @@ class SBSPlotter(BSPlotter):
             dos_label=dos_label,
             plot_dos_legend=plot_dos_legend,
             aspect=aspect,
+            spin=spin,
         )
         return plt
 
@@ -691,6 +693,7 @@ class SBSPlotter(BSPlotter):
         dos_label=None,
         plot_dos_legend=True,
         aspect=None,
+        spin=None,
     ):
         """Tidy the band structure & add the density of states if required."""
         if zero_line:
@@ -729,7 +732,8 @@ class SBSPlotter(BSPlotter):
                 dos_options,
                 dos_label=dos_label,
                 plot_legend=plot_dos_legend,
-                zero_line=zero_line
+                zero_line=zero_line,
+                spin=spin,
             )
         else:
             # keep correct aspect ratio for axes based on canvas size
@@ -748,7 +752,7 @@ class SBSPlotter(BSPlotter):
 
     @staticmethod
     def _makedos(ax, dos_plotter, dos_options,
-                 dos_label=None, plot_legend=True, zero_line=False):
+                 dos_label=None, plot_legend=True, zero_line=False, spin=None):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
         # don't use first 4 colours; these are the band structure line colours
@@ -759,14 +763,20 @@ class SBSPlotter(BSPlotter):
         mask = plot_data["mask"]
         energies = plot_data["energies"][mask]
         lines = plot_data["lines"]
-        spins = [Spin.up] if len(lines[0][0]["dens"]) == 1 else [Spin.up, Spin.down]
+        print(spin)
+        if spin is None:
+            spins = [Spin.up] if len(lines[0][0]["dens"]) == 1 else [Spin.up, Spin.down]
+        elif isinstance(spin, Spin):
+            spins = [spin]
+        else:
+            spins = spin
 
         # disable y ticks for DOS panel
         ax.tick_params(axis="y", which="both", right=False)
 
         for line_set in plot_data["lines"]:
             for line, spin in it.product(line_set, spins):
-                if spin == Spin.up:
+                if spin == Spin.up or len(spins) == 1:
                     label = line["label"]
                     densities = line["dens"][spin][mask]
                 else:
@@ -782,15 +792,18 @@ class SBSPlotter(BSPlotter):
                 )
                 ax.plot(densities, energies, label=label, color=line["colour"])
 
-            # x and y axis reversed versus normal dos plotting
-            ax.set_ylim(dos_options["xmin"], dos_options["xmax"])
+        # x and y axis reversed versus normal dos plotting
+        ax.set_ylim(dos_options["xmin"], dos_options["xmax"])
+        if len(spins) == 1:
+            ax.set_xlim(0, plot_data["ymax"])
+        else:
             ax.set_xlim(plot_data["ymin"], plot_data["ymax"])
 
-            if zero_line:
-                draw_themed_line(0, ax)
+        if zero_line:
+            draw_themed_line(0, ax)
 
-            if dos_label is not None:
-                ax.set_xlabel(dos_label)
+        if dos_label is not None:
+            ax.set_xlabel(dos_label)
 
         ax.set_xticklabels([])
         if plot_legend:
