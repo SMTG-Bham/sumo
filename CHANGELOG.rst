@@ -1,8 +1,8 @@
 Change Log
 ==========
 
-Unreleased
-----------
+v2.3.0
+------
 
 Major changes:
 
@@ -15,7 +15,12 @@ New features:
 - Fermi level may be chosen as energy zero in DOS or band structure (YWF, AJJ)
 - Horizontal line may be requested at energy zero in DOS or band structure (YWF, AJJ)
 
-Bugfix: VBM shift argument was not correctly passed in DOS plots.  (@pzarabadip)
+Bugfixes
+
+- VBM shift argument was not correctly passed in DOS plots (@pzarabadip)
+- Scissor option with combined band and DOS plot did not scissor DOS (@utf)
+- Spin option with combined band and DOS plot did not apply to the DOS (@utf)
+- Fixed phonon band structures with non-analytic correction (@utf)
 
 v2.2.5
 ------
