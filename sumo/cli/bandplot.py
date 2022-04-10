@@ -351,9 +351,17 @@ def bandplot(
     if dos_file:
         if code == "vasp":
             dos, pdos = load_dos(
-                dos_file, elements, lm_orbitals, atoms, gaussian, total_only
+                dos_file,
+                elements,
+                lm_orbitals,
+                atoms,
+                gaussian,
+                total_only,
+                scissor=scissor,
             )
         elif code == "castep":
+            if scissor:
+                raise ValueError("Scissor not compatabile with CASTEP DOS.")
             pdos_file = None
             if cell_file:
                 pdos_file = _replace_ext(cell_file, "pdos_bin")

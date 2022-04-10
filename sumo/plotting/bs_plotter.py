@@ -774,7 +774,6 @@ class SBSPlotter(BSPlotter):
         mask = plot_data["mask"]
         energies = plot_data["energies"][mask]
         lines = plot_data["lines"]
-        print(spin)
         if spin is None:
             spins = [Spin.up] if len(lines[0][0]["dens"]) == 1 else [Spin.up, Spin.down]
         elif isinstance(spin, Spin):

@@ -26,6 +26,7 @@ def load_dos(
     total_only=False,
     log=False,
     adjust_fermi=True,
+    scissor=None,
 ):
     """Load a vasprun and extract the total and projected density of states.
 
@@ -76,6 +77,9 @@ def load_dos(
         log (:obj:`bool`): Print logging messages. Defaults to ``False``.
         adjust_fermi (:obj:`bool`, optional): Shift the Fermi level to sit at
             the valence band maximum (does not affect metals).
+        scissor (:obj:`float`, optional): Apply a scissor operator to shift the band gap
+            to equal scissor (rigid shift of the densities above the mid gap). Not
+            compatible with metallic systems.
 
     Returns:
         dict: The total and projected density of states. Formatted as a
@@ -97,6 +101,8 @@ def load_dos(
 
     band = vr.get_band_structure()
     dos = vr.complete_dos
+
+    dos, band = _scissor_dos(dos, band, scissor)
 
     if band.is_metal():
         if log:
@@ -312,7 +318,6 @@ def write_files(dos, pdos, prefix=None, directory=None, zero_to_efermi=True):
         filename = os.path.join(directory, filename)
     np.savetxt(filename, tdos_data, header=" ".join(header))
 
-    spin = len(dos.densities)
     for el, el_pdos in pdos.items():
         header = ["energy"]
         pdos_data = [eners]
@@ -376,3 +381,43 @@ def sort_orbitals(element_pdos):
             sorted_keys.append(key)
 
     return sorted_keys
+
+
+def _scissor_dos(dos, band, scissor):
+    """Apply scissor to DOS by inserting zeros at the midgap point."""
+    if scissor and band.is_metal():
+        raise ValueError("Cannot apply scissor to metallic DOS.")
+    elif scissor:
+        mid_gap = (band.get_vbm()["energy"] + band.get_cbm()["energy"]) / 2
+        shift = scissor - band.get_band_gap()["energy"]
+
+        # apply scissor to band structure
+        for spin, bands in band.bands.items():
+            mask = bands > mid_gap
+            band.bands[spin][mask] += shift
+        band.efermi += shift
+
+        # apply scissor to DOS
+        e_step = dos.energies[1] - dos.energies[0]
+        n_extra_points = int(np.ceil(shift / e_step))
+        dos_fill = np.zeros(n_extra_points)
+        energy_fill = np.linspace(
+            dos.energies.max(),
+            dos.energies.max() + (n_extra_points - 1) * e_step,
+            n_extra_points,
+        )
+        insert_point = np.argmin(np.abs(dos.energies - mid_gap)) + 1
+
+        logging.info(f"Applying scissor to DOS (shift = {shift:.2f} eV)")
+        dos.energies = np.concatenate([dos.energies, energy_fill])
+        for spin, densities in dos.densities.items():
+            dos.densities[spin] = np.insert(densities, insert_point, dos_fill)
+
+        if dos.pdos:
+            for site, site_dos in dos.pdos.items():
+                for orbital, orbital_dos in site_dos.items():
+                    for spin, spin_dos in orbital_dos.items():
+                        dos.pdos[site][orbital][spin] = np.insert(
+                            spin_dos, insert_point, dos_fill
+                        )
+    return dos, band
