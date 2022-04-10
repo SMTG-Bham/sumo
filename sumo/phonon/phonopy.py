@@ -18,7 +18,7 @@ def load_phonopy(
     filename,
     structure,
     dim,
-    symprec=0.01,
+    symprec=1e-5,
     primitive_matrix=None,
     factor=VaspToTHz,
     symmetrise=True,
@@ -77,8 +77,7 @@ def load_phonopy(
             )
             logging.error(msg.format(filename))
             sys.exit()
-
-        phonon.set_force_constants(fc)
+        phonon.force_constants = fc
 
     elif "FORCE_SETS" in filename:
         # load the force sets from file and calculate force constants
@@ -92,30 +91,33 @@ def load_phonopy(
             logging.error(msg.format(filename))
             sys.exit()
 
-        phonon.set_displacement_dataset(fs)
+        phonon.dataset = fs
 
         logging.info("Calculating force constants...")
-        phonon.produce_force_constants()
+        phonon.produce_force_constants(
+            calculate_full_force_constants=False,
+            fc_calculator=None,
+            fc_calculator_options=None,
+        )
+
+    if symmetrise:
+        phonon.symmetrize_force_constants()
 
     if born:
         # load born parameters from a file
         nac_params = file_IO.parse_BORN(
             phonon._primitive, symprec=symprec, filename=born
         )
-
         # set the nac unit conversion factor manual,  specific to VASP
         nac_params["factor"] = Hartree * Bohr
-        phonon.set_nac_params(nac_params)
-
-    if symmetrise:
-        phonon.symmetrize_force_constants()
+        phonon.nac_params = nac_params
 
     if write_fc == "hdf5":
-        file_IO.write_force_constants_to_hdf5(phonon.get_force_constants())
+        file_IO.write_force_constants_to_hdf5(phonon.force_constants)
         logging.info("Force constants written to force_constants.hdf5.")
 
     elif write_fc:
-        file_IO.write_FORCE_CONSTANTS(phonon.get_force_constants())
+        file_IO.write_FORCE_CONSTANTS(phonon.force_constants)
         logging.info("Force constants written to FORCE_CONSTANTS.")
 
     return phonon

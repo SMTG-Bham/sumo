@@ -379,7 +379,7 @@ def _bs_from_filename(
                 logging.error(f"\n {msg}")
                 sys.exit()
 
-            dim = sposcar.structure.lattice.matrix * poscar.structure.lattice.inv_matrix
+            dim = sposcar.structure.lattice.matrix @ poscar.structure.lattice.inv_matrix
 
             # round due to numerical noise error
             dim = np.around(dim, 5)
@@ -404,7 +404,6 @@ def _bs_from_filename(
             filename,
             poscar.structure,
             dim,
-            symprec=symprec,
             primitive_matrix=primitive_axis,
             factor=factors[units.lower()],
             symmetrise=True,
@@ -454,9 +453,11 @@ def _bs_from_filename(
     # phonon.set_partial_DOS()
 
     if ".yaml" not in filename:
-        phonon.set_band_structure(kpoints, is_eigenvectors=eigenvectors, labels=labels)
+        phonon.run_band_structure(
+            kpoints, with_eigenvectors=eigenvectors, labels=labels
+        )
         yaml_file = "sumo_band.yaml"
-        phonon._band_structure.write_yaml(filename=yaml_file)
+        phonon.band_structure.write_yaml(filename=yaml_file)
 
     bs = get_ph_bs_symm_line(yaml_file, has_nac=False, labels_dict=kpath.kpoints)
     return bs, phonon
