@@ -26,7 +26,7 @@ class PhonopyTestCase(unittest.TestCase):
         )
         self.assertIsInstance(phonopy_obj, Phonopy)
 
-        self.assertEquals(phonopy_obj.force_constants.shape, (324, 324, 3, 3))
+        self.assertEqual(phonopy_obj.force_constants.shape, (324, 324, 3, 3))
         self.assertAlmostEqual(
             phonopy_obj.force_constants.trace().trace(), 2654.3381334806545
         )

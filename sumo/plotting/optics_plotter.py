@@ -100,7 +100,7 @@ class SOpticsPlotter:
                 if len(alpha.shape) == 1:
                     x = min(ener[mask])
                 else:
-                    x = max([min(ener[mask[:, i]]) for i in range(3)])
+                    x = max(min(ener[mask[:, i]]) for i in range(3))
                 xmax = x if x > xmax else xmax
         else:
             # If no absorption data, use the maximum of the shortest x range

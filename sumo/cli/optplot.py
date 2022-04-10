@@ -237,9 +237,7 @@ def optplot(
                     Vasprun(item).get_band_structure().get_band_gap()["energy"]
                 )
             else:
-                raise ValueError(
-                    "Format not recognised for auto bandgap: {}.".format(item)
-                )
+                raise ValueError(f"Format not recognised for auto bandgap: {item}.")
 
     plotter = SOpticsPlotter(abs_data, band_gap=band_gaps, label=labels)
     plt = plotter.get_plot(

@@ -241,4 +241,4 @@ def draw_themed_line(y, ax, orientation="horizontal"):
     elif orientation == "vertical":
         ax.axvline(y, **themed_line_options)
     else:
-        raise ValueError('Line orientation "{}" not supported'.format(orientation))
+        raise ValueError(f'Line orientation "{orientation}" not supported')

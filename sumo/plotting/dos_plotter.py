@@ -176,7 +176,7 @@ class SDOSPlotter:
 
         # Visibility cutoff based on scale of total plot even if it is hidden
         try:
-            dmax = max([max(d[mask]) for d in dos.densities.values()])
+            dmax = max(max(d[mask]) for d in dos.densities.values())
         except ValueError:
             dmax = 0
 
@@ -211,7 +211,7 @@ class SDOSPlotter:
         for el, el_pdos in pdos.items():
             el_lines = []
             for orb in sort_orbitals(el_pdos):
-                dmax = max([max(d[mask]) for d in el_pdos[orb].densities.values()])
+                dmax = max(max(d[mask]) for d in el_pdos[orb].densities.values())
                 ymax = dmax if dmax > ymax else ymax
                 label = None if dmax < cutoff else f"{el} ({orb})"
                 colour, cache = get_cached_colour(el, orb, colours, cache=cache)

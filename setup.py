@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 from sumo import __version__
 
-with open("README.rst", "r") as file:
+with open("README.rst") as file:
     long_description = file.read()
 
 setup(

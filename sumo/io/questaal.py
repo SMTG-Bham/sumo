@@ -299,7 +299,7 @@ class QuestaalInit:
             if "UNITS" not in self.lattice or self.lattice["UNITS"] is None:
                 lattice = Lattice(lattice.matrix * _bohr_to_angstrom)
                 coords = [
-                    tuple([x * _bohr_to_angstrom for x in site_coords])
+                    tuple(x * _bohr_to_angstrom for x in site_coords)
                     for site_coords in coords
                 ]
 
@@ -762,9 +762,9 @@ def read_dos(
             ne, nchan, nsp, fmt = map(int, (ne, nchan, nsp, fmt))
             emin, emax, efermi, delta = map(float, (emin, emax, efermi, delta))
             if ry:
-                emin, emax, efermi, delta = [
+                emin, emax, efermi, delta = (
                     x * _ry_to_ev for x in (emin, emax, efermi, delta)
-                ]
+                )
 
             nlines = ceil(ne / 5)
             data = [_read_states(f, nlines) for _ in range(nsp * nchan)]

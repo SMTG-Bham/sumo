@@ -218,10 +218,10 @@ def get_reconstructed_band_structure(list_bs, efermi=None):
         structures in ``list_bs``.
     """
     if efermi is None:
-        efermi = sum([b.efermi for b in list_bs]) / len(list_bs)
+        efermi = sum(b.efermi for b in list_bs) / len(list_bs)
 
     kpoints = np.concatenate([[k.frac_coords for k in bs.kpoints] for bs in list_bs])
-    nb_bands = min([list_bs[i].nb_bands for i in range(len(list_bs))])
+    nb_bands = min(list_bs[i].nb_bands for i in range(len(list_bs)))
     dicts = [bs.labels_dict for bs in list_bs]
     labels_dict = {k: v.frac_coords for d in dicts for k, v in d.items()}
 
