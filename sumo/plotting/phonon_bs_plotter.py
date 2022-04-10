@@ -184,6 +184,7 @@ class SPhononBSPlotter(PhononBSPlotter):
 
         if any(legend):  # Don't show legend if all entries are empty string
             from matplotlib.lines import Line2D
+
             ax.legend(
                 [Line2D([0], [0], color=f"C{i}") for i in range(len(legend))],
                 legend,

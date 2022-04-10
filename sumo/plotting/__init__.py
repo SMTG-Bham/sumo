@@ -166,10 +166,10 @@ def power_tick(val, pos, times_sign=r"\times"):
         exponent = int(np.log10(-val))
     else:
         exponent = int(np.log10(val))
-    coeff = val / 10 ** exponent
+    coeff = val / 10**exponent
     prec = 0 if coeff % 1 == 0 else 1
 
-    return fr"$\mathregular{{{coeff:.{prec}f} {times_sign} 10^{exponent:2d}}}$"
+    return rf"$\mathregular{{{coeff:.{prec}f} {times_sign} 10^{exponent:2d}}}$"
 
 
 def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid", linewidth=2.5):
@@ -215,7 +215,7 @@ def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid", linewidth=2.5):
     return lc
 
 
-def draw_themed_line(y, ax, orientation='horizontal'):
+def draw_themed_line(y, ax, orientation="horizontal"):
     """Draw a horizontal line using the theme settings
 
     Args:
@@ -228,14 +228,17 @@ def draw_themed_line(y, ax, orientation='horizontal'):
     # arguments to this to mess with linestyle, zorder etc.
     # Just .update() the options dict
 
-    themed_line_options = dict(color=rcParams['grid.color'],
-                               linestyle='--', dashes=(5, 2), zorder=0,
-                               linewidth=rcParams['ytick.major.width'])
+    themed_line_options = dict(
+        color=rcParams["grid.color"],
+        linestyle="--",
+        dashes=(5, 2),
+        zorder=0,
+        linewidth=rcParams["ytick.major.width"],
+    )
 
-    if orientation == 'horizontal':
+    if orientation == "horizontal":
         ax.axhline(y, **themed_line_options)
-    elif orientation == 'vertical':
+    elif orientation == "vertical":
         ax.axvline(y, **themed_line_options)
     else:
-        raise ValueError(
-            'Line orientation "{}" not supported'.format(orientation))
+        raise ValueError('Line orientation "{}" not supported'.format(orientation))

@@ -119,16 +119,16 @@ class BradCrackKpath(Kpath):
 
             elif "F" in spg_symbol:
                 if (
-                    1 / a ** 2 < 1 / b ** 2 + 1 / c ** 2
-                    and 1 / b ** 2 < 1 / c ** 2 + 1 / a ** 2
-                    and 1 / c ** 2 < 1 / a ** 2 + 1 / b ** 2
+                    1 / a**2 < 1 / b**2 + 1 / c**2
+                    and 1 / b**2 < 1 / c**2 + 1 / a**2
+                    and 1 / c**2 < 1 / a**2 + 1 / b**2
                 ):
                     return "orth_f_1"
-                elif 1 / c ** 2 > 1 / a ** 2 + 1 / b ** 2:
+                elif 1 / c**2 > 1 / a**2 + 1 / b**2:
                     return "orth_f_2"
-                elif 1 / b ** 2 > 1 / a ** 2 + 1 / c ** 2:
+                elif 1 / b**2 > 1 / a**2 + 1 / c**2:
                     return "orth_f_3"
-                elif 1 / a ** 2 > 1 / c ** 2 + 1 / b ** 2:
+                elif 1 / a**2 > 1 / c**2 + 1 / b**2:
                     return "orth_f_4"
 
             elif "I" in spg_symbol:

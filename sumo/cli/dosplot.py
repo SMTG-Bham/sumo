@@ -524,7 +524,8 @@ def _get_parser():
         type=float,
         default=None,
         dest="zero_energy",
-        help="Plot vertical line at energy zero")
+        help="Plot vertical line at energy zero",
+    )
 
     parser.add_argument(
         "--total-only",
@@ -571,10 +572,7 @@ def _get_parser():
         help="x-axis (i.e. energy) label/units",
     )
     parser.add_argument(
-        "--ylabel",
-        type=str,
-        default="Arb. units",
-        help="y-axis (i.e. DOS) label/units"
+        "--ylabel", type=str, default="Arb. units", help="y-axis (i.e. DOS) label/units"
     )
     parser.add_argument(
         "--yscale", type=float, default=1, help="scaling factor for the y-axis"
@@ -583,7 +581,8 @@ def _get_parser():
         "--zero-line",
         action="store_true",
         dest="zero_line",
-        help="Plot vertical line at energy zero")
+        help="Plot vertical line at energy zero",
+    )
     parser.add_argument(
         "--format",
         type=str,

@@ -155,10 +155,11 @@ class SDOSPlotter:
         pdos = self._pdos
 
         if zero_energy is None:
-            energy_shift = -dos.efermi if zero_to_efermi else 0.
+            energy_shift = -dos.efermi if zero_to_efermi else 0.0
         elif zero_to_efermi:
-            raise ValueError("Cannot use zero_energy and "
-                             "zero_to_efermi simultaneously.")
+            raise ValueError(
+                "Cannot use zero_energy and " "zero_to_efermi simultaneously."
+            )
         else:
             energy_shift = -zero_energy
         eners = dos.energies + energy_shift
@@ -379,9 +380,9 @@ class SDOSPlotter:
                 ax.plot(energies, densities, label=label, color=line["colour"])
 
             if zero_line:
-                draw_themed_line(0, ax, orientation='vertical')
+                draw_themed_line(0, ax, orientation="vertical")
 
-            ax.set_ylim(plot_data['ymin'], plot_data['ymax'])
+            ax.set_ylim(plot_data["ymin"], plot_data["ymax"])
             ax.set_xlim(xmin, xmax)
             if len(spins) == 1:
                 ax.set_ylim(0, plot_data["ymax"])

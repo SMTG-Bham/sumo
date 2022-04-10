@@ -670,16 +670,20 @@ def _get_parser():
 
     parser.add_argument(
         "--zero-line",
-        action="store_true", dest="zero_line",
-        help="Plot horizontal line at energy zero")
+        action="store_true",
+        dest="zero_line",
+        help="Plot horizontal line at energy zero",
+    )
 
     parser.add_argument(
         "--zero-energy",
         type=float,
         dest="zero_energy",
         default=None,
-        help=("Reference energy: energy will be shifted to place this energy "
-              "at zero. If not specified, zero will be set to the VBM.")
+        help=(
+            "Reference energy: energy will be shifted to place this energy "
+            "at zero. If not specified, zero will be set to the VBM."
+        ),
     )
     parser.add_argument(
         "--elements",

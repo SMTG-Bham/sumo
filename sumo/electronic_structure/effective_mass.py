@@ -142,7 +142,7 @@ def fit_effective_mass(distances, energies, parabolic=True):
     else:
         # Use non parabolic description of the bands
         def f(x, alpha, d):
-            top = np.sqrt(4 * alpha * d * x ** 2 + 1) - 1
+            top = np.sqrt(4 * alpha * d * x**2 + 1) - 1
             bot = 2 * alpha
             return top / bot
 
@@ -154,5 +154,5 @@ def fit_effective_mass(distances, energies, parabolic=True):
 
     # coefficient is currently in eV/Angstrom^2/h_bar^2
     # want it in atomic units so Hartree/bohr^2/h_bar^2
-    eff_mass = (angstrom_to_bohr ** 2 / eV_to_hartree) / c
+    eff_mass = (angstrom_to_bohr**2 / eV_to_hartree) / c
     return eff_mass

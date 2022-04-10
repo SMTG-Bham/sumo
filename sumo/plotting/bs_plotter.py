@@ -11,7 +11,6 @@ import logging
 import numpy as np
 from matplotlib import cycler, rcParams
 from matplotlib.style import context
-from sumo.plotting import draw_themed_line
 from matplotlib.ticker import AutoMinorLocator, MaxNLocator
 from pymatgen.electronic_structure.core import Spin
 from pymatgen.electronic_structure.plotter import BSPlotter
@@ -66,7 +65,7 @@ class SBSPlotter(BSPlotter):
             self.nbands = self._nb_bands
 
     @staticmethod
-    def _reset_zero_energy(bs_plot_data, zero_energy=0.):
+    def _reset_zero_energy(bs_plot_data, zero_energy=0.0):
         """Modify reference energy of data from bs_plot_data
 
         This method is defined in Pymatgen and obtains plotting data with zero
@@ -93,13 +92,13 @@ class SBSPlotter(BSPlotter):
 
         for key, value in bs_plot_data.items():
             if key in ("vbm", "cbm"):
-                shifted_data[key] = [(pt[0], pt[1] + energy_shift)
-                                     for pt in value]
+                shifted_data[key] = [(pt[0], pt[1] + energy_shift) for pt in value]
             elif key == "energy":
                 shifted_data["energy"] = {}
                 for spin, energies in value.items():
-                    shifted_data["energy"][spin] = [array + energy_shift
-                                                    for array in energies]
+                    shifted_data["energy"][spin] = [
+                        array + energy_shift for array in energies
+                    ]
             elif key == "zero_energy":
                 shifted_data[key] = zero_energy
             else:
@@ -626,7 +625,7 @@ class SBSPlotter(BSPlotter):
                         distances,
                         bands,
                         c=c,
-                        s=circle_size * w ** 2,
+                        s=circle_size * w**2,
                         zorder=z,
                         rasterized=True,
                     )
@@ -723,9 +722,14 @@ class SBSPlotter(BSPlotter):
             if not dos_options:
                 dos_options = {}
 
-            dos_options.update({"xmin": ymin, "xmax": ymax,
-                                "zero_energy": data["zero_energy"],
-                                "zero_to_efermi": False})
+            dos_options.update(
+                {
+                    "xmin": ymin,
+                    "xmax": ymax,
+                    "zero_energy": data["zero_energy"],
+                    "zero_to_efermi": False,
+                }
+            )
             self._makedos(
                 ax,
                 dos_plotter,
@@ -751,8 +755,15 @@ class SBSPlotter(BSPlotter):
                 ax.set_aspect(aspect * ((x1 - x0) / (y1 - y0)))
 
     @staticmethod
-    def _makedos(ax, dos_plotter, dos_options,
-                 dos_label=None, plot_legend=True, zero_line=False, spin=None):
+    def _makedos(
+        ax,
+        dos_plotter,
+        dos_options,
+        dos_label=None,
+        plot_legend=True,
+        zero_line=False,
+        spin=None,
+    ):
         """This is basically the same as the SDOSPlotter get_plot function."""
 
         # don't use first 4 colours; these are the band structure line colours
