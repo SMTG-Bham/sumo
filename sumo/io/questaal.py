@@ -323,7 +323,7 @@ class QuestaalInit:
 
             f.write("SITE\n")
             for row in self.site:
-                f.write("    ATOM={:4s}  ".format(row["ATOM"]))
+                f.write(f"    ATOM={row['ATOM']:4s}  ")
                 if "POS" in self.site:
                     f.write("POS= {:11.8f} {:11.8f} {:11.8f}".format(*row["POS"]))
                 else:
@@ -645,8 +645,7 @@ def labels_from_syml(syml_file):
             label1_label2 = label_text.split(" to ")
             if len(label1_label2) != 2:
                 raise ValueError(
-                    "Not clear how to interpret labels from "
-                    "this line: {}".format(line)
+                    f"Not clear how to interpret labels from this line: {line}"
                 )
             label1, label2 = label1_label2
             labels.update({label1: kpt1, label2: kpt2})
@@ -755,8 +754,7 @@ def read_dos(
 
             if check_tdos and int(nchan) != 1:
                 raise ValueError(
-                    "File {} is not a TDOS: contains {} channels"
-                    "".format(filename, nchan)
+                    f"File {filename} is not a TDOS: contains {nchan} channels"
                 )
 
             ne, nchan, nsp, fmt = map(int, (ne, nchan, nsp, fmt))
@@ -784,7 +782,7 @@ def read_dos(
             densities = {Spin.up: data[0], Spin.down: data[1]}
         else:
             raise ValueError(
-                "There can't be {} spin channels, that makes " "no sense!".format(nsp)
+                f"There can't be {nsp} spin channels, that makes no sense!"
             )
         return Dos(efermi, energies, densities)
 
@@ -802,7 +800,7 @@ def read_dos(
             spins = (Spin.up, Spin.down)
         else:
             raise ValueError(
-                "There can't be {} spin channels, that makes " "no sense!".format(nsp)
+                f"There can't be {nsp} spin channels, that makes no sense!"
             )
 
         site_data = QuestaalSite.from_file(site_file)
@@ -1126,7 +1124,7 @@ def dielectric_from_opt(filename, cshift=1e-6, out_filename=None):
         data = np.hstack(data[:, :1], data[1:4] + data[4:7])
     else:
         raise ValueError(
-            "Not sure how to interpret {}; expected " "4 or 7 columns.".format(filename)
+            f"Not sure how to interpret {filename}; expected 4 or 7 columns."
         )
 
     data[:, 0] *= _ry_to_ev

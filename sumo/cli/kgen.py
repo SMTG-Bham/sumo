@@ -271,12 +271,10 @@ def _get_parser():
         description="""
     kgen generates KPOINTS files for running band structure calculations in
     VASP""",
-        epilog="""
-    Author: {}
-    Version: {}
-    Last updated: {}""".format(
-            __author__, __version__, __date__
-        ),
+        epilog=f"""
+    Author: {__author__}
+    Version: {__version__}
+    Last updated: {__date__}""",
     )
 
     parser.add_argument(

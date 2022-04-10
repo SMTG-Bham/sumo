@@ -113,7 +113,7 @@ class CastepCell:
         with open(filename, "wt") as f:
             for tag, content in self.tags.items():
                 if content.comment in (None, ""):
-                    f.write("{: <24}: {}\n".format(tag, " ".join(content.value)))
+                    f.write(f"{tag: <24}: {' '.join(content.value)}\n")
                 else:
                     f.write(
                         "{: <24}: {: <16} ! {}\n".format(
@@ -190,8 +190,7 @@ class CastepCell:
                     in_block = False
                 else:
                     raise OSError(
-                        "Cannot cope with line {}: not currently in "
-                        "a block.".format(line)
+                        f"Cannot cope with line {line}: not currently in a block."
                     )
             elif in_block:
                 _, data, comment = _data_comment_from_line(line, in_block=True)

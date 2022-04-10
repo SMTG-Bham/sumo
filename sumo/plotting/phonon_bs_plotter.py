@@ -178,7 +178,7 @@ class SPhononBSPlotter(PhononBSPlotter):
             json_data = json_plotter.bs_plot_data()
             if json_plotter._nb_bands != self._nb_bands:
                 raise Exception(
-                    "Number of bands in {} does not match " "main plot".format(bs_json)
+                    f"Number of bands in {bs_json} does not match main plot"
                 )
             _plot_lines(json_data, ax, color=f"C{i + 1}", zorder=0.5)
 

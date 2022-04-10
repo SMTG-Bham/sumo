@@ -104,7 +104,7 @@ def load_dos(
         zero_point = vr.efermi
     else:
         if log:
-            logging.info("Band gap: {:.3f}".format(band.get_band_gap()["energy"]))
+            logging.info(f"Band gap: {band.get_band_gap()['energy']:.3f}")
             logging.info(f"DOS band gap: {dos.get_gap():.3f}")
         zero_point = band.get_vbm()["energy"]
 

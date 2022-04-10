@@ -305,8 +305,7 @@ def bandplot(
             alat = site_data.alat
         else:
             raise OSError(
-                "Site file {} not found: "
-                "needed to determine lattice".format(site_file)
+                f"Site file {site_file} not found: needed to determine lattice"
             )
 
         syml_file = os.path.abspath(os.path.join(bnds_folder, f"syml.{ext}"))
@@ -569,12 +568,10 @@ def _get_parser():
         description="""
     bandplot is a script to produce publication-ready band
     structure diagrams""",
-        epilog="""
-    Author: {}
-    Version: {}
-    Last updated: {}""".format(
-            __author__, __version__, __date__
-        ),
+        epilog=f"""
+    Author: {__author__}
+    Version: {__version__}
+    Last updated: {__date__}""",
     )
 
     parser.add_argument(

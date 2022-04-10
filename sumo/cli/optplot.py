@@ -285,12 +285,10 @@ def _get_parser():
     parser = argparse.ArgumentParser(
         description="""
     optplot is a script to produce optical absorption spectra diagrams""",
-        epilog="""
-    Author: {}
-    Version: {}
-    Last updated: {}""".format(
-            __author__, __version__, __date__
-        ),
+        epilog=f"""
+    Author: {__author__}
+    Version: {__version__}
+    Last updated: {__date__}""",
     )
 
     parser.add_argument(

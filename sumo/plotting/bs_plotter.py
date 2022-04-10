@@ -635,7 +635,7 @@ class SBSPlotter(BSPlotter):
             if isinstance(spec, str):
                 label = spec
             else:
-                label = "{} ({})".format(spec[0], " + ".join(spec[1]))
+                label = f"{spec[0]} ({' + '.join(spec[1])})"
             ax.scatter([-10000], [-10000], c=c, s=50, label=label, edgecolors="none")
 
         if dos_plotter:

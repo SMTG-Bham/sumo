@@ -143,7 +143,7 @@ def get_path_data(
     kpt_dict = kpath.kpoints
 
     logging.info("Structure information:")
-    logging.info("\tSpace group number: {}".format(kpath._spg_data["number"]))
+    logging.info(f"\tSpace group number: {kpath._spg_data['number']}")
 
     logging.info(f"\tInternational symbol: {kpath.spg_symbol}")
     logging.info(f"\tLattice type: {kpath.lattice_type}")

@@ -210,9 +210,7 @@ def phonon_bandplot(
             )
 
         else:
-            logging.info(
-                "No input data, using file {} " "to construct plot".format(from_json[0])
-            )
+            logging.info(f"No input data, using file {from_json[0]} to construct plot")
             with open(from_json[0]) as f:
                 bs = PhononBandStructureSymmLine.from_dict(json.load(f))
             from_json = from_json[1:]
@@ -423,9 +421,7 @@ def _bs_from_filename(
 
         cell_file = ".".join(filename.split(".")[:-1] + ["cell"])
         if isfile(cell_file):
-            logging.info(
-                "Found .cell file, reading x-axis labels from " "{}".format(cell_file)
-            )
+            logging.info(f"Found .cell file, reading x-axis labels from {cell_file}")
             castep_phonon.set_labels_from_file(cell_file)
         else:
             logging.warning("No .cell file found, cannot read x-axis labels.")
@@ -471,12 +467,10 @@ def _get_parser():
         description="""
     phonon-bandplot is a script to produce publication ready phonon band
     structure diagrams""",
-        epilog="""
-    Author: {}
-    Version: {}
-    Last updated: {}""".format(
-            __author__, __version__, __date__
-        ),
+        epilog=f"""
+    Author: {__author__}
+    Version: {__version__}
+    Last updated: {__date__}""",
     )
 
     parser.add_argument(

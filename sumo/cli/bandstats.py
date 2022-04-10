@@ -187,7 +187,7 @@ def _log_band_gap_information(bs):
     """
     bg_data = bs.get_band_gap()
     if not bg_data["direct"]:
-        logging.info("Indirect band gap: {:.3f} eV".format(bg_data["energy"]))
+        logging.info(f"Indirect band gap: {bg_data['energy']:.3f} eV")
 
     direct_data = bs.get_direct_band_gap_dict()
     if bs.is_spin_polarized:
@@ -253,9 +253,9 @@ def _log_band_edge_information(bs, edge_data):
         k_loc = kpoint.label
     else:
         branch = bs.get_branch(edge_data["kpoint_index"][0])[0]
-        k_loc = "between {}".format(branch["name"])
+        k_loc = f"between {branch['name']}"
 
-    logging.info("  Energy: {:.3f} eV".format(edge_data["energy"]))
+    logging.info(f"  Energy: {edge_data['energy']:.3f} eV")
     logging.info(f"  k-point: {kpoint_str}")
     logging.info(f"  k-point location: {k_loc}")
     logging.info(f"  k-point indices: {k_indices}")
@@ -289,10 +289,10 @@ def _log_effective_mass_data(data, is_spin_polarized, mass_type="m_e"):
 
         is_spin_polarized (bool): Whether the system is spin polarized.
     """
-    s = " ({})".format(data["spin"].name) if is_spin_polarized else ""
+    s = f" ({data['spin'].name})" if is_spin_polarized else ""
 
     # add 1 to band id to be consistent with VASP
-    band_str = "band {}{}".format(data["band_id"] + 1, s)
+    band_str = f"band {data['band_id'] + 1}{s}"
 
     start_kpoint = data["start_kpoint"]
     end_kpoint = data["end_kpoint"]
@@ -314,12 +314,10 @@ def _get_parser():
         description="""
     bandstats provides information on the band gap and effective
     masses of semiconductors.""",
-        epilog="""
-    Author: {}
-    Version: {}
-    Last updated: {}""".format(
-            __author__, __version__, __date__
-        ),
+        epilog=f"""
+    Author: {__author__}
+    Version: {__version__}
+    Last updated: {__date__}""",
     )
 
     parser.add_argument(
