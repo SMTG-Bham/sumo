@@ -35,8 +35,8 @@
             
   <section id="change-log">
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
-<section id="unreleased">
-<h2>Unreleased<a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
+<section id="v2-3-0">
+<h2>v2.3.0<a class="headerlink" href="#v2-3-0" title="Permalink to this headline">¶</a></h2>
 <p>Major changes:</p>
 <ul class="simple">
 <li><p>DOS energies are no longer shifted by SIGMA in smeared calculations;
@@ -48,7 +48,13 @@ will ensure peaks are in the right positions. (&#64;yw-fang &amp; &#64;ajjackson
 <li><p>Fermi level may be chosen as energy zero in DOS or band structure (YWF, AJJ)</p></li>
 <li><p>Horizontal line may be requested at energy zero in DOS or band structure (YWF, AJJ)</p></li>
 </ul>
-<p>Bugfix: VBM shift argument was not correctly passed in DOS plots.  (&#64;pzarabadip)</p>
+<p>Bugfixes</p>
+<ul class="simple">
+<li><p>VBM shift argument was not correctly passed in DOS plots (&#64;pzarabadip)</p></li>
+<li><p>Scissor option with combined band and DOS plot did not scissor DOS (&#64;utf)</p></li>
+<li><p>Spin option with combined band and DOS plot did not apply to the DOS (&#64;utf)</p></li>
+<li><p>Fixed phonon band structures with non-analytic correction (&#64;utf)</p></li>
+</ul>
 </section>
 <section id="v2-2-5">
 <h2>v2.2.5<a class="headerlink" href="#v2-2-5" title="Permalink to this headline">¶</a></h2>
@@ -360,7 +366,7 @@ Enables plots to be customised based on user settings.</p>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-3-0">v2.3.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-2-5">v2.2.5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-2-4">v2.2.4</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-2-3">v2.2.3</a></li>
