@@ -211,12 +211,13 @@
             <span class="n">json_data</span> <span class="o">=</span> <span class="n">json_plotter</span><span class="o">.</span><span class="n">bs_plot_data</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">json_plotter</span><span class="o">.</span><span class="n">_nb_bands</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nb_bands</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                    <span class="s2">&quot;Number of bands in </span><span class="si">{}</span><span class="s2"> does not match &quot;</span> <span class="s2">&quot;main plot&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bs_json</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;Number of bands in </span><span class="si">{</span><span class="n">bs_json</span><span class="si">}</span><span class="s2"> does not match main plot&quot;</span>
                 <span class="p">)</span>
             <span class="n">_plot_lines</span><span class="p">(</span><span class="n">json_data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;C</span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">legend</span><span class="p">):</span>  <span class="c1"># Don&#39;t show legend if all entries are empty string</span>
             <span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
+
             <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
                 <span class="p">[</span><span class="n">Line2D</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;C</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">legend</span><span class="p">))],</span>
                 <span class="n">legend</span><span class="p">,</span>
@@ -397,7 +398,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

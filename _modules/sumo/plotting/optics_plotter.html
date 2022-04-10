@@ -133,7 +133,7 @@
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="n">x</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ener</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="n">ener</span><span class="p">[</span><span class="n">mask</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">ener</span><span class="p">[</span><span class="n">mask</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
                 <span class="n">xmax</span> <span class="o">=</span> <span class="n">x</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">xmax</span> <span class="k">else</span> <span class="n">xmax</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># If no absorption data, use the maximum of the shortest x range</span>
@@ -422,7 +422,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

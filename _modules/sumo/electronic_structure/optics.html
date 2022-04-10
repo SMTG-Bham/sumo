@@ -293,7 +293,7 @@
     <span class="n">w_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">w_i</span><span class="p">,</span> <span class="p">(</span><span class="n">nedos</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">integration_element</span><span class="p">(</span><span class="n">w_r</span><span class="p">):</span>
-        <span class="n">factor</span> <span class="o">=</span> <span class="n">w_i</span> <span class="o">/</span> <span class="p">(</span><span class="n">w_i</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">w_r</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">cshift</span><span class="p">)</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="n">w_i</span> <span class="o">/</span> <span class="p">(</span><span class="n">w_i</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">w_r</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">cshift</span><span class="p">)</span>
         <span class="n">total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">eps_imag</span> <span class="o">*</span> <span class="n">factor</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">total</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">de</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 
@@ -359,7 +359,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

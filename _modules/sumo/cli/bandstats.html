@@ -220,7 +220,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bg_data</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_band_gap</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">bg_data</span><span class="p">[</span><span class="s2">&quot;direct&quot;</span><span class="p">]:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Indirect band gap: </span><span class="si">{:.3f}</span><span class="s2"> eV&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bg_data</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Indirect band gap: </span><span class="si">{</span><span class="n">bg_data</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> eV&quot;</span><span class="p">)</span>
 
     <span class="n">direct_data</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_direct_band_gap_dict</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span><span class="p">:</span>
@@ -286,9 +286,9 @@
         <span class="n">k_loc</span> <span class="o">=</span> <span class="n">kpoint</span><span class="o">.</span><span class="n">label</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">branch</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;kpoint_index&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">k_loc</span> <span class="o">=</span> <span class="s2">&quot;between </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">branch</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+        <span class="n">k_loc</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;between </span><span class="si">{</span><span class="n">branch</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;  Energy: </span><span class="si">{:.3f}</span><span class="s2"> eV&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Energy: </span><span class="si">{</span><span class="n">edge_data</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> eV&quot;</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  k-point: </span><span class="si">{</span><span class="n">kpoint_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  k-point location: </span><span class="si">{</span><span class="n">k_loc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  k-point indices: </span><span class="si">{</span><span class="n">k_indices</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -322,10 +322,10 @@
 
 <span class="sd">        is_spin_polarized (bool): Whether the system is spin polarized.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot; (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;spin&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_spin_polarized</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;spin&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">is_spin_polarized</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
     <span class="c1"># add 1 to band id to be consistent with VASP</span>
-    <span class="n">band_str</span> <span class="o">=</span> <span class="s2">&quot;band </span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;band_id&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="n">band_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;band </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;band_id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="n">start_kpoint</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;start_kpoint&quot;</span><span class="p">]</span>
     <span class="n">end_kpoint</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;end_kpoint&quot;</span><span class="p">]</span>
@@ -347,12 +347,10 @@
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    bandstats provides information on the band gap and effective</span>
 <span class="s2">    masses of semiconductors.&quot;&quot;&quot;</span><span class="p">,</span>
-        <span class="n">epilog</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    Author: </span><span class="si">{}</span><span class="s2"></span>
-<span class="s2">    Version: </span><span class="si">{}</span><span class="s2"></span>
-<span class="s2">    Last updated: </span><span class="si">{}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">__author__</span><span class="p">,</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__date__</span>
-        <span class="p">),</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Author: </span><span class="si">{</span><span class="n">__author__</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">    Version: </span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">    Last updated: </span><span class="si">{</span><span class="n">__date__</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -464,7 +462,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

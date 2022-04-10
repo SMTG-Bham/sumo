@@ -251,10 +251,10 @@
 <span class="sd">        structures in ``list_bs``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">efermi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">efermi</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">b</span><span class="o">.</span><span class="n">efermi</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">list_bs</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_bs</span><span class="p">)</span>
+        <span class="n">efermi</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">efermi</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">list_bs</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_bs</span><span class="p">)</span>
 
     <span class="n">kpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="n">k</span><span class="o">.</span><span class="n">frac_coords</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">bs</span><span class="o">.</span><span class="n">kpoints</span><span class="p">]</span> <span class="k">for</span> <span class="n">bs</span> <span class="ow">in</span> <span class="n">list_bs</span><span class="p">])</span>
-    <span class="n">nb_bands</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">list_bs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">nb_bands</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_bs</span><span class="p">))])</span>
+    <span class="n">nb_bands</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">list_bs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">nb_bands</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_bs</span><span class="p">)))</span>
     <span class="n">dicts</span> <span class="o">=</span> <span class="p">[</span><span class="n">bs</span><span class="o">.</span><span class="n">labels_dict</span> <span class="k">for</span> <span class="n">bs</span> <span class="ow">in</span> <span class="n">list_bs</span><span class="p">]</span>
     <span class="n">labels_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">frac_coords</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dicts</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
@@ -412,7 +412,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

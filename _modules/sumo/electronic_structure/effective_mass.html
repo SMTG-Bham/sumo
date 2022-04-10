@@ -175,7 +175,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Use non parabolic description of the bands</span>
         <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
-            <span class="n">top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="n">bot</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">alpha</span>
             <span class="k">return</span> <span class="n">top</span> <span class="o">/</span> <span class="n">bot</span>
 
@@ -187,7 +187,7 @@
 
     <span class="c1"># coefficient is currently in eV/Angstrom^2/h_bar^2</span>
     <span class="c1"># want it in atomic units so Hartree/bohr^2/h_bar^2</span>
-    <span class="n">eff_mass</span> <span class="o">=</span> <span class="p">(</span><span class="n">angstrom_to_bohr</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">eV_to_hartree</span><span class="p">)</span> <span class="o">/</span> <span class="n">c</span>
+    <span class="n">eff_mass</span> <span class="o">=</span> <span class="p">(</span><span class="n">angstrom_to_bohr</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">eV_to_hartree</span><span class="p">)</span> <span class="o">/</span> <span class="n">c</span>
     <span class="k">return</span> <span class="n">eff_mass</span></div>
 </pre></div>
 
@@ -250,7 +250,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

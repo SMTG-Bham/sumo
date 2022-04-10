@@ -51,7 +51,7 @@
     <span class="n">filename</span><span class="p">,</span>
     <span class="n">structure</span><span class="p">,</span>
     <span class="n">dim</span><span class="p">,</span>
-    <span class="n">symprec</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">symprec</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>
     <span class="n">primitive_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">factor</span><span class="o">=</span><span class="n">VaspToTHz</span><span class="p">,</span>
     <span class="n">symmetrise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -110,8 +110,7 @@
             <span class="p">)</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
-
-        <span class="n">phonon</span><span class="o">.</span><span class="n">set_force_constants</span><span class="p">(</span><span class="n">fc</span><span class="p">)</span>
+        <span class="n">phonon</span><span class="o">.</span><span class="n">force_constants</span> <span class="o">=</span> <span class="n">fc</span>
 
     <span class="k">elif</span> <span class="s2">&quot;FORCE_SETS&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
         <span class="c1"># load the force sets from file and calculate force constants</span>
@@ -125,30 +124,33 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
-        <span class="n">phonon</span><span class="o">.</span><span class="n">set_displacement_dataset</span><span class="p">(</span><span class="n">fs</span><span class="p">)</span>
+        <span class="n">phonon</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">fs</span>
 
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Calculating force constants...&quot;</span><span class="p">)</span>
-        <span class="n">phonon</span><span class="o">.</span><span class="n">produce_force_constants</span><span class="p">()</span>
+        <span class="n">phonon</span><span class="o">.</span><span class="n">produce_force_constants</span><span class="p">(</span>
+            <span class="n">calculate_full_force_constants</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">fc_calculator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">fc_calculator_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">symmetrise</span><span class="p">:</span>
+        <span class="n">phonon</span><span class="o">.</span><span class="n">symmetrize_force_constants</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">born</span><span class="p">:</span>
         <span class="c1"># load born parameters from a file</span>
         <span class="n">nac_params</span> <span class="o">=</span> <span class="n">file_IO</span><span class="o">.</span><span class="n">parse_BORN</span><span class="p">(</span>
             <span class="n">phonon</span><span class="o">.</span><span class="n">_primitive</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">born</span>
         <span class="p">)</span>
-
         <span class="c1"># set the nac unit conversion factor manual,  specific to VASP</span>
         <span class="n">nac_params</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Hartree</span> <span class="o">*</span> <span class="n">Bohr</span>
-        <span class="n">phonon</span><span class="o">.</span><span class="n">set_nac_params</span><span class="p">(</span><span class="n">nac_params</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">symmetrise</span><span class="p">:</span>
-        <span class="n">phonon</span><span class="o">.</span><span class="n">symmetrize_force_constants</span><span class="p">()</span>
+        <span class="n">phonon</span><span class="o">.</span><span class="n">nac_params</span> <span class="o">=</span> <span class="n">nac_params</span>
 
     <span class="k">if</span> <span class="n">write_fc</span> <span class="o">==</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">:</span>
-        <span class="n">file_IO</span><span class="o">.</span><span class="n">write_force_constants_to_hdf5</span><span class="p">(</span><span class="n">phonon</span><span class="o">.</span><span class="n">get_force_constants</span><span class="p">())</span>
+        <span class="n">file_IO</span><span class="o">.</span><span class="n">write_force_constants_to_hdf5</span><span class="p">(</span><span class="n">phonon</span><span class="o">.</span><span class="n">force_constants</span><span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Force constants written to force_constants.hdf5.&quot;</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">write_fc</span><span class="p">:</span>
-        <span class="n">file_IO</span><span class="o">.</span><span class="n">write_FORCE_CONSTANTS</span><span class="p">(</span><span class="n">phonon</span><span class="o">.</span><span class="n">get_force_constants</span><span class="p">())</span>
+        <span class="n">file_IO</span><span class="o">.</span><span class="n">write_FORCE_CONSTANTS</span><span class="p">(</span><span class="n">phonon</span><span class="o">.</span><span class="n">force_constants</span><span class="p">)</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Force constants written to FORCE_CONSTANTS.&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">phonon</span></div>
@@ -213,7 +215,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
