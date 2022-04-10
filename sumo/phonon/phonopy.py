@@ -94,11 +94,7 @@ def load_phonopy(
         phonon.dataset = fs
 
         logging.info("Calculating force constants...")
-        phonon.produce_force_constants(
-            calculate_full_force_constants=False,
-            fc_calculator=None,
-            fc_calculator_options=None,
-        )
+        phonon.produce_force_constants()
 
     if symmetrise:
         phonon.symmetrize_force_constants()
