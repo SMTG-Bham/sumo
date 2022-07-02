@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>sumo.phonon package &#8212; sumo 2.3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -34,27 +35,27 @@
           <div class="body" role="main">
             
   <section id="sumo-phonon-package">
-<h1>sumo.phonon package<a class="headerlink" href="#sumo-phonon-package" title="Permalink to this headline">¶</a></h1>
+<h1>sumo.phonon package<a class="headerlink" href="#sumo-phonon-package" title="Permalink to this heading">¶</a></h1>
 <section id="module-sumo.phonon">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sumo.phonon" title="Permalink to this headline">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-sumo.phonon" title="Permalink to this heading">¶</a></h2>
 <p>Package containing functions for loading and manipulating phonon data.</p>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
 </section>
 <section id="module-sumo.phonon.phonopy">
-<span id="sumo-phonon-phonopy-module"></span><h2>sumo.phonon.phonopy module<a class="headerlink" href="#module-sumo.phonon.phonopy" title="Permalink to this headline">¶</a></h2>
+<span id="sumo-phonon-phonopy-module"></span><h2>sumo.phonon.phonopy module<a class="headerlink" href="#module-sumo.phonon.phonopy" title="Permalink to this heading">¶</a></h2>
 <p>This module provides helper functions for dealing with phonopy.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="sumo.phonon.phonopy.load_phonopy">
 <span class="sig-prename descclassname"><span class="pre">sumo.phonon.phonopy.</span></span><span class="sig-name descname"><span class="pre">load_phonopy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symprec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primitive_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15.633302300230191</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetrise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">born</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_fc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/phonon/phonopy.html#load_phonopy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.phonon.phonopy.load_phonopy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load phonopy output and return an <code class="docutils literal notranslate"><span class="pre">phonopy.Phonopy</span></code> object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to phonopy output. Can be any of <code class="docutils literal notranslate"><span class="pre">FORCE_SETS</span></code>,
 <code class="docutils literal notranslate"><span class="pre">FORCE_CONSTANTS</span></code>, or <code class="docutils literal notranslate"><span class="pre">force_constants.hdf5</span></code>.</p></li>
-<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.3.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The unitcell
+<li><p><strong>structure</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Structure</span></code></a>) – The unitcell
 structure.</p></li>
 <li><p><strong>dim</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – The supercell size, as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>.</p></li>
 <li><p><strong>symprec</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The tolerance for determining the
@@ -130,7 +131,7 @@ written. Alternatively, if set to <code class="docutils literal notranslate"><sp
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -147,7 +148,7 @@ written. Alternatively, if set to <code class="docutils literal notranslate"><sp
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

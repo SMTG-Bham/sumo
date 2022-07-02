@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>sumo-phonon-bandplot &#8212; sumo 2.3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -34,10 +35,10 @@
           <div class="body" role="main">
             
   <section id="sumo-phonon-bandplot">
-<h1>sumo-phonon-bandplot<a class="headerlink" href="#sumo-phonon-bandplot" title="Permalink to this headline">¶</a></h1>
+<h1>sumo-phonon-bandplot<a class="headerlink" href="#sumo-phonon-bandplot" title="Permalink to this heading">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code> is a program for generating publication-ready phonon band
 structure diagrams based on <code class="docutils literal notranslate"><span class="pre">phonopy</span></code> calculations.</p>
-<div class="contents local topic" id="table-of-contents">
+<nav class="contents local" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#usage" id="id4">Usage</a></p>
@@ -54,9 +55,9 @@ structure diagrams based on <code class="docutils literal notranslate"><span cla
 </ul>
 </li>
 </ul>
-</div>
+</nav>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
 <p>The full range of options supported by <code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code> are detailed in the
 <a class="reference internal" href="#command-line-interface">Command-Line Interface</a> section, and be can be accessed using the command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">-</span><span class="n">h</span>
@@ -73,7 +74,7 @@ data written to <code class="docutils literal notranslate"><span class="pre">pho
 should look like:</p>
 <a class="reference internal image-reference" href="_images/phonon_band_basic.png"><img alt="_images/phonon_band_basic.png" class="align-center" src="_images/phonon_band_basic.png" style="height: 400px;" /></a>
 <section id="supercell-size">
-<h3>Supercell Size<a class="headerlink" href="#supercell-size" title="Permalink to this headline">¶</a></h3>
+<h3>Supercell Size<a class="headerlink" href="#supercell-size" title="Permalink to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code> will attempt to extract the supercell size from the structure information, however,
 sometimes it will fail and an error occurs. In this case, the supercell size should be specified manually using
 the <code class="docutils literal notranslate"><span class="pre">--dim</span></code> option. For example, if the force constants were calculated in a 3x3x3 supercell, the
@@ -83,7 +84,7 @@ command would be:</p>
 </div>
 </section>
 <section id="supported-inputs">
-<h3>Supported Inputs<a class="headerlink" href="#supported-inputs" title="Permalink to this headline">¶</a></h3>
+<h3>Supported Inputs<a class="headerlink" href="#supported-inputs" title="Permalink to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code> will automatically look for a <code class="docutils literal notranslate"><span class="pre">FORCE_SETS</span></code> file in the current directory,
 however, other input types are supported. The input can be specified using the <code class="docutils literal notranslate"><span class="pre">--filename</span></code> option.
 The supported inputs are:</p>
@@ -96,7 +97,7 @@ the high-symmetry path cannot be altered.</p></li>
 </ul>
 </section>
 <section id="basic-options">
-<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this headline">¶</a></h3>
+<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this heading">¶</a></h3>
 <p>The height, and width of the graphic, along with the y-axis limits, can be controlled via the
 <code class="docutils literal notranslate"><span class="pre">--width</span></code>, <code class="docutils literal notranslate"><span class="pre">--height</span></code>, <code class="docutils literal notranslate"><span class="pre">--ymax</span></code>, and <code class="docutils literal notranslate"><span class="pre">--ymin</span></code> options.</p>
 <p>By default, the eigenvectors are not written to the <code class="docutils literal notranslate"><span class="pre">phonon_band.yaml</span></code> file.
@@ -115,7 +116,7 @@ cell to primitive cell, the usage would be:</p>
 </div>
 </section>
 <section id="high-symmetry-k-point-path">
-<h3>High-Symmetry k-Point Path<a class="headerlink" href="#high-symmetry-k-point-path" title="Permalink to this headline">¶</a></h3>
+<h3>High-Symmetry k-Point Path<a class="headerlink" href="#high-symmetry-k-point-path" title="Permalink to this heading">¶</a></h3>
 <p>By default, the paths used are those from Bradley and Cracknell <a class="reference internal" href="sumo.symmetry.html#brad" id="id1"><span>[brad]</span></a>. To use the k-point paths provided
 SeeK-path <a class="reference internal" href="sumo.symmetry.html#seek" id="id2"><span>[seek]</span></a> or pymatgen <a class="reference internal" href="sumo.symmetry.html#curt" id="id3"><span>[curt]</span></a>. The options <code class="docutils literal notranslate"><span class="pre">--seekpath</span></code> or <code class="docutils literal notranslate"><span class="pre">--pymatgen</span></code> can be used.</p>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-phonon-bandplot</span></code> also supports generating k-points along custom k-point paths.
@@ -140,7 +141,7 @@ For example, the path <code class="docutils literal notranslate"><span class="pr
 </section>
 </section>
 <section id="command-line-interface">
-<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading">¶</a></h2>
 <p><blockquote>
 <div><p>phonon-bandplot is a script to produce publication ready phonon band
 structure diagrams</p>
@@ -162,7 +163,7 @@ structure diagrams</p>
 </pre></div>
 </div>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filename</kbd></dt>
 <dd><p>FORCE_SETS, FORCE_CONSTANTS or band.yaml file</p>
@@ -339,7 +340,7 @@ Last updated: Jan 17, 2018</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -356,7 +357,7 @@ Last updated: Jan 17, 2018</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

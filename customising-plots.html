@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Customising Sumo Plots &#8212; sumo 2.3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -34,12 +35,12 @@
           <div class="body" role="main">
             
   <section id="customising-sumo-plots">
-<h1>Customising Sumo Plots<a class="headerlink" href="#customising-sumo-plots" title="Permalink to this headline">¶</a></h1>
+<h1>Customising Sumo Plots<a class="headerlink" href="#customising-sumo-plots" title="Permalink to this heading">¶</a></h1>
 <p>Sumo’s default plotting style has been designed to look aesthetically pleasing, however,
 you may want to adjust the look and feel of plot for a publication. This is simple to
 achieve for both the command line scripts and python API. In this tutorial, we explore
 the ways in which sumo plots can customised.</p>
-<div class="contents local topic" id="table-of-contents">
+<nav class="contents local" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#command-line-interface" id="id1">Command-Line Interface</a></p>
@@ -49,9 +50,9 @@ the ways in which sumo plots can customised.</p>
 </li>
 <li><p><a class="reference internal" href="#python-api" id="id3">Python API</a></p></li>
 </ul>
-</div>
+</nav>
 <section id="command-line-interface">
-<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading">¶</a></h2>
 <p>All sumo plotting scripts have a number of options that can be used to tweak the formatting
 of a plot, including the <code class="docutils literal notranslate"><span class="pre">--width</span></code>, <code class="docutils literal notranslate"><span class="pre">--height</span></code>, <code class="docutils literal notranslate"><span class="pre">--dpi</span></code>, and <code class="docutils literal notranslate"><span class="pre">--font</span></code>, options.
 Greater customisation is provided through the <code class="docutils literal notranslate"><span class="pre">--style</span></code> option, by use of
@@ -73,7 +74,7 @@ to the above file. For example:</p>
 plots to maintain consistency. To see examples of what can be tuned, see the
 <a class="reference external" href="https://github.com/SMTG-UCL/sumo/blob/mpl-style/sumo/plotting/sumo_base.mplstyle">default sumo style sheet</a>.</p>
 <section id="using-matplotlib-in-built-style-sheets">
-<h3>Using matplotlib in-built style sheets<a class="headerlink" href="#using-matplotlib-in-built-style-sheets" title="Permalink to this headline">¶</a></h3>
+<h3>Using matplotlib in-built style sheets<a class="headerlink" href="#using-matplotlib-in-built-style-sheets" title="Permalink to this heading">¶</a></h3>
 <p>Matplotlib provides a large number of in-built style sheets that can be used.
 You can explore the <a class="reference external" href="https://matplotlib.org/gallery/style_sheets/style_sheets_reference.html">matplotlib gallery</a> to
 see what is available.
@@ -90,7 +91,7 @@ following command:</p>
 </section>
 </section>
 <section id="python-api">
-<h2>Python API<a class="headerlink" href="#python-api" title="Permalink to this headline">¶</a></h2>
+<h2>Python API<a class="headerlink" href="#python-api" title="Permalink to this heading">¶</a></h2>
 <p>Sumo plots produced using the python API support matplotlib style sheets for customisation through
 the <code class="docutils literal notranslate"><span class="pre">style</span></code> optional argument. The process by which this is achieved is described on the
 <a class="reference external" href="https://matplotlib.org/users/style_sheets.html">matplotlib website</a>.</p>
@@ -163,7 +164,7 @@ when using the in-built matplotlib styles.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -180,7 +181,7 @@ when using the in-built matplotlib styles.</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

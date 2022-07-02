@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>sumo-bandstats &#8212; sumo 2.3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -35,10 +36,10 @@
           <div class="body" role="main">
             
   <section id="sumo-bandstats">
-<h1>sumo-bandstats<a class="headerlink" href="#sumo-bandstats" title="Permalink to this headline">¶</a></h1>
+<h1>sumo-bandstats<a class="headerlink" href="#sumo-bandstats" title="Permalink to this heading">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> is a program for extracting band gaps and effective masses
 from a band structure calculation.</p>
-<div class="contents local topic" id="table-of-contents">
+<nav class="contents local" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#usage" id="id1">Usage</a></p>
@@ -53,9 +54,9 @@ from a band structure calculation.</p>
 </ul>
 </li>
 </ul>
-</div>
+</nav>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
 <p>The full range of options supported by <code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> are detailed in the <a class="reference internal" href="#command-line-interface">Command-Line Interface</a> section,
 and be can be accessed using the command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandstats</span> <span class="o">-</span><span class="n">h</span>
@@ -111,7 +112,7 @@ the conduction band minimum is composed of a single two-electron band.</p>
 for the very flat valence band from <span class="math notranslate nohighlight">\(\Gamma\)</span> to X, which results in masses greater than
 15 <span class="math notranslate nohighlight">\(m_0\)</span>.</p>
 <section id="file-searching">
-<h3>File Searching<a class="headerlink" href="#file-searching" title="Permalink to this headline">¶</a></h3>
+<h3>File Searching<a class="headerlink" href="#file-searching" title="Permalink to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> will automatically look for <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> or <code class="docutils literal notranslate"><span class="pre">vasprun.xml.gz</span></code> files in the current
 directory. If the band structure has been broken up into multiple parts (as is common
 for hybrid band structure calculations), these files will be preferentially used. For this to work, the
@@ -129,7 +130,7 @@ the splits. For example, if the file structure is as follows:</p>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> should be run in the <code class="docutils literal notranslate"><span class="pre">bandstructure</span></code> directory.</p>
 </section>
 <section id="basic-options">
-<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this headline">¶</a></h3>
+<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this heading">¶</a></h3>
 <p>To specify a particular <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> to extract information from, the <code class="docutils literal notranslate"><span class="pre">--filenames</span></code> option
 can be used. If multiple <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> files are provided, they will be combined into a single band
 structure.</p>
@@ -140,7 +141,7 @@ controlled using the <code class="docutils literal notranslate"><span class="pre
 </section>
 </section>
 <section id="command-line-interface">
-<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading">¶</a></h2>
 <p><blockquote>
 <div><p>bandstats provides information on the band gap and effective
 masses of semiconductors.</p>
@@ -150,7 +151,7 @@ masses of semiconductors.</p>
 </pre></div>
 </div>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filenames</kbd></dt>
 <dd><p>one or more vasprun.xml files to plot</p>
@@ -226,7 +227,7 @@ Last updated: March 4, 2018</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -243,7 +244,7 @@ Last updated: March 4, 2018</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

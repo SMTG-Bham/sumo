@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,6 +11,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -54,10 +55,10 @@
     <span class="n">get_projections_by_branches</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">sumo.plotting</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">colorline</span><span class="p">,</span>
     <span class="n">draw_themed_line</span><span class="p">,</span>
     <span class="n">pretty_plot</span><span class="p">,</span>
     <span class="n">pretty_subplot</span><span class="p">,</span>
-    <span class="n">rgbline</span><span class="p">,</span>
     <span class="n">styled_plot</span><span class="p">,</span>
     <span class="n">sumo_base_style</span><span class="p">,</span>
     <span class="n">sumo_bs_style</span><span class="p">,</span>
@@ -358,6 +359,10 @@
         <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rgb&quot;</span><span class="p">,</span>
         <span class="n">normalise</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
         <span class="n">interpolate_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">color1</span><span class="o">=</span><span class="s2">&quot;#FF0000&quot;</span><span class="p">,</span>
+        <span class="n">color2</span><span class="o">=</span><span class="s2">&quot;#00FF00&quot;</span><span class="p">,</span>
+        <span class="n">color3</span><span class="o">=</span><span class="s2">&quot;#0000FF&quot;</span><span class="p">,</span>
+        <span class="n">colorspace</span><span class="o">=</span><span class="s2">&quot;lab&quot;</span><span class="p">,</span>
         <span class="n">circle_size</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
         <span class="n">projection_cutoff</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
         <span class="n">zero_energy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -445,6 +450,15 @@
 <span class="sd">                lines). A larger number indicates greater interpolation.</span>
 <span class="sd">            circle_size (:obj:`float`, optional): The area of the circles used</span>
 <span class="sd">                when ``mode = &#39;stacked&#39;``.</span>
+<span class="sd">            color1 (str): A color specified in any way supported by matplotlib. Used</span>
+<span class="sd">                when ``mode = &#39;rgb&#39;``.</span>
+<span class="sd">            color2 (str): A color specified in any way supported by matplotlib. Used</span>
+<span class="sd">                when ``mode = &#39;rgb&#39;``.</span>
+<span class="sd">            color3 (str): A color specified in any way supported by matplotlib. Used</span>
+<span class="sd">                when ``mode = &#39;rgb&#39;``.</span>
+<span class="sd">            colorspace (str): The colorspace in which to perform the interpolation. The</span>
+<span class="sd">                allowed values are rgb, hsv, lab, luvlc, lablch, and xyz. Used</span>
+<span class="sd">                when ``mode = &#39;rgb&#39;``.</span>
 <span class="sd">            projection_cutoff (:obj:`float`): Don&#39;t plot projections with</span>
 <span class="sd">                intensities below this number. This option is useful for</span>
 <span class="sd">                stacked plots, where small projections clutter the plot.</span>
@@ -619,7 +633,7 @@
             <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;rgb&quot;</span><span class="p">:</span>
 
                 <span class="c1"># colours aren&#39;t used now but needed later for legend</span>
-                <span class="n">colours</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#ff0000&quot;</span><span class="p">,</span> <span class="s2">&quot;#00ff00&quot;</span><span class="p">,</span> <span class="s2">&quot;#0000ff&quot;</span><span class="p">]</span>
+                <span class="n">colours</span> <span class="o">=</span> <span class="p">[</span><span class="n">color1</span><span class="p">,</span> <span class="n">color2</span><span class="p">,</span> <span class="n">color3</span><span class="p">]</span>
 
                 <span class="c1"># if only two orbitals then just use red and blue</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -627,13 +641,14 @@
                     <span class="n">colours</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#ff0000&quot;</span><span class="p">,</span> <span class="s2">&quot;#0000ff&quot;</span><span class="p">]</span>
 
                 <span class="n">ls</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">spin</span> <span class="o">==</span> <span class="n">Spin</span><span class="o">.</span><span class="n">up</span> <span class="k">else</span> <span class="s2">&quot;--&quot;</span>
-                <span class="n">lc</span> <span class="o">=</span> <span class="n">rgbline</span><span class="p">(</span>
+                <span class="n">lc</span> <span class="o">=</span> <span class="n">colorline</span><span class="p">(</span>
                     <span class="n">distances</span><span class="p">,</span>
                     <span class="n">bands</span><span class="p">,</span>
-                    <span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                    <span class="n">weights</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="n">weights</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                    <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">weights</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+                    <span class="n">color1</span><span class="o">=</span><span class="n">color1</span><span class="p">,</span>
+                    <span class="n">color2</span><span class="o">=</span><span class="n">color2</span><span class="p">,</span>
+                    <span class="n">color3</span><span class="o">=</span><span class="n">color3</span><span class="p">,</span>
+                    <span class="n">colorspace</span><span class="o">=</span><span class="n">colorspace</span><span class="p">,</span>
                     <span class="n">linestyles</span><span class="o">=</span><span class="n">ls</span><span class="p">,</span>
                     <span class="n">linewidth</span><span class="o">=</span><span class="p">(</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;lines.linewidth&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.25</span><span class="p">),</span>
                 <span class="p">)</span>
@@ -971,7 +986,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -988,7 +1003,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,6 +11,7 @@
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -87,6 +88,10 @@
     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rgb&quot;</span><span class="p">,</span>
     <span class="n">normalise</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
     <span class="n">interpolate_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">color1</span><span class="o">=</span><span class="s2">&quot;#FF0000&quot;</span><span class="p">,</span>
+    <span class="n">color2</span><span class="o">=</span><span class="s2">&quot;#00FF00&quot;</span><span class="p">,</span>
+    <span class="n">color3</span><span class="o">=</span><span class="s2">&quot;#0000FF&quot;</span><span class="p">,</span>
+    <span class="n">colorspace</span><span class="o">=</span><span class="s2">&quot;lab&quot;</span><span class="p">,</span>
     <span class="n">circle_size</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
     <span class="n">dos_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">cart_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -194,6 +199,15 @@
 <span class="sd">                   selected projections.</span>
 <span class="sd">              * ``None``: No normalisation performed.</span>
 
+<span class="sd">        color1 (str): A color specified in any way supported by matplotlib. Used</span>
+<span class="sd">            when ``mode = &#39;rgb&#39;``.</span>
+<span class="sd">        color2 (str): A color specified in any way supported by matplotlib. Used</span>
+<span class="sd">            when ``mode = &#39;rgb&#39;``.</span>
+<span class="sd">        color3 (str): A color specified in any way supported by matplotlib. Used</span>
+<span class="sd">            when ``mode = &#39;rgb&#39;``.</span>
+<span class="sd">        colorspace (str): The colorspace in which to perform the interpolation. The</span>
+<span class="sd">            allowed values are rgb, hsv, lab, luvlc, lablch, and xyz. Used</span>
+<span class="sd">            when ``mode = &#39;rgb&#39;``.</span>
 <span class="sd">        circle_size (:obj:`float`, optional): The area of the circles used</span>
 <span class="sd">            when ``mode = &#39;stacked&#39;``.</span>
 <span class="sd">        cart_coords (:obj:`bool`, optional): Whether the k-points are read as</span>
@@ -439,6 +453,10 @@
             <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
             <span class="n">normalise</span><span class="o">=</span><span class="n">normalise</span><span class="p">,</span>
             <span class="n">interpolate_factor</span><span class="o">=</span><span class="n">interpolate_factor</span><span class="p">,</span>
+            <span class="n">color1</span><span class="o">=</span><span class="n">color1</span><span class="p">,</span>
+            <span class="n">color2</span><span class="o">=</span><span class="n">color2</span><span class="p">,</span>
+            <span class="n">color3</span><span class="o">=</span><span class="n">color3</span><span class="p">,</span>
+            <span class="n">colorspace</span><span class="o">=</span><span class="n">colorspace</span><span class="p">,</span>
             <span class="n">circle_size</span><span class="o">=</span><span class="n">circle_size</span><span class="p">,</span>
             <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">zero_line</span><span class="o">=</span><span class="n">zero_line</span><span class="p">,</span>
@@ -682,12 +700,47 @@
         <span class="s2">&quot;be ignored if --code=vasp.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--colour1&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;#FF0000&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;color1&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;colour1 for rgb projections (default: red)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--colour2&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;#00FF00&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;color2&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;colour2 for rgb projections (default: green)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--colour3&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;#0000FF&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;color3&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;colour3 for rgb projections (default: blue)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--colourspace&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;lab&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;colorspace&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;colorspace used for interpolation of for rgb projections (options: &quot;</span>
+            <span class="s2">&quot;lab[default], rgb, hsv, luvlc, lablch, and xyz)&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--circle-size&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
         <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;circle_size&quot;</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;S&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;circle size for &quot;stacked&quot; projections &#39;</span> <span class="s2">&quot;(default: 150)&quot;</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;circle size for &quot;stacked&quot; projections (default: 150)&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--ylabel&quot;</span><span class="p">,</span>
@@ -872,6 +925,10 @@
         <span class="n">interpolate_factor</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">interpolate_factor</span><span class="p">,</span>
         <span class="n">cart_coords</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cartesian</span><span class="p">,</span>
         <span class="n">scissor</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scissor</span><span class="p">,</span>
+        <span class="n">color1</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">color1</span><span class="p">,</span>
+        <span class="n">color2</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">color2</span><span class="p">,</span>
+        <span class="n">color3</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">color3</span><span class="p">,</span>
+        <span class="n">colorspace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">colorspace</span><span class="p">,</span>
         <span class="n">circle_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">circle_size</span><span class="p">,</span>
         <span class="n">yscale</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
         <span class="n">ylabel</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ylabel</span><span class="p">,</span>
@@ -946,7 +1003,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -963,7 +1020,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

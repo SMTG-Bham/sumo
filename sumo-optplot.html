@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>sumo-optplot &#8212; sumo 2.3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -34,11 +35,11 @@
           <div class="body" role="main">
             
   <section id="sumo-optplot">
-<h1>sumo-optplot<a class="headerlink" href="#sumo-optplot" title="Permalink to this headline">¶</a></h1>
+<h1>sumo-optplot<a class="headerlink" href="#sumo-optplot" title="Permalink to this heading">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-optplot</span></code> is a program for generating publication-ready optical absorption
 spectra diagrams from VASP calculations. The script supports plotting multiple
 spectra simultaneously.</p>
-<div class="contents local topic" id="table-of-contents">
+<nav class="contents local" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#usage" id="id1">Usage</a></p>
@@ -57,9 +58,9 @@ spectra simultaneously.</p>
 </ul>
 </li>
 </ul>
-</div>
+</nav>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
 <p>The full range of options supported by <code class="docutils literal notranslate"><span class="pre">sumo-optplot</span></code> are detailed in the <a class="reference internal" href="#command-line-interface">Command-Line Interface</a> section,
 and be can be accessed using the command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">optplot</span> <span class="o">-</span><span class="n">h</span>
@@ -75,7 +76,7 @@ and be can be accessed using the command:</p>
 spectra should look like:</p>
 <a class="reference internal image-reference" href="_images/absorption_basic.png"><img alt="_images/absorption_basic.png" class="align-center" src="_images/absorption_basic.png" style="height: 400px;" /></a>
 <section id="basic-options">
-<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this headline">¶</a></h3>
+<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-optplot</span></code> automatically searches for a <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> file in the current directory.
 To specify a particular <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> to plot, the <code class="docutils literal notranslate"><span class="pre">--filenames</span></code> option can be used.</p>
 <p>The height, and width of the graphic, along with the y-axis limits, can be controlled via the
@@ -84,7 +85,7 @@ To specify a particular <code class="docutils literal notranslate"><span class="
 point number as the argument and controls the standard deviation of the broadening applied.</p>
 </section>
 <section id="anisotropic-absorption">
-<h3>Anisotropic Absorption<a class="headerlink" href="#anisotropic-absorption" title="Permalink to this headline">¶</a></h3>
+<h3>Anisotropic Absorption<a class="headerlink" href="#anisotropic-absorption" title="Permalink to this heading">¶</a></h3>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">sumo-optplot</span></code> plots the average optical absorption. The anisotropic contributions
 from the x, y and z cartesian directions can be plotted individually using the <code class="docutils literal notranslate"><span class="pre">--anisotropic</span></code>
 option.</p>
@@ -96,7 +97,7 @@ the anisotropic absorption spectra should look like:</p>
 <a class="reference internal image-reference" href="_images/absorption_anisotropic.png"><img alt="_images/absorption_anisotropic.png" class="align-center" src="_images/absorption_anisotropic.png" style="height: 400px;" /></a>
 </section>
 <section id="displaying-band-gaps">
-<h3>Displaying Band Gaps<a class="headerlink" href="#displaying-band-gaps" title="Permalink to this headline">¶</a></h3>
+<h3>Displaying Band Gaps<a class="headerlink" href="#displaying-band-gaps" title="Permalink to this heading">¶</a></h3>
 <p>The band gap of the system can be indicated using the <code class="docutils literal notranslate"><span class="pre">--bandgap</span></code> option.
 There are several ways to use this option:</p>
 <ul class="simple">
@@ -114,7 +115,7 @@ the plot should look like:</p>
 <a class="reference internal image-reference" href="_images/absorption_bandgap.png"><img alt="_images/absorption_bandgap.png" class="align-center" src="_images/absorption_bandgap.png" style="height: 400px;" /></a>
 </section>
 <section id="plotting-multiple-spectra">
-<h3>Plotting Multiple Spectra<a class="headerlink" href="#plotting-multiple-spectra" title="Permalink to this headline">¶</a></h3>
+<h3>Plotting Multiple Spectra<a class="headerlink" href="#plotting-multiple-spectra" title="Permalink to this heading">¶</a></h3>
 <p>Multiple absorption spectra can be plotted simultaneously by specifying multiple
 <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> files using the <code class="docutils literal notranslate"><span class="pre">--filenames</span></code> option.
 A label will be generated for each system, based on the composition. Alternatively,
@@ -129,7 +130,7 @@ the plot should look like:</p>
 <p>This mode also supports plotting the band gap of each compound using the <code class="docutils literal notranslate"><span class="pre">--bandgap</span></code> option.</p>
 </section>
 <section id="questaal">
-<h3>Questaal<a class="headerlink" href="#questaal" title="Permalink to this headline">¶</a></h3>
+<h3>Questaal<a class="headerlink" href="#questaal" title="Permalink to this heading">¶</a></h3>
 <p>LMTO optics calculations with the <code class="docutils literal notranslate"><span class="pre">lmf</span></code> program are supported;
 when <code class="docutils literal notranslate"><span class="pre">OPTICS</span> <span class="pre">MODE=1</span></code> (or greater) in the <em>ctrl.ext</em> file an
 <em>opt.ext</em> file is written with the imaginary dielectric function vs
@@ -145,7 +146,7 @@ somewhere in the filename.</p>
 </section>
 </section>
 <section id="command-line-interface">
-<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading">¶</a></h2>
 <p><blockquote>
 <div><p>optplot is a script to produce optical absorption spectra diagrams</p>
 </div></blockquote>
@@ -161,17 +162,17 @@ somewhere in the filename.</p>
 </pre></div>
 </div>
 <section id="Positional Arguments">
-<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>M</kbd></dt>
-<dd><p>Possible choices: loss, eps_real, n_real, absorption, eps_imag, n_imag</p>
+<dd><p>Possible choices: loss, absorption, n_imag, eps_imag, eps_real, n_real</p>
 <p>Optical properties to plot. Multiple choices  will be displayed as subplots. Accepted values: “absorption” (optical absorption over distance), “loss” (energy-loss function -Im(1/eps)), “eps_real” and “eps_imag” (real and imaginary parts of the dielectric function), “n_real” (real part of complex refractive index)”n_imag” (imaginary part of RI, also known as the extinction coefficient kappa.)</p>
 <p>Default: “absorption”</p>
 </dd>
 </dl>
 </section>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filenames</kbd></dt>
 <dd><p>path to one or more vasprun.xml files</p>
@@ -305,7 +306,7 @@ Last updated: Jan 10, 2018</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -322,7 +323,7 @@ Last updated: Jan 10, 2018</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>sumo-dosplot &#8212; sumo 2.3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -34,12 +35,12 @@
           <div class="body" role="main">
             
   <section id="sumo-dosplot">
-<span id="id1"></span><h1>sumo-dosplot<a class="headerlink" href="#sumo-dosplot" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>sumo-dosplot<a class="headerlink" href="#sumo-dosplot" title="Permalink to this heading">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code> is a program for generating publication-ready density of states diagrams and extracting
 the density of states from VASP calculations. A large number of features are provided, including
 the ability to break the density of states down into the contributions from specific elements,
 orbitals, and atoms.</p>
-<div class="contents local topic" id="table-of-contents">
+<nav class="contents local" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#usage" id="id5">Usage</a></p>
@@ -59,9 +60,9 @@ orbitals, and atoms.</p>
 </ul>
 </li>
 </ul>
-</div>
+</nav>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
 <p>The full range of options supported by <code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code> are detailed in the <a class="reference internal" href="#command-line-interface">Command-Line Interface</a> section,
 and be can be accessed using the command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">-</span><span class="n">h</span>
@@ -79,7 +80,7 @@ element name, for each element in the structure.</p>
 look like:</p>
 <a class="reference internal image-reference" href="_images/dos_basic.png"><img alt="_images/dos_basic.png" class="align-center" src="_images/dos_basic.png" style="height: 400px;" /></a>
 <section id="basic-options">
-<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this headline">¶</a></h3>
+<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this heading">¶</a></h3>
 <p>The program automatically looks for files in the current directory, to specify alternative files, the
 <code class="docutils literal notranslate"><span class="pre">--filename</span></code> option can be used.</p>
 <p>The number of columns in the legend is controlled using the <code class="docutils literal notranslate"><span class="pre">--columns</span></code> option.</p>
@@ -94,7 +95,7 @@ made more appealing using the following command:</p>
 point number as the argument and controls the standard deviation of the broadening applied.</p>
 </section>
 <section id="subplots">
-<h3>Subplots<a class="headerlink" href="#subplots" title="Permalink to this headline">¶</a></h3>
+<h3>Subplots<a class="headerlink" href="#subplots" title="Permalink to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code> supports plotting the total and elemental density of states on separate panels, or subplots,
 using the <code class="docutils literal notranslate"><span class="pre">--subplot</span></code> option. For example, if we run the following command in the
 <code class="docutils literal notranslate"><span class="pre">sumo/tests/data/OsO2</span></code> folder, the output will look like:</p>
@@ -104,7 +105,7 @@ using the <code class="docutils literal notranslate"><span class="pre">--subplot
 <a class="reference internal image-reference" href="_images/dos_subplot.png"><img alt="_images/dos_subplot.png" class="align-center" src="_images/dos_subplot.png" style="height: 400px;" /></a>
 </section>
 <section id="legend-labels">
-<span id="id2"></span><h3>Legend Labels<a class="headerlink" href="#legend-labels" title="Permalink to this headline">¶</a></h3>
+<span id="id2"></span><h3>Legend Labels<a class="headerlink" href="#legend-labels" title="Permalink to this heading">¶</a></h3>
 <p>You may have noticed that not all elements and their orbitals are displayed in the legend. This is because
 <code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code> only labels states that have a significant contribution in the plotting area. By default,
 a significant contribution is defined as greater than 3 % of the max total density of states. The
@@ -119,7 +120,7 @@ For example:</p>
 <a class="reference internal image-reference" href="_images/dos_all_labels.png"><img alt="_images/dos_all_labels.png" class="align-center" src="_images/dos_all_labels.png" style="height: 400px;" /></a>
 </section>
 <section id="selective-plotting-of-specific-orbitals-and-atoms">
-<span id="id3"></span><h3>Selective Plotting of Specific Orbitals and Atoms<a class="headerlink" href="#selective-plotting-of-specific-orbitals-and-atoms" title="Permalink to this headline">¶</a></h3>
+<span id="id3"></span><h3>Selective Plotting of Specific Orbitals and Atoms<a class="headerlink" href="#selective-plotting-of-specific-orbitals-and-atoms" title="Permalink to this heading">¶</a></h3>
 <p>By default <code class="docutils literal notranslate"><span class="pre">sumo-dosplot</span></code> includes all elements, orbitals, and atoms when plotting the density of states.
 However, sometimes it may be desirable to plot the density of states of only of a specific orbital,
 or even specific atoms.</p>
@@ -178,7 +179,7 @@ the first Os atom, the following command would be used:</p>
 <a class="reference internal image-reference" href="_images/dos_specific.png"><img alt="_images/dos_specific.png" class="align-center" src="_images/dos_specific.png" style="height: 400px;" /></a>
 </section>
 <section id="custom-line-colours">
-<span id="id4"></span><h3>Custom Line Colours<a class="headerlink" href="#custom-line-colours" title="Permalink to this headline">¶</a></h3>
+<span id="id4"></span><h3>Custom Line Colours<a class="headerlink" href="#custom-line-colours" title="Permalink to this heading">¶</a></h3>
 <p>Sumo uses a config file for choosing the colours of elements and orbitals in density of states plots.
 The default colours can be found in <code class="docutils literal notranslate"><span class="pre">sumo/conf/orbital_colours.conf</span></code>. The format of this file is simple:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">N</span><span class="p">]</span>
@@ -194,7 +195,7 @@ colour identifiers include hex codes, rgb values or any other format supported b
 </div>
 </section>
 <section id="questaal">
-<h3>Questaal<a class="headerlink" href="#questaal" title="Permalink to this headline">¶</a></h3>
+<h3>Questaal<a class="headerlink" href="#questaal" title="Permalink to this heading">¶</a></h3>
 <p>A typical workflow for plotting the DOS in Questaal is to first
 converge a density with LMF, then run a non-self-consistent step to
 output DOS files with a command such as:</p>
@@ -235,7 +236,7 @@ the DOS. The <cite>–elements</cite> switch may be useful for hiding these if
 desired.</p>
 </section>
 <section id="castep">
-<h3>Castep<a class="headerlink" href="#castep" title="Permalink to this headline">¶</a></h3>
+<h3>Castep<a class="headerlink" href="#castep" title="Permalink to this heading">¶</a></h3>
 <p>When plotting from CASTEP, give the <em>seedname.bands</em> path as
 <cite>–filename</cite>.  If a <em>.pdos_bin</em> file is in the same directory,
 orbital-project DOS plots are possible; this requires the <em>.cell</em> file
@@ -244,7 +245,7 @@ summing over the eigenvalue data in the <em>.bands</em> file.</p>
 </section>
 </section>
 <section id="command-line-interface">
-<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading">¶</a></h2>
 <p><blockquote>
 <div><p>dosplot is a script to produce publication-ready density of
 states diagrams</p>
@@ -262,7 +263,7 @@ states diagrams</p>
 </pre></div>
 </div>
 <section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filename</kbd></dt>
 <dd><p>vasprun.xml file to plot</p>
@@ -441,7 +442,7 @@ Last updated: April 9, 2018</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -458,7 +459,7 @@ Last updated: April 9, 2018</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
