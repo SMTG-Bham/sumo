@@ -172,47 +172,129 @@ def power_tick(val, pos, times_sign=r"\times"):
     return rf"$\mathregular{{{coeff:.{prec}f} {times_sign} 10^{exponent:2d}}}$"
 
 
-def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid", linewidth=2.5):
+def colorline(
+    x,
+    y,
+    weights,
+    color1="#FF0000",
+    color2="#00FF00",
+    color3="#0000FF",
+    colorspace="lab",
+    linestyles="solid",
+    linewidth=2.5,
+):
     """Get a RGB coloured line for plotting.
 
     Args:
         x (list): x-axis data.
         y (list): y-axis data (can be multidimensional array).
-        red (list): Red data (must have same shape as ``y``).
-        green (list): Green data (must have same shape as ``y``).
-        blue (list): blue data (must have same shape as ``y``).
-        alpha (:obj:`list` or :obj:`int`, optional): Alpha (transparency)
-            data (must have same shape as ``y`` or be an :obj:`int`).
+        weights (list): The weights of the color1, color2, and color3 channels. Given
+            as an array with the shape (n, 3), where n is the same length as the x and
+            y data.
+        color1 (str): A color specified in any way supported by matplotlib.
+        color2 (str): A color specified in any way supported by matplotlib.
+        color3 (str): A color specified in any way supported by matplotlib.
+        colorspace (str): The colorspace in which to perform the interpolation. The
+            allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.
         linestyles (:obj:`str`, optional): Linestyle for plot. Options are
             ``"solid"`` or ``"dotted"``.
     """
     y = np.array(y)
     if len(y.shape) == 1:
         y = np.array([y])
-        red = np.array([red])
-        green = np.array([green])
-        blue = np.array([blue])
-        alpha = np.array([alpha])
-    elif isinstance(alpha, int):
-        alpha = [alpha] * len(y)
+        weights = np.array([weights])
 
     seg = []
     colours = []
-    for yy, rr, gg, bb, aa in zip(y, red, green, blue, alpha):
+    for yy, ww in zip(y, weights):
         pts = np.array([x, yy]).T.reshape(-1, 1, 2)
         seg.extend(np.concatenate([pts[:-1], pts[1:]], axis=1))
 
         nseg = len(x) - 1
-        r = [0.5 * (rr[i] + rr[i + 1]) for i in range(nseg)]
-        g = [0.5 * (gg[i] + gg[i + 1]) for i in range(nseg)]
-        b = [0.5 * (bb[i] + bb[i + 1]) for i in range(nseg)]
-        a = np.ones(nseg, np.float) * aa
-        colours.extend(list(zip(r, g, b, a)))
+        w = [0.5 * (ww[i] + ww[i + 1]) for i in range(nseg)]
+        c = get_interpolated_colors(color1, color2, color3, w, colorspace=colorspace)
+        colours.extend(c.tolist())
 
     lc = LineCollection(
         seg, colors=colours, rasterized=True, linewidth=linewidth, linestyles=linestyles
     )
     return lc
+
+
+def get_interpolated_colors(color1, color2, color3, weights, colorspace="lab"):
+    """
+    Interpolate colors at a number of points within a colorspace.
+
+    Args:
+        color1 (str): A color specified in any way supported by matplotlib.
+        color2 (str): A color specified in any way supported by matplotlib.
+        color3 (str): A color specified in any way supported by matplotlib.
+        weights (list): A list of weights with the shape (n, 3). Where the 3 values of
+            the last axis give the amount of color1, color2, and color3.
+        colorspace (str): The colorspace in which to perform the interpolation. The
+            allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.
+
+    Returns:
+        A list of colors, specified in the rgb format as a (n, 3) array.
+    """
+    from colormath.color_conversions import convert_color
+    from colormath.color_objects import (
+        HSVColor,
+        LabColor,
+        LCHabColor,
+        LCHuvColor,
+        XYZColor,
+        sRGBColor,
+    )
+    from matplotlib.colors import to_rgb
+
+    colorspace_mapping = {
+        "rgb": sRGBColor,
+        "hsv": HSVColor,
+        "lab": LabColor,
+        "luvlch": LCHuvColor,
+        "lablch": LCHabColor,
+        "xyz": XYZColor,
+    }
+    if colorspace not in list(colorspace_mapping.keys()):
+        raise ValueError(f"colorspace must be one of {colorspace_mapping.keys()}")
+
+    colorspace = colorspace_mapping[colorspace]
+
+    # first convert matplotlib color specification to colormath sRGB
+    color1_rgb = sRGBColor(*to_rgb(color1))
+    color2_rgb = sRGBColor(*to_rgb(color2))
+    color3_rgb = sRGBColor(*to_rgb(color3))
+
+    # now convert to the colorspace basis for interpolation
+    basis1 = np.array(
+        convert_color(color1_rgb, colorspace, target_illuminant="d50").get_value_tuple()
+    )
+    basis2 = np.array(
+        convert_color(color2_rgb, colorspace, target_illuminant="d50").get_value_tuple()
+    )
+    basis3 = np.array(
+        convert_color(color3_rgb, colorspace, target_illuminant="d50").get_value_tuple()
+    )
+
+    # ensure weights is a numpy array
+    weights = np.asarray(weights)
+
+    # perform the interpolation in the colorspace basis
+    colors = (
+        basis1 * weights[:, 0][:, None]
+        + basis2 * weights[:, 1][:, None]
+        + basis3 * weights[:, 2][:, None]
+    )
+
+    # convert colors to RGB
+    rgb_colors = [
+        convert_color(colorspace(*c), sRGBColor).get_value_tuple() for c in colors
+    ]
+
+    # ensure all rgb values are less than 1 (sometimes issues in interpolation gives
+    # values slightly over 1)
+    return np.minimum(rgb_colors, 1)
 
 
 def draw_themed_line(y, ax, orientation="horizontal"):

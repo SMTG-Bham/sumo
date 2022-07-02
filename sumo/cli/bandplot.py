@@ -54,6 +54,10 @@ def bandplot(
     mode="rgb",
     normalise="all",
     interpolate_factor=4,
+    color1="#FF0000",
+    color2="#00FF00",
+    color3="#0000FF",
+    colorspace="lab",
     circle_size=150,
     dos_file=None,
     cart_coords=False,
@@ -161,6 +165,15 @@ def bandplot(
                    selected projections.
               * ``None``: No normalisation performed.
 
+        color1 (str): A color specified in any way supported by matplotlib. Used
+            when ``mode = 'rgb'``.
+        color2 (str): A color specified in any way supported by matplotlib. Used
+            when ``mode = 'rgb'``.
+        color3 (str): A color specified in any way supported by matplotlib. Used
+            when ``mode = 'rgb'``.
+        colorspace (str): The colorspace in which to perform the interpolation. The
+            allowed values are rgb, hsv, lab, luvlc, lablch, and xyz. Used
+            when ``mode = 'rgb'``.
         circle_size (:obj:`float`, optional): The area of the circles used
             when ``mode = 'stacked'``.
         cart_coords (:obj:`bool`, optional): Whether the k-points are read as
@@ -406,6 +419,10 @@ def bandplot(
             mode=mode,
             normalise=normalise,
             interpolate_factor=interpolate_factor,
+            color1=color1,
+            color2=color2,
+            color3=color3,
+            colorspace=colorspace,
             circle_size=circle_size,
             zero_to_efermi=True,
             zero_line=zero_line,
@@ -649,12 +666,47 @@ def _get_parser():
         "be ignored if --code=vasp.",
     )
     parser.add_argument(
+        "--colour1",
+        type=str,
+        default="#FF0000",
+        dest="color1",
+        metavar="C",
+        help="colour1 for rgb projections (default: red)",
+    )
+    parser.add_argument(
+        "--colour2",
+        type=str,
+        default="#00FF00",
+        dest="color2",
+        metavar="C",
+        help="colour2 for rgb projections (default: green)",
+    )
+    parser.add_argument(
+        "--colour3",
+        type=str,
+        default="#0000FF",
+        dest="color3",
+        metavar="C",
+        help="colour3 for rgb projections (default: blue)",
+    )
+    parser.add_argument(
+        "--colourspace",
+        type=str,
+        default="lab",
+        dest="colorspace",
+        metavar="C",
+        help=(
+            "colorspace used for interpolation of for rgb projections (options: "
+            "lab[default], rgb, hsv, luvlc, lablch, and xyz)"
+        ),
+    )
+    parser.add_argument(
         "--circle-size",
         type=int,
         default=150,
         dest="circle_size",
         metavar="S",
-        help=('circle size for "stacked" projections ' "(default: 150)"),
+        help='circle size for "stacked" projections (default: 150)',
     )
     parser.add_argument(
         "--ylabel",
@@ -839,6 +891,10 @@ def main():
         interpolate_factor=args.interpolate_factor,
         cart_coords=args.cartesian,
         scissor=args.scissor,
+        color1=args.color1,
+        color2=args.color2,
+        color3=args.color3,
+        colorspace=args.colorspace,
         circle_size=args.circle_size,
         yscale=args.scale,
         ylabel=args.ylabel,

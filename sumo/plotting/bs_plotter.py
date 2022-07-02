@@ -21,10 +21,10 @@ from sumo.electronic_structure.bandstructure import (
     get_projections_by_branches,
 )
 from sumo.plotting import (
+    colorline,
     draw_themed_line,
     pretty_plot,
     pretty_subplot,
-    rgbline,
     styled_plot,
     sumo_base_style,
     sumo_bs_style,
@@ -325,6 +325,10 @@ class SBSPlotter(BSPlotter):
         mode="rgb",
         normalise="all",
         interpolate_factor=4,
+        color1="#FF0000",
+        color2="#00FF00",
+        color3="#0000FF",
+        colorspace="lab",
         circle_size=150,
         projection_cutoff=0.001,
         zero_energy=None,
@@ -412,6 +416,15 @@ class SBSPlotter(BSPlotter):
                 lines). A larger number indicates greater interpolation.
             circle_size (:obj:`float`, optional): The area of the circles used
                 when ``mode = 'stacked'``.
+            color1 (str): A color specified in any way supported by matplotlib. Used
+                when ``mode = 'rgb'``.
+            color2 (str): A color specified in any way supported by matplotlib. Used
+                when ``mode = 'rgb'``.
+            color3 (str): A color specified in any way supported by matplotlib. Used
+                when ``mode = 'rgb'``.
+            colorspace (str): The colorspace in which to perform the interpolation. The
+                allowed values are rgb, hsv, lab, luvlc, lablch, and xyz. Used
+                when ``mode = 'rgb'``.
             projection_cutoff (:obj:`float`): Don't plot projections with
                 intensities below this number. This option is useful for
                 stacked plots, where small projections clutter the plot.
@@ -586,7 +599,7 @@ class SBSPlotter(BSPlotter):
             if mode == "rgb":
 
                 # colours aren't used now but needed later for legend
-                colours = ["#ff0000", "#00ff00", "#0000ff"]
+                colours = [color1, color2, color3]
 
                 # if only two orbitals then just use red and blue
                 if len(weights) == 2:
@@ -594,13 +607,14 @@ class SBSPlotter(BSPlotter):
                     colours = ["#ff0000", "#0000ff"]
 
                 ls = "-" if spin == Spin.up else "--"
-                lc = rgbline(
+                lc = colorline(
                     distances,
                     bands,
-                    weights[0],
-                    weights[1],
-                    weights[2],
-                    alpha=1,
+                    weights.transpose((1, 2, 0)),
+                    color1=color1,
+                    color2=color2,
+                    color3=color3,
+                    colorspace=colorspace,
                     linestyles=ls,
                     linewidth=(rcParams["lines.linewidth"] * 1.25),
                 )
