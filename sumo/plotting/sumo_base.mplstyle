@@ -37,8 +37,16 @@ ytick.direction      : in
 ytick.right          : False
 ytick.left           : True
 
-pdf.fonttype : 42
-mathtext.fontset : stixsans
+pdf.fonttype : 3
+mathtext.fontset : custom
+mathtext.bf: sans:semibold
+mathtext.cal: cursive
+mathtext.it: sans:italic
+mathtext.rm: sans
+mathtext.sf: sans
+mathtext.tt: sans
+mathtext.fallback: stixsans
+mathtext.default: it
 
 legend.handlelength  : 1.5
 legend.fontsize     : 19
