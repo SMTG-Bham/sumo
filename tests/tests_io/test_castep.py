@@ -270,10 +270,17 @@ class CastepPhononTestCaseZincblende(unittest.TestCase):
         for key in bs_dict.keys():
             self.assertIn(key, ref_dict.keys())
 
-        # Comparing the band frequencies and displacements is painfully slow;
-        # compare other stuff then use numpy for band data
-        for key in ("lattice_rec", "qpoints", "labels_dict", "structure"):
-            self.assertEqual(bs_dict[key], ref_dict[key], f"{key} failed")
+        # Comparing this data is quite brittle so compare the arrays when possible
+        assert_array_almost_equal(
+            bs_dict["lattice_rec"]["matrix"], ref_dict["lattice_rec"]["matrix"]
+        )
+        assert_array_almost_equal(bs_dict["qpoints"], ref_dict["qpoints"])
+        self.assertEqual(bs_dict["labels_dict"], ref_dict["labels_dict"])
+        self.assertEqual(bs_dict["structure"]["sites"], ref_dict["structure"]["sites"])
+        assert_array_almost_equal(
+            bs_dict["structure"]["lattice"]["matrix"],
+            ref_dict["structure"]["lattice"]["matrix"],
+        )
 
         assert_array_almost_equal(bs_dict["bands"], ref_dict["bands"])
         assert_array_almost_equal(
