@@ -107,7 +107,7 @@ def write_kpoint_files(
                 os.makedirs(folder)
             except OSError as e:
                 if e.errno == errno.EEXIST:
-                    logging.error("\nERROR: Folders already exist, won't " "overwrite.")
+                    logging.error("\nERROR: Folders already exist, won't overwrite.")
                     sys.exit()
                 else:
                     raise

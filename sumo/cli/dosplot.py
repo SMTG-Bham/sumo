@@ -285,7 +285,7 @@ def dosplot(
 
         if shift:
             logging.warning(
-                "Fermi level shift requested, but not implemented " "for Questaal DOS."
+                "Fermi level shift requested, but not implemented for Questaal DOS."
             )
 
         dos, pdos = sumo.io.questaal.read_dos(

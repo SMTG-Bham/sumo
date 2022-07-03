@@ -248,12 +248,12 @@ class QuestaalInit:
                 )
                 self.lattice["GAMMA"] = 120
             else:
-                logging.info("Lattice angle GAMMA not given, " "assume right-angle")
+                logging.info("Lattice angle GAMMA not given, assume right-angle")
                 self.lattice["GAMMA"] = 90
 
         if self.cartesian:
             logging.info(
-                "Warning: Cartesian positions used without " "explicit lattice vectors"
+                "Warning: Cartesian positions used without explicit lattice vectors"
             )
 
         if "UNITS" not in self.lattice or self.lattice["UNITS"] is None:
@@ -562,7 +562,7 @@ def write_kpoint_files(
             if e.errno == errno.EEXIST:
                 import sys
 
-                logging.error("\nERROR: Folders already exist, won't " "overwrite.")
+                logging.error("\nERROR: Folders already exist, won't overwrite.")
                 sys.exit()
             else:
                 raise

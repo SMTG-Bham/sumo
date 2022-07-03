@@ -158,7 +158,7 @@ class SDOSPlotter:
             energy_shift = -dos.efermi if zero_to_efermi else 0.0
         elif zero_to_efermi:
             raise ValueError(
-                "Cannot use zero_energy and " "zero_to_efermi simultaneously."
+                "Cannot use zero_energy and zero_to_efermi simultaneously."
             )
         else:
             energy_shift = -zero_energy

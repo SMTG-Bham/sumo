@@ -520,14 +520,14 @@ def _get_parser():
         metavar="M",
         dest="primitive_axis",
         default=None,
-        help="conventional to primitive cell " "transformation matrix",
+        help="conventional to primitive cell transformation matrix",
     )
     prim_axis.add_argument(
         "--primitive-auto",
         action="store_const",
         dest="primitive_axis",
         const="auto",
-        help="Let phonopy automatically determine primitive" " cell transformation",
+        help="Let phonopy automatically determine primitive cell transformation",
     )
     parser.add_argument(
         "--symprec",
@@ -541,7 +541,7 @@ def _get_parser():
         metavar="UNITS",
         default="THz",
         choices=("THz", "thz", "cm-1", "eV", "ev", "meV", "mev"),
-        help=("choose units of phonon frequency " "(THz, cm-1, eV, meV)"),
+        help=("choose units of phonon frequency (THz, cm-1, eV, meV)"),
     )
     parser.add_argument(
         "--spg", type=str, default=None, help="space group number or symbol"
@@ -569,13 +569,13 @@ def _get_parser():
         "--kpoints",
         type=str,
         default=None,
-        help=("specify a list of kpoints " '(e.g. "0 0 0, 0.5 0 0")'),
+        help=('specify a list of kpoints (e.g. "0 0 0, 0.5 0 0")'),
     )
     parser.add_argument(
         "--labels",
         type=str,
         default=None,
-        help=("specify the labels for kpoints " r'(e.g. "\Gamma,X")'),
+        help=r'specify the labels for kpoints (e.g. "\Gamma,X")',
     )
     parser.add_argument(
         "--height", type=float, default=None, help="height of the graph"
@@ -639,7 +639,7 @@ def _get_parser():
         type=str,
         default=None,
         dest="to_web",
-        help="(Output JSON file for " "http://henriquemiranda.github.io/phononwebsite)",
+        help="(Output JSON file for http://henriquemiranda.github.io/phononwebsite)",
     )
     parser.add_argument(
         "--legend",

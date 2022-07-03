@@ -256,10 +256,10 @@ def _parse_ibzkpt(ibzkpt):
         try:
             ibz = Kpoints.from_file(ibzkpt)
             if ibz.tet_number != 0:
-                logging.error("\nERROR: IBZKPT contains tetrahedron " "information.")
+                logging.error("\nERROR: IBZKPT contains tetrahedron information.")
                 sys.exit()
         except OSError:
-            logging.error("\nERROR: Hybrid specified but no IBZKPT file " "found.")
+            logging.error("\nERROR: Hybrid specified but no IBZKPT file found.")
             sys.exit()
     else:
         ibz = None

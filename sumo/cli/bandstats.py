@@ -333,7 +333,7 @@ def _get_parser():
         "--nonparabolic",
         default=True,
         action="store_false",
-        help=("use a nonparabolic model to fit the " "effective masses"),
+        help=("use a nonparabolic model to fit the effective masses"),
     )
     parser.add_argument(
         "-s",

@@ -347,7 +347,7 @@ def read_dos(
     if pdos_file is not None and not total_only:
         if cell_file is None:
             raise OSError(
-                f"Cell file {cell_file} not found: this must be " "provided for PDOS."
+                f"Cell file {cell_file} not found: this must be provided for PDOS."
             )
         pdos_raw = compute_pdos(pdos_file, eigenvalues, weights, bins)
         # Also we, need to read the structure, but have it sorted with increasing
@@ -481,7 +481,7 @@ def labels_from_cell(cell_file, phonon=False):
         while blockstart.match(line.lower()) is None:
             line = f.readline()
             if line == "":
-                logging.error("Could not find start of k-point block in " "cell file.")
+                logging.error("Could not find start of k-point block in cell file.")
                 sys.exit()
 
         line = f.readline()  # Skip past block start line
@@ -494,7 +494,7 @@ def labels_from_cell(cell_file, phonon=False):
                 labels[label] = kpt
             line = f.readline()
             if line == "":
-                logging.error("Could not find end of k-point block in " "cell file.")
+                logging.error("Could not find end of k-point block in cell file.")
                 sys.exit()
 
     return labels

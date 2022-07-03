@@ -387,9 +387,7 @@ def bandplot(
                 else:
                     logging.info(f"Found PDOS file {pdos_file}")
             else:
-                logging.info(
-                    f"Cell file {cell_file} does not exist, " "cannot plot PDOS."
-                )
+                logging.info(f"Cell file {cell_file} does not exist, cannot plot PDOS.")
 
             dos, pdos = read_castep_dos(
                 dos_file,
@@ -641,13 +639,13 @@ def _get_parser():
         "--mode",
         default="rgb",
         type=str,
-        help=("mode for orbital projections (options: rgb, " "stacked)"),
+        help=("mode for orbital projections (options: rgb, stacked)"),
     )
     parser.add_argument(
         "--normalise",
         default="all",
         type=str,
-        help=("how to normalise projections (options: all, " "select)"),
+        help=("how to normalise projections (options: all, select)"),
     )
     parser.add_argument(
         "--interpolate-factor",
@@ -655,7 +653,7 @@ def _get_parser():
         default=4,
         dest="interpolate_factor",
         metavar="N",
-        help=("interpolate factor for band structure " "projections (default: 4)"),
+        help=("interpolate factor for band structure projections (default: 4)"),
     )
     parser.add_argument(
         "--cartesian",
