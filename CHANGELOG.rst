@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+v2.3.1
+------
+
+You can now specify custom colours for RGB mode projected band structures. See the
+documentation for more details. The colormath package has been added as a dependency.
+
 v2.3.0
 ------
 
