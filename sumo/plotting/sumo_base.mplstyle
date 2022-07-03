@@ -6,19 +6,24 @@ axes.prop_cycle: cycler('color', ['f0a3ff', '0075dc', '993f00', '4c005c', '42660
 font.family : sans-serif
 font.sans-serif : Whitney Pro, Whitney Book Extended, Catamaran, Helvetica, Liberation Sans, Andale Sans, Arial
 
-font.size : 11.5
 text.usetex : False
+font.size : 11.5
+pdf.fonttype : 3
+
+legend.handlelength  : 1.5
+legend.fontsize     : 11.5
 
 axes.titlesize : 11.5
 axes.labelsize : 11.5
 axes.linewidth       : 0.8
+axes.axisbelow: False
+
 grid.linewidth       : 0.8
 grid.color           : black
+grid.linestyle       : -
+
 lines.linewidth : 1.1
 lines.markersize: 4
-
-grid.linestyle       : -
-grid.color           : black
 
 xtick.major.size     : 3.5
 xtick.minor.size     : 0
@@ -38,7 +43,6 @@ ytick.direction      : in
 ytick.right          : False
 ytick.left           : True
 
-pdf.fonttype : 3
 mathtext.fontset : custom
 mathtext.bf: sans:semibold
 mathtext.cal: cursive
@@ -48,6 +52,3 @@ mathtext.sf: sans
 mathtext.tt: sans
 mathtext.fallback: stixsans
 mathtext.default: it
-
-legend.handlelength  : 1.5
-legend.fontsize     : 11.5

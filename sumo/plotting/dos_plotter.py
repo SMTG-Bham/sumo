@@ -249,7 +249,7 @@ class SDOSPlotter:
         legend_frame_on=False,
         legend_cutoff=3,
         xlabel="Energy (eV)",
-        ylabel="Arb. units",
+        ylabel="DOS",
         zero_to_efermi=True,
         zero_line=False,
         zero_energy=None,

@@ -64,7 +64,7 @@ def dosplot(
     xmax=6.0,
     num_columns=2,
     xlabel="Energy (eV)",
-    ylabel="Arb. units",
+    ylabel="DOS",
     yscale=1,
     zero_energy=None,
     zero_line=False,
@@ -570,7 +570,7 @@ def _get_parser():
         help="x-axis (i.e. energy) label/units",
     )
     parser.add_argument(
-        "--ylabel", type=str, default="Arb. units", help="y-axis (i.e. DOS) label/units"
+        "--ylabel", type=str, default="DOS", help="y-axis (i.e. DOS) label/units"
     )
     parser.add_argument(
         "--yscale", type=float, default=1, help="scaling factor for the y-axis"
