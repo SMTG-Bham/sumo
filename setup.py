@@ -12,9 +12,7 @@ with open("README.rst") as file:
 setup(
     name="sumo",
     version=__version__,
-    description=(
-        "Heavy weight plotting tools for ab initio " "solid-state calculations"
-    ),
+    description=("Heavy weight plotting tools for ab initio solid-state calculations"),
     url="https://github.com/smtg-ucl/sumo",
     author="Alex Ganose, Adam J. Jackson",
     author_email="d.scanlon@ucl.ac.uk",
@@ -32,7 +30,7 @@ setup(
     ],
     keywords="chemistry pymatgen dft vasp dos band",
     packages=find_packages(),
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     install_requires=[
         "spglib",
         "numpy",
@@ -43,6 +41,7 @@ setup(
         "matplotlib",
         "seekpath",
         "castepxbin==0.1.0",
+        "colormath",
     ],
     extras_require={
         "docs": ["sphinx", "sphinx-argparse"],
