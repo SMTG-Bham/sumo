@@ -96,7 +96,7 @@ def bandstats(
         vr = BSVasprun(vr_file, parse_projected_eigen=False)
         bs = vr.get_band_structure(line_mode=True)
         bandstructures.append(bs)
-    bs = get_reconstructed_band_structure(bandstructures)
+    bs = get_reconstructed_band_structure(bandstructures, force_kpath_branches=False)
 
     if bs.is_metal():
         logging.error("ERROR: System is metallic!")

@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Unreleased
+----------
+
+Bugfixes:
+
+- `sumo-bandstats` now reports the correct k-point indices for the VBM and CBM.
+
+
 v2.3.1
 ------
 

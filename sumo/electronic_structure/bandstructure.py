@@ -192,7 +192,7 @@ def get_projections(bs, selection, normalise=None):
     return spec_proj
 
 
-def get_reconstructed_band_structure(list_bs, efermi=None):
+def get_reconstructed_band_structure(list_bs, efermi=None, force_kpath_branches=True):
     """Combine a list of band structures into a single band structure.
 
     This is typically very useful when you split non self consistent
@@ -210,6 +210,8 @@ def get_reconstructed_band_structure(list_bs, efermi=None):
         efermi (:obj:`float`, optional): The Fermi energy of the reconstructed
             band structure. If `None`, an average of all the Fermi energies
             across all band structures is used.
+        force_kpath_branches (bool): Force a linemode band structure to contain
+            branches by adding repeated high-symmetry k-points in the path.
 
     Returns:
         :obj:`pymatgen.electronic_structure.bandstructure.BandStructure` or \
@@ -244,7 +246,10 @@ def get_reconstructed_band_structure(list_bs, efermi=None):
         structure=list_bs[0].structure,
         projections=projections,
     )
-    return force_branches(bs)
+    if force_kpath_branches:
+        return force_branches(bs)
+    else:
+        return bs
 
 
 def force_branches(bandstructure):
