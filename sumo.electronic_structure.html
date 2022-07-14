@@ -80,7 +80,7 @@ without the duplicate k-points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structure.</p></li>
+<li><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structure.</p></li>
 <li><p><strong>selection</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – <p>A list of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/string.html#module-string" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string</span></code></a>
 identifying which projections to return. Projections can be
 specified by both element and orbital, for example:</p>
@@ -125,7 +125,7 @@ in <code class="docutils literal notranslate"><span class="pre">selection</span>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="p">{</span><span class="n">spin</span><span class="p">:</span> <span class="n">projections</span><span class="p">},</span> <span class="p">{</span><span class="n">spin</span><span class="p">:</span> <span class="n">projections</span><span class="p">}</span> <span class="o">...</span> <span class="p">]</span>
 </pre></div>
 </div>
-<p>Where spin is a <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.core.html#pymatgen.electronic_structure.core.Spin" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.core.Spin</span></code></a>
+<p>Where spin is a <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.core.html#pymatgen.electronic_structure.core.Spin" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.core.Spin</span></code></a>
 object and projections is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code></a> of:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">projections</span><span class="p">[</span><span class="n">band_index</span><span class="p">][</span><span class="n">kpoint_index</span><span class="p">]</span>
 </pre></div>
@@ -147,7 +147,7 @@ zeros is returned for each spin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structure.</p></li>
+<li><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structure.</p></li>
 <li><p><strong>selection</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – <p>A list of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> or <a class="reference external" href="https://docs.python.org/3.6/library/string.html#module-string" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string</span></code></a>
 identifying which projections to return. Projections can be
 specified by both element and orbital, for example:</p>
@@ -193,7 +193,7 @@ the format:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="p">[</span> <span class="p">{</span><span class="n">spin</span><span class="p">:</span> <span class="n">projections</span><span class="p">}</span> <span class="p">],</span> <span class="p">[</span> <span class="p">{</span><span class="n">spin</span><span class="p">:</span> <span class="n">projections</span><span class="p">}</span> <span class="p">],</span> <span class="o">...</span> <span class="p">]</span>
 </pre></div>
 </div>
-<p>Where spin is a <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.core.html#pymatgen.electronic_structure.core.Spin" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.core.Spin</span></code></a>
+<p>Where spin is a <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.core.html#pymatgen.electronic_structure.core.Spin" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.core.Spin</span></code></a>
 object and projections is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.23)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code></a> of:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">projections</span><span class="p">[</span><span class="n">band_index</span><span class="p">][</span><span class="n">kpoint_index</span><span class="p">]</span>
 </pre></div>
@@ -210,7 +210,7 @@ zeros is returned for each spin.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="sumo.electronic_structure.bandstructure.get_reconstructed_band_structure">
-<span class="sig-prename descclassname"><span class="pre">sumo.electronic_structure.bandstructure.</span></span><span class="sig-name descname"><span class="pre">get_reconstructed_band_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_bs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">efermi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/electronic_structure/bandstructure.html#get_reconstructed_band_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.electronic_structure.bandstructure.get_reconstructed_band_structure" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">sumo.electronic_structure.bandstructure.</span></span><span class="sig-name descname"><span class="pre">get_reconstructed_band_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_bs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">efermi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_kpath_branches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/electronic_structure/bandstructure.html#get_reconstructed_band_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.electronic_structure.bandstructure.get_reconstructed_band_structure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Combine a list of band structures into a single band structure.</p>
 <p>This is typically very useful when you split non self consistent
 band structure runs in several independent jobs and want to merge back
@@ -220,10 +220,12 @@ branches.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>list_bs</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of         <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructure" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructure</span></code></a>         or <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structures.</p></li>
+<li><p><strong>list_bs</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of         <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructure" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructure</span></code></a>         or <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structures.</p></li>
 <li><p><strong>efermi</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>, optional) – The Fermi energy of the reconstructed
 band structure. If <cite>None</cite>, an average of all the Fermi energies
 across all band structures is used.</p></li>
+<li><p><strong>force_kpath_branches</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Force a linemode band structure to contain
+branches by adding repeated high-symmetry k-points in the path.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -231,7 +233,7 @@ across all band structures is used.</p></li>
 structures in <code class="docutils literal notranslate"><span class="pre">list_bs</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructure" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.bandstructure.BandStructure</span></code></a> or         <code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.bandstructureBandStructureSymmLine</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructure" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.bandstructure.BandStructure</span></code></a> or         <code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.bandstructureBandStructureSymmLine</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -246,8 +248,8 @@ structures in <code class="docutils literal notranslate"><span class="pre">list_
 <section id="module-sumo.electronic_structure.dos">
 <span id="sumo-electronic-structure-dos-module"></span><h2>sumo.electronic_structure.dos module<a class="headerlink" href="#module-sumo.electronic_structure.dos" title="Permalink to this heading">¶</a></h2>
 <p>Module containing helper functions for dealing with
-<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> and
-<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.CompleteDos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CompleteDos</span></code></a> objects.</p>
+<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> and
+<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.CompleteDos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CompleteDos</span></code></a> objects.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="sumo.electronic_structure.dos.get_element_pdos">
 <span class="sig-prename descclassname"><span class="pre">sumo.electronic_structure.dos.</span></span><span class="sig-name descname"><span class="pre">get_element_pdos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lm_orbitals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orbitals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/electronic_structure/dos.html#get_element_pdos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.electronic_structure.dos.get_element_pdos" title="Permalink to this definition">¶</a></dt>
@@ -255,7 +257,7 @@ structures in <code class="docutils literal notranslate"><span class="pre">list_
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dos</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.CompleteDos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CompleteDos</span></code></a>) – The
+<li><p><strong>dos</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.CompleteDos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CompleteDos</span></code></a>) – The
 density of states.</p></li>
 <li><p><strong>element</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Element symbol. E.g. ‘Zn’.</p></li>
 <li><p><strong>sites</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a>) – The atomic indices over which to sum the density of
@@ -276,7 +278,7 @@ extracted. Defaults to <code class="docutils literal notranslate"><span class="p
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p>The projected density of states. Formatted as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>
-mapping the orbitals to <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a>
+mapping the orbitals to <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a>
 objects. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">Dos</span><span class="p">,</span>
@@ -299,7 +301,7 @@ objects. For example:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dos</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.CompleteDos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CompleteDos</span></code></a>) – The
+<li><p><strong>dos</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.CompleteDos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CompleteDos</span></code></a>) – The
 density of states.</p></li>
 <li><p><strong>elements</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>The elements and orbitals to extract
 from the projected density of states. Should be provided as a
@@ -345,7 +347,7 @@ for all elements will be considered.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p>The projected density of states. Formatted as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of
 <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> mapping the elements and their orbitals to
-<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> objects. For example:</p>
+<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> objects. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;Bi&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">Dos</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="n">Dos</span> <span class="o">...</span> <span class="p">},</span>
     <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">Dos</span><span class="p">}</span>
@@ -368,7 +370,7 @@ for all elements will be considered.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>vasprun</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Path to a vasprun.xml or vasprun.xml.gz file or
-a <a class="reference external" href="https://pymatgen.org/pymatgen.io.vasp.outputs.html#pymatgen.io.vasp.outputs.Vasprun" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.io.vasp.outputs.Vasprun</span></code></a> object.</p></li>
+a <a class="reference external" href="https://pymatgen.org/pymatgen.io.vasp.outputs.html#pymatgen.io.vasp.outputs.Vasprun" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.io.vasp.outputs.Vasprun</span></code></a> object.</p></li>
 <li><p><strong>elements</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, optional) – <p>The elements and orbitals to extract
 from the projected density of states. Should be provided as a
 <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> with the keys as the element names and corresponding
@@ -424,10 +426,10 @@ compatible with metallic systems.</p></li>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p>The total and projected density of states. Formatted as a
 <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> of <code class="docutils literal notranslate"><span class="pre">(dos,</span> <span class="pre">pdos)</span></code>, where <code class="docutils literal notranslate"><span class="pre">dos</span></code> is a
-<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> object containing the
+<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> object containing the
 total density of states and <code class="docutils literal notranslate"><span class="pre">pdos</span></code> is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of
 <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> mapping the elements and their orbitals to
-<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> objects. For example:</p>
+<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> objects. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;Bi&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">Dos</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="n">Dos</span> <span class="o">...</span> <span class="p">},</span>
     <span class="s1">&#39;S&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">Dos</span><span class="p">}</span>
@@ -452,7 +454,7 @@ Will also sort lm decomposed orbitals. This is useful for plotting/saving.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>element_pdos</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – <p>An element’s pdos. Should be formatted as a
 <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <code class="docutils literal notranslate"><span class="pre">{orbital:</span> <span class="pre">dos}</span></code>. Where dos is a
-<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> object. For example:</p>
+<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> object. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">dos</span><span class="p">,</span> <span class="s1">&#39;px&#39;</span><span class="p">:</span> <span class="n">dos</span><span class="p">}</span>
 </pre></div>
 </div>
@@ -474,11 +476,11 @@ Will also sort lm decomposed orbitals. This is useful for plotting/saving.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dos</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> or              <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.CompleteDos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CompleteDos</span></code></a>) – The total
+<li><p><strong>dos</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> or              <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.CompleteDos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CompleteDos</span></code></a>) – The total
 density of states.</p></li>
 <li><p><strong>pdos</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – <p>The projected density of states. Formatted as a
 <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> mapping the elements and their orbitals
-to <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> objects. For
+to <a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.dos.html#pymatgen.electronic_structure.dos.Dos" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dos</span></code></a> objects. For
 example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;Bi&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="n">Dos</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="n">Dos</span><span class="p">},</span>
@@ -534,8 +536,8 @@ there data if there are enough points in that direction.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structure.</p></li>
-<li><p><strong>spin</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.core.html#pymatgen.electronic_structure.core.Spin" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Spin</span></code></a>) – Which spin
+<li><p><strong>bs</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.bandstructure.html#pymatgen.electronic_structure.bandstructure.BandStructureSymmLine" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandStructureSymmLine</span></code></a>) – The band structure.</p></li>
+<li><p><strong>spin</strong> (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.core.html#pymatgen.electronic_structure.core.Spin" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Spin</span></code></a>) – Which spin
 channel to sample.</p></li>
 <li><p><strong>band_id</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Index of the band to sample.</p></li>
 <li><p><strong>kpoint_id</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Index of the kpoint to sample.</p></li>
@@ -552,7 +554,7 @@ keys:</p>
 </dd>
 <dt>’band_id’ (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>)</dt><dd><p>The index of the band,</p>
 </dd>
-<dt>’spin’ (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.core.html#pymatgen.electronic_structure.core.Spin" title="(in pymatgen v2022.5.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Spin</span></code></a>)</dt><dd><p>The spin channel</p>
+<dt>’spin’ (<a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.core.html#pymatgen.electronic_structure.core.Spin" title="(in pymatgen v2022.7.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Spin</span></code></a>)</dt><dd><p>The spin channel</p>
 </dd>
 <dt>’start_kpoint’ (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>)</dt><dd><p>The index of the k-point at which the band extrema occurs</p>
 </dd>
@@ -586,7 +588,7 @@ keys:</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dielectric</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a>) – <p>The high-frequency dielectric data, following
 the same format as
-<a class="reference external" href="https://pymatgen.org/pymatgen.io.vasp.outputs.html#pymatgen.io.vasp.outputs.Vasprun.dielectric" title="(in pymatgen v2022.5.19)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pymatgen.io.vasp.outputs.Vasprun.dielectric</span></code></a>.
+<a class="reference external" href="https://pymatgen.org/pymatgen.io.vasp.outputs.html#pymatgen.io.vasp.outputs.Vasprun.dielectric" title="(in pymatgen v2022.7.8)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pymatgen.io.vasp.outputs.Vasprun.dielectric</span></code></a>.
 This is a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a> containing the energy, the real part of the
 dielectric tensor, and the imaginary part of the tensor, as a
 <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <code class="xref py py-obj docutils literal notranslate"><span class="pre">floats</span></code>. E.g.:</p>

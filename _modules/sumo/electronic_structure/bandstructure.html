@@ -226,7 +226,7 @@
     <span class="k">return</span> <span class="n">spec_proj</span></div>
 
 
-<div class="viewcode-block" id="get_reconstructed_band_structure"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.get_reconstructed_band_structure">[docs]</a><span class="k">def</span> <span class="nf">get_reconstructed_band_structure</span><span class="p">(</span><span class="n">list_bs</span><span class="p">,</span> <span class="n">efermi</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_reconstructed_band_structure"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.get_reconstructed_band_structure">[docs]</a><span class="k">def</span> <span class="nf">get_reconstructed_band_structure</span><span class="p">(</span><span class="n">list_bs</span><span class="p">,</span> <span class="n">efermi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_kpath_branches</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Combine a list of band structures into a single band structure.</span>
 
 <span class="sd">    This is typically very useful when you split non self consistent</span>
@@ -244,6 +244,8 @@
 <span class="sd">        efermi (:obj:`float`, optional): The Fermi energy of the reconstructed</span>
 <span class="sd">            band structure. If `None`, an average of all the Fermi energies</span>
 <span class="sd">            across all band structures is used.</span>
+<span class="sd">        force_kpath_branches (bool): Force a linemode band structure to contain</span>
+<span class="sd">            branches by adding repeated high-symmetry k-points in the path.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        :obj:`pymatgen.electronic_structure.bandstructure.BandStructure` or \</span>
@@ -278,7 +280,10 @@
         <span class="n">structure</span><span class="o">=</span><span class="n">list_bs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span>
         <span class="n">projections</span><span class="o">=</span><span class="n">projections</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">force_branches</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">force_kpath_branches</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">force_branches</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">bs</span></div>
 
 
 <div class="viewcode-block" id="force_branches"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.force_branches">[docs]</a><span class="k">def</span> <span class="nf">force_branches</span><span class="p">(</span><span class="n">bandstructure</span><span class="p">):</span>
