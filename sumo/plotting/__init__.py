@@ -208,12 +208,15 @@ def colorline(
     colours = []
     for yy, ww in zip(y, weights):
         pts = np.array([x, yy]).T.reshape(-1, 1, 2)
-        seg.extend(np.concatenate([pts[:-1], pts[1:]], axis=1))
+        if len(pts) > 1:  # need at least one point to interpolate colours
+            seg.extend(np.concatenate([pts[:-1], pts[1:]], axis=1))
 
-        nseg = len(x) - 1
-        w = [0.5 * (ww[i] + ww[i + 1]) for i in range(nseg)]
-        c = get_interpolated_colors(color1, color2, color3, w, colorspace=colorspace)
-        colours.extend(c.tolist())
+            nseg = len(x) - 1
+            w = [0.5 * (ww[i] + ww[i + 1]) for i in range(nseg)]
+            c = get_interpolated_colors(
+                color1, color2, color3, w, colorspace=colorspace
+            )
+            colours.extend(c.tolist())
 
     lc = LineCollection(
         seg, colors=colours, rasterized=True, linewidth=linewidth, linestyles=linestyles
