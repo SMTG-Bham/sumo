@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+v2.3.3
+------
+
+Bugfix: ``sumo-bandplot --project --mode rgb`` now works with paths containing branches
+with a single k-point.
+
 v2.3.2
 ------
 
