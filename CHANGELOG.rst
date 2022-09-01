@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+v2.3.4
+------
+
+Support for new versions of `castepxbin`.
+
 v2.3.3
 ------
 
