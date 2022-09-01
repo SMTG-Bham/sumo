@@ -40,7 +40,7 @@ setup(
         "phonopy>=2.1.3",
         "matplotlib",
         "seekpath",
-        "castepxbin==0.1.0",
+        "castepxbin<=1.0",
         "colormath",
     ],
     extras_require={
