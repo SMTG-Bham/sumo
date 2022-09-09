@@ -41,7 +41,7 @@ The plot should now reflect your customisations:
 In this way, one can create a customised plotting style that can be used for all sumo
 plots to maintain consistency. To see examples of what can be tuned, see the
 `default sumo style sheet
-<https://github.com/SMTG-UCL/sumo/blob/mpl-style/sumo/plotting/sumo_base.mplstyle>`_.
+<https://github.com/SMTG-UCL/sumo/blob/master/sumo/plotting/sumo_base.mplstyle>`_.
 
 
 Using matplotlib in-built style sheets
