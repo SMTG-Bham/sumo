@@ -55,8 +55,8 @@ def bandplot(
     normalise="all",
     interpolate_factor=4,
     color1="#FF0000",
-    color2="#00FF00",
-    color3="#0000FF",
+    color2="#0000FF",
+    color3="#00FF00",
     colorspace="lab",
     circle_size=150,
     dos_file=None,
@@ -674,18 +674,18 @@ def _get_parser():
     parser.add_argument(
         "--colour2",
         type=str,
-        default="#00FF00",
+        default="#0000FF",
         dest="color2",
         metavar="C",
-        help="colour2 for rgb projections (default: green)",
+        help="colour2 for rgb projections (default: blue)",
     )
     parser.add_argument(
         "--colour3",
         type=str,
-        default="#0000FF",
+        default="#00FF00",
         dest="color3",
         metavar="C",
-        help="colour3 for rgb projections (default: blue)",
+        help="colour3 for rgb projections (default: green)",
     )
     parser.add_argument(
         "--colourspace",
