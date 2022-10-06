@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+v2.3.5
+------
+
+Fix projected band structures with two projections selected (@utf, #181).
+
 v2.3.4
 ------
 
