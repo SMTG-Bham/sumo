@@ -326,8 +326,8 @@ class SBSPlotter(BSPlotter):
         normalise="all",
         interpolate_factor=4,
         color1="#FF0000",
-        color2="#00FF00",
-        color3="#0000FF",
+        color2="#0000FF",
+        color3="#00FF00",
         colorspace="lab",
         circle_size=150,
         projection_cutoff=0.001,
@@ -603,8 +603,8 @@ class SBSPlotter(BSPlotter):
 
                 # if only two orbitals then just use red and blue
                 if len(weights) == 2:
-                    weights = np.insert(weights, 1, np.zeros(weights[0].shape), axis=0)
-                    colours = ["#ff0000", "#0000ff"]
+                    weights = np.insert(weights, 2, np.zeros(weights[0].shape), axis=0)
+                    colours = [color1, color2]
 
                 ls = "-" if spin == Spin.up else "--"
                 lc = colorline(
