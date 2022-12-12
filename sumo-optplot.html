@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>sumo-optplot &#8212; sumo 2.3.5 documentation</title>
+    <title>sumo-optplot &#8212; sumo 2.3.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -54,8 +54,8 @@ spectra simultaneously.</p>
 </li>
 <li><p><a class="reference internal" href="#command-line-interface" id="id7">Command-Line Interface</a></p>
 <ul>
-<li><p><a class="reference internal" href="#Positional Arguments" id="id8">Positional Arguments</a></p></li>
-<li><p><a class="reference internal" href="#Named Arguments" id="id9">Named Arguments</a></p></li>
+<li><p><a class="reference internal" href="#positional-arguments" id="id8">Positional Arguments</a></p></li>
+<li><p><a class="reference internal" href="#named-arguments" id="id9">Named Arguments</a></p></li>
 </ul>
 </li>
 </ul>
@@ -162,18 +162,18 @@ somewhere in the filename.</p>
                     <span class="p">[</span><span class="n">M</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Positional Arguments">
-<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this heading">¶</a></h3>
+<section id="positional-arguments">
+<h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>M</kbd></dt>
-<dd><p>Possible choices: n_real, eps_imag, loss, absorption, n_imag, eps_real</p>
+<dd><p>Possible choices: n_imag, absorption, n_real, loss, eps_real, eps_imag</p>
 <p>Optical properties to plot. Multiple choices  will be displayed as subplots. Accepted values: “absorption” (optical absorption over distance), “loss” (energy-loss function -Im(1/eps)), “eps_real” and “eps_imag” (real and imaginary parts of the dielectric function), “n_real” (real part of complex refractive index)”n_imag” (imaginary part of RI, also known as the extinction coefficient kappa.)</p>
 <p>Default: “absorption”</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments">
-<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this heading">¶</a></h3>
+<section id="named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Permalink to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filenames</kbd></dt>
 <dd><p>path to one or more vasprun.xml files</p>
@@ -324,7 +324,7 @@ Last updated: Jan 10, 2018</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.2.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
