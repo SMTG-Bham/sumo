@@ -726,9 +726,9 @@ class SBSPlotter(BSPlotter):
 
         if vbm_cbm_marker:
             for cbm in data["cbm"]:
-                ax.scatter(cbm[0], cbm[1], color="C2", marker="o", s=100)
+                ax.scatter(cbm[0], cbm[1], color="C2", marker="o")
             for vbm in data["vbm"]:
-                ax.scatter(vbm[0], vbm[1], color="C3", marker="o", s=100)
+                ax.scatter(vbm[0], vbm[1], color="C3", marker="o")
 
         if dos_plotter:
             ax = fig.axes[1]
