@@ -66,7 +66,7 @@
 
 
 <div class="viewcode-block" id="SBSPlotter"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.bs_plotter.SBSPlotter">[docs]</a><span class="k">class</span> <span class="nc">SBSPlotter</span><span class="p">(</span><span class="n">BSPlotter</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class for plotting electronic band structures.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for plotting electronic band structures.</span>
 
 <span class="sd">    This class is similar to the pymatgen</span>
 <span class="sd">    :obj:`pymatgen.electronic_structure.plotter.BSPlotter` class but overrides</span>
@@ -98,7 +98,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_reset_zero_energy</span><span class="p">(</span><span class="n">bs_plot_data</span><span class="p">,</span> <span class="n">zero_energy</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Modify reference energy of data from bs_plot_data</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modify reference energy of data from bs_plot_data</span>
 
 <span class="sd">        This method is defined in Pymatgen and obtains plotting data with zero</span>
 <span class="sd">        set to 0. (if zero_to_efermi=False), self.efermi (if</span>
@@ -162,7 +162,7 @@
         <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object of the band structure.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object of the band structure.</span>
 
 <span class="sd">        If the system is spin polarised, and no spin has been specified, orange</span>
 <span class="sd">        lines are spin up, dashed blue lines are spin down. For metals, all</span>
@@ -385,7 +385,7 @@
         <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` of the projected band structure.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` of the projected band structure.</span>
 
 <span class="sd">        If the system is spin polarised, no spin has been specified and</span>
 <span class="sd">        ``mode = &#39;rgb&#39;`` spin up and spin down bands are differentiated by</span>
@@ -740,7 +740,7 @@
         <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tidy the band structure &amp; add the density of states if required.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Tidy the band structure &amp; add the density of states if required.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">zero_line</span><span class="p">:</span>
             <span class="n">draw_themed_line</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
 
@@ -810,7 +810,7 @@
         <span class="n">zero_line</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;This is basically the same as the SDOSPlotter get_plot function.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is basically the same as the SDOSPlotter get_plot function.&quot;&quot;&quot;</span>
 
         <span class="c1"># don&#39;t use first 4 colours; these are the band structure line colours</span>
         <span class="n">cycle</span> <span class="o">=</span> <span class="n">cycler</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.prop_cycle&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s2">&quot;color&quot;</span><span class="p">][</span><span class="mi">4</span><span class="p">:])</span>
@@ -867,7 +867,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_sanitise_label</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @&quot;&quot;&quot;</span>
 
         <span class="kn">import</span> <span class="nn">re</span>
 
@@ -878,7 +878,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_sanitise_label_group</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">labelgroup</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @</span>
 
 <span class="sd">        Labels split with $\mid$ symbol will be treated for each part.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -896,7 +896,7 @@
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_sanitise_label</span><span class="p">(</span><span class="n">labelgroup</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_maketicks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Utility method to add tick marks to a band structure.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Utility method to add tick marks to a band structure.&quot;&quot;&quot;</span>
         <span class="c1"># set y-ticks</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">AutoMinorLocator</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
@@ -1001,8 +1001,8 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.0.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.1.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
     </div>
 

@@ -171,7 +171,7 @@ It is a good idea to also use this package manager to install
 Numpy and Matplotlib, as building them with setuptools can be troublesome.
 Sumo can then be installed using the Python package manager “Pip”,
 which will automatically setup other Python packages as required:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install --user sumo
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>sumo
 </pre></div>
 </div>
 <p>If this is your first entry to the scientific Python ecosystem, be
@@ -184,9 +184,9 @@ of disk space.</p>
 (<a class="reference external" href="https://github.com/smtg-ucl/sumo">https://github.com/smtg-ucl/sumo</a>); this will be preferred for development
 work or if using experimental code branches.</p>
 <p>To clone the project from Github and make a local installation:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/smtg-ucl/sumo.git
-<span class="nb">cd</span> sumo
-pip install --user -e .
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/smtg-ucl/sumo.git
+<span class="nb">cd</span><span class="w"> </span>sumo
+pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">-e</span></code> and <code class="docutils literal notranslate"><span class="pre">--user</span></code> options are recommended:
@@ -210,8 +210,8 @@ features using GitHub Actions.</p>
 <h4>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">¶</a></h4>
 <p>To build the documentation from the project files, install
 sumo with extra Sphinx dependencies before compiling with <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install --user .<span class="o">[</span>docs<span class="o">]</span>
-sphinx-build docs/src docs_build
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>.<span class="o">[</span>docs<span class="o">]</span>
+sphinx-build<span class="w"> </span>docs/src<span class="w"> </span>docs_build
 </pre></div>
 </div>
 <p>The user guide can then be explored from <em>docs/build/html/index.html</em>.</p>
@@ -340,8 +340,8 @@ the changes are accepted.</p></li>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.0.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.1.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
       <a href="_sources/index.rst.txt"
