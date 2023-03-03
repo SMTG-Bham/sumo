@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Unreleased
+----------
+
+Bugfix: Allow "BREAK" keyword in CASTEP band paths - and ignore it. (@azanre, #201)
+
 v2.3.5
 ------
 
