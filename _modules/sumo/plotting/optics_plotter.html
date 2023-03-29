@@ -274,13 +274,9 @@
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">spectrum_key</span> <span class="o">==</span> <span class="s2">&quot;absorption&quot;</span><span class="p">:</span>
-                <span class="n">font</span> <span class="o">=</span> <span class="n">findfont</span><span class="p">(</span><span class="n">FontProperties</span><span class="p">(</span><span class="n">family</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sans-serif&quot;</span><span class="p">]))</span>
-                <span class="k">if</span> <span class="s2">&quot;Whitney&quot;</span> <span class="ow">in</span> <span class="n">font</span><span class="p">:</span>
-                    <span class="n">times_sign</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">times_sign</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\times&quot;</span>
+                <span class="n">findfont</span><span class="p">(</span><span class="n">FontProperties</span><span class="p">(</span><span class="n">family</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sans-serif&quot;</span><span class="p">]))</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span>
-                    <span class="n">FuncFormatter</span><span class="p">(</span><span class="n">curry_power_tick</span><span class="p">(</span><span class="n">times_sign</span><span class="o">=</span><span class="n">times_sign</span><span class="p">))</span>
+                    <span class="n">FuncFormatter</span><span class="p">(</span><span class="n">curry_power_tick</span><span class="p">(</span><span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\times&quot;</span><span class="p">))</span>
                 <span class="p">)</span>
 
             <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>

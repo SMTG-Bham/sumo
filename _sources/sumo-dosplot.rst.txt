@@ -196,7 +196,7 @@ output DOS files with a command such as::
 
   lmf ctrl.ext --dos:npts=2001:window=-1,1 --pdos --quit=rho
 
-Setting `--pdos` defaults to mode 2, decomposing the DOS contributions
+Setting ``--pdos`` defaults to mode 2, decomposing the DOS contributions
 by l, m and each structure site. However, that decomposed data is
 written in a binary format to *moms.ext* while *dos.ext* contains a
 total-DOS. This will be overwritten in the next step, so for usage with Sumo please rename this file to "tdos.ext"::
@@ -204,7 +204,7 @@ total-DOS. This will be overwritten in the next step, so for usage with Sumo ple
   mv dos.ext tdos.ext
 
 Part of Questaal, the *lmdos* program converts from *moms.ext* to a
-plottable PDOS. It needs to run with the same `--dos` and `--pdos`
+plottable PDOS. It needs to run with the same ``--dos`` and ``--pdos``
 flags as the previous step, i.e. in this case::
 
   lmdos --dos:npts=2001:window=-1,1 --pdos ext
@@ -224,17 +224,17 @@ DOS.::
 
   sumo-dosplot --code questaal -f dos.ext
 
-The `--elements` and `--orbitals` options may be used to specify which
+The ``--elements`` and ``--orbitals`` options may be used to specify which
 channels are grouped and/or shown. Note that empty sites may be
 included in the output if they have a non-negligible contribution to
-the DOS. The `--elements` switch may be useful for hiding these if
+the DOS. The ``--elements`` switch may be useful for hiding these if
 desired.
 
 Castep
 ~~~~~~
 
 When plotting from CASTEP, give the *seedname.bands* path as
-`--filename`.  If a *.pdos_bin* file is in the same directory,
+``--filename``.  If a *.pdos_bin* file is in the same directory,
 orbital-project DOS plots are possible; this requires the *.cell* file
 to also be available. Otherwise, a total DOS will be obtained by
 summing over the eigenvalue data in the *.bands* file.

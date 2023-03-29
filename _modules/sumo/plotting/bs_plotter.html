@@ -588,7 +588,6 @@
 
         <span class="c1"># nd is branch index</span>
         <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">nbranches</span><span class="p">)):</span>
-
             <span class="c1"># mask data to reduce plotting load</span>
             <span class="n">bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">spin</span><span class="p">)][</span><span class="n">nd</span><span class="p">])</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
@@ -629,7 +628,6 @@
             <span class="n">weights</span><span class="p">[</span><span class="n">weights</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
             <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;rgb&quot;</span><span class="p">:</span>
-
                 <span class="c1"># colours aren&#39;t used now but needed later for legend</span>
                 <span class="n">colours</span> <span class="o">=</span> <span class="p">[</span><span class="n">color1</span><span class="p">,</span> <span class="n">color2</span><span class="p">,</span> <span class="n">color3</span><span class="p">]</span>
 

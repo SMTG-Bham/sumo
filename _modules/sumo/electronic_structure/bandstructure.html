@@ -179,9 +179,8 @@
     <span class="n">dict_proj</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">))</span>
     <span class="n">sum_proj</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nbands</span><span class="p">,</span> <span class="n">nkpts</span><span class="p">))</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spins</span><span class="p">}</span>
 
-    <span class="c1"># store the projections for all elements and orbitals in a useable format</span>
+    <span class="c1"># store the projections for all elements and orbitals in a usable format</span>
     <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">orbital</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">all_orbitals</span><span class="p">):</span>
-
         <span class="c1"># convert data to [nb][nk]</span>
         <span class="n">el_orb_proj</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">[</span><span class="n">all_proj</span><span class="p">[</span><span class="n">spin</span><span class="p">][</span><span class="n">nb</span><span class="p">][</span><span class="n">nk</span><span class="p">][</span><span class="n">element</span><span class="p">][</span><span class="n">orbital</span><span class="p">]</span> <span class="k">for</span> <span class="n">nk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nkpts</span><span class="p">)]</span>
@@ -196,7 +195,6 @@
     <span class="c1"># now go through the selected orbitals and extract what&#39;s needed</span>
     <span class="n">spec_proj</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">selection</span><span class="p">:</span>
-
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># spec is just an element type, therefore sum all orbitals</span>
             <span class="n">element</span> <span class="o">=</span> <span class="n">spec</span>
@@ -298,7 +296,7 @@
 <span class="sd">        bandstructure: A band structure object.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A band structure with brnaches.</span>
+<span class="sd">        A band structure with branches.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">kpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">k</span><span class="o">.</span><span class="n">frac_coords</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">bandstructure</span><span class="o">.</span><span class="n">kpoints</span><span class="p">])</span>
     <span class="n">labels_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">frac_coords</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bandstructure</span><span class="o">.</span><span class="n">labels_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>

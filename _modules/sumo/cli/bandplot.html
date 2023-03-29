@@ -406,7 +406,7 @@
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;castep&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">scissor</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Scissor not compatabile with CASTEP DOS.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Scissor not compatible with CASTEP DOS.&quot;</span><span class="p">)</span>
             <span class="n">pdos_file</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">cell_file</span><span class="p">:</span>
                 <span class="n">pdos_file</span> <span class="o">=</span> <span class="n">_replace_ext</span><span class="p">(</span><span class="n">cell_file</span><span class="p">,</span> <span class="s2">&quot;pdos_bin&quot;</span><span class="p">)</span>

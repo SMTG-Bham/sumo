@@ -93,7 +93,6 @@
     <span class="c1"># check to see if there are enough points to sample from first</span>
     <span class="c1"># check in the forward direction</span>
     <span class="k">if</span> <span class="n">kpoint_id</span> <span class="o">+</span> <span class="n">num_sample_points</span> <span class="o">&lt;=</span> <span class="n">branch_data</span><span class="p">[</span><span class="s2">&quot;end_index&quot;</span><span class="p">]:</span>
-
         <span class="c1"># calculate sampling limits</span>
         <span class="n">start_id</span> <span class="o">=</span> <span class="n">kpoint_id</span>
         <span class="n">end_id</span> <span class="o">=</span> <span class="n">kpoint_id</span> <span class="o">+</span> <span class="n">num_sample_points</span> <span class="o">+</span> <span class="mi">1</span>
@@ -122,7 +121,6 @@
 
     <span class="c1"># check in the backward direction</span>
     <span class="k">if</span> <span class="n">kpoint_id</span> <span class="o">-</span> <span class="n">num_sample_points</span> <span class="o">&gt;=</span> <span class="n">branch_data</span><span class="p">[</span><span class="s2">&quot;start_index&quot;</span><span class="p">]:</span>
-
         <span class="c1"># calculate sampling limits</span>
         <span class="n">start_id</span> <span class="o">=</span> <span class="n">kpoint_id</span> <span class="o">-</span> <span class="n">num_sample_points</span>
         <span class="n">end_id</span> <span class="o">=</span> <span class="n">kpoint_id</span> <span class="o">+</span> <span class="mi">1</span>
