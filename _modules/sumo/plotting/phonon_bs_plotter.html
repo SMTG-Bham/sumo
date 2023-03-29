@@ -33,9 +33,7 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module provides a class for plotting phonon band structure diagrams.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;This module provides a class for plotting phonon band structure diagrams.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -157,7 +155,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">from_json</span><span class="p">):</span>
                 <span class="k">pass</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">from_json</span><span class="p">):</span>
-                <span class="n">legend</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span>
+                <span class="n">legend</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">legend</span><span class="p">)]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Inappropriate number of legend entries&quot;</span><span class="p">)</span>
 
@@ -182,7 +180,7 @@
             <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">_plot_lines</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Pull data from any PhononBSPlotter and add to axis&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Pull data from any PhononBSPlotter and add to axis.&quot;&quot;&quot;</span>
             <span class="n">dists</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">]</span>
             <span class="n">freqs</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;frequency&quot;</span><span class="p">]</span>
 

@@ -33,9 +33,7 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Subpackage providing helper functions for generating publication ready plots.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Subpackage providing helper functions for generating publication ready plots.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span>
@@ -71,10 +69,7 @@
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">get_plot</span><span class="p">):</span>
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">get_plot</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">no_base_style</span><span class="p">:</span>
-                <span class="n">list_style</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">list_style</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">style_sheets</span><span class="p">)</span>
+            <span class="n">list_style</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">no_base_style</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">style_sheets</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">style</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -108,7 +103,6 @@
 <span class="sd">        :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` object with</span>
 <span class="sd">        publication ready defaults set.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">if</span> <span class="n">plt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">plt</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span>
         <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -159,7 +153,6 @@
 <span class="sd">        :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` subplot object</span>
 <span class="sd">        with publication ready defaults set.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">width</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -256,8 +249,7 @@
 
 
 <div class="viewcode-block" id="get_interpolated_colors"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.get_interpolated_colors">[docs]</a><span class="k">def</span> <span class="nf">get_interpolated_colors</span><span class="p">(</span><span class="n">color1</span><span class="p">,</span> <span class="n">color2</span><span class="p">,</span> <span class="n">color3</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">colorspace</span><span class="o">=</span><span class="s2">&quot;lab&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Interpolate colors at a number of points within a colorspace.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interpolate colors at a number of points within a colorspace.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        color1 (str): A color specified in any way supported by matplotlib.</span>
@@ -332,25 +324,24 @@
 
 
 <div class="viewcode-block" id="draw_themed_line"><a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.draw_themed_line">[docs]</a><span class="k">def</span> <span class="nf">draw_themed_line</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Draw a horizontal line using the theme settings</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Draw a horizontal line using the theme settings.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        y (float): Position of line in data coordinates</span>
 <span class="sd">        ax (Axes): Matplotlib Axes on which line is drawn</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="c1"># Note to future developers: feel free to add plenty more optional</span>
     <span class="c1"># arguments to this to mess with linestyle, zorder etc.</span>
     <span class="c1"># Just .update() the options dict</span>
 
-    <span class="n">themed_line_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">color</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;grid.color&quot;</span><span class="p">],</span>
-        <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
-        <span class="n">dashes</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">linewidth</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;ytick.major.width&quot;</span><span class="p">],</span>
-    <span class="p">)</span>
+    <span class="n">themed_line_options</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;grid.color&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;linestyle&quot;</span><span class="p">:</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dashes&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="s2">&quot;zorder&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;linewidth&quot;</span><span class="p">:</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;ytick.major.width&quot;</span><span class="p">],</span>
+    <span class="p">}</span>
 
     <span class="k">if</span> <span class="n">orientation</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">themed_line_options</span><span class="p">)</span>

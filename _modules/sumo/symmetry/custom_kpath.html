@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sumo.symmetry.custom_kpath &#8212; sumo 2.3.5 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for sumo.symmetry.custom_kpath</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
+<span class="c1"># Distributed under the terms of the MIT License.</span>
+
+<span class="sd">&quot;&quot;&quot;Module containing class for generating custom k-point paths.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+
+<span class="kn">from</span> <span class="nn">sumo.symmetry</span> <span class="kn">import</span> <span class="n">Kpath</span>
+
+
+<div class="viewcode-block" id="CustomKpath"><a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.custom_kpath.CustomKpath">[docs]</a><span class="k">class</span> <span class="nc">CustomKpath</span><span class="p">(</span><span class="n">Kpath</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to generate k-points along custom k-point paths.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        structure (:obj:`~pymatgen.core.structure.Structure`): The structure.</span>
+<span class="sd">        symprec (:obj:`float`, optional): The tolerance for determining the</span>
+<span class="sd">            crystal symmetry.</span>
+<span class="sd">        kpt_list (list): List of k-points to use, formatted as a list of</span>
+<span class="sd">            subpaths, each containing a list of fractional k-points. For</span>
+<span class="sd">            example::</span>
+
+<span class="sd">                [ [[0., 0., 0.], [0., 0., 0.5]],</span>
+<span class="sd">                  [[0.5, 0., 0.], [0.5, 0.5, 0.]] ]</span>
+
+<span class="sd">            Will return points along ``0 0 0 -&gt; 0 0 1/2 | 1/2 0 0</span>
+<span class="sd">            -&gt; 1/2 1/2 0``</span>
+<span class="sd">        path_labels (:obj:`list`): The k-point labels. These should be provided</span>
+<span class="sd">            as a :obj:`list` of :obj:`str` for each subpath of the overall</span>
+<span class="sd">            path. For example::</span>
+
+<span class="sd">                [ [&#39;Gamma&#39;, &#39;Z&#39;], [&#39;X&#39;, &#39;M&#39;] ]</span>
+
+<span class="sd">            combined with the above example for ``kpt_list`` would indicate the</span>
+<span class="sd">            path: Gamma -&gt; Z | X -&gt; M. If no labels are provided, letters from</span>
+<span class="sd">            A -&gt; Z will be used instead.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        prim (:obj:`~pymatgen.core.structure.Structure`): The standardised</span>
+<span class="sd">            primitive cell structure for the generated k-point path.</span>
+<span class="sd">        conv (:obj:`~pymatgen.core.structure.Structure`): The standardised</span>
+<span class="sd">            conventional cell structure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">kpt_list</span><span class="p">,</span> <span class="n">path_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+        <span class="n">Kpath</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">path_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">path_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auto_kpath_labels</span><span class="p">(</span><span class="n">kpt_list</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">kpt_list</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">path_labels</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">kpt_segment</span><span class="p">,</span> <span class="n">path_segment</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">kpt_list</span><span class="p">,</span> <span class="n">path_labels</span><span class="p">):</span>
+                <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">kpt_segment</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">path_segment</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;kpt_list and path_labels are not consistent&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+
+        <span class="n">flat_kpts</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">kpt_list</span><span class="p">)</span>
+        <span class="n">flat_path_labels</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">path_labels</span><span class="p">)</span>
+        <span class="n">kpt_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">flat_path_labels</span><span class="p">,</span> <span class="n">flat_kpts</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;kpoints&quot;</span><span class="p">:</span> <span class="n">kpt_dict</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path_labels</span><span class="p">}</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_auto_kpath_labels</span><span class="p">(</span><span class="n">kpt_list</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a default set of labels (1), (2), (3)... for a k-point path.</span>
+
+<span class="sd">        Repeated points will be identified and the labels re-used.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kpt_list (list): Nested list representing k-point path segments,</span>
+<span class="sd">                e.g.::</span>
+
+<span class="sd">                  [[[0., 0., 0.], [0., 0., 0.5], [0., 0.5, 0.5]],</span>
+<span class="sd">                   [[0.5, 0.5, 0.], [0., 0., 0.]]]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Corresponding nested list of labels, e.g.::</span>
+
+<span class="sd">              [[&#39;(1)&#39;, &#39;(2)&#39;, &#39;(3)&#39;], [&#39;(4)&#39;, &#39;(1)&#39;]]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Build dict of labels</span>
+        <span class="n">label_i</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">kpt_labels</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">kpt</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">kpt_list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">kpt</span><span class="p">)</span> <span class="ow">in</span> <span class="n">kpt_labels</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">kpt_labels</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="nb">tuple</span><span class="p">(</span><span class="n">kpt</span><span class="p">):</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">label_i</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">})</span>
+                <span class="n">label_i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Read out into nested lists</span>
+        <span class="n">kpath_labels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="n">kpt_labels</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">kpt</span><span class="p">)]</span> <span class="k">for</span> <span class="n">kpt</span> <span class="ow">in</span> <span class="n">segment</span><span class="p">]</span> <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">kpt_list</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">kpath_labels</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">sumo</a></h1>
+
+
+
+<p class="blurb">Heavy weight plotting tools</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SMTG-UCL&repo=sumo&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery.html">Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Python API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Scanlon Materials Theory Group.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.1.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

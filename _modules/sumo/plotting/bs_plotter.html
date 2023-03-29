@@ -33,9 +33,7 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module provides a class for plotting electronic band structure diagrams.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;This module provides a class for plotting electronic band structure diagrams.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -98,7 +96,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_reset_zero_energy</span><span class="p">(</span><span class="n">bs_plot_data</span><span class="p">,</span> <span class="n">zero_energy</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modify reference energy of data from bs_plot_data</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modify reference energy of data from bs_plot_data.</span>
 
 <span class="sd">        This method is defined in Pymatgen and obtains plotting data with zero</span>
 <span class="sd">        set to 0. (if zero_to_efermi=False), self.efermi (if</span>
@@ -118,7 +116,6 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            dict in format of bs_plot_data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">shifted_data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">energy_shift</span> <span class="o">=</span> <span class="n">bs_plot_data</span><span class="p">[</span><span class="s2">&quot;zero_energy&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">zero_energy</span>
 
@@ -809,7 +806,6 @@
         <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This is basically the same as the SDOSPlotter get_plot function.&quot;&quot;&quot;</span>
-
         <span class="c1"># don&#39;t use first 4 colours; these are the band structure line colours</span>
         <span class="n">cycle</span> <span class="o">=</span> <span class="n">cycler</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.prop_cycle&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s2">&quot;color&quot;</span><span class="p">][</span><span class="mi">4</span><span class="p">:])</span>
         <span class="k">with</span> <span class="n">context</span><span class="p">({</span><span class="s2">&quot;axes.prop_cycle&quot;</span><span class="p">:</span> <span class="n">cycle</span><span class="p">}):</span>
@@ -865,8 +861,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_sanitise_label</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @&quot;&quot;&quot;</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @.&quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">re</span>
 
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^@.*$&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
@@ -876,11 +871,10 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_sanitise_label_group</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">labelgroup</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @.</span>
 
 <span class="sd">        Labels split with $\mid$ symbol will be treated for each part.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">if</span> <span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span> <span class="ow">in</span> <span class="n">labelgroup</span><span class="p">:</span>
             <span class="n">label_components</span> <span class="o">=</span> <span class="n">labelgroup</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\mid$&quot;</span><span class="p">)</span>
             <span class="n">good_labels</span> <span class="o">=</span> <span class="p">[</span>
