@@ -169,7 +169,7 @@ def power_tick(val, pos, times_sign=r"\times"):
     coeff = val / 10**exponent
     prec = 0 if coeff % 1 == 0 else 1
 
-    return rf"$\mathregular{{{coeff:.{prec}f} {times_sign} 10^{exponent:2d}}}$"
+    return rf"${coeff:.{prec}f}\mathrm{{{times_sign}}}10^{{{exponent:2d}}}$"
 
 
 def colorline(
