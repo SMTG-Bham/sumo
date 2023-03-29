@@ -2,7 +2,7 @@ Sumo
 ====
 
 
-.. image:: https://img.shields.io/github/workflow/status/smtg-ucl/sumo/Run%20tests
+.. image:: https://img.shields.io/github/actions/workflow/status/smtg-ucl/sumo/tests.yml?branch=master
     :target: https://github.com/SMTG-UCL/sumo/actions?query=workflow%3A%22Run+tests%22
     :alt: Build Status
 

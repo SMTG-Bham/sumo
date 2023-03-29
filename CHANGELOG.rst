@@ -4,7 +4,11 @@ Change Log
 v2.3.6
 ------
 
-Fix superscript in ``sumo-optplot``
+
+Bugfixes:
+
+- Allow "BREAK" keyword in CASTEP band paths - and ignore it. (@azanre, #201)
+- Fix superscript in ``sumo-optplot`` (@utf,  #203)
 
 v2.3.5
 ------

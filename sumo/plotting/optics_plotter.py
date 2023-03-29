@@ -243,12 +243,8 @@ class SOpticsPlotter:
 
             if spectrum_key == "absorption":
                 font = findfont(FontProperties(family=["sans-serif"]))
-                if "Whitney" in font:
-                    times_sign = "x"
-                else:
-                    times_sign = r"\times"
                 ax.yaxis.set_major_formatter(
-                    FuncFormatter(curry_power_tick(times_sign=times_sign))
+                    FuncFormatter(curry_power_tick(times_sign=r"\times"))
                 )
 
             ax.yaxis.set_major_locator(MaxNLocator(5))

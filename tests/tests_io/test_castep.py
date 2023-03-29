@@ -241,6 +241,26 @@ class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
         self.assertEqual(header, ref_header)
 
 
+class BandStructureTestCasePathBreak(unittest.TestCase):
+    def setUp(self):
+        self.pt_cell = resource_filename(
+            __name__, path_join("..", "data", "Pt", "Pt.cell")
+        )
+        self.ref_labels = {
+            r"\Gamma": (0.0, 0.0, 0.0),
+            "X": (0.5, 0.0, 0.5),
+            "U": (0.625, 0.25, 0.625),
+            "K": (0.375, 0.375, 0.75),
+            "L": (0.5, 0.5, 0.5),
+            "W": (0.5, 0.25, 0.75)
+        }
+
+    def test_castep_parse_break_in_k_path(self):
+        labels = labels_from_cell(self.pt_cell)
+        print(labels)
+        self.assertEqual(labels, self.ref_labels)
+
+
 # To generate reference file::
 #
 #   sumo-phonon-bandplot -f zns.phonon --units cm-1 --to-json zns_phonon.json

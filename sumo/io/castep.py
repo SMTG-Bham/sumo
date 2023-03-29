@@ -486,12 +486,14 @@ def labels_from_cell(cell_file, phonon=False):
 
         line = f.readline()  # Skip past block start line
         while blockend.match(line.lower()) is None:
-            kpt = tuple(map(float, line.split()[:3]))
-            if len(line.split()) > 3:
-                label = line.split()[-1]
-                if label.lower() in ("g", "gamma"):
-                    label = r"\Gamma"
-                labels[label] = kpt
+            # Do not parse break lines
+            if 'break' not in line.lower():
+                kpt = tuple(map(float, line.split()[:3]))
+                if len(line.split()) > 3:
+                    label = line.split()[-1]
+                    if label.lower() in ("g", "gamma"):
+                        label = r"\Gamma"
+                    labels[label] = kpt
             line = f.readline()
             if line == "":
                 logging.error("Could not find end of k-point block in cell file.")
