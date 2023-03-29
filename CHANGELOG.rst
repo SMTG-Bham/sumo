@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+v2.3.6
+------
+
+Fix superscript in ``sumo-optplot``
+
 v2.3.5
 ------
 
