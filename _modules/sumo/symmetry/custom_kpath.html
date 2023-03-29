@@ -33,7 +33,9 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;Module containing class for generating custom k-point paths.&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing class for generating custom k-point paths.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
 
@@ -83,18 +85,18 @@
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">kpt_list</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">path_labels</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">kpt_segment</span><span class="p">,</span> <span class="n">path_segment</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">kpt_list</span><span class="p">,</span> <span class="n">path_labels</span><span class="p">):</span>
                 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">kpt_segment</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">path_segment</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;kpt_list and path_labels are not consistent&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;kpt_list and path_labels are not consistent&quot;</span><span class="p">)</span>
 
         <span class="n">flat_kpts</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">kpt_list</span><span class="p">)</span>
         <span class="n">flat_path_labels</span> <span class="o">=</span> <span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">path_labels</span><span class="p">)</span>
-        <span class="n">kpt_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">flat_path_labels</span><span class="p">,</span> <span class="n">flat_kpts</span><span class="p">))</span>
+        <span class="n">kpt_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="n">kpt</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">kpt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">flat_path_labels</span><span class="p">,</span> <span class="n">flat_kpts</span><span class="p">)}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;kpoints&quot;</span><span class="p">:</span> <span class="n">kpt_dict</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path_labels</span><span class="p">}</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_auto_kpath_labels</span><span class="p">(</span><span class="n">kpt_list</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a default set of labels (1), (2), (3)... for a k-point path.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a default set of labels (1), (2), (3)... for a k-point path</span>
 
 <span class="sd">        Repeated points will be identified and the labels re-used.</span>
 
@@ -111,6 +113,7 @@
 <span class="sd">              [[&#39;(1)&#39;, &#39;(2)&#39;, &#39;(3)&#39;], [&#39;(4)&#39;, &#39;(1)&#39;]]</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># Build dict of labels</span>
         <span class="n">label_i</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">kpt_labels</span> <span class="o">=</span> <span class="p">{}</span>

@@ -200,7 +200,7 @@ output DOS files with a command such as:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lmf</span> <span class="n">ctrl</span><span class="o">.</span><span class="n">ext</span> <span class="o">--</span><span class="n">dos</span><span class="p">:</span><span class="n">npts</span><span class="o">=</span><span class="mi">2001</span><span class="p">:</span><span class="n">window</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span> <span class="o">--</span><span class="n">pdos</span> <span class="o">--</span><span class="n">quit</span><span class="o">=</span><span class="n">rho</span>
 </pre></div>
 </div>
-<p>Setting <code class="docutils literal notranslate"><span class="pre">--pdos</span></code> defaults to mode 2, decomposing the DOS contributions
+<p>Setting <cite>–pdos</cite> defaults to mode 2, decomposing the DOS contributions
 by l, m and each structure site. However, that decomposed data is
 written in a binary format to <em>moms.ext</em> while <em>dos.ext</em> contains a
 total-DOS. This will be overwritten in the next step, so for usage with Sumo please rename this file to “tdos.ext”:</p>
@@ -208,7 +208,7 @@ total-DOS. This will be overwritten in the next step, so for usage with Sumo ple
 </pre></div>
 </div>
 <p>Part of Questaal, the <em>lmdos</em> program converts from <em>moms.ext</em> to a
-plottable PDOS. It needs to run with the same <code class="docutils literal notranslate"><span class="pre">--dos</span></code> and <code class="docutils literal notranslate"><span class="pre">--pdos</span></code>
+plottable PDOS. It needs to run with the same <cite>–dos</cite> and <cite>–pdos</cite>
 flags as the previous step, i.e. in this case:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">lmdos</span> <span class="o">--</span><span class="n">dos</span><span class="p">:</span><span class="n">npts</span><span class="o">=</span><span class="mi">2001</span><span class="p">:</span><span class="n">window</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span> <span class="o">--</span><span class="n">pdos</span> <span class="n">ext</span>
 </pre></div>
@@ -227,16 +227,16 @@ DOS.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="o">--</span><span class="n">code</span> <span class="n">questaal</span> <span class="o">-</span><span class="n">f</span> <span class="n">dos</span><span class="o">.</span><span class="n">ext</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">--elements</span></code> and <code class="docutils literal notranslate"><span class="pre">--orbitals</span></code> options may be used to specify which
+<p>The <cite>–elements</cite> and <cite>–orbitals</cite> options may be used to specify which
 channels are grouped and/or shown. Note that empty sites may be
 included in the output if they have a non-negligible contribution to
-the DOS. The <code class="docutils literal notranslate"><span class="pre">--elements</span></code> switch may be useful for hiding these if
+the DOS. The <cite>–elements</cite> switch may be useful for hiding these if
 desired.</p>
 </section>
 <section id="castep">
 <h3>Castep<a class="headerlink" href="#castep" title="Permalink to this heading">¶</a></h3>
 <p>When plotting from CASTEP, give the <em>seedname.bands</em> path as
-<code class="docutils literal notranslate"><span class="pre">--filename</span></code>.  If a <em>.pdos_bin</em> file is in the same directory,
+<cite>–filename</cite>.  If a <em>.pdos_bin</em> file is in the same directory,
 orbital-project DOS plots are possible; this requires the <em>.cell</em> file
 to also be available. Otherwise, a total DOS will be obtained by
 summing over the eigenvalue data in the <em>.bands</em> file.</p>

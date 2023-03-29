@@ -33,7 +33,9 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;Module containing class for generating k-points along paths from SeeK-path.&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing class for generating k-points along paths from SeeK-path.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
 
@@ -97,8 +99,6 @@
 <span class="sd">                labels::</span>
 
 <span class="sd">                    {&#39;GAMMA&#39;: [0., 0., 0.], ...}</span>
-
-
 <span class="sd">        Returns:</span>
 <span class="sd">            dict: The path and k-points as::</span>
 
@@ -110,7 +110,7 @@
         <span class="c1"># convert from seekpath format e.g. [(l1, l2), (l2, l3), (l4, l5)]</span>
         <span class="c1"># to our preferred representation [[l1, l2, l3], [l4, l5]]</span>
         <span class="n">path</span> <span class="o">=</span> <span class="p">[[</span><span class="n">seekpath</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]]</span>
-        <span class="k">for</span> <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span> <span class="ow">in</span> <span class="n">seekpath</span><span class="p">:</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">seekpath</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">k1</span><span class="p">:</span>
                 <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k2</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>

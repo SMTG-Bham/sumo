@@ -33,9 +33,10 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;Module containing functions to process dielectric and optical absorption data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing functions to process dielectric and optical absorption data.</span>
 
-<span class="sd">Todo:</span>
+<span class="sd">TODO:</span>
 <span class="sd">    * Remove magic values</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -92,7 +93,7 @@
 
 
 <div class="viewcode-block" id="calculate_dielectric_properties"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.optics.calculate_dielectric_properties">[docs]</a><span class="k">def</span> <span class="nf">calculate_dielectric_properties</span><span class="p">(</span><span class="n">dielectric</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate optical properties from the dielectric function.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate optical properties from the dielectric function</span>
 
 <span class="sd">    Supported properties:</span>
 
@@ -145,8 +146,8 @@
 <span class="sd">              eigenvalues are sorted from smallest to largest.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        tuple of ``(energies, {property_name: property_value})``: The optical absorption</span>
-<span class="sd">        is given in :math:`\mathrm{cm}^{-1}`. If ``mode`` is ``&quot;average&quot;``, the</span>
+<span class="sd">        tuple of ``(energies, {property_name: property_value})``: The optical absorption is given in</span>
+<span class="sd">        :math:`\mathrm{cm}^{-1}`. If ``mode`` is ``&quot;average&quot;``, the</span>
 <span class="sd">        property_value will be returned as::</span>
 
 <span class="sd">            [property]</span>
@@ -247,6 +248,7 @@
 <span class="sd">        prefix (:obj:`str`, optional): Prefix for file names.</span>
 <span class="sd">        directory (:obj:`str`, optional): The directory in which to save files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">absorption</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">abs_data</span><span class="p">):</span>
         <span class="n">num_txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">abs_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="n">prefix_txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_&quot;</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
@@ -267,7 +269,7 @@
 
 
 <div class="viewcode-block" id="kkr"><a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.optics.kkr">[docs]</a><span class="k">def</span> <span class="nf">kkr</span><span class="p">(</span><span class="n">de</span><span class="p">,</span> <span class="n">eps_imag</span><span class="p">,</span> <span class="n">cshift</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Kramers Kronig transformation of imaginary dielectric function.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Kramers Kronig transformation of imaginary dielectric function</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        de (:obj:`float`): Energy difference between evenly-spaced energy</span>

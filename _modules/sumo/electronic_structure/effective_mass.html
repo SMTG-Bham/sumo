@@ -33,7 +33,9 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;Module containing helper functions for calculating band effective masses.&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module containing helper functions for calculating band effective masses.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.constants</span> <span class="kn">import</span> <span class="n">physical_constants</span>
@@ -91,6 +93,7 @@
     <span class="c1"># check to see if there are enough points to sample from first</span>
     <span class="c1"># check in the forward direction</span>
     <span class="k">if</span> <span class="n">kpoint_id</span> <span class="o">+</span> <span class="n">num_sample_points</span> <span class="o">&lt;=</span> <span class="n">branch_data</span><span class="p">[</span><span class="s2">&quot;end_index&quot;</span><span class="p">]:</span>
+
         <span class="c1"># calculate sampling limits</span>
         <span class="n">start_id</span> <span class="o">=</span> <span class="n">kpoint_id</span>
         <span class="n">end_id</span> <span class="o">=</span> <span class="n">kpoint_id</span> <span class="o">+</span> <span class="n">num_sample_points</span> <span class="o">+</span> <span class="mi">1</span>
@@ -119,6 +122,7 @@
 
     <span class="c1"># check in the backward direction</span>
     <span class="k">if</span> <span class="n">kpoint_id</span> <span class="o">-</span> <span class="n">num_sample_points</span> <span class="o">&gt;=</span> <span class="n">branch_data</span><span class="p">[</span><span class="s2">&quot;start_index&quot;</span><span class="p">]:</span>
+
         <span class="c1"># calculate sampling limits</span>
         <span class="n">start_id</span> <span class="o">=</span> <span class="n">kpoint_id</span> <span class="o">-</span> <span class="n">num_sample_points</span>
         <span class="n">end_id</span> <span class="o">=</span> <span class="n">kpoint_id</span> <span class="o">+</span> <span class="mi">1</span>
