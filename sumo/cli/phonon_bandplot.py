@@ -407,6 +407,7 @@ def _bs_from_filename(
             primitive_matrix=primitive_axis,
             factor=factors[units.lower()],
             symmetrise=True,
+            symprec=symprec,
             born=born,
             write_fc=False,
         )
