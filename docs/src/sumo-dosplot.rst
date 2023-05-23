@@ -174,7 +174,7 @@ Custom Line Colours
 ~~~~~~~~~~~~~~~~~~~
 
 Sumo uses a config file for choosing the colours of elements and orbitals in density of states plots.
-The default colours can be found in ``sumo/conf/orbital_colours.conf``. The format of this file is simple::
+The format of this file is simple::
 
     [N]
     s = r
