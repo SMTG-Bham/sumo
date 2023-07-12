@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -7,12 +6,11 @@ Module containing helper functions for calculating band effective masses.
 """
 
 import numpy as np
-
-from scipy.optimize import curve_fit
 from scipy.constants import physical_constants
+from scipy.optimize import curve_fit
 
-eV_to_hartree = physical_constants['electron volt-hartree relationship'][0]
-bohr_to_m = physical_constants['Bohr radius'][0]
+eV_to_hartree = physical_constants["electron volt-hartree relationship"][0]
+bohr_to_m = physical_constants["Bohr radius"][0]
 angstrom_to_bohr = bohr_to_m / 1e-10
 
 
@@ -55,15 +53,14 @@ def get_fitting_data(bs, spin, band_id, kpoint_id, num_sample_points=3):
     """
     # branch data provides data about the start and end points
     # of specific band paths
-    branch_data = [b for b in bs.get_branch(kpoint_id)
-                   if b['index'] == kpoint_id][0]
+    branch_data = [b for b in bs.get_branch(kpoint_id) if b["index"] == kpoint_id][0]
     start_kpoint = bs.kpoints[kpoint_id]
 
     fitting_data = []
 
     # check to see if there are enough points to sample from first
     # check in the forward direction
-    if kpoint_id + num_sample_points <= branch_data['end_index']:
+    if kpoint_id + num_sample_points <= branch_data["end_index"]:
 
         # calculate sampling limits
         start_id = kpoint_id
@@ -80,14 +77,19 @@ def get_fitting_data(bs, spin, band_id, kpoint_id, num_sample_points=3):
         energies = np.concatenate([energies[::-1], energies[1:]])
         dists = np.concatenate([-dists[::-1], dists[1:]])
 
-        end_kpoint = bs.kpoints[branch_data['end_index']]
-        data = {'energies': energies, 'distances': dists, 'band_id': band_id,
-                'spin': spin, 'start_kpoint': start_kpoint,
-                'end_kpoint': end_kpoint}
+        end_kpoint = bs.kpoints[branch_data["end_index"]]
+        data = {
+            "energies": energies,
+            "distances": dists,
+            "band_id": band_id,
+            "spin": spin,
+            "start_kpoint": start_kpoint,
+            "end_kpoint": end_kpoint,
+        }
         fitting_data.append(data)
 
     # check in the backward direction
-    if kpoint_id - num_sample_points >= branch_data['start_index']:
+    if kpoint_id - num_sample_points >= branch_data["start_index"]:
 
         # calculate sampling limits
         start_id = kpoint_id - num_sample_points
@@ -104,10 +106,15 @@ def get_fitting_data(bs, spin, band_id, kpoint_id, num_sample_points=3):
         energies = np.concatenate([energies[:-1], energies[::-1]])
         dists = np.concatenate([dists[:-1], -dists[::-1]])
 
-        end_kpoint = bs.kpoints[branch_data['start_index']]
-        data = {'energies': energies, 'distances': dists, 'band_id': band_id,
-                'spin': spin, 'start_kpoint': start_kpoint,
-                'end_kpoint': end_kpoint}
+        end_kpoint = bs.kpoints[branch_data["start_index"]]
+        data = {
+            "energies": energies,
+            "distances": dists,
+            "band_id": band_id,
+            "spin": spin,
+            "start_kpoint": start_kpoint,
+            "end_kpoint": end_kpoint,
+        }
         fitting_data.append(data)
 
     return fitting_data
@@ -142,8 +149,7 @@ def fit_effective_mass(distances, energies, parabolic=True):
         # set boundaries for curve fitting: alpha > 1e-8
         # as alpha = 0 causes an error
         bounds = ((1e-8, -np.inf), (np.inf, np.inf))
-        popt, _ = curve_fit(f, distances, energies, p0=[1., 1.],
-                            bounds=bounds)
+        popt, _ = curve_fit(f, distances, energies, p0=[1.0, 1.0], bounds=bounds)
         c = 2 * popt[1]
 
     # coefficient is currently in eV/Angstrom^2/h_bar^2

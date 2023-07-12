@@ -1,1 +1,2 @@
-axes.prop_cycle : cycler('color', ['2ca02c'])
+# Thank you http://colorbrewer2.org/
+axes.prop_cycle : cycler('color', ['006d2c', '2ca25f', '66c2a4', 'b2e2e2'])

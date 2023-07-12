@@ -1,0 +1,26 @@
+#######################################################
+#CASTEP cell file: NiO.cell
+#Created using the Atomic Simulation Environment (ASE)#
+#######################################################
+
+%BLOCK LATTICE_CART
+ 2.983077  0.000000  0.000000
+-1.491454  2.583475  0.000000
+ 1.491583 -0.861188  4.864003
+%ENDBLOCK LATTICE_CART
+
+%BLOCK POSITIONS_ABS
+Ni  0.000000  0.000000  0.000000 SPIN=1
+Ni  1.491603  0.861143  2.432002 SPIN=-1
+O  0.000069  1.722313  1.215967  SPIN=0
+O  2.983138 -0.000026  3.648036  SPIN=0
+%ENDBLOCK POSITIONS_ABS
+
+%BLOCK SPECIES_POT
+Ni C19
+O  C19
+%ENDBLOCK SPECIES_POT
+
+KPOINTS_MP_GRID 7 7 7
+SPECTRAL_KPOINTS_MP_GRID 2 2 2
+

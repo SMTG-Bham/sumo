@@ -1,45 +1,47 @@
+import json
 import unittest
 from os.path import join as path_join
-from pkg_resources import resource_filename
+
 import numpy as np
 from numpy.testing import assert_almost_equal
-import json
-
+from pkg_resources import resource_filename
 from pymatgen.io.vasp import Vasprun
-from sumo.electronic_structure.optics import (kkr,
-                                              calculate_dielectric_properties)
+
+from sumo.electronic_structure.optics import calculate_dielectric_properties, kkr
 
 
 class AbsorptionTestCase(unittest.TestCase):
     def setUp(self):
         diel_path = resource_filename(
-            __name__,
-            path_join('..', 'data', 'Ge', 'ge_diel.json'))
-        with open(diel_path, 'r') as f:
+            __name__, path_join("..", "data", "Ge", "ge_diel.json")
+        )
+        with open(diel_path) as f:
             self.ge_diel = json.load(f)
 
         absorption_path = resource_filename(
-            __name__,
-            path_join('..', 'data', 'Ge', 'ge_alpha.json'))
-        with open(absorption_path, 'r') as f:
+            __name__, path_join("..", "data", "Ge", "ge_alpha.json")
+        )
+        with open(absorption_path) as f:
             self.ge_abs = json.load(f)
 
     def test_absorption(self):
-        energy, alpha = calculate_dielectric_properties(
-            self.ge_diel, {'absorption',})['absorption']
-        self.assertIsNone(assert_almost_equal(alpha, self.ge_abs))
+        energy, properties = calculate_dielectric_properties(
+            self.ge_diel,
+            {"absorption"},
+        )
+        self.assertIsNone(assert_almost_equal(properties["absorption"], self.ge_abs))
 
 
 class KramersKronigTestCase(unittest.TestCase):
     def setUp(self):
         ge_vasprun_path = resource_filename(
-            __name__,
-            path_join('..', 'data', 'Ge', 'vasprun.xml.gz'))
+            __name__, path_join("..", "data", "Ge", "vasprun.xml.gz")
+        )
         self.ge_vasprun = Vasprun(ge_vasprun_path)
 
         self.ge_text_file = resource_filename(
-            __name__,
-            path_join('..', 'data', 'Ge', 'optics.txt'))
+            __name__, path_join("..", "data", "Ge", "optics.txt")
+        )
 
     def test_kkr(self):
         energy, eps_real, eps_imag = self.ge_vasprun.dielectric
@@ -60,9 +62,10 @@ class KramersKronigTestCase(unittest.TestCase):
         # This is likely due to the limited precision available in vasprun
 
         error = kkr(de, eps_imag_3x3) - eps_real_3x3
-        error_fracs = [eps / eps_ref
-                       for eps, eps_ref in zip(error.flatten(),
-                                               eps_real_3x3.flatten())
-                       if eps_ref > 1e-2]  # Exclude low-precision cases
+        error_fracs = [
+            eps / eps_ref
+            for eps, eps_ref in zip(error.flatten(), eps_real_3x3.flatten())
+            if eps_ref > 1e-2
+        ]  # Exclude low-precision cases
 
-        self.assertLess(np.sqrt((np.array(error_fracs)**2).mean()), 0.1)
+        self.assertLess(np.sqrt((np.array(error_fracs) ** 2).mean()), 0.1)

@@ -1,25 +1,24 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
 """
 Subpackage providing helper functions for generating publication ready plots.
 """
-
-import numpy as np
+from functools import wraps
 
 import matplotlib.pyplot
+import numpy as np
+from matplotlib import rcParams
 from matplotlib.collections import LineCollection
-from matplotlib import rc, rcParams
 from pkg_resources import resource_filename
 
 colour_cache = {}
 
-sumo_base_style = resource_filename('sumo.plotting', 'sumo_base.mplstyle')
-sumo_dos_style = resource_filename('sumo.plotting', 'sumo_dos.mplstyle')
-sumo_bs_style = resource_filename('sumo.plotting', 'sumo_bs.mplstyle')
-sumo_phonon_style = resource_filename('sumo.plotting', 'sumo_phonon.mplstyle')
-sumo_optics_style = resource_filename('sumo.plotting', 'sumo_optics.mplstyle')
+sumo_base_style = resource_filename("sumo.plotting", "sumo_base.mplstyle")
+sumo_dos_style = resource_filename("sumo.plotting", "sumo_dos.mplstyle")
+sumo_bs_style = resource_filename("sumo.plotting", "sumo_bs.mplstyle")
+sumo_phonon_style = resource_filename("sumo.plotting", "sumo_phonon.mplstyle")
+sumo_optics_style = resource_filename("sumo.plotting", "sumo_optics.mplstyle")
 
 
 def styled_plot(*style_sheets):
@@ -38,9 +37,8 @@ def styled_plot(*style_sheets):
     """
 
     def decorator(get_plot):
-
-        def wrapper(*args, fonts=None, style=None, no_base_style=False,
-                    **kwargs):
+        @wraps(get_plot)
+        def wrapper(*args, fonts=None, style=None, no_base_style=False, **kwargs):
 
             if no_base_style:
                 list_style = []
@@ -54,13 +52,13 @@ def styled_plot(*style_sheets):
                     list_style += [style]
 
             if fonts is not None:
-                list_style += [{'font.family': 'sans-serif',
-                               'font.sans-serif': fonts}]
+                list_style += [{"font.family": "sans-serif", "font.sans-serif": fonts}]
 
             matplotlib.pyplot.style.use(list_style)
             return get_plot(*args, **kwargs)
 
         return wrapper
+
     return decorator
 
 
@@ -83,12 +81,12 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None):
     if plt is None:
         plt = matplotlib.pyplot
         if width is None:
-            width = matplotlib.rcParams['figure.figsize'][0]
+            width = matplotlib.rcParams["figure.figsize"][0]
         if height is None:
-            height = matplotlib.rcParams['figure.figsize'][1]
+            height = matplotlib.rcParams["figure.figsize"][1]
 
         if dpi is not None:
-            matplotlib.rcParams['figure.dpi'] = dpi
+            matplotlib.rcParams["figure.dpi"] = dpi
 
         fig = plt.figure(figsize=(width, height))
         fig.add_subplot(1, 1, 1)
@@ -96,8 +94,17 @@ def pretty_plot(width=None, height=None, plt=None, dpi=None):
     return plt
 
 
-def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
-                   sharey=True, dpi=None, plt=None, gridspec_kw=None):
+def pretty_subplot(
+    nrows,
+    ncols,
+    width=None,
+    height=None,
+    sharex=True,
+    sharey=True,
+    dpi=None,
+    plt=None,
+    gridspec_kw=None,
+):
     """Get a :obj:`matplotlib.pyplot` subplot object with pretty defaults.
 
     Args:
@@ -123,77 +130,200 @@ def pretty_subplot(nrows, ncols, width=None, height=None, sharex=True,
     """
 
     if width is None:
-        width = rcParams['figure.figsize'][0]
+        width = rcParams["figure.figsize"][0]
     if height is None:
-        height = rcParams['figure.figsize'][1]
+        height = rcParams["figure.figsize"][1]
 
     # TODO: Make this work if plt is already set...
     if plt is None:
         plt = matplotlib.pyplot
-        plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey, dpi=dpi,
-                     figsize=(width, height), facecolor='w',
-                     gridspec_kw=gridspec_kw)
+        plt.subplots(
+            nrows,
+            ncols,
+            sharex=sharex,
+            sharey=sharey,
+            dpi=dpi,
+            figsize=(width, height),
+            facecolor="w",
+            gridspec_kw=gridspec_kw,
+        )
 
     return plt
 
 
-def curry_power_tick(times_sign=r'\times'):
+def curry_power_tick(times_sign=r"\times"):
     def f(val, pos):
         return power_tick(val, pos, times_sign=times_sign)
+
     return f
 
-def power_tick(val, pos, times_sign=r'\times'):
-    """Custom power ticker function. """
+
+def power_tick(val, pos, times_sign=r"\times"):
+    """Custom power ticker function."""
     if val == 0:
-        return r'$\mathregular{0}$'
+        return r"$\mathregular{0}$"
     elif val < 0:
         exponent = int(np.log10(-val))
     else:
         exponent = int(np.log10(val))
     coeff = val / 10**exponent
+    prec = 0 if coeff % 1 == 0 else 1
 
-    return r'$\mathregular{{{:.1f} {} 10^{:2d}}}$'.format(coeff,
-                                                          times_sign,
-                                                          exponent)
+    return rf"${coeff:.{prec}f}\mathrm{{{times_sign}}}10^{{{exponent:2d}}}$"
 
-def rgbline(x, y, red, green, blue, alpha=1, linestyles="solid",
-            linewidth=2.5):
+
+def colorline(
+    x,
+    y,
+    weights,
+    color1="#FF0000",
+    color2="#00FF00",
+    color3="#0000FF",
+    colorspace="lab",
+    linestyles="solid",
+    linewidth=2.5,
+):
     """Get a RGB coloured line for plotting.
 
     Args:
         x (list): x-axis data.
         y (list): y-axis data (can be multidimensional array).
-        red (list): Red data (must have same shape as ``y``).
-        green (list): Green data (must have same shape as ``y``).
-        blue (list): blue data (must have same shape as ``y``).
-        alpha (:obj:`list` or :obj:`int`, optional): Alpha (transparency)
-            data (must have same shape as ``y`` or be an :obj:`int`).
+        weights (list): The weights of the color1, color2, and color3 channels. Given
+            as an array with the shape (n, 3), where n is the same length as the x and
+            y data.
+        color1 (str): A color specified in any way supported by matplotlib.
+        color2 (str): A color specified in any way supported by matplotlib.
+        color3 (str): A color specified in any way supported by matplotlib.
+        colorspace (str): The colorspace in which to perform the interpolation. The
+            allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.
         linestyles (:obj:`str`, optional): Linestyle for plot. Options are
             ``"solid"`` or ``"dotted"``.
     """
     y = np.array(y)
     if len(y.shape) == 1:
         y = np.array([y])
-        red = np.array([red])
-        green = np.array([green])
-        blue = np.array([blue])
-        alpha = np.array([alpha])
-    elif isinstance(alpha, int):
-        alpha = [alpha] * len(y)
+        weights = np.array([weights])
 
     seg = []
     colours = []
-    for yy, rr, gg, bb, aa in zip(y, red, green, blue, alpha):
+    for yy, ww in zip(y, weights):
         pts = np.array([x, yy]).T.reshape(-1, 1, 2)
-        seg.extend(np.concatenate([pts[:-1], pts[1:]], axis=1))
+        if len(pts) > 1:  # need at least one point to interpolate colours
+            seg.extend(np.concatenate([pts[:-1], pts[1:]], axis=1))
 
-        nseg = len(x) - 1
-        r = [0.5 * (rr[i] + rr[i + 1]) for i in range(nseg)]
-        g = [0.5 * (gg[i] + gg[i + 1]) for i in range(nseg)]
-        b = [0.5 * (bb[i] + bb[i + 1]) for i in range(nseg)]
-        a = np.ones(nseg, np.float) * aa
-        colours.extend(list(zip(r, g, b, a)))
+            nseg = len(x) - 1
+            w = [0.5 * (ww[i] + ww[i + 1]) for i in range(nseg)]
+            c = get_interpolated_colors(
+                color1, color2, color3, w, colorspace=colorspace
+            )
+            colours.extend(c.tolist())
 
-    lc = LineCollection(seg, colors=colours, rasterized=True,
-                        linewidth=linewidth, linestyles=linestyles)
+    lc = LineCollection(
+        seg, colors=colours, rasterized=True, linewidth=linewidth, linestyles=linestyles
+    )
     return lc
+
+
+def get_interpolated_colors(color1, color2, color3, weights, colorspace="lab"):
+    """
+    Interpolate colors at a number of points within a colorspace.
+
+    Args:
+        color1 (str): A color specified in any way supported by matplotlib.
+        color2 (str): A color specified in any way supported by matplotlib.
+        color3 (str): A color specified in any way supported by matplotlib.
+        weights (list): A list of weights with the shape (n, 3). Where the 3 values of
+            the last axis give the amount of color1, color2, and color3.
+        colorspace (str): The colorspace in which to perform the interpolation. The
+            allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.
+
+    Returns:
+        A list of colors, specified in the rgb format as a (n, 3) array.
+    """
+    from colormath.color_conversions import convert_color
+    from colormath.color_objects import (
+        HSVColor,
+        LabColor,
+        LCHabColor,
+        LCHuvColor,
+        XYZColor,
+        sRGBColor,
+    )
+    from matplotlib.colors import to_rgb
+
+    colorspace_mapping = {
+        "rgb": sRGBColor,
+        "hsv": HSVColor,
+        "lab": LabColor,
+        "luvlch": LCHuvColor,
+        "lablch": LCHabColor,
+        "xyz": XYZColor,
+    }
+    if colorspace not in list(colorspace_mapping.keys()):
+        raise ValueError(f"colorspace must be one of {colorspace_mapping.keys()}")
+
+    colorspace = colorspace_mapping[colorspace]
+
+    # first convert matplotlib color specification to colormath sRGB
+    color1_rgb = sRGBColor(*to_rgb(color1))
+    color2_rgb = sRGBColor(*to_rgb(color2))
+    color3_rgb = sRGBColor(*to_rgb(color3))
+
+    # now convert to the colorspace basis for interpolation
+    basis1 = np.array(
+        convert_color(color1_rgb, colorspace, target_illuminant="d50").get_value_tuple()
+    )
+    basis2 = np.array(
+        convert_color(color2_rgb, colorspace, target_illuminant="d50").get_value_tuple()
+    )
+    basis3 = np.array(
+        convert_color(color3_rgb, colorspace, target_illuminant="d50").get_value_tuple()
+    )
+
+    # ensure weights is a numpy array
+    weights = np.asarray(weights)
+
+    # perform the interpolation in the colorspace basis
+    colors = (
+        basis1 * weights[:, 0][:, None]
+        + basis2 * weights[:, 1][:, None]
+        + basis3 * weights[:, 2][:, None]
+    )
+
+    # convert colors to RGB
+    rgb_colors = [
+        convert_color(colorspace(*c), sRGBColor).get_value_tuple() for c in colors
+    ]
+
+    # ensure all rgb values are less than 1 (sometimes issues in interpolation gives
+    # values slightly over 1)
+    return np.minimum(rgb_colors, 1)
+
+
+def draw_themed_line(y, ax, orientation="horizontal"):
+    """Draw a horizontal line using the theme settings
+
+    Args:
+        y (float): Position of line in data coordinates
+        ax (Axes): Matplotlib Axes on which line is drawn
+
+    """
+
+    # Note to future developers: feel free to add plenty more optional
+    # arguments to this to mess with linestyle, zorder etc.
+    # Just .update() the options dict
+
+    themed_line_options = dict(
+        color=rcParams["grid.color"],
+        linestyle="--",
+        dashes=(5, 2),
+        zorder=0,
+        linewidth=rcParams["ytick.major.width"],
+    )
+
+    if orientation == "horizontal":
+        ax.axhline(y, **themed_line_options)
+    elif orientation == "vertical":
+        ax.axvline(y, **themed_line_options)
+    else:
+        raise ValueError(f'Line orientation "{orientation}" not supported')

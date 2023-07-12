@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -6,9 +5,9 @@
 Module containing class for generating k-points along paths from pymatgen.
 """
 
-from sumo.symmetry import Kpath
-
 from pymatgen.symmetry.bandstructure import HighSymmKpath
+
+from sumo.symmetry import Kpath
 
 
 class PymatgenKpath(Kpath):

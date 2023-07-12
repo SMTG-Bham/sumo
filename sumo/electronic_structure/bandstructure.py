@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -9,15 +8,12 @@ todo:
   * Extend get projections to allow specifying lm orbitals and atomic sites.
 """
 
-import numpy as np
 import itertools as it
+from collections import defaultdict
 from copy import deepcopy
 
-from collections import defaultdict
-
+import numpy as np
 from pymatgen.electronic_structure.core import Spin
-from pymatgen.electronic_structure.bandstructure import (BandStructure,
-                                                         BandStructureSymmLine)
 
 
 def get_projections_by_branches(bs, selection, normalise=None):
@@ -73,8 +69,8 @@ def get_projections_by_branches(bs, selection, normalise=None):
 
     branches = []
     for b in bs.branches:
-        s = b['start_index']
-        e = b['end_index'] + 1
+        s = b["start_index"]
+        e = b["end_index"] + 1
 
         branch_proj = deepcopy(projections)
         for spin, i in it.product(spins, range(len(projections))):
@@ -137,7 +133,7 @@ def get_projections(bs, selection, normalise=None):
 
     # if we are to normalise the data later we need access to all projections
     elements = bs.structure.symbol_set
-    all_orbitals = ['s', 'p', 'd', 'f']
+    all_orbitals = ["s", "p", "d", "f"]
 
     # dictio has the form: {'el1': [s, p, d, f], 'el2': [s, p, d, f]...}
     dictio = dict(zip(elements, [all_orbitals] * len(elements)))
@@ -149,18 +145,20 @@ def get_projections(bs, selection, normalise=None):
 
     # Make a defaultdict of defaultdicts
     dict_proj = defaultdict(lambda: defaultdict(dict))
-    sum_proj = dict(zip(spins, [np.zeros((nbands, nkpts))] * len(spins)))
+    sum_proj = {s: np.zeros((nbands, nkpts)) for s in spins}
 
     # store the projections for all elements and orbitals in a useable format
     for spin, element, orbital in it.product(spins, elements, all_orbitals):
 
-        # convert data to [nb][nk][projection]
-        el_orb_proj = [[all_proj[spin][nb][nk][element][orbital]
-                        for nk in range(nkpts)] for nb in range(nbands)]
+        # convert data to [nb][nk]
+        el_orb_proj = [
+            [all_proj[spin][nb][nk][element][orbital] for nk in range(nkpts)]
+            for nb in range(nbands)
+        ]
 
         dict_proj[element][orbital][spin] = np.array(el_orb_proj)
 
-        if normalise == 'all':
+        if normalise == "all":
             sum_proj[spin] += el_orb_proj
 
     # now go through the selected orbitals and extract what's needed
@@ -176,11 +174,11 @@ def get_projections(bs, selection, normalise=None):
             # even if there is only one orbital, make sure we can loop over it
             orbitals = tuple(orbitals)
 
-        proj = dict(zip(spins, [np.zeros((nbands, nkpts))] * len(spins)))
+        proj = {s: np.zeros((nbands, nkpts)) for s in spins}
         for spin, orbital in it.product(spins, orbitals):
             proj[spin] += dict_proj[element][orbital][spin]
 
-            if normalise == 'select':
+            if normalise == "select":
                 sum_proj[spin] += dict_proj[element][orbital][spin]
 
         spec_proj.append(proj)
@@ -188,14 +186,13 @@ def get_projections(bs, selection, normalise=None):
     if normalise:
         # to prevent warnings/errors relating to divide by zero,
         # catch warnings and surround divide with np.nan_to_num
-        with np.errstate(divide='ignore', invalid='ignore'):
+        with np.errstate(divide="ignore", invalid="ignore"):
             for spin, i in it.product(spins, range(len(spec_proj))):
-                spec_proj[i][spin] = np.nan_to_num(spec_proj[i][spin] /
-                                                   sum_proj[spin])
+                spec_proj[i][spin] = np.nan_to_num(spec_proj[i][spin] / sum_proj[spin])
     return spec_proj
 
 
-def get_reconstructed_band_structure(list_bs, efermi=None):
+def get_reconstructed_band_structure(list_bs, efermi=None, force_kpath_branches=True):
     """Combine a list of band structures into a single band structure.
 
     This is typically very useful when you split non self consistent
@@ -213,6 +210,8 @@ def get_reconstructed_band_structure(list_bs, efermi=None):
         efermi (:obj:`float`, optional): The Fermi energy of the reconstructed
             band structure. If `None`, an average of all the Fermi energies
             across all band structures is used.
+        force_kpath_branches (bool): Force a linemode band structure to contain
+            branches by adding repeated high-symmetry k-points in the path.
 
     Returns:
         :obj:`pymatgen.electronic_structure.bandstructure.BandStructure` or \
@@ -221,60 +220,106 @@ def get_reconstructed_band_structure(list_bs, efermi=None):
         structures in ``list_bs``.
     """
     if efermi is None:
-        efermi = sum([b.efermi for b in list_bs]) / len(list_bs)
+        efermi = sum(b.efermi for b in list_bs) / len(list_bs)
 
-    kpoints = []
-    labels_dict = {}
-    rec_lattice = list_bs[0].lattice_rec
-    nb_bands = min([list_bs[i].nb_bands for i in range(len(list_bs))])
-
-    kpoints = np.concatenate([[k.frac_coords for k in bs.kpoints]
-                              for bs in list_bs])
-
+    kpoints = np.concatenate([[k.frac_coords for k in bs.kpoints] for bs in list_bs])
+    nb_bands = min(list_bs[i].nb_bands for i in range(len(list_bs)))
     dicts = [bs.labels_dict for bs in list_bs]
     labels_dict = {k: v.frac_coords for d in dicts for k, v in d.items()}
+
+    eigenvals = {}
+    projections = {}
+    for spin in list_bs[0].bands.keys():
+        spin_bands = [bs.bands[spin][:nb_bands] for bs in list_bs]
+        eigenvals[spin] = np.concatenate(spin_bands, axis=1)
+
+        if len(list_bs[0].projections) != 0:
+            spin_projs = [bs.projections[Spin.up][:nb_bands] for bs in list_bs]
+            projections[Spin.up] = np.concatenate(spin_projs, axis=1)
+
+    bs = type(list_bs[0])(
+        kpoints,
+        eigenvals,
+        list_bs[0].lattice_rec,
+        efermi,
+        labels_dict,
+        structure=list_bs[0].structure,
+        projections=projections,
+    )
+    if force_kpath_branches:
+        return force_branches(bs)
+    else:
+        return bs
+
+
+def force_branches(bandstructure):
+    """Force a linemode band structure to contain branches.
+
+    Branches give a specific portion of the path from one high-symmetry point
+    to another. Branches are required for the plotting methods to function correctly.
+    Unfortunately, due to the pymatgen BandStructure implementation they require
+    duplicate k-points in the band structure path. To avoid this unnecessary
+    computational expense, this function can reconstruct branches in band structures
+    without the duplicate k-points.
+
+    Args:
+        bandstructure: A band structure object.
+
+    Returns:
+        A band structure with brnaches.
+    """
+    kpoints = np.array([k.frac_coords for k in bandstructure.kpoints])
+    labels_dict = {k: v.frac_coords for k, v in bandstructure.labels_dict.items()}
 
     # pymatgen band structure objects support branches. These are formed when
     # two kpoints with the same label are next to each other. This bit of code
     # will ensure that the band structure will contain branches, if it doesn't
     # already.
     dup_ids = []
+    high_sym_kpoints = tuple(map(tuple, labels_dict.values()))
     for i, k in enumerate(kpoints):
         dup_ids.append(i)
-        if (tuple(k) in tuple(map(tuple, labels_dict.values()))
-                and i != 0 and i != len(kpoints) - 1
-                and (not np.array_equal(kpoints[i + 1], k)
-                     or not np.array_equal(kpoints[i - 1], k))):
+        if (
+            tuple(k) in high_sym_kpoints
+            and i != 0
+            and i != len(kpoints) - 1
+            and (
+                not np.array_equal(kpoints[i + 1], k)
+                or not np.array_equal(kpoints[i - 1], k)
+            )
+        ):
             dup_ids.append(i)
 
     kpoints = kpoints[dup_ids]
 
     eigenvals = {}
-    eigenvals[Spin.up] = np.concatenate([bs.bands[Spin.up][:nb_bands]
-                                         for bs in list_bs], axis=1)
-    eigenvals[Spin.up] = eigenvals[Spin.up][:, dup_ids]
-
-    if list_bs[0].is_spin_polarized:
-        eigenvals[Spin.down] = np.concatenate([bs.bands[Spin.down][:nb_bands]
-                                               for bs in list_bs], axis=1)
-        eigenvals[Spin.down] = eigenvals[Spin.up][:, dup_ids]
-
     projections = {}
-    if len(list_bs[0].projections) != 0:
-        projs = [bs.projections[Spin.up][:nb_bands][dup_ids] for bs in list_bs]
-        projections[Spin.up] = np.concatenate(projs, axis=1)[:, dup_ids]
+    for spin, spin_energies in bandstructure.bands.items():
+        eigenvals[spin] = spin_energies[:, dup_ids]
+        if len(bandstructure.projections) != 0:
+            projections[spin] = bandstructure.projections[spin][:, dup_ids]
 
-        if list_bs[0].is_spin_polarized:
-            projs = [bs.projections[Spin.down][:nb_bands][dup_ids]
-                     for bs in list_bs]
-            projections[Spin.down] = np.concatenate(projs, axis=1)[:, dup_ids]
+    return type(bandstructure)(
+        kpoints,
+        eigenvals,
+        bandstructure.lattice_rec,
+        bandstructure.efermi,
+        labels_dict,
+        structure=bandstructure.structure,
+        projections=projections,
+    )
 
-    if isinstance(list_bs[0], BandStructureSymmLine):
-        return BandStructureSymmLine(kpoints, eigenvals, rec_lattice,
-                                     efermi, labels_dict,
-                                     structure=list_bs[0].structure,
-                                     projections=projections)
+
+def string_to_spin(spin_string):
+    """Function to convert 'spin' cli argument to pymatgen Spin object"""
+    if spin_string in ["up", "Up", "1", "+1"]:
+        return Spin.up
+
+    elif spin_string in ["down", "Down", "-1"]:
+        return Spin.down
+
+    elif spin_string is None:
+        return None
+
     else:
-        return BandStructure(kpoints, eigenvals, rec_lattice, efermi,
-                             labels_dict, structure=list_bs[0].structure,
-                             projections=projections)
+        raise ValueError("Unable to parse 'spin' argument")

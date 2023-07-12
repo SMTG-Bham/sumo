@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -6,16 +5,14 @@
 Module containing the base class for high-symmetry k-point path determination.
 """
 
-import spglib
-import seekpath
-
 import numpy as np
-
+import seekpath
+import spglib
 from pymatgen.core.structure import Structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
 
-class Kpath(object):
+class Kpath:
     r"""Base class providing helper functions for generating k-point paths.
 
     This class should not be used directly. Instead, one of the
@@ -49,15 +46,15 @@ class Kpath(object):
         std = spglib.refine_cell(sym._cell, symprec=symprec)
         self._seek_data = seekpath.get_path(std)
 
-        prim_lattice = self._seek_data['primitive_lattice']
-        prim_scaled_positions = self._seek_data['primitive_positions']
-        prim_numbers = self._seek_data['primitive_types']
+        prim_lattice = self._seek_data["primitive_lattice"]
+        prim_scaled_positions = self._seek_data["primitive_positions"]
+        prim_numbers = self._seek_data["primitive_types"]
         prim_atoms = [sym._unique_species[i - 1] for i in prim_numbers]
         self.prim = Structure(prim_lattice, prim_atoms, prim_scaled_positions)
 
-        conv_lattice = self._seek_data['conv_lattice']
-        conv_scaled_positions = self._seek_data['conv_positions']
-        conv_numbers = self._seek_data['conv_types']
+        conv_lattice = self._seek_data["conv_lattice"]
+        conv_scaled_positions = self._seek_data["conv_positions"]
+        conv_numbers = self._seek_data["conv_types"]
         conv_atoms = [sym._unique_species[i - 1] for i in conv_numbers]
         self.conv = Structure(conv_lattice, conv_atoms, conv_scaled_positions)
 
@@ -75,8 +72,9 @@ class Kpath(object):
             bool: ``True`` if the structure is the same as the standard
             primitive, otherwise ``False``.
         """
-        return np.allclose(self.structure.lattice.matrix,
-                           self.prim.lattice.matrix, atol=atol)
+        return np.allclose(
+            self.structure.lattice.matrix, self.prim.lattice.matrix, atol=atol
+        )
 
     def get_kpoints(self, line_density=20, cart_coords=False, phonopy=False):
         r"""Return a list of k-points and labels along the high-symmetry path.
@@ -138,17 +136,23 @@ class Kpath(object):
                 start = np.array(self.kpoints[b[i - 1]])
                 end = np.array(self.kpoints[b[i]])
                 distance = np.linalg.norm(
-                    recip_lattice.get_cartesian_coords(start) -
-                    recip_lattice.get_cartesian_coords(end))
+                    recip_lattice.get_cartesian_coords(start)
+                    - recip_lattice.get_cartesian_coords(end)
+                )
                 nb = int(np.ceil(distance * line_density))
-                sym_point_labels.extend([b[i - 1]] + [''] * (nb - 1))
+                sym_point_labels.extend([b[i - 1]] + [""] * (nb - 1))
 
                 limit = nb + 1 if phonopy else nb
-                kpts = [recip_lattice.get_cartesian_coords(start)
-                        + float(i) / float(nb) *
-                        (recip_lattice.get_cartesian_coords(end)
-                        - recip_lattice.get_cartesian_coords(start))
-                        for i in range(0, limit)]
+                kpts = [
+                    recip_lattice.get_cartesian_coords(start)
+                    + float(i)
+                    / float(nb)
+                    * (
+                        recip_lattice.get_cartesian_coords(end)
+                        - recip_lattice.get_cartesian_coords(start)
+                    )
+                    for i in range(0, limit)
+                ]
 
                 if phonopy:
                     list_k_points.append(kpts)
@@ -172,7 +176,7 @@ class Kpath(object):
             for i, path_branch in enumerate(self.path):
                 for n, label in enumerate(path_branch):
                     if i != 0 and n == 0:
-                        sym_point_labels[-1] += " | {}".format(label)
+                        sym_point_labels[-1] += f" | {label}"
                     else:
                         sym_point_labels.append(label)
 
@@ -180,12 +184,15 @@ class Kpath(object):
             return list_k_points, sym_point_labels
         else:
             if phonopy:
-                frac_k_points = [[recip_lattice.get_fractional_coords(k)
-                                 for k in p] for p in list_k_points]
+                frac_k_points = [
+                    [recip_lattice.get_fractional_coords(k) for k in p]
+                    for p in list_k_points
+                ]
                 frac_k_points = frac_k_points
             else:
-                frac_k_points = [recip_lattice.get_fractional_coords(k)
-                                 for k in list_k_points]
+                frac_k_points = [
+                    recip_lattice.get_fractional_coords(k) for k in list_k_points
+                ]
             return frac_k_points, sym_point_labels
 
     @property
@@ -195,7 +202,7 @@ class Kpath(object):
 
             {'\Gamma': [0., 0., 0.], 'X': [0.5, 0. 0.]}
         """
-        return self._kpath['kpoints']
+        return self._kpath["kpoints"]
 
     @property
     def path(self):
@@ -205,7 +212,7 @@ class Kpath(object):
 
             [['\Gamma', 'X', 'C'], ['\Gamma', 'Y']].
         """
-        return self._kpath['path']
+        return self._kpath["path"]
 
     @property
     def lattice_type(self):
@@ -217,12 +224,12 @@ class Kpath(object):
     @property
     def spg_symbol(self):
         """str: The international space group symbol."""
-        return self._spg_data['international']
+        return self._spg_data["international"]
 
     @property
     def spg_number(self):
         """int: The international space group number."""
-        return self._spg_data['number']
+        return self._spg_data["number"]
 
     @property
     def path_string(self):
@@ -231,7 +238,7 @@ class Kpath(object):
 
             "X -> Gamma | Y -> Z"
         """
-        return ' | '.join([' -> '.join(subpath) for subpath in self.path])
+        return " | ".join([" -> ".join(subpath) for subpath in self.path])
 
     @staticmethod
     def get_lattice_type(number):
@@ -246,11 +253,19 @@ class Kpath(object):
         Returns:
             str: The lattice crystal system.
         """
-        f = lambda i, j: i <= number <= j
-        cs = {'triclinic': (1, 2), 'monoclinic': (3, 15),
-              'orthorhombic': (16, 74), 'tetragonal': (75, 142),
-              'trigonal': (143, 167), 'hexagonal': (168, 194),
-              'cubic': (195, 230)}
+
+        def f(i, j):
+            return i <= number <= j
+
+        cs = {
+            "triclinic": (1, 2),
+            "monoclinic": (3, 15),
+            "orthorhombic": (16, 74),
+            "tetragonal": (75, 142),
+            "trigonal": (143, 167),
+            "hexagonal": (168, 194),
+            "cubic": (195, 230),
+        }
 
         crystal_system = None
         for k, v in cs.items():

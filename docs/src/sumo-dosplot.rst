@@ -214,14 +214,14 @@ existing file if present.
 
 To plot with Sumo, provide either file. If a single-channel file is
 provided, Sumo will plot a TDOS, e.g.::
-  
+
   sumo-dosplot --code questaal -f tdos.ext
 
 If a multichannel PDOS file is provided, this will be interpreted as
 if decomposed by site, l, and m. The *site.ext* file is read in, and
 if present a file named *tdos.ext* will also be used to add the total
 DOS.::
-  
+
   sumo-dosplot --code questaal -f dos.ext
 
 The `--elements` and `--orbitals` options may be used to specify which
@@ -229,6 +229,16 @@ channels are grouped and/or shown. Note that empty sites may be
 included in the output if they have a non-negligible contribution to
 the DOS. The `--elements` switch may be useful for hiding these if
 desired.
+
+Castep
+~~~~~~
+
+When plotting from CASTEP, give the *seedname.bands* path as
+`--filename`.  If a *.pdos_bin* file is in the same directory,
+orbital-project DOS plots are possible; this requires the *.cell* file
+to also be available. Otherwise, a total DOS will be obtained by
+summing over the eigenvalue data in the *.bands* file.
+
 
 Command-Line Interface
 ----------------------

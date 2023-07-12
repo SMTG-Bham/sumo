@@ -144,6 +144,22 @@ the output should look like::
    :height: 400px
    :align: center
 
+**RGB Mode (custom colours)**
+
+Custom colours can be specified in RGB mode using the ``--colour1``, ``--colour2``, and
+``colour3`` options. Furthermore, by default, colour interpolation is performed in LAB
+colourspace for more natural transitions between colours. An alternative colourspace
+can be specified using the ``--colourspace`` option.
+
+For example, if the following command is run in the ``sumo/tests/data/Cs2SnI6/bandstructure`` directory,
+the output should look like::
+
+    sumo-bandplot --project Sn.s,Sn.p,I --ymin -4 --width 4 --colour1 "#CC33A7" --colour2 "#A7CC33" --colour3 "#33A7CC"
+
+.. image:: figures/band_projected_rgb_colours.png
+   :height: 400px
+   :align: center
+
 **Stacked Mode**
 
 If using ``--mode stacked``, the element or orbital contributions are drawn as a series of stacked

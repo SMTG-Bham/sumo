@@ -1,43 +1,54 @@
-figure.figsize : 6., 6.
+figure.figsize : 3.2, 3.2
 figure.dpi: 400
 
 axes.prop_cycle: cycler('color', ['f0a3ff', '0075dc', '993f00', '4c005c', '426600', 'ff0010', '9dcc00', 'c20088', '003380', 'ffa405', 'ffff00', 'ff5005', '5ef1f2', '740aff', '990000', '00998f', '005c31', '2bce48', 'ffcc99', '94ffb5', '8f7c00', '6fa8bb', '808080'])
 
 font.family : sans-serif
-font.sans-serif : Whitney Book Extended, Catamaran, Helvetica, Liberation Sans, Andale Sans, Arial
-
-font.size : 22
+font.sans-serif : Whitney Pro, Whitney Book Extended, Catamaran, Helvetica, Liberation Sans, Andale Sans, Arial
 
 text.usetex : False
+font.size : 11.5
+pdf.fonttype : 3
 
-axes.titlesize : 22
-axes.linewidth       : 1.5
+legend.handlelength  : 1.5
+legend.fontsize     : 11.5
 
-grid.linewidth       : 1.5
+axes.titlesize : 11.5
+axes.labelsize : 11.5
+axes.linewidth       : 0.8
+axes.axisbelow: False
+
+grid.linewidth       : 0.8
 grid.color           : black
+grid.linestyle       : -
 
-lines.linewidth : 2
+lines.linewidth : 1.1
+lines.markersize: 4
 
-xtick.major.size     : 15
+xtick.major.size     : 3.5
 xtick.minor.size     : 0
-xtick.major.width    : 1.5
-xtick.minor.width    : 1.5
-xtick.major.pad      : 7
+xtick.major.width    : 0.8
+xtick.minor.width    : 0.8
+xtick.major.pad      : 4
 xtick.direction      : in
 xtick.top            : False
 xtick.bottom         : True
 
-ytick.major.size     : 15
+ytick.major.size     : 3.5
 ytick.minor.size     : 0
-ytick.major.width    : 1.5
-ytick.minor.width    : 1.5
-ytick.major.pad      : 7
+ytick.major.width    : 0.8
+ytick.minor.width    : 0.8
+ytick.major.pad      : 2
 ytick.direction      : in
 ytick.right          : False
 ytick.left           : True
 
-pdf.fonttype : 42
-mathtext.fontset : stixsans
-
-legend.handlelength  : 1.5
-legend.fontsize     : 19
+mathtext.fontset : custom
+mathtext.bf: sans:semibold
+mathtext.cal: cursive
+mathtext.it: sans:italic
+mathtext.rm: sans
+mathtext.sf: sans
+mathtext.tt: sans
+mathtext.fallback: stixsans
+mathtext.default: it

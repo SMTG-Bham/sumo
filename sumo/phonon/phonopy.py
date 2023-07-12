@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -6,18 +5,26 @@
 This module provides helper functions for dealing with phonopy.
 """
 
-import sys
 import logging
+import sys
 
 from phonopy import Phonopy, file_IO
 from phonopy.structure.cells import determinant
-from phonopy.units import VaspToTHz, Hartree, Bohr
-
+from phonopy.units import Bohr, Hartree, VaspToTHz
 from pymatgen.io.phonopy import get_phonopy_structure
 
 
-def load_phonopy(filename, structure, dim, symprec=0.01, primitive_matrix=None,
-                 factor=VaspToTHz, symmetrise=True, born=None, write_fc=False):
+def load_phonopy(
+    filename,
+    structure,
+    dim,
+    symprec=1e-5,
+    primitive_matrix=None,
+    factor=VaspToTHz,
+    symmetrise=True,
+    born=None,
+    write_fc=False,
+):
     """Load phonopy output and return an ``phonopy.Phonopy`` object.
 
     Args:
@@ -50,60 +57,63 @@ def load_phonopy(filename, structure, dim, symprec=0.01, primitive_matrix=None,
     num_atom = unitcell.get_number_of_atoms()
     num_satom = determinant(dim) * num_atom
 
-    phonon = Phonopy(unitcell, dim, primitive_matrix=primitive_matrix,
-                     factor=factor, symprec=symprec)
+    phonon = Phonopy(
+        unitcell, dim, primitive_matrix=primitive_matrix, factor=factor, symprec=symprec
+    )
 
-    if 'FORCE_CONSTANTS' == filename or '.hdf5' in filename:
+    if "FORCE_CONSTANTS" in filename or ".hdf5" in filename:
         # if force constants exist, use these to avoid recalculating them
-        if '.hdf5' in filename:
+        if ".hdf5" in filename:
             fc = file_IO.read_force_constants_hdf5(filename)
 
-        elif 'FORCE_CONSTANTS' == filename:
+        elif "FORCE_CONSTANTS" in filename:
             fc = file_IO.parse_FORCE_CONSTANTS(filename=filename)
 
         if fc.shape[0] != num_satom:
-            msg = ("\nNumber of atoms in supercell is not consistent with the "
-                   "matrix shape of\nforce constants read from {}.\nPlease"
-                   "carefully check --dim.")
+            msg = (
+                "\nNumber of atoms in supercell is not consistent with the "
+                "matrix shape of\nforce constants read from {}.\nPlease"
+                "carefully check --dim."
+            )
             logging.error(msg.format(filename))
             sys.exit()
+        phonon.force_constants = fc
 
-        phonon.set_force_constants(fc)
-
-    elif 'FORCE_SETS' == filename:
+    elif "FORCE_SETS" in filename:
         # load the force sets from file and calculate force constants
-        fs = file_IO.parse_FORCE_SETS()
+        fs = file_IO.parse_FORCE_SETS(filename=filename)
 
-        if fs['natom'] != num_satom:
-            msg = ("\nNumber of atoms in supercell is not consistent with the "
-                   "the data in FORCE_SETS\nPlease carefully check --dim.")
+        if fs["natom"] != num_satom:
+            msg = (
+                "\nNumber of atoms in supercell is not consistent with the "
+                "the data in FORCE_SETS\nPlease carefully check --dim."
+            )
             logging.error(msg.format(filename))
             sys.exit()
 
-        phonon.set_displacement_dataset(fs)
+        phonon.dataset = fs
 
         logging.info("Calculating force constants...")
         phonon.produce_force_constants()
 
-    if born:
-        # load born parameters from a file
-        nac_params = file_IO.parse_BORN(phonon._primitive,
-                                        symprec=symprec,
-                                        filename=born)
-
-        # set the nac unit conversion factor manual,  specific to VASP
-        nac_params['factor'] = Hartree * Bohr
-        phonon.set_nac_params(nac_params)
-
     if symmetrise:
         phonon.symmetrize_force_constants()
 
-    if write_fc == 'hdf5':
-        file_IO.write_force_constants_to_hdf5(phonon.get_force_constants())
+    if born:
+        # load born parameters from a file
+        nac_params = file_IO.parse_BORN(
+            phonon._primitive, symprec=symprec, filename=born
+        )
+        # set the nac unit conversion factor manual,  specific to VASP
+        nac_params["factor"] = Hartree * Bohr
+        phonon.nac_params = nac_params
+
+    if write_fc == "hdf5":
+        file_IO.write_force_constants_to_hdf5(phonon.force_constants)
         logging.info("Force constants written to force_constants.hdf5.")
 
     elif write_fc:
-        file_IO.write_FORCE_CONSTANTS(phonon.get_force_constants())
+        file_IO.write_FORCE_CONSTANTS(phonon.force_constants)
         logging.info("Force constants written to FORCE_CONSTANTS.")
 
     return phonon

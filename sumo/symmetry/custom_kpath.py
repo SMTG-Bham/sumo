@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Scanlon Materials Theory Group
 # Distributed under the terms of the MIT License.
 
@@ -59,10 +58,9 @@ class CustomKpath(Kpath):
 
         flat_kpts = chain(*kpt_list)
         flat_path_labels = chain(*path_labels)
-        kpt_dict = {label: kpt for label, kpt in zip(flat_path_labels,
-                                                     flat_kpts)}
+        kpt_dict = {label: kpt for label, kpt in zip(flat_path_labels, flat_kpts)}
 
-        self._kpath = {'kpoints': kpt_dict, 'path': path_labels}
+        self._kpath = {"kpoints": kpt_dict, "path": path_labels}
 
     @staticmethod
     def _auto_kpath_labels(kpt_list):
@@ -91,11 +89,12 @@ class CustomKpath(Kpath):
             if tuple(kpt) in kpt_labels:
                 continue
             else:
-                kpt_labels.update({tuple(kpt): '({})'.format(label_i)})
+                kpt_labels.update({tuple(kpt): f"({label_i})"})
                 label_i += 1
 
         # Read out into nested lists
-        kpath_labels = [[kpt_labels[tuple(kpt)] for kpt in segment]
-                        for segment in kpt_list]
+        kpath_labels = [
+            [kpt_labels[tuple(kpt)] for kpt in segment] for segment in kpt_list
+        ]
 
         return kpath_labels

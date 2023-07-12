@@ -1,0 +1,21 @@
+%block lattice_cart
+ 0.000000  2.710000  2.710000
+ 2.710000  0.000000  2.710000
+ 2.710000  2.710000  0.000000
+%endblock lattice_cart
+
+%block positions_abs
+Zn  0.000000  0.000000  0.000000
+S  1.355000  1.355000  1.355000
+%endblock positions_abs
+
+%block species_pot
+Zn NCP
+S  NCP
+%endblock species_pot
+
+fix_all_cell:      true
+fix_all_ions:      true
+symmetry_generate: true
+kpoint_mp_grid:    4 4 4
+snap_to_symmetry:  true
