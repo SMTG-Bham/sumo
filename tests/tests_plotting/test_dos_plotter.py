@@ -1,7 +1,6 @@
 import unittest
-from os.path import abspath
-
-from pkg_resources import Requirement, resource_filename
+import importlib.resources
+import os
 
 try:
     import configparser
@@ -17,13 +16,12 @@ from sumo.plotting.dos_plotter import get_cached_colour
 
 class GetColourTestCase(unittest.TestCase):
     def setUp(self):
-        # Open default CLI colours config
-        config_path = resource_filename(
-            Requirement.parse("sumo"), "sumo/plotting/orbital_colours.conf"
+        config_path = os.path.join(
+            importlib.resources.files("sumo.plotting"), "orbital_colours.conf"
         )
 
         self.config = configparser.ConfigParser()
-        self.config.read(abspath(config_path))
+        self.config.read(os.path.abspath(config_path))
 
     def test_get_colour_cache(self):
         """Check colour caching"""
