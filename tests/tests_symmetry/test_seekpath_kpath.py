@@ -1,8 +1,8 @@
 import unittest
 import warnings
-from os.path import join as path_join
+import os
 
-import pkg_resources
+from importlib_resources import files
 from pymatgen.core.structure import Structure
 
 from sumo.symmetry.seekpath_kpath import SeekpathKpath
@@ -10,9 +10,8 @@ from sumo.symmetry.seekpath_kpath import SeekpathKpath
 
 class SeekpathKpathTestCase(unittest.TestCase):
     def setUp(self):
-        ge_poscar = pkg_resources.resource_filename(
-            __name__, path_join("..", "data", "Ge", "POSCAR")
-        )
+        ge_poscar = os.path.join(files(__name__), "..", "data", "Ge", "POSCAR")
+
         with warnings.catch_warnings():  # Not interested in Pymatgen warnings
             warnings.simplefilter("ignore")
             self.ge_structure = Structure.from_file(ge_poscar)

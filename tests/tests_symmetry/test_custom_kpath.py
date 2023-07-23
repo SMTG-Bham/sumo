@@ -1,8 +1,8 @@
 import unittest
 import warnings
-from os.path import join as path_join
+import os
 
-import pkg_resources
+from importlib_resources import files
 from pymatgen.core.structure import Structure
 
 from sumo.symmetry.custom_kpath import CustomKpath
@@ -10,9 +10,7 @@ from sumo.symmetry.custom_kpath import CustomKpath
 
 class CustomKpathTestCase(unittest.TestCase):
     def setUp(self):
-        poscar = pkg_resources.resource_filename(
-            __name__, path_join("..", "data", "Ge", "POSCAR")
-        )
+        poscar = os.path.join(files(__name__), "..", "data", "Ge", "POSCAR")
         with warnings.catch_warnings():  # Not interested in Pymatgen warnings
             warnings.simplefilter("ignore")
             self.structure = Structure.from_file(poscar)

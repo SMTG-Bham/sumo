@@ -5,9 +5,8 @@ try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
-# Can use importlib.resources in python>=3.9
-from importlib_resources import files
 
+from importlib_resources import files
 import matplotlib.pyplot
 
 import sumo.plotting

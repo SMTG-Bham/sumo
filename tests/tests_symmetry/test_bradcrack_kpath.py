@@ -1,8 +1,8 @@
 import unittest
 import warnings
-from os.path import join as path_join
+import os
 
-import pkg_resources
+from importlib_resources import files
 from pymatgen.core.structure import Structure
 
 from sumo.symmetry.brad_crack_kpath import BradCrackKpath
@@ -11,8 +11,8 @@ from sumo.symmetry.seekpath_kpath import SeekpathKpath
 
 class BradCrackKpathTestCase(unittest.TestCase):
     def setUp(self):
-        poscar = pkg_resources.resource_filename(
-            __name__, path_join("..", "data", "Cs2SnI6", "dos", "vasprun.xml.gz")
+        poscar = os.path.join(
+            files(__name__), "..", "data", "Cs2SnI6", "dos", "vasprun.xml.gz"
         )
         with warnings.catch_warnings():  # Not interested in Pymatgen warnings
             warnings.simplefilter("ignore")
@@ -27,7 +27,9 @@ class BradCrackKpathTestCase(unittest.TestCase):
             "triclinic",
         )
         self.assertEqual(
-            BradCrackKpath._get_bravais_lattice("Fd-3m", "cubic", 5.66, 5.66, 5.66, 0),
+            BradCrackKpath._get_bravais_lattice(
+                "Fd-3m", "cubic", 5.66, 5.66, 5.66, 0
+            ),
             "cubic_f",
         )
 

@@ -1,11 +1,11 @@
 import json
 import unittest
-from os.path import join as path_join
+import os
 
+from importlib_resources import files
 from monty.io import gzip
 from monty.json import MontyDecoder
 from numpy.testing import assert_array_almost_equal
-from pkg_resources import resource_filename
 from pymatgen.core.structure import Structure
 from pymatgen.electronic_structure.core import Spin
 
@@ -23,20 +23,20 @@ _ry_to_ev = 13.605693009
 
 class CastepCellTestCase(unittest.TestCase):
     def setUp(self):
-        self.si_cell = resource_filename(
-            __name__, path_join("..", "data", "Si", "Si2.cell")
+        self.si_cell = os.path.join(
+            files(__name__), "..", "data", "Si", "Si2.cell"
         )
-        self.si_cell_alt = resource_filename(
-            __name__, path_join("..", "data", "Si", "Si2-alt.cell")
+        self.si_cell_alt = os.path.join(
+            files(__name__), "..", "data", "Si", "Si2-alt.cell"
         )
-        self.zns_band_cell = resource_filename(
-            __name__, path_join("..", "data", "ZnS", "zns.cell")
+        self.zns_band_cell = os.path.join(
+            files(__name__), "..", "data", "ZnS", "zns.cell"
         )
-        self.zns_singlepoint_cell = resource_filename(
-            __name__, path_join("..", "data", "ZnS", "zns-sp.cell")
+        self.zns_singlepoint_cell = os.path.join(
+            files(__name__), "..", "data", "ZnS", "zns-sp.cell"
         )
-        si_structure_file = resource_filename(
-            __name__, path_join("..", "data", "Si", "Si8.json")
+        si_structure_file = os.path.join(
+            files(__name__), "..", "data", "Si", "Si8.json"
         )
         self.si_structure = Structure.from_file(si_structure_file)
 
@@ -51,7 +51,8 @@ class CastepCellTestCase(unittest.TestCase):
     def test_castep_cell_from_singlepoint_file(self):
         cc = CastepCell.from_file(self.zns_singlepoint_cell)
         self.assertEqual(
-            set(cc.blocks.keys()), {"lattice_cart", "positions_abs", "species_pot"}
+            set(cc.blocks.keys()),
+            {"lattice_cart", "positions_abs", "species_pot"},
         )
         self.assertEqual(
             {k: v.value for k, v in cc.tags.items()},
@@ -88,7 +89,8 @@ class CastepCellTestCase(unittest.TestCase):
             cell.blocks["positions_frac"].values[0], ["Si", "0.0", "0.0", "0.0"]
         )
         self.assertEqual(
-            cell.blocks["positions_frac"].values[7], ["Si", "0.75", "0.75", "0.25"]
+            cell.blocks["positions_frac"].values[7],
+            ["Si", "0.75", "0.75", "0.25"],
         )
 
 
@@ -100,18 +102,17 @@ class CastepDosNiOTestCase(unittest.TestCase):
             "cell_file": "NiO.cell",
         }
         for key, value in nio_files.items():
-            nio_files[key] = resource_filename(
-                __name__, path_join("..", "data", "NiO", value)
+            nio_files[key] = os.path.join(
+                files(__name__), "..", "data", "NiO", value
             )
+
         self.read_dos_kwargs = nio_files
 
         json_files = {"dos": "dos-pmg.json.gz", "pdos": "pdos-pmg.json.gz"}
         self.ref_data = {}
 
         for key, value in json_files.items():
-            filename = resource_filename(
-                __name__, path_join("..", "data", "NiO", value)
-            )
+            filename = os.path.join(files(__name__), "..", "data", "NiO", value)
 
             with gzip.open(filename) as f:
                 self.ref_data[key] = json.load(f, cls=MontyDecoder)
@@ -151,17 +152,17 @@ class CastepDosNiOTestCase(unittest.TestCase):
 
 class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
     def setUp(self):
-        self.si_bands = resource_filename(
-            __name__, path_join("..", "data", "Si", "Si2.bands")
+        self.si_bands = os.path.join(
+            files(__name__), "..", "data", "Si", "Si2.bands"
         )
-        self.si_cell = resource_filename(
-            __name__, path_join("..", "data", "Si", "Si2.cell")
+        self.si_cell = os.path.join(
+            files(__name__), "..", "data", "Si", "Si2.cell"
         )
-        self.si_cell_alt = resource_filename(
-            __name__, path_join("..", "data", "Si", "Si2-alt.cell")
+        self.si_cell_alt = os.path.join(
+            files(__name__), "..", "data", "Si", "Si2-alt.cell"
         )
-        self.si_header_ref = resource_filename(
-            __name__, path_join("..", "data", "Si", "Si2.bands_header.json")
+        self.si_header_ref = os.path.join(
+            files(__name__), "..", "data", "Si", "Si2.bands_header.json"
         )
 
         self.ref_labels = {
@@ -181,12 +182,16 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
     def test_castep_bands_read_eigenvalues(self):
         with open(self.si_header_ref) as f:
             ref_header = json.load(f)
-        kpoints, weights, eigenvals = read_bands_eigenvalues(self.si_bands, ref_header)
+        kpoints, weights, eigenvals = read_bands_eigenvalues(
+            self.si_bands, ref_header
+        )
 
         for i, k in enumerate([0.5, 0.36111111, 0.63888889]):
             self.assertAlmostEqual(kpoints[4][i], k)
 
-        self.assertAlmostEqual(eigenvals[Spin.up][2, 4], 0.09500443 * _ry_to_ev * 2)
+        self.assertAlmostEqual(
+            eigenvals[Spin.up][2, 4], 0.09500443 * _ry_to_ev * 2
+        )
 
         for weight in weights:
             self.assertAlmostEqual(weight, 0.02272727)
@@ -204,8 +209,8 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
 
 class CastepBandStructureTestCaseNickel(unittest.TestCase):
     def setUp(self):
-        self.ni_cell = resource_filename(
-            __name__, path_join("..", "data", "Ni", "ni-band.cell")
+        self.ni_cell = os.path.join(
+            files(__name__), "..", "data", "Ni", "ni-band.cell"
         )
 
         self.ref_labels = {
@@ -224,14 +229,15 @@ class CastepBandStructureTestCaseNickel(unittest.TestCase):
 
 class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
     def setUp(self):
-        self.fe_bands = resource_filename(
-            __name__, path_join("..", "data", "Fe", "Fe.bands")
+        self.fe_bands = os.path.join(
+            files(__name__), "..", "data", "Fe", "Fe.bands"
         )
-        self.fe_cell = resource_filename(
-            __name__, path_join("..", "data", "Fe", "Fe.cell")
+
+        self.fe_cell = os.path.join(
+            files(__name__), "..", "data", "Fe", "Fe.cell"
         )
-        self.fe_header_ref = resource_filename(
-            __name__, path_join("..", "data", "Fe", "Fe.bands_header.json")
+        self.fe_header_ref = os.path.join(
+            files(__name__), "..", "data", "Fe", "Fe.bands_header.json"
         )
 
     def test_castep_bands_read_header(self):
@@ -243,8 +249,8 @@ class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
 
 class BandStructureTestCasePathBreak(unittest.TestCase):
     def setUp(self):
-        self.pt_cell = resource_filename(
-            __name__, path_join("..", "data", "Pt", "Pt.cell")
+        self.pt_cell = os.path.join(
+            files(__name__), "..", "data", "Pt", "Pt.cell"
         )
         self.ref_labels = {
             r"\Gamma": (0.0, 0.0, 0.0),
@@ -252,7 +258,7 @@ class BandStructureTestCasePathBreak(unittest.TestCase):
             "U": (0.625, 0.25, 0.625),
             "K": (0.375, 0.375, 0.75),
             "L": (0.5, 0.5, 0.5),
-            "W": (0.5, 0.25, 0.75)
+            "W": (0.5, 0.25, 0.75),
         }
 
     def test_castep_parse_break_in_k_path(self):
@@ -266,15 +272,14 @@ class BandStructureTestCasePathBreak(unittest.TestCase):
 #   sumo-phonon-bandplot -f zns.phonon --units cm-1 --to-json zns_phonon.json
 class CastepPhononTestCaseZincblende(unittest.TestCase):
     def setUp(self):
-        self.zns_phonon = resource_filename(
-            __name__, path_join("..", "data", "ZnS", "zns.phonon")
+        self.zns_phonon = os.path.join(
+            files(__name__), "..", "data", "Zns", "zns.phonon"
         )
-
-        self.zns_cell = resource_filename(
-            __name__, path_join("..", "data", "ZnS", "zns.cell")
+        self.zns_cell = os.path.join(
+            files(__name__), "..", "data", "Zns", "zns.cell"
         )
-        self.zns_phonon_ref = resource_filename(
-            __name__, path_join("..", "data", "ZnS", "zns_phonon.json")
+        self.zns_phonon_ref = os.path.join(
+            files(__name__), "..", "data", "Zns", "zns_phonon.json"
         )
 
     def test_castep_phonon_read_bands(self):
@@ -296,7 +301,9 @@ class CastepPhononTestCaseZincblende(unittest.TestCase):
         )
         assert_array_almost_equal(bs_dict["qpoints"], ref_dict["qpoints"])
         self.assertEqual(bs_dict["labels_dict"], ref_dict["labels_dict"])
-        self.assertEqual(bs_dict["structure"]["sites"], ref_dict["structure"]["sites"])
+        self.assertEqual(
+            bs_dict["structure"]["sites"], ref_dict["structure"]["sites"]
+        )
         assert_array_almost_equal(
             bs_dict["structure"]["lattice"]["matrix"],
             ref_dict["structure"]["lattice"]["matrix"],
