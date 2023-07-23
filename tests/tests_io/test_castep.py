@@ -273,18 +273,14 @@ class BandStructureTestCasePathBreak(unittest.TestCase):
 class CastepPhononTestCaseZincblende(unittest.TestCase):
     def setUp(self):
         self.zns_phonon = os.path.join(
-            files("tests"), "data", "Zns", "zns.phonon"
+            files("tests"), "data", "ZnS", "zns.phonon"
         )
         self.zns_cell = os.path.join(
-            files("tests"), "data", "Zns", "zns.cell"
+            files("tests"), "data", "ZnS", "zns.cell"
         )
         self.zns_phonon_ref = os.path.join(
-            files("tests"), "data", "Zns", "zns_phonon.json"
+            files("tests"), "data", "ZnS", "zns_phonon.json"
         )
-        import logging
-        logging.warning(f"zns_phonon_ref: {self.zns_phonon_ref}")
-        logging.warning(f"zns_phonon: {self.zns_phonon}")
-        logging.warning(f"zns_cell: {self.zns_cell}")
 
     def test_castep_phonon_read_bands(self):
         castep_phonon = CastepPhonon.from_file(self.zns_phonon)
