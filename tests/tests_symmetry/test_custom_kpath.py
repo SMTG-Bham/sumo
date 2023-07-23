@@ -10,7 +10,7 @@ from sumo.symmetry.custom_kpath import CustomKpath
 
 class CustomKpathTestCase(unittest.TestCase):
     def setUp(self):
-        poscar = os.path.join(files(__name__), "..", "data", "Ge", "POSCAR")
+        poscar = os.path.join(files("tests"), "data", "Ge", "POSCAR")
         with warnings.catch_warnings():  # Not interested in Pymatgen warnings
             warnings.simplefilter("ignore")
             self.structure = Structure.from_file(poscar)
@@ -27,7 +27,8 @@ class CustomKpathTestCase(unittest.TestCase):
         ]
 
         self.assertEqual(
-            CustomKpath._auto_kpath_labels(kpts_flat), [["(1)", "(2)", "(3)", "(4)"]]
+            CustomKpath._auto_kpath_labels(kpts_flat),
+            [["(1)", "(2)", "(3)", "(4)"]],
         )
         self.assertEqual(
             CustomKpath._auto_kpath_labels(kpts_multisegment),

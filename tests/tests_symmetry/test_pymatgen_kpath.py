@@ -12,9 +12,9 @@ from sumo.symmetry.pymatgen_kpath import PymatgenKpath
 class SeekpathKpathTestCase(unittest.TestCase):
     def setUp(self):
         zno_poscar = os.path.join(
-            files(__name__), "..", "data", "ZnO", "POSCAR"
+            files("tests"), "data", "ZnO", "POSCAR"
         )
-        hgs_poscar = os.path.join(files(__name__), "..", "data", "Ge", "POSCAR")
+        hgs_poscar = os.path.join(files("tests"), "data", "Ge", "POSCAR")
 
         with warnings.catch_warnings():  # Not interested in Pymatgen warnings
             warnings.simplefilter("ignore")

@@ -10,7 +10,7 @@ from sumo.symmetry.seekpath_kpath import SeekpathKpath
 
 class SeekpathKpathTestCase(unittest.TestCase):
     def setUp(self):
-        ge_poscar = os.path.join(files(__name__), "..", "data", "Ge", "POSCAR")
+        ge_poscar = os.path.join(files("tests"), "data", "Ge", "POSCAR")
 
         with warnings.catch_warnings():  # Not interested in Pymatgen warnings
             warnings.simplefilter("ignore")

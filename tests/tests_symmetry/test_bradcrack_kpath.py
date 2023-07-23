@@ -12,7 +12,7 @@ from sumo.symmetry.seekpath_kpath import SeekpathKpath
 class BradCrackKpathTestCase(unittest.TestCase):
     def setUp(self):
         poscar = os.path.join(
-            files(__name__), "..", "data", "Cs2SnI6", "dos", "vasprun.xml.gz"
+            files("tests"), "data", "Cs2SnI6", "dos", "vasprun.xml.gz"
         )
         with warnings.catch_warnings():  # Not interested in Pymatgen warnings
             warnings.simplefilter("ignore")

@@ -12,10 +12,10 @@ import sumo.phonon.phonopy
 class PhonopyTestCase(unittest.TestCase):
     def setUp(self):
         self.phonon_data = os.path.join(
-            files(__name__), "..", "data", "RbSnI6", "phonopy", "FORCE_SETS"
+            files("tests"), "data", "RbSnI6", "phonopy", "FORCE_SETS"
         )
         poscar_path = os.path.join(
-            files(__name__), "..", "data", "RbSnI6", "phonopy", "POSCAR"
+            files("tests"), "data", "RbSnI6", "phonopy", "POSCAR"
         )
         phonon_poscar = Poscar.from_file(poscar_path)
         self.phonon_structure = phonon_poscar.structure

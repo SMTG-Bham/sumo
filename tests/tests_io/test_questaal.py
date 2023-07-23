@@ -11,7 +11,7 @@ from sumo.io.questaal import QuestaalInit, dielectric_from_file
 class QuestaalOpticsTestCase(unittest.TestCase):
     def setUp(self):
         self.bse_path = os.path.join(
-            files(__name__), "..", "data", "SnO2", "eps_BSE.out"
+            files("tests"), "data", "SnO2", "eps_BSE.out"
         )
 
     def test_optics_from_bethesalpeter(self):
@@ -172,7 +172,7 @@ class QuestaalInitTestCase(unittest.TestCase):
             QuestaalInit(lattice, site)
 
     def test_init_from_file(self):
-        zno_path = os.path.join(files(__name__), "..", "data", "ZnO")
+        zno_path = os.path.join(files("tests"), "data", "ZnO")
 
         init1 = QuestaalInit.from_file(
             os.path.join(zno_path, "init.zno_nosym"), preprocessor=False

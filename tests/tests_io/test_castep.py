@@ -24,19 +24,19 @@ _ry_to_ev = 13.605693009
 class CastepCellTestCase(unittest.TestCase):
     def setUp(self):
         self.si_cell = os.path.join(
-            files(__name__), "..", "data", "Si", "Si2.cell"
+            files("tests"), "data", "Si", "Si2.cell"
         )
         self.si_cell_alt = os.path.join(
-            files(__name__), "..", "data", "Si", "Si2-alt.cell"
+            files("tests"), "data", "Si", "Si2-alt.cell"
         )
         self.zns_band_cell = os.path.join(
-            files(__name__), "..", "data", "ZnS", "zns.cell"
+            files("tests"), "data", "ZnS", "zns.cell"
         )
         self.zns_singlepoint_cell = os.path.join(
-            files(__name__), "..", "data", "ZnS", "zns-sp.cell"
+            files("tests"), "data", "ZnS", "zns-sp.cell"
         )
         si_structure_file = os.path.join(
-            files(__name__), "..", "data", "Si", "Si8.json"
+            files("tests"), "data", "Si", "Si8.json"
         )
         self.si_structure = Structure.from_file(si_structure_file)
 
@@ -103,7 +103,7 @@ class CastepDosNiOTestCase(unittest.TestCase):
         }
         for key, value in nio_files.items():
             nio_files[key] = os.path.join(
-                files(__name__), "..", "data", "NiO", value
+                files("tests"), "data", "NiO", value
             )
 
         self.read_dos_kwargs = nio_files
@@ -112,7 +112,7 @@ class CastepDosNiOTestCase(unittest.TestCase):
         self.ref_data = {}
 
         for key, value in json_files.items():
-            filename = os.path.join(files(__name__), "..", "data", "NiO", value)
+            filename = os.path.join(files("tests"), "data", "NiO", value)
 
             with gzip.open(filename) as f:
                 self.ref_data[key] = json.load(f, cls=MontyDecoder)
@@ -153,16 +153,16 @@ class CastepDosNiOTestCase(unittest.TestCase):
 class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
     def setUp(self):
         self.si_bands = os.path.join(
-            files(__name__), "..", "data", "Si", "Si2.bands"
+            files("tests"), "data", "Si", "Si2.bands"
         )
         self.si_cell = os.path.join(
-            files(__name__), "..", "data", "Si", "Si2.cell"
+            files("tests"), "data", "Si", "Si2.cell"
         )
         self.si_cell_alt = os.path.join(
-            files(__name__), "..", "data", "Si", "Si2-alt.cell"
+            files("tests"), "data", "Si", "Si2-alt.cell"
         )
         self.si_header_ref = os.path.join(
-            files(__name__), "..", "data", "Si", "Si2.bands_header.json"
+            files("tests"), "data", "Si", "Si2.bands_header.json"
         )
 
         self.ref_labels = {
@@ -210,7 +210,7 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
 class CastepBandStructureTestCaseNickel(unittest.TestCase):
     def setUp(self):
         self.ni_cell = os.path.join(
-            files(__name__), "..", "data", "Ni", "ni-band.cell"
+            files("tests"), "data", "Ni", "ni-band.cell"
         )
 
         self.ref_labels = {
@@ -230,14 +230,14 @@ class CastepBandStructureTestCaseNickel(unittest.TestCase):
 class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
     def setUp(self):
         self.fe_bands = os.path.join(
-            files(__name__), "..", "data", "Fe", "Fe.bands"
+            files("tests"), "data", "Fe", "Fe.bands"
         )
 
         self.fe_cell = os.path.join(
-            files(__name__), "..", "data", "Fe", "Fe.cell"
+            files("tests"), "data", "Fe", "Fe.cell"
         )
         self.fe_header_ref = os.path.join(
-            files(__name__), "..", "data", "Fe", "Fe.bands_header.json"
+            files("tests"), "data", "Fe", "Fe.bands_header.json"
         )
 
     def test_castep_bands_read_header(self):
@@ -250,7 +250,7 @@ class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
 class BandStructureTestCasePathBreak(unittest.TestCase):
     def setUp(self):
         self.pt_cell = os.path.join(
-            files(__name__), "..", "data", "Pt", "Pt.cell"
+            files("tests"), "data", "Pt", "Pt.cell"
         )
         self.ref_labels = {
             r"\Gamma": (0.0, 0.0, 0.0),
@@ -273,14 +273,18 @@ class BandStructureTestCasePathBreak(unittest.TestCase):
 class CastepPhononTestCaseZincblende(unittest.TestCase):
     def setUp(self):
         self.zns_phonon = os.path.join(
-            files(__name__), "..", "data", "Zns", "zns.phonon"
+            files("tests"), "data", "Zns", "zns.phonon"
         )
         self.zns_cell = os.path.join(
-            files(__name__), "..", "data", "Zns", "zns.cell"
+            files("tests"), "data", "Zns", "zns.cell"
         )
         self.zns_phonon_ref = os.path.join(
-            files(__name__), "..", "data", "Zns", "zns_phonon.json"
+            files("tests"), "data", "Zns", "zns_phonon.json"
         )
+        import logging
+        logging.warning(f"zns_phonon_ref: {self.zns_phonon_ref}")
+        logging.warning(f"zns_phonon: {self.zns_phonon}")
+        logging.warning(f"zns_cell: {self.zns_cell}")
 
     def test_castep_phonon_read_bands(self):
         castep_phonon = CastepPhonon.from_file(self.zns_phonon)
