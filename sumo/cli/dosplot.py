@@ -18,7 +18,10 @@ from glob import glob
 
 import matplotlib as mpl
 import numpy as np
-from pkg_resources import Requirement, resource_filename
+try:
+    from importlib.resources import files as ilr_files
+except ImportError:  # Python < 3.9
+    from importlib_resources import files as ilr_files
 
 mpl.use("Agg")
 
@@ -205,7 +208,6 @@ def dosplot(
         )
 
     elif code.lower() == "castep":
-
         if filename:
             bands_file = filename
         else:
@@ -261,7 +263,13 @@ def dosplot(
         else:
             pdos_candidates = glob("dos.*")
             for candidate in pdos_candidates:
-                if candidate.split(".")[-1] in ("pdf", "png", "svg", "jpg", "jpeg"):
+                if candidate.split(".")[-1] in (
+                    "pdf",
+                    "png",
+                    "svg",
+                    "jpg",
+                    "jpeg",
+                ):
                     continue
                 elif candidate.split(".")[-1].lower() in ("gz", "z", "bz2"):
                     pdos_file = candidate
@@ -422,14 +430,20 @@ def _get_parser():
     )
 
     parser.add_argument(
-        "-f", "--filename", help="vasprun.xml file to plot", default=None, metavar="F"
+        "-f",
+        "--filename",
+        help="vasprun.xml file to plot",
+        default=None,
+        metavar="F",
     )
     parser.add_argument(
         "-c",
         "--code",
         default="vasp",
         metavar="C",
-        help=('Input file format: "vasp" (vasprun.xml) or ' '"questaal" (opt.ext)'),
+        help=(
+            'Input file format: "vasp" (vasprun.xml) or ' '"questaal" (opt.ext)'
+        ),
     )
     parser.add_argument(
         "-p", "--prefix", metavar="P", help="prefix for the files generated"
@@ -449,7 +463,10 @@ def _get_parser():
         "--orbitals",
         type=_el_orb,
         metavar="O",
-        help=("orbitals to split into lm-decomposed " 'contributions (e.g. "Ru.d")'),
+        help=(
+            "orbitals to split into lm-decomposed "
+            'contributions (e.g. "Ru.d")'
+        ),
     )
     parser.add_argument(
         "-a",
@@ -500,7 +517,10 @@ def _get_parser():
         ),
     )
     parser.add_argument(
-        "--no-legend", action="store_false", dest="legend", help="hide the plot legend"
+        "--no-legend",
+        action="store_false",
+        dest="legend",
+        help="hide the plot legend",
     )
     parser.add_argument(
         "--legend-frame",
@@ -540,7 +560,9 @@ def _get_parser():
     parser.add_argument(
         "--height", type=float, default=None, help="height of the graph"
     )
-    parser.add_argument("--width", type=float, default=None, help="width of the graph")
+    parser.add_argument(
+        "--width", type=float, default=None, help="width of the graph"
+    )
     parser.add_argument(
         "--xmin", type=float, default=-6.0, help="minimum energy on the x-axis"
     )
@@ -570,7 +592,10 @@ def _get_parser():
         help="x-axis (i.e. energy) label/units",
     )
     parser.add_argument(
-        "--ylabel", type=str, default="DOS", help="y-axis (i.e. DOS) label/units"
+        "--ylabel",
+        type=str,
+        default="DOS",
+        help="y-axis (i.e. DOS) label/units",
     )
     parser.add_argument(
         "--yscale", type=float, default=1, help="scaling factor for the y-axis"
@@ -609,8 +634,8 @@ def main():
     logging.getLogger("").addHandler(console)
 
     if args.config is None:
-        config_path = resource_filename(
-            Requirement.parse("sumo"), "sumo/plotting/orbital_colours.conf"
+        config_path = os.path.join(
+            ilr_files("sumo.plotting"), "orbital_colours.conf"
         )
     else:
         config_path = args.config
@@ -618,7 +643,9 @@ def main():
     colours.read(os.path.abspath(config_path))
 
     warnings.filterwarnings("ignore", category=UserWarning, module="matplotlib")
-    warnings.filterwarnings("ignore", category=UnicodeWarning, module="matplotlib")
+    warnings.filterwarnings(
+        "ignore", category=UnicodeWarning, module="matplotlib"
+    )
     warnings.filterwarnings("ignore", category=UserWarning, module="pymatgen")
 
     if args.zero_energy is not None:

@@ -5,20 +5,29 @@
 Subpackage providing helper functions for generating publication ready plots.
 """
 from functools import wraps
+import os
 
 import matplotlib.pyplot
 import numpy as np
 from matplotlib import rcParams
 from matplotlib.collections import LineCollection
-from pkg_resources import resource_filename
+
+try:
+    from importlib.resources import files as ilr_files
+except ImportError:  # Python < 3.9
+    from importlib_resources import files as ilr_files
 
 colour_cache = {}
 
-sumo_base_style = resource_filename("sumo.plotting", "sumo_base.mplstyle")
-sumo_dos_style = resource_filename("sumo.plotting", "sumo_dos.mplstyle")
-sumo_bs_style = resource_filename("sumo.plotting", "sumo_bs.mplstyle")
-sumo_phonon_style = resource_filename("sumo.plotting", "sumo_phonon.mplstyle")
-sumo_optics_style = resource_filename("sumo.plotting", "sumo_optics.mplstyle")
+sumo_base_style = os.path.join(ilr_files("sumo.plotting"), "sumo_base.mplstyle")
+sumo_dos_style = os.path.join(ilr_files("sumo.plotting"), "sumo_dos.mplstyle")
+sumo_bs_style = os.path.join(ilr_files("sumo.plotting"), "sumo_bs.mplstyle")
+sumo_phonon_style = os.path.join(
+    ilr_files("sumo.plotting"), "sumo_phonon.mplstyle"
+)
+sumo_optics_style = os.path.join(
+    ilr_files("sumo.plotting"), "sumo_optics.mplstyle"
+)
 
 
 def styled_plot(*style_sheets):
@@ -38,8 +47,9 @@ def styled_plot(*style_sheets):
 
     def decorator(get_plot):
         @wraps(get_plot)
-        def wrapper(*args, fonts=None, style=None, no_base_style=False, **kwargs):
-
+        def wrapper(
+            *args, fonts=None, style=None, no_base_style=False, **kwargs
+        ):
             if no_base_style:
                 list_style = []
             else:
@@ -52,7 +62,9 @@ def styled_plot(*style_sheets):
                     list_style += [style]
 
             if fonts is not None:
-                list_style += [{"font.family": "sans-serif", "font.sans-serif": fonts}]
+                list_style += [
+                    {"font.family": "sans-serif", "font.sans-serif": fonts}
+                ]
 
             matplotlib.pyplot.style.use(list_style)
             return get_plot(*args, **kwargs)
@@ -188,14 +200,14 @@ def colorline(
     Args:
         x (list): x-axis data.
         y (list): y-axis data (can be multidimensional array).
-        weights (list): The weights of the color1, color2, and color3 channels. Given
-            as an array with the shape (n, 3), where n is the same length as the x and
-            y data.
+        weights (list): The weights of the color1, color2, and color3 channels.
+            Given as an array with the shape (n, 3), where n is the same length
+            as the x and y data.
         color1 (str): A color specified in any way supported by matplotlib.
         color2 (str): A color specified in any way supported by matplotlib.
         color3 (str): A color specified in any way supported by matplotlib.
-        colorspace (str): The colorspace in which to perform the interpolation. The
-            allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.
+        colorspace (str): The colorspace in which to perform the interpolation.
+            The allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.
         linestyles (:obj:`str`, optional): Linestyle for plot. Options are
             ``"solid"`` or ``"dotted"``.
     """
@@ -219,7 +231,11 @@ def colorline(
             colours.extend(c.tolist())
 
     lc = LineCollection(
-        seg, colors=colours, rasterized=True, linewidth=linewidth, linestyles=linestyles
+        seg,
+        colors=colours,
+        rasterized=True,
+        linewidth=linewidth,
+        linestyles=linestyles,
     )
     return lc
 
@@ -232,10 +248,11 @@ def get_interpolated_colors(color1, color2, color3, weights, colorspace="lab"):
         color1 (str): A color specified in any way supported by matplotlib.
         color2 (str): A color specified in any way supported by matplotlib.
         color3 (str): A color specified in any way supported by matplotlib.
-        weights (list): A list of weights with the shape (n, 3). Where the 3 values of
-            the last axis give the amount of color1, color2, and color3.
-        colorspace (str): The colorspace in which to perform the interpolation. The
-            allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.
+        weights (list): A list of weights with the shape (n, 3).
+            Where the 3 values of the last axis give the amount of
+            color1, color2, and color3.
+        colorspace (str): The colorspace in which to perform the interpolation.
+            The allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.
 
     Returns:
         A list of colors, specified in the rgb format as a (n, 3) array.
@@ -260,7 +277,9 @@ def get_interpolated_colors(color1, color2, color3, weights, colorspace="lab"):
         "xyz": XYZColor,
     }
     if colorspace not in list(colorspace_mapping.keys()):
-        raise ValueError(f"colorspace must be one of {colorspace_mapping.keys()}")
+        raise ValueError(
+            f"colorspace must be one of {colorspace_mapping.keys()}"
+        )
 
     colorspace = colorspace_mapping[colorspace]
 
@@ -271,13 +290,19 @@ def get_interpolated_colors(color1, color2, color3, weights, colorspace="lab"):
 
     # now convert to the colorspace basis for interpolation
     basis1 = np.array(
-        convert_color(color1_rgb, colorspace, target_illuminant="d50").get_value_tuple()
+        convert_color(
+            color1_rgb, colorspace, target_illuminant="d50"
+        ).get_value_tuple()
     )
     basis2 = np.array(
-        convert_color(color2_rgb, colorspace, target_illuminant="d50").get_value_tuple()
+        convert_color(
+            color2_rgb, colorspace, target_illuminant="d50"
+        ).get_value_tuple()
     )
     basis3 = np.array(
-        convert_color(color3_rgb, colorspace, target_illuminant="d50").get_value_tuple()
+        convert_color(
+            color3_rgb, colorspace, target_illuminant="d50"
+        ).get_value_tuple()
     )
 
     # ensure weights is a numpy array
@@ -292,11 +317,12 @@ def get_interpolated_colors(color1, color2, color3, weights, colorspace="lab"):
 
     # convert colors to RGB
     rgb_colors = [
-        convert_color(colorspace(*c), sRGBColor).get_value_tuple() for c in colors
+        convert_color(colorspace(*c), sRGBColor).get_value_tuple()
+        for c in colors
     ]
 
-    # ensure all rgb values are less than 1 (sometimes issues in interpolation gives
-    # values slightly over 1)
+    # ensure all rgb values are less than 1 (sometimes issues in interpolation
+    # gives values slightly over 1)
     return np.minimum(rgb_colors, 1)
 
 
