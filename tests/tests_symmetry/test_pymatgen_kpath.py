@@ -2,7 +2,10 @@ import unittest
 import warnings
 import os
 
-from importlib_resources import files
+try:
+    from importlib.resources import files as ilr_files
+except ImportError:  # Python < 3.9
+    from importlib_resources import files as ilr_files
 from pymatgen.core.structure import Structure
 
 from sumo.symmetry.brad_crack_kpath import BradCrackKpath
@@ -12,9 +15,9 @@ from sumo.symmetry.pymatgen_kpath import PymatgenKpath
 class SeekpathKpathTestCase(unittest.TestCase):
     def setUp(self):
         zno_poscar = os.path.join(
-            files("tests"), "data", "ZnO", "POSCAR"
+            ilr_files("tests"), "data", "ZnO", "POSCAR"
         )
-        hgs_poscar = os.path.join(files("tests"), "data", "Ge", "POSCAR")
+        hgs_poscar = os.path.join(ilr_files("tests"), "data", "Ge", "POSCAR")
 
         with warnings.catch_warnings():  # Not interested in Pymatgen warnings
             warnings.simplefilter("ignore")

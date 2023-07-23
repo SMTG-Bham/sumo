@@ -2,7 +2,10 @@ import json
 import unittest
 import os
 
-from importlib_resources import files
+try:
+    from importlib.resources import files as ilr_files
+except ImportError:  # Python < 3.9
+    from importlib_resources import files as ilr_files
 import numpy as np
 from numpy.testing import assert_almost_equal
 from pymatgen.io.vasp import Vasprun
@@ -16,13 +19,13 @@ from sumo.electronic_structure.optics import (
 class AbsorptionTestCase(unittest.TestCase):
     def setUp(self):
         diel_path = os.path.join(
-            files("tests"), "data", "Ge", "ge_diel.json"
+            ilr_files("tests"), "data", "Ge", "ge_diel.json"
         )
         with open(diel_path) as f:
             self.ge_diel = json.load(f)
 
         absorption_path = os.path.join(
-            files("tests"), "data", "Ge", "ge_alpha.json"
+            ilr_files("tests"), "data", "Ge", "ge_alpha.json"
         )
         with open(absorption_path) as f:
             self.ge_abs = json.load(f)
@@ -40,12 +43,12 @@ class AbsorptionTestCase(unittest.TestCase):
 class KramersKronigTestCase(unittest.TestCase):
     def setUp(self):
         ge_vasprun_path = os.path.join(
-            files("tests"), "data", "Ge", "vasprun.xml.gz"
+            ilr_files("tests"), "data", "Ge", "vasprun.xml.gz"
         )
         self.ge_vasprun = Vasprun(ge_vasprun_path)
 
         self.ge_text_file = ge_vasprun_path = os.path.join(
-            files("tests"), "data", "Ge", "optics.txt"
+            ilr_files("tests"), "data", "Ge", "optics.txt"
         )
 
     def test_kkr(self):

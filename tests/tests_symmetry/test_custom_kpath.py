@@ -2,7 +2,10 @@ import unittest
 import warnings
 import os
 
-from importlib_resources import files
+try:
+    from importlib.resources import files as ilr_files
+except ImportError:  # Python < 3.9
+    from importlib_resources import files as ilr_files
 from pymatgen.core.structure import Structure
 
 from sumo.symmetry.custom_kpath import CustomKpath
@@ -10,7 +13,7 @@ from sumo.symmetry.custom_kpath import CustomKpath
 
 class CustomKpathTestCase(unittest.TestCase):
     def setUp(self):
-        poscar = os.path.join(files("tests"), "data", "Ge", "POSCAR")
+        poscar = os.path.join(ilr_files("tests"), "data", "Ge", "POSCAR")
         with warnings.catch_warnings():  # Not interested in Pymatgen warnings
             warnings.simplefilter("ignore")
             self.structure = Structure.from_file(poscar)

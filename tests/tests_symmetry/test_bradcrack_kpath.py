@@ -2,7 +2,10 @@ import unittest
 import warnings
 import os
 
-from importlib_resources import files
+try:
+    from importlib.resources import files as ilr_files
+except ImportError:  # Python < 3.9
+    from importlib_resources import files as ilr_files
 from pymatgen.core.structure import Structure
 
 from sumo.symmetry.brad_crack_kpath import BradCrackKpath
@@ -12,7 +15,7 @@ from sumo.symmetry.seekpath_kpath import SeekpathKpath
 class BradCrackKpathTestCase(unittest.TestCase):
     def setUp(self):
         poscar = os.path.join(
-            files("tests"), "data", "Cs2SnI6", "dos", "vasprun.xml.gz"
+            ilr_files("tests"), "data", "Cs2SnI6", "dos", "vasprun.xml.gz"
         )
         with warnings.catch_warnings():  # Not interested in Pymatgen warnings
             warnings.simplefilter("ignore")

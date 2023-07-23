@@ -1,7 +1,10 @@
 import unittest
 import os
 
-from importlib_resources import files
+try:
+    from importlib.resources import files as ilr_files
+except ImportError:  # Python < 3.9
+    from importlib_resources import files as ilr_files
 import numpy as np
 from pymatgen.core.lattice import Lattice
 
@@ -11,7 +14,7 @@ from sumo.io.questaal import QuestaalInit, dielectric_from_file
 class QuestaalOpticsTestCase(unittest.TestCase):
     def setUp(self):
         self.bse_path = os.path.join(
-            files("tests"), "data", "SnO2", "eps_BSE.out"
+            ilr_files("tests"), "data", "SnO2", "eps_BSE.out"
         )
 
     def test_optics_from_bethesalpeter(self):
@@ -172,7 +175,7 @@ class QuestaalInitTestCase(unittest.TestCase):
             QuestaalInit(lattice, site)
 
     def test_init_from_file(self):
-        zno_path = os.path.join(files("tests"), "data", "ZnO")
+        zno_path = os.path.join(ilr_files("tests"), "data", "ZnO")
 
         init1 = QuestaalInit.from_file(
             os.path.join(zno_path, "init.zno_nosym"), preprocessor=False
