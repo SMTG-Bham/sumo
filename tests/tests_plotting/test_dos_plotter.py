@@ -1,11 +1,12 @@
 import unittest
-import importlib.resources
 import os
 
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
+# Can use importlib.resources in python>=3.9
+from importlib_resources import files
 
 import matplotlib.pyplot
 
@@ -17,7 +18,7 @@ from sumo.plotting.dos_plotter import get_cached_colour
 class GetColourTestCase(unittest.TestCase):
     def setUp(self):
         config_path = os.path.join(
-            importlib.resources.files("sumo.plotting"), "orbital_colours.conf"
+            files("sumo.plotting"), "orbital_colours.conf"
         )
 
         self.config = configparser.ConfigParser()

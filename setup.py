@@ -42,6 +42,7 @@ setup(
         "seekpath",
         "castepxbin<1.0",
         "colormath",
+        "importlib-resources',
     ],
     extras_require={
         "docs": ["sphinx", "sphinx-argparse"],
