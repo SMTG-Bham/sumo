@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.symmetry.kpath &#8212; sumo 2.3.6 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../../_static/documentation_options.js?v=ac39ba8c"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -43,7 +43,9 @@
 <span class="kn">from</span> <span class="nn">pymatgen.symmetry.analyzer</span> <span class="kn">import</span> <span class="n">SpacegroupAnalyzer</span>
 
 
-<div class="viewcode-block" id="Kpath"><a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath">[docs]</a><span class="k">class</span> <span class="nc">Kpath</span><span class="p">:</span>
+<div class="viewcode-block" id="Kpath">
+<a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath">[docs]</a>
+<span class="k">class</span> <span class="nc">Kpath</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class providing helper functions for generating k-point paths.</span>
 
 <span class="sd">    This class should not be used directly. Instead, one of the</span>
@@ -89,7 +91,9 @@
         <span class="n">conv_atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">sym</span><span class="o">.</span><span class="n">_unique_species</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">conv_numbers</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conv</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">(</span><span class="n">conv_lattice</span><span class="p">,</span> <span class="n">conv_atoms</span><span class="p">,</span> <span class="n">conv_scaled_positions</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Kpath.correct_structure"><a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.correct_structure">[docs]</a>    <span class="k">def</span> <span class="nf">correct_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
+<div class="viewcode-block" id="Kpath.correct_structure">
+<a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.correct_structure">[docs]</a>
+    <span class="k">def</span> <span class="nf">correct_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine if the structure matches the standard primitive structure.</span>
 
 <span class="sd">        The standard primitive will be different between seekpath and pymatgen</span>
@@ -107,7 +111,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prim</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Kpath.get_kpoints"><a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.get_kpoints">[docs]</a>    <span class="k">def</span> <span class="nf">get_kpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line_density</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cart_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">phonopy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Kpath.get_kpoints">
+<a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.get_kpoints">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_kpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line_density</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cart_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">phonopy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a list of k-points and labels along the high-symmetry path.</span>
 
 <span class="sd">        The format of the returned data will be different if phonopy is</span>
@@ -226,6 +233,7 @@
                 <span class="p">]</span>
             <span class="k">return</span> <span class="n">frac_k_points</span><span class="p">,</span> <span class="n">sym_point_labels</span></div>
 
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">kpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;dict: The high-symmetry k-point labels and their fractional</span>
@@ -271,7 +279,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot; | &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot; -&gt; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subpath</span><span class="p">)</span> <span class="k">for</span> <span class="n">subpath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">])</span>
 
-<div class="viewcode-block" id="Kpath.get_lattice_type"><a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.get_lattice_type">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Kpath.get_lattice_type">
+<a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.get_lattice_type">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_lattice_type</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the lattice crystal system.</span>
 
@@ -309,7 +319,9 @@
         <span class="k">elif</span> <span class="n">crystal_system</span> <span class="o">==</span> <span class="s2">&quot;trigonal&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;hexagonal&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">crystal_system</span></div></div>
+            <span class="k">return</span> <span class="n">crystal_system</span></div>
+</div>
+
 </pre></div>
 
           </div>
@@ -371,7 +383,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
     </div>

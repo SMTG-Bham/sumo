@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>sumo-kgen &#8212; sumo 2.3.6 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <script src="_static/documentation_options.js?v=ac39ba8c"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="sumo-dosplot" href="sumo-dosplot.html" />
@@ -32,7 +32,7 @@
           <div class="body" role="main">
             
   <section id="sumo-kgen">
-<h1>sumo-kgen<a class="headerlink" href="#sumo-kgen" title="Permalink to this heading">¶</a></h1>
+<h1>sumo-kgen<a class="headerlink" href="#sumo-kgen" title="Link to this heading">¶</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> is a program for generating input files containing k-points along high-symmetry
 k-point paths, for electronic band structure calculations (e.g. <code class="docutils literal notranslate"><span class="pre">KPOINTS</span></code> file for VASP).
 The path is unique for each of the 14 Bravais lattice types and, as such, will depend
@@ -63,7 +63,7 @@ literature, <code class="docutils literal notranslate"><span class="pre">sumo-kg
 </ul>
 </nav>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
 <p><em>For simplicity, this tutorial will initially assume you are using VASP. Details for other codes are provided at the end.</em></p>
 <p>The full range of options supported by <code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> are detailed in the <a class="reference internal" href="#command-line-interface">Command-Line Interface</a> section,
 and be can be accessed using the command:</p>
@@ -104,7 +104,7 @@ a file called <code class="docutils literal notranslate"><span class="pre">KPOIN
 </pre></div>
 </div>
 <section id="basic-options">
-<h3>Basic Options<a class="headerlink" href="#basic-options" title="Permalink to this heading">¶</a></h3>
+<h3>Basic Options<a class="headerlink" href="#basic-options" title="Link to this heading">¶</a></h3>
 <p>As the path depends on the symmetry of the lattice, it is important that the symmetry is determined
 correctly. The tolerance used for symmetry detection can be controlled using the <code class="docutils literal notranslate"><span class="pre">--symprec</span></code> option.
 The default is 0.01 Angstrom.</p>
@@ -116,7 +116,7 @@ file can be specified using the <code class="docutils literal notranslate"><span
 60.</p>
 </section>
 <section id="hybrid-band-structures">
-<h3>Hybrid Band Structures<a class="headerlink" href="#hybrid-band-structures" title="Permalink to this heading">¶</a></h3>
+<h3>Hybrid Band Structures<a class="headerlink" href="#hybrid-band-structures" title="Link to this heading">¶</a></h3>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> generates <code class="docutils literal notranslate"><span class="pre">KPOINTS</span></code> files for use in non-self-consistent band structure calculations
 (e.g. for use with generalised-gradient approximation functionals). To perform hybrid band structures, the
 zero-weighted k-point scheme should be used. To generate <code class="docutils literal notranslate"><span class="pre">KPOINTS</span></code> files for use in hybrid band structures, an
@@ -132,7 +132,7 @@ included in the <code class="docutils literal notranslate"><span class="pre">IBZ
 via the <code class="docutils literal notranslate"><span class="pre">--split</span></code> option.</p>
 </section>
 <section id="folder-generation">
-<h3>Folder Generation<a class="headerlink" href="#folder-generation" title="Permalink to this heading">¶</a></h3>
+<h3>Folder Generation<a class="headerlink" href="#folder-generation" title="Link to this heading">¶</a></h3>
 <p>Often it is desirable to generate a new folder in which to run the band structure. <code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> can automate
 this procedure using the <code class="docutils literal notranslate"><span class="pre">--folders</span></code> (or <code class="docutils literal notranslate"><span class="pre">-f</span></code>) option. The script will also copy in the required VASP
 files from the current directory. Which files are copied depends on the mode of k-point generation.
@@ -144,7 +144,7 @@ generated for each file. These will be named <code class="docutils literal notra
 reconstruct the full band structure from the individual splits.</p>
 </section>
 <section id="custom-k-point-paths">
-<h3>Custom k-Point Paths<a class="headerlink" href="#custom-k-point-paths" title="Permalink to this heading">¶</a></h3>
+<h3>Custom k-Point Paths<a class="headerlink" href="#custom-k-point-paths" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> also supports generating k-points along custom k-point paths. This is controlled using the
 <code class="docutils literal notranslate"><span class="pre">--kpoints</span></code> option. The custom k-point path is specified as a string with commas separating the k-points.
 For example, to generate the k-points along <code class="docutils literal notranslate"><span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">-&gt;</span> <span class="pre">0.5</span> <span class="pre">0.5</span> <span class="pre">0.5</span></code>, the usage is:</p>
@@ -165,9 +165,9 @@ For example, the path <code class="docutils literal notranslate"><span class="pr
 </section>
 </section>
 <section id="other-codes">
-<h2>Other codes<a class="headerlink" href="#other-codes" title="Permalink to this heading">¶</a></h2>
+<h2>Other codes<a class="headerlink" href="#other-codes" title="Link to this heading">¶</a></h2>
 <section id="castep">
-<h3>CASTEP<a class="headerlink" href="#castep" title="Permalink to this heading">¶</a></h3>
+<h3>CASTEP<a class="headerlink" href="#castep" title="Link to this heading">¶</a></h3>
 <p>In CASTEP, band structure calculations also include SCF convergence so
 two sets of k-points are set: a mesh for the SCF and a path for the
 band structure. It is safe to provide <em>kgen</em> with a .cell file that
@@ -185,7 +185,7 @@ An extra feature is provided to aid phonon calculations with CASTEP: the
 <code class="docutils literal notranslate"><span class="pre">--phonon</span></code> option will write a <em>PHONON_FINE_KPOINT_LIST</em> block instead.</p>
 </section>
 <section id="questaal">
-<h3>Questaal<a class="headerlink" href="#questaal" title="Permalink to this heading">¶</a></h3>
+<h3>Questaal<a class="headerlink" href="#questaal" title="Link to this heading">¶</a></h3>
 <p>To perform LMTO band structure calculations the <code class="docutils literal notranslate"><span class="pre">lmf</span></code> program can be
 given a file defining the band structure path. The crystal structure
 is defined with an <em>init.ext</em> file (where <em>ext</em> is an identifier for
@@ -210,7 +210,7 @@ and Bohr units it can get a bit confusing.</p>
 </section>
 </section>
 <section id="command-line-interface">
-<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading">¶</a></h2>
+<h2>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Link to this heading">¶</a></h2>
 <p><blockquote>
 <div><p>kgen generates KPOINTS files for running band structure calculations in
 VASP</p>
@@ -223,7 +223,7 @@ VASP</p>
 </pre></div>
 </div>
 <section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Permalink to this heading">¶</a></h3>
+<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-p, --poscar</kbd></dt>
 <dd><p>input structure file (default: POSCAR)</p>
@@ -364,7 +364,7 @@ Last updated: July 6, 2017</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |

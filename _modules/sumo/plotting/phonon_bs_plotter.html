@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.plotting.phonon_bs_plotter &#8212; sumo 2.3.6 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../../_static/documentation_options.js?v=ac39ba8c"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -58,7 +58,9 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="SPhononBSPlotter"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.phonon_bs_plotter.SPhononBSPlotter">[docs]</a><span class="k">class</span> <span class="nc">SPhononBSPlotter</span><span class="p">(</span><span class="n">PhononBSPlotter</span><span class="p">):</span>
+<div class="viewcode-block" id="SPhononBSPlotter">
+<a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.phonon_bs_plotter.SPhononBSPlotter">[docs]</a>
+<span class="k">class</span> <span class="nc">SPhononBSPlotter</span><span class="p">(</span><span class="n">PhononBSPlotter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for plotting phonon band structures.</span>
 
 <span class="sd">    This class is similar to the :obj:`pymatgen.phonon.plotter.PhononBSPlotter`</span>
@@ -91,7 +93,9 @@
         <span class="k">if</span> <span class="n">dashline</span><span class="p">:</span>
             <span class="n">draw_themed_line</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SPhononBSPlotter.get_plot"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.phonon_bs_plotter.SPhononBSPlotter.get_plot">[docs]</a>    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">,</span> <span class="n">sumo_phonon_style</span><span class="p">)</span>
+<div class="viewcode-block" id="SPhononBSPlotter.get_plot">
+<a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.phonon_bs_plotter.SPhononBSPlotter.get_plot">[docs]</a>
+    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">,</span> <span class="n">sumo_phonon_style</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">units</span><span class="o">=</span><span class="s2">&quot;THz&quot;</span><span class="p">,</span>
@@ -238,6 +242,7 @@
 
         <span class="k">return</span> <span class="n">plt</span></div>
 
+
     <span class="k">def</span> <span class="nf">_makeplot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ax</span><span class="p">,</span>
@@ -335,6 +340,7 @@
             <span class="s2">&quot;mev&quot;</span><span class="p">:</span> <span class="s2">&quot;meV&quot;</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency (</span><span class="si">{</span><span class="n">labels</span><span class="p">[</span><span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
+
 </pre></div>
 
           </div>
@@ -396,7 +402,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
     </div>

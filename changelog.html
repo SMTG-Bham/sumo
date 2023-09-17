@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Change Log &#8212; sumo 2.3.6 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <script src="_static/documentation_options.js?v=ac39ba8c"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="sumo" href="modules.html" />
@@ -32,9 +32,9 @@
           <div class="body" role="main">
             
   <section id="change-log">
-<h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this heading">¶</a></h1>
+<h1>Change Log<a class="headerlink" href="#change-log" title="Link to this heading">¶</a></h1>
 <section id="v2-3-6">
-<h2>v2.3.6<a class="headerlink" href="#v2-3-6" title="Permalink to this heading">¶</a></h2>
+<h2>v2.3.6<a class="headerlink" href="#v2-3-6" title="Link to this heading">¶</a></h2>
 <p>Bugfixes:</p>
 <ul class="simple">
 <li><p>Allow “BREAK” keyword in CASTEP band paths - and ignore it. (&#64;azanre, #201)</p></li>
@@ -42,29 +42,29 @@
 </ul>
 </section>
 <section id="v2-3-5">
-<h2>v2.3.5<a class="headerlink" href="#v2-3-5" title="Permalink to this heading">¶</a></h2>
+<h2>v2.3.5<a class="headerlink" href="#v2-3-5" title="Link to this heading">¶</a></h2>
 <p>Fix projected band structures with two projections selected (&#64;utf, #181).</p>
 </section>
 <section id="v2-3-4">
-<h2>v2.3.4<a class="headerlink" href="#v2-3-4" title="Permalink to this heading">¶</a></h2>
+<h2>v2.3.4<a class="headerlink" href="#v2-3-4" title="Link to this heading">¶</a></h2>
 <p>Support for new versions of <cite>castepxbin</cite>.</p>
 </section>
 <section id="v2-3-3">
-<h2>v2.3.3<a class="headerlink" href="#v2-3-3" title="Permalink to this heading">¶</a></h2>
+<h2>v2.3.3<a class="headerlink" href="#v2-3-3" title="Link to this heading">¶</a></h2>
 <p>Bugfix: <code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span> <span class="pre">--project</span> <span class="pre">--mode</span> <span class="pre">rgb</span></code> now works with paths containing branches
 with a single k-point.</p>
 </section>
 <section id="v2-3-2">
-<h2>v2.3.2<a class="headerlink" href="#v2-3-2" title="Permalink to this heading">¶</a></h2>
+<h2>v2.3.2<a class="headerlink" href="#v2-3-2" title="Link to this heading">¶</a></h2>
 <p>Bugfix: <code class="docutils literal notranslate"><span class="pre">sumo-bandstats</span></code> now reports the correct k-point indices for the VBM and CBM.</p>
 </section>
 <section id="v2-3-1">
-<h2>v2.3.1<a class="headerlink" href="#v2-3-1" title="Permalink to this heading">¶</a></h2>
+<h2>v2.3.1<a class="headerlink" href="#v2-3-1" title="Link to this heading">¶</a></h2>
 <p>You can now specify custom colours for RGB mode projected band structures. See the
 documentation for more details. The colormath package has been added as a dependency.</p>
 </section>
 <section id="v2-3-0">
-<h2>v2.3.0<a class="headerlink" href="#v2-3-0" title="Permalink to this heading">¶</a></h2>
+<h2>v2.3.0<a class="headerlink" href="#v2-3-0" title="Link to this heading">¶</a></h2>
 <p>Major changes:</p>
 <ul class="simple">
 <li><p>DOS energies are no longer shifted by SIGMA in smeared calculations;
@@ -85,28 +85,28 @@ will ensure peaks are in the right positions. (&#64;yw-fang &amp; &#64;ajjackson
 </ul>
 </section>
 <section id="v2-2-5">
-<h2>v2.2.5<a class="headerlink" href="#v2-2-5" title="Permalink to this heading">¶</a></h2>
+<h2>v2.2.5<a class="headerlink" href="#v2-2-5" title="Link to this heading">¶</a></h2>
 <p>Bugfix: Fixed colour parsing for BS + DOS plots. (&#64;kavanse)</p>
 </section>
 <section id="v2-2-4">
-<h2>v2.2.4<a class="headerlink" href="#v2-2-4" title="Permalink to this heading">¶</a></h2>
+<h2>v2.2.4<a class="headerlink" href="#v2-2-4" title="Link to this heading">¶</a></h2>
 <p>Bugfix: <code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> with <code class="docutils literal notranslate"><span class="pre">--hybrid</span></code> but without <code class="docutils literal notranslate"><span class="pre">--folders</span></code> now asks whether to
 split up the k-points.</p>
 </section>
 <section id="v2-2-3">
-<h2>v2.2.3<a class="headerlink" href="#v2-2-3" title="Permalink to this heading">¶</a></h2>
+<h2>v2.2.3<a class="headerlink" href="#v2-2-3" title="Link to this heading">¶</a></h2>
 <p>Bugfix: Questaal band structure import was consistently raising unnecessary Exception</p>
 </section>
 <section id="v2-2-2">
-<h2>v2.2.2<a class="headerlink" href="#v2-2-2" title="Permalink to this heading">¶</a></h2>
+<h2>v2.2.2<a class="headerlink" href="#v2-2-2" title="Link to this heading">¶</a></h2>
 <p>Added Latimer-Munro high-symmetry k-point paths. (&#64;kavanse)</p>
 </section>
 <section id="v2-2-1">
-<h2>v2.2.1<a class="headerlink" href="#v2-2-1" title="Permalink to this heading">¶</a></h2>
+<h2>v2.2.1<a class="headerlink" href="#v2-2-1" title="Link to this heading">¶</a></h2>
 <p>Fixed typo in <code class="docutils literal notranslate"><span class="pre">sumo-bandplot</span></code>.</p>
 </section>
 <section id="v2-2-0">
-<h2>v2.2.0<a class="headerlink" href="#v2-2-0" title="Permalink to this heading">¶</a></h2>
+<h2>v2.2.0<a class="headerlink" href="#v2-2-0" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Support is added for orbital-projected DOS plots from CASTEP. (&#64;zhubonan)</p>
 <ul>
@@ -125,7 +125,7 @@ at that band and k-point. (&#64;utf)</p></li>
 </ul>
 </section>
 <section id="v2-1-1">
-<h2>v2.1.1<a class="headerlink" href="#v2-1-1" title="Permalink to this heading">¶</a></h2>
+<h2>v2.1.1<a class="headerlink" href="#v2-1-1" title="Link to this heading">¶</a></h2>
 <p>Enhancements:</p>
 <ul class="simple">
 <li><p>Band structure grid lines can now be customised using a matplotlib
@@ -133,7 +133,7 @@ style sheet.</p></li>
 </ul>
 </section>
 <section id="v2-1-0">
-<h2>v2.1.0<a class="headerlink" href="#v2-1-0" title="Permalink to this heading">¶</a></h2>
+<h2>v2.1.0<a class="headerlink" href="#v2-1-0" title="Link to this heading">¶</a></h2>
 <p>Sumo is now python 3.6+ only.</p>
 <p>Additional bug fixes:</p>
 <ul class="simple">
@@ -142,11 +142,11 @@ style sheet.</p></li>
 </ul>
 </section>
 <section id="v2-0-2">
-<h2>v2.0.2<a class="headerlink" href="#v2-0-2" title="Permalink to this heading">¶</a></h2>
+<h2>v2.0.2<a class="headerlink" href="#v2-0-2" title="Link to this heading">¶</a></h2>
 <p>New testing and release framework.</p>
 </section>
 <section id="v2-0-1">
-<h2>v2.0.1<a class="headerlink" href="#v2-0-1" title="Permalink to this heading">¶</a></h2>
+<h2>v2.0.1<a class="headerlink" href="#v2-0-1" title="Link to this heading">¶</a></h2>
 <p>Bug fixes:</p>
 <ul class="simple">
 <li><p>Fixed support for pymatgen versions &gt; 2020.10.9.1 (&#64;utf)</p></li>
@@ -154,7 +154,7 @@ style sheet.</p></li>
 </ul>
 </section>
 <section id="v2-0-0">
-<h2>v2.0.0<a class="headerlink" href="#v2-0-0" title="Permalink to this heading">¶</a></h2>
+<h2>v2.0.0<a class="headerlink" href="#v2-0-0" title="Link to this heading">¶</a></h2>
 <p>New features:</p>
 <ul class="simple">
 <li><p>Support for CASTEP: (AJJ)</p>
@@ -176,7 +176,7 @@ projected-DOS plots are not currently available.</p></li>
 </ul>
 </section>
 <section id="v1-4-0">
-<h2>v1.4.0<a class="headerlink" href="#v1-4-0" title="Permalink to this heading">¶</a></h2>
+<h2>v1.4.0<a class="headerlink" href="#v1-4-0" title="Link to this heading">¶</a></h2>
 <p>New features:</p>
 <ul class="simple">
 <li><p>Plot single spin channel band structures. (&#64;kavanase)</p></li>
@@ -189,7 +189,7 @@ projected-DOS plots are not currently available.</p></li>
 </ul>
 </section>
 <section id="v1-3-0">
-<h2>v1.3.0<a class="headerlink" href="#v1-3-0" title="Permalink to this heading">¶</a></h2>
+<h2>v1.3.0<a class="headerlink" href="#v1-3-0" title="Link to this heading">¶</a></h2>
 <p>This is the last supported version for Python 3.5, due to changes in pymatgen.</p>
 <p>New features:</p>
 <ul class="simple">
@@ -206,7 +206,7 @@ projected-DOS plots are not currently available.</p></li>
 </ul>
 </section>
 <section id="v1-2-0">
-<h2>v1.2.0<a class="headerlink" href="#v1-2-0" title="Permalink to this heading">¶</a></h2>
+<h2>v1.2.0<a class="headerlink" href="#v1-2-0" title="Link to this heading">¶</a></h2>
 <p>This is the most contributers to a release so far!</p>
 <ul class="simple">
 <li><p>Bug fixes
@@ -258,11 +258,11 @@ another.</p></li>
 </ul>
 </section>
 <section id="v1-1-3">
-<h2>v1.1.3<a class="headerlink" href="#v1-1-3" title="Permalink to this heading">¶</a></h2>
+<h2>v1.1.3<a class="headerlink" href="#v1-1-3" title="Link to this heading">¶</a></h2>
 <p>Update Manifest.in</p>
 </section>
 <section id="v1-1-2">
-<h2>v1.1.2<a class="headerlink" href="#v1-1-2" title="Permalink to this heading">¶</a></h2>
+<h2>v1.1.2<a class="headerlink" href="#v1-1-2" title="Link to this heading">¶</a></h2>
 <p>Various bugfixes and enhancements:</p>
 <ul class="simple">
 <li><p>Fix manual k-point selection in kgen.</p></li>
@@ -275,11 +275,11 @@ another.</p></li>
 </ul>
 </section>
 <section id="v1-1-1">
-<h2>v1.1.1<a class="headerlink" href="#v1-1-1" title="Permalink to this heading">¶</a></h2>
+<h2>v1.1.1<a class="headerlink" href="#v1-1-1" title="Link to this heading">¶</a></h2>
 <p>Fix bug when installing from Pypi.</p>
 </section>
 <section id="v1-1-0">
-<h2>v1.1.0<a class="headerlink" href="#v1-1-0" title="Permalink to this heading">¶</a></h2>
+<h2>v1.1.0<a class="headerlink" href="#v1-1-0" title="Link to this heading">¶</a></h2>
 <p>Use matplotlib style sheets for styling plots (&#64;ajjackson &amp; &#64;utf).
 Enables plots to be customised based on user settings.</p>
 <p>Various bug fixes:</p>
@@ -290,7 +290,7 @@ Enables plots to be customised based on user settings.</p>
 </ul>
 </section>
 <section id="v1-0-10">
-<h2>v1.0.10<a class="headerlink" href="#v1-0-10" title="Permalink to this heading">¶</a></h2>
+<h2>v1.0.10<a class="headerlink" href="#v1-0-10" title="Link to this heading">¶</a></h2>
 <p>Add option to align DOS to Fermi level (&#64;shyamd)</p>
 <p>Various bug fixes:</p>
 <ul class="simple">
@@ -299,7 +299,7 @@ Enables plots to be customised based on user settings.</p>
 </ul>
 </section>
 <section id="v1-0-9">
-<h2>v1.0.9<a class="headerlink" href="#v1-0-9" title="Permalink to this heading">¶</a></h2>
+<h2>v1.0.9<a class="headerlink" href="#v1-0-9" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">phonon-bandplot</span></code> now supports combined DOS &amp; band structure plots (Adam Jackson, Arthur Yaud).</p>
 <p>Various bug fixes:</p>
 <ul class="simple">
@@ -310,7 +310,7 @@ Enables plots to be customised based on user settings.</p>
 </ul>
 </section>
 <section id="v1-0-8">
-<h2>v1.0.8<a class="headerlink" href="#v1-0-8" title="Permalink to this heading">¶</a></h2>
+<h2>v1.0.8<a class="headerlink" href="#v1-0-8" title="Link to this heading">¶</a></h2>
 <p>Enhancements by Adam Jackson:</p>
 <ul class="simple">
 <li><p>Add y-label and dos label options for DOS &amp; band plots.</p></li>
@@ -325,7 +325,7 @@ Enables plots to be customised based on user settings.</p>
 </ul>
 </section>
 <section id="v1-0-7">
-<h2>v1.0.7<a class="headerlink" href="#v1-0-7" title="Permalink to this heading">¶</a></h2>
+<h2>v1.0.7<a class="headerlink" href="#v1-0-7" title="Link to this heading">¶</a></h2>
 <p>Various bug fixes:</p>
 <ul class="simple">
 <li><p>Fixed density option in kgen.</p></li>
@@ -333,21 +333,21 @@ Enables plots to be customised based on user settings.</p>
 </ul>
 </section>
 <section id="v1-0-6">
-<h2>v1.0.6<a class="headerlink" href="#v1-0-6" title="Permalink to this heading">¶</a></h2>
+<h2>v1.0.6<a class="headerlink" href="#v1-0-6" title="Link to this heading">¶</a></h2>
 <p>Move package data files.</p>
 </section>
 <section id="v1-0-5">
-<h2>v1.0.5<a class="headerlink" href="#v1-0-5" title="Permalink to this heading">¶</a></h2>
+<h2>v1.0.5<a class="headerlink" href="#v1-0-5" title="Link to this heading">¶</a></h2>
 <p>Minor bug fixes.</p>
 </section>
 <section id="v1-0-4">
-<h2>v1.0.4<a class="headerlink" href="#v1-0-4" title="Permalink to this heading">¶</a></h2>
+<h2>v1.0.4<a class="headerlink" href="#v1-0-4" title="Link to this heading">¶</a></h2>
 <p>Minor changes to Pypi config.</p>
 </section>
 <section id="v1-0-0">
-<h2>v1.0.0<a class="headerlink" href="#v1-0-0" title="Permalink to this heading">¶</a></h2>
+<h2>v1.0.0<a class="headerlink" href="#v1-0-0" title="Link to this heading">¶</a></h2>
 <section id="added">
-<h3>Added<a class="headerlink" href="#added" title="Permalink to this heading">¶</a></h3>
+<h3>Added<a class="headerlink" href="#added" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Script files:</p>
 <ul>
@@ -459,7 +459,7 @@ Enables plots to be customised based on user settings.</p>
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |

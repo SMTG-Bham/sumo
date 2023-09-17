@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.plotting.dos_plotter &#8212; sumo 2.3.6 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/sphinx_highlight.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
+    <script src="../../../_static/documentation_options.js?v=ac39ba8c"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -62,7 +62,9 @@
 <span class="n">empty_space</span> <span class="o">=</span> <span class="mf">1.05</span>
 
 
-<div class="viewcode-block" id="SDOSPlotter"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter">[docs]</a><span class="k">class</span> <span class="nc">SDOSPlotter</span><span class="p">:</span>
+<div class="viewcode-block" id="SDOSPlotter">
+<a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter">[docs]</a>
+<span class="k">class</span> <span class="nc">SDOSPlotter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for plotting density of states data.</span>
 
 <span class="sd">    This class should be initialised with the total and partial density</span>
@@ -92,7 +94,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_dos</span> <span class="o">=</span> <span class="n">dos</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pdos</span> <span class="o">=</span> <span class="n">pdos</span>
 
-<div class="viewcode-block" id="SDOSPlotter.dos_plot_data"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter.dos_plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">dos_plot_data</span><span class="p">(</span>
+<div class="viewcode-block" id="SDOSPlotter.dos_plot_data">
+<a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter.dos_plot_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">dos_plot_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">yscale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">xmin</span><span class="o">=-</span><span class="mf">6.0</span><span class="p">,</span>
@@ -264,7 +268,10 @@
         <span class="n">plot_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;lines&quot;</span><span class="p">:</span> <span class="n">lines</span><span class="p">,</span> <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="n">ymax</span><span class="p">,</span> <span class="s2">&quot;ymin&quot;</span><span class="p">:</span> <span class="n">ymin</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">plot_data</span></div>
 
-<div class="viewcode-block" id="SDOSPlotter.get_plot"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter.get_plot">[docs]</a>    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_dos_style</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SDOSPlotter.get_plot">
+<a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.SDOSPlotter.get_plot">[docs]</a>
+    <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_dos_style</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">subplot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -453,10 +460,14 @@
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">plt</span></div></div>
+        <span class="k">return</span> <span class="n">plt</span></div>
+</div>
 
 
-<div class="viewcode-block" id="get_cached_colour"><a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.get_cached_colour">[docs]</a><span class="k">def</span> <span class="nf">get_cached_colour</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_cached_colour">
+<a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.dos_plotter.get_cached_colour">[docs]</a>
+<span class="k">def</span> <span class="nf">get_cached_colour</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">orbital</span><span class="p">,</span> <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a colour for a particular elemental and orbital combination.</span>
 
 <span class="sd">    If the element is not specified in the colours dictionary, the cache is</span>
@@ -536,6 +547,7 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Argument &quot;colours&quot; should be dict, &#39;</span> <span class="s2">&quot;ConfigParser or None.&quot;</span><span class="p">)</span></div>
+
 </pre></div>
 
           </div>
@@ -597,7 +609,7 @@
       &copy;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
     </div>
