@@ -64,15 +64,15 @@ Usage
 Sumo is intended to be used via the command-line, however, a
 fully-documented python API is also provided. A manual, including
 tutorials and API documentation, is `available online
-<https://smtg-ucl.github.io/sumo/>`_. Additionally, the built-in
+<https://smtg-bham.github.io/sumo/>`_. Additionally, the built-in
 help (``-h``) option for each command provides a summary of the
 available options.
 
 A guide to using each command can be found on the
-`Tutorial page <https://smtg-ucl.github.io/sumo/tutorials.html>`_.
+`Tutorial page <https://smtg-bham.github.io/sumo/tutorials.html>`_.
 
 For a preview of the functionality of sumo, see the
-`Gallery <https://smtg-ucl.github.io/sumo/gallery.html>`_.
+`Gallery <https://smtg-bham.github.io/sumo/gallery.html>`_.
 
 Currently, the scripts provided are:
 
@@ -91,7 +91,7 @@ Currently, the scripts provided are:
 
 Information on how to tweak the style of sumo plots is provided on the
 `Customising Sumo Plots page
-<https://smtg-ucl.github.io/sumo/customising-plots.html>`_.
+<https://smtg-bham.github.io/sumo/customising-plots.html>`_.
 
 Feature support for different codes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -145,14 +145,14 @@ Developer installation
 *Regular users can skip this section!*
 
 Sumo can also be installed from a copy of the source repository
-(https://github.com/smtg-ucl/sumo); this will be preferred for development
+(https://github.com/smtg-bham/sumo); this will be preferred for development
 work or if using experimental code branches.
 
 To clone the project from Github and make a local installation:
 
 .. code-block:: bash
 
-    git clone https://github.com/smtg-ucl/sumo.git
+    git clone https://github.com/smtg-bham/sumo.git
     cd sumo
     pip install --user -e .
 
@@ -233,7 +233,7 @@ Bugs reports and feature requests
 
 There are probably still some bugs. If you think you've found
 one, please report it on the `Issue Tracker
-<https://github.com/SMTG-UCL/sumo/issues>`_.
+<https://github.com/SMTG-bham/sumo/issues>`_.
 This is also the place to propose ideas for new features or ask
 questions about the design of Sumo.
 Poor documentation is considered a bug, but please be as specific as
