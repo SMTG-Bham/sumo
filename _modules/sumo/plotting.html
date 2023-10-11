@@ -380,13 +380,16 @@
 
 <div class="viewcode-block" id="draw_themed_line">
 <a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.draw_themed_line">[docs]</a>
-<span class="k">def</span> <span class="nf">draw_themed_line</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">draw_themed_line</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Draw a horizontal line using the theme settings</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        y (float): Position of line in data coordinates</span>
 <span class="sd">        ax (Axes): Matplotlib Axes on which line is drawn</span>
-
+<span class="sd">        orientation (str, optional): Orientation of line. Options are</span>
+<span class="sd">            ``&quot;horizontal&quot;`` or ``&quot;vertical&quot;``.</span>
+<span class="sd">        **kwargs: Additional keyword arguments passed to ``ax.axhline`` or</span>
+<span class="sd">            ``ax.axvline``, which can be used to override the theme settings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Note to future developers: feel free to add plenty more optional</span>
@@ -400,6 +403,7 @@
         <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="n">linewidth</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;ytick.major.width&quot;</span><span class="p">],</span>
     <span class="p">)</span>
+    <span class="n">themed_line_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">orientation</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">themed_line_options</span><span class="p">)</span>

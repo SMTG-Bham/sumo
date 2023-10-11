@@ -67,13 +67,17 @@ The allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="sumo.plotting.draw_themed_line">
-<span class="sig-prename descclassname"><span class="pre">sumo.plotting.</span></span><span class="sig-name descname"><span class="pre">draw_themed_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'horizontal'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting.html#draw_themed_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.plotting.draw_themed_line" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">sumo.plotting.</span></span><span class="sig-name descname"><span class="pre">draw_themed_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'horizontal'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/plotting.html#draw_themed_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.plotting.draw_themed_line" title="Link to this definition">¶</a></dt>
 <dd><p>Draw a horizontal line using the theme settings</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Position of line in data coordinates</p></li>
 <li><p><strong>ax</strong> (<em>Axes</em>) – Matplotlib Axes on which line is drawn</p></li>
+<li><p><strong>orientation</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em>, </em><em>optional</em>) – Orientation of line. Options are
+<code class="docutils literal notranslate"><span class="pre">&quot;horizontal&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;vertical&quot;</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to <code class="docutils literal notranslate"><span class="pre">ax.axhline</span></code> or
+<code class="docutils literal notranslate"><span class="pre">ax.axvline</span></code>, which can be used to override the theme settings.</p></li>
 </ul>
 </dd>
 </dl>
@@ -297,10 +301,7 @@ a single font, specified as a <a class="reference external" href="https://docs.p
 specified as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>.</p></li>
 <li><p><strong>style</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, or <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) – Any matplotlib
 style specifications, to be composed on top of Sumo base
-style.
-no_base_style (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional): Prevent use of sumo base
-style. This can make alternative styles behave more
-predictably.</p></li>
+style.</p></li>
 <li><p><strong>no_base_style</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Prevent use of sumo base
 style. This can make alternative styles behave more
 predictably.</p></li>
