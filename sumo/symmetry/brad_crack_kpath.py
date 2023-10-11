@@ -6,7 +6,6 @@ Module containing class for generating Bradley and Cracknell k-point paths.
 """
 
 from json import load as load_json
-import os
 
 import numpy as np
 
@@ -66,9 +65,7 @@ class BradCrackKpath(Kpath):
             spg_symbol = self.spg_symbol
             lattice_type = self.lattice_type
 
-        bravais = self._get_bravais_lattice(
-            spg_symbol, lattice_type, a, b, c, unique
-        )
+        bravais = self._get_bravais_lattice(spg_symbol, lattice_type, a, b, c, unique)
         self._kpath = self._get_bradcrack_data(bravais)
 
     @staticmethod
@@ -85,7 +82,7 @@ class BradCrackKpath(Kpath):
                'path': [['\Gamma', 'X', ..., 'P'], ['H', 'N', ...]]}
 
         """
-        json_file = os.path.join(ilr_files("sumo.symmetry"), "bradcrack.json")
+        json_file = ilr_files("sumo.symmetry") / "bradcrack.json"
         with open(json_file) as f:
             bradcrack_data = load_json(f)
             return bradcrack_data[bravais]

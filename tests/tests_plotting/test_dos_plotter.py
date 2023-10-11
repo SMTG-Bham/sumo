@@ -1,5 +1,5 @@
-import unittest
 import os
+import unittest
 
 try:
     import configparser
@@ -9,6 +9,7 @@ try:
     from importlib.resources import files as ilr_files
 except ImportError:  # Python < 3.9
     from importlib_resources import files as ilr_files
+
 import matplotlib.pyplot
 
 import sumo.plotting
@@ -18,9 +19,7 @@ from sumo.plotting.dos_plotter import get_cached_colour
 
 class GetColourTestCase(unittest.TestCase):
     def setUp(self):
-        config_path = os.path.join(
-            ilr_files("sumo.plotting"), "orbital_colours.conf"
-        )
+        config_path = os.path.join(ilr_files("sumo.plotting"), "orbital_colours.conf")
 
         self.config = configparser.ConfigParser()
         self.config.read(os.path.abspath(config_path))

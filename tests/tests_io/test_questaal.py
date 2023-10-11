@@ -1,10 +1,11 @@
-import unittest
 import os
+import unittest
 
 try:
     from importlib.resources import files as ilr_files
 except ImportError:  # Python < 3.9
     from importlib_resources import files as ilr_files
+
 import numpy as np
 from pymatgen.core.lattice import Lattice
 
@@ -13,9 +14,7 @@ from sumo.io.questaal import QuestaalInit, dielectric_from_file
 
 class QuestaalOpticsTestCase(unittest.TestCase):
     def setUp(self):
-        self.bse_path = os.path.join(
-            ilr_files("tests"), "data", "SnO2", "eps_BSE.out"
-        )
+        self.bse_path = os.path.join(ilr_files("tests"), "data", "SnO2", "eps_BSE.out")
 
     def test_optics_from_bethesalpeter(self):
         energy, real, imag = dielectric_from_file(self.bse_path)
@@ -93,9 +92,7 @@ class QuestaalInitTestCase(unittest.TestCase):
         self.assertFalse(init_plat.cartesian)
 
         init_plat_alat = QuestaalInit(lattice, site)
-        init_plat_alat.lattice["PLAT"] = (
-            np.array(init_plat_alat.lattice["PLAT"]) * 0.1
-        )
+        init_plat_alat.lattice["PLAT"] = np.array(init_plat_alat.lattice["PLAT"]) * 0.1
         init_plat_alat.lattice["ALAT"] = 10
         self.assertEqual(init_plat.structure, init_plat_alat.structure)
 
@@ -143,9 +140,7 @@ class QuestaalInitTestCase(unittest.TestCase):
         bohr_init_noconvert = QuestaalInit(
             bohr_lattice, bohr_cart_sites, ignore_units=True
         )
-        self.assertAlmostEqual(
-            bohr_init_noconvert.structure.lattice.abc[2], 9.74172715
-        )
+        self.assertAlmostEqual(bohr_init_noconvert.structure.lattice.abc[2], 9.74172715)
         self.assertAlmostEqual(
             bohr_init_noconvert.structure.distance_matrix[0, -1], 3.66441077
         )
@@ -208,8 +203,7 @@ class QuestaalInitTestCase(unittest.TestCase):
         self.assertLess(
             (
                 abs(
-                    np.array(self.ref_pmg_lat.abc)
-                    - np.array(sym_structure.lattice.abc)
+                    np.array(self.ref_pmg_lat.abc) - np.array(sym_structure.lattice.abc)
                 )
             ).max(),
             1e-5,

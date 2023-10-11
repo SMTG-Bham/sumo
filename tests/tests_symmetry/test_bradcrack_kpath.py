@@ -1,11 +1,12 @@
+import os
 import unittest
 import warnings
-import os
 
 try:
     from importlib.resources import files as ilr_files
 except ImportError:  # Python < 3.9
     from importlib_resources import files as ilr_files
+
 from pymatgen.core.structure import Structure
 
 from sumo.symmetry.brad_crack_kpath import BradCrackKpath
@@ -30,9 +31,7 @@ class BradCrackKpathTestCase(unittest.TestCase):
             "triclinic",
         )
         self.assertEqual(
-            BradCrackKpath._get_bravais_lattice(
-                "Fd-3m", "cubic", 5.66, 5.66, 5.66, 0
-            ),
+            BradCrackKpath._get_bravais_lattice("Fd-3m", "cubic", 5.66, 5.66, 5.66, 0),
             "cubic_f",
         )
 

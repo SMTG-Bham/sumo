@@ -17,10 +17,9 @@ try:
     from importlib.resources import files as ilr_files
 except ImportError:  # Python < 3.9
     from importlib_resources import files as ilr_files
+
 import matplotlib as mpl
-from pymatgen.electronic_structure.bandstructure import (
-    get_reconstructed_band_structure,
-)
+from pymatgen.electronic_structure.bandstructure import get_reconstructed_band_structure
 from pymatgen.electronic_structure.core import Spin
 from pymatgen.io.vasp.outputs import BSVasprun
 
@@ -394,9 +393,7 @@ def bandplot(
                 else:
                     logging.info(f"Found PDOS file {pdos_file}")
             else:
-                logging.info(
-                    f"Cell file {cell_file} does not exist, cannot plot PDOS."
-                )
+                logging.info(f"Cell file {cell_file} does not exist, cannot plot PDOS.")
 
             dos, pdos = read_castep_dos(
                 dos_file,
@@ -620,8 +617,7 @@ def _get_parser():
         "-c",
         "--code",
         default="vasp",
-        help="Electronic structure code (default: vasp)."
-        '"questaal" also supported.',
+        help="Electronic structure code (default: vasp)." '"questaal" also supported.',
     )
     parser.add_argument(
         "-p", "--prefix", metavar="P", help="prefix for the files generated"
@@ -762,24 +758,20 @@ def _get_parser():
         "--orbitals",
         type=_el_orb,
         metavar="O",
-        help=(
-            "orbitals to split into lm-decomposed "
-            'contributions (e.g. "Ru.d")'
-        ),
+        help="orbitals to split into lm-decomposed contributions (e.g. 'Ru.d')",
     )
     parser.add_argument(
         "--atoms",
         type=_atoms,
         metavar="A",
-        help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'),
+        help='atoms to include (e.g. "O.1.2.3,Ru.1.2.3")',
     )
     parser.add_argument(
         "--spin",
         type=str,
         default=None,
         help=(
-            "select only one spin channel for a "
-            "spin-polarised calculation "
+            "select only one spin channel for a spin-polarised calculation "
             "(options: up, 1; down, -1)"
         ),
     )
@@ -829,9 +821,7 @@ def _get_parser():
     parser.add_argument(
         "--height", type=float, default=None, help="height of the graph"
     )
-    parser.add_argument(
-        "--width", type=float, default=None, help="width of the graph"
-    )
+    parser.add_argument("--width", type=float, default=None, help="width of the graph")
     parser.add_argument(
         "--ymin", type=float, default=-6.0, help="minimum energy on the y-axis"
     )
@@ -883,18 +873,14 @@ def main():
     logging.getLogger("").addHandler(console)
 
     if args.config is None:
-        config_path = os.path.join(
-            ilr_files("sumo.plotting"), "orbital_colours.conf"
-        )
+        config_path = ilr_files("sumo.plotting") / "orbital_colours.conf"
     else:
         config_path = args.config
     colours = configparser.ConfigParser()
     colours.read(os.path.abspath(config_path))
 
     warnings.filterwarnings("ignore", category=UserWarning, module="matplotlib")
-    warnings.filterwarnings(
-        "ignore", category=UnicodeWarning, module="matplotlib"
-    )
+    warnings.filterwarnings("ignore", category=UnicodeWarning, module="matplotlib")
     warnings.filterwarnings("ignore", category=UserWarning, module="pymatgen")
 
     bandplot(

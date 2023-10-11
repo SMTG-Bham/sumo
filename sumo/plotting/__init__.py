@@ -4,8 +4,8 @@
 """
 Subpackage providing helper functions for generating publication ready plots.
 """
-from functools import wraps
 import os
+from functools import wraps
 
 import matplotlib.pyplot
 import numpy as np
@@ -19,15 +19,11 @@ except ImportError:  # Python < 3.9
 
 colour_cache = {}
 
-sumo_base_style = os.path.join(ilr_files("sumo.plotting"), "sumo_base.mplstyle")
-sumo_dos_style = os.path.join(ilr_files("sumo.plotting"), "sumo_dos.mplstyle")
-sumo_bs_style = os.path.join(ilr_files("sumo.plotting"), "sumo_bs.mplstyle")
-sumo_phonon_style = os.path.join(
-    ilr_files("sumo.plotting"), "sumo_phonon.mplstyle"
-)
-sumo_optics_style = os.path.join(
-    ilr_files("sumo.plotting"), "sumo_optics.mplstyle"
-)
+sumo_base_style = ilr_files("sumo.plotting") / "sumo_base.mplstyle"
+sumo_dos_style = ilr_files("sumo.plotting") / "sumo_dos.mplstyle"
+sumo_bs_style = ilr_files("sumo.plotting") / "sumo_bs.mplstyle"
+sumo_phonon_style = ilr_files("sumo.plotting") / "sumo_phonon.mplstyle"
+sumo_optics_style = ilr_files("sumo.plotting") / "sumo_optics.mplstyle"
 
 
 def styled_plot(*style_sheets):
@@ -47,9 +43,7 @@ def styled_plot(*style_sheets):
 
     def decorator(get_plot):
         @wraps(get_plot)
-        def wrapper(
-            *args, fonts=None, style=None, no_base_style=False, **kwargs
-        ):
+        def wrapper(*args, fonts=None, style=None, no_base_style=False, **kwargs):
             if no_base_style:
                 list_style = []
             else:
@@ -62,9 +56,7 @@ def styled_plot(*style_sheets):
                     list_style += [style]
 
             if fonts is not None:
-                list_style += [
-                    {"font.family": "sans-serif", "font.sans-serif": fonts}
-                ]
+                list_style += [{"font.family": "sans-serif", "font.sans-serif": fonts}]
 
             matplotlib.pyplot.style.use(list_style)
             return get_plot(*args, **kwargs)
@@ -277,9 +269,7 @@ def get_interpolated_colors(color1, color2, color3, weights, colorspace="lab"):
         "xyz": XYZColor,
     }
     if colorspace not in list(colorspace_mapping.keys()):
-        raise ValueError(
-            f"colorspace must be one of {colorspace_mapping.keys()}"
-        )
+        raise ValueError(f"colorspace must be one of {colorspace_mapping.keys()}")
 
     colorspace = colorspace_mapping[colorspace]
 
@@ -290,19 +280,13 @@ def get_interpolated_colors(color1, color2, color3, weights, colorspace="lab"):
 
     # now convert to the colorspace basis for interpolation
     basis1 = np.array(
-        convert_color(
-            color1_rgb, colorspace, target_illuminant="d50"
-        ).get_value_tuple()
+        convert_color(color1_rgb, colorspace, target_illuminant="d50").get_value_tuple()
     )
     basis2 = np.array(
-        convert_color(
-            color2_rgb, colorspace, target_illuminant="d50"
-        ).get_value_tuple()
+        convert_color(color2_rgb, colorspace, target_illuminant="d50").get_value_tuple()
     )
     basis3 = np.array(
-        convert_color(
-            color3_rgb, colorspace, target_illuminant="d50"
-        ).get_value_tuple()
+        convert_color(color3_rgb, colorspace, target_illuminant="d50").get_value_tuple()
     )
 
     # ensure weights is a numpy array
@@ -317,8 +301,7 @@ def get_interpolated_colors(color1, color2, color3, weights, colorspace="lab"):
 
     # convert colors to RGB
     rgb_colors = [
-        convert_color(colorspace(*c), sRGBColor).get_value_tuple()
-        for c in colors
+        convert_color(colorspace(*c), sRGBColor).get_value_tuple() for c in colors
     ]
 
     # ensure all rgb values are less than 1 (sometimes issues in interpolation

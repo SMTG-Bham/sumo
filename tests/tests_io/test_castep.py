@@ -1,11 +1,12 @@
 import json
-import unittest
 import os
+import unittest
 
 try:
     from importlib.resources import files as ilr_files
 except ImportError:  # Python < 3.9
     from importlib_resources import files as ilr_files
+
 from monty.io import gzip
 from monty.json import MontyDecoder
 from numpy.testing import assert_array_almost_equal
@@ -26,21 +27,15 @@ _ry_to_ev = 13.605693009
 
 class CastepCellTestCase(unittest.TestCase):
     def setUp(self):
-        self.si_cell = os.path.join(
-            ilr_files("tests"), "data", "Si", "Si2.cell"
-        )
+        self.si_cell = os.path.join(ilr_files("tests"), "data", "Si", "Si2.cell")
         self.si_cell_alt = os.path.join(
             ilr_files("tests"), "data", "Si", "Si2-alt.cell"
         )
-        self.zns_band_cell = os.path.join(
-            ilr_files("tests"), "data", "ZnS", "zns.cell"
-        )
+        self.zns_band_cell = os.path.join(ilr_files("tests"), "data", "ZnS", "zns.cell")
         self.zns_singlepoint_cell = os.path.join(
             ilr_files("tests"), "data", "ZnS", "zns-sp.cell"
         )
-        si_structure_file = os.path.join(
-            ilr_files("tests"), "data", "Si", "Si8.json"
-        )
+        si_structure_file = os.path.join(ilr_files("tests"), "data", "Si", "Si8.json")
         self.si_structure = Structure.from_file(si_structure_file)
 
     def test_castep_cell_null_init(self):
@@ -105,9 +100,7 @@ class CastepDosNiOTestCase(unittest.TestCase):
             "cell_file": "NiO.cell",
         }
         for key, value in nio_files.items():
-            nio_files[key] = os.path.join(
-                ilr_files("tests"), "data", "NiO", value
-            )
+            nio_files[key] = os.path.join(ilr_files("tests"), "data", "NiO", value)
 
         self.read_dos_kwargs = nio_files
 
@@ -155,12 +148,8 @@ class CastepDosNiOTestCase(unittest.TestCase):
 
 class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
     def setUp(self):
-        self.si_bands = os.path.join(
-            ilr_files("tests"), "data", "Si", "Si2.bands"
-        )
-        self.si_cell = os.path.join(
-            ilr_files("tests"), "data", "Si", "Si2.cell"
-        )
+        self.si_bands = os.path.join(ilr_files("tests"), "data", "Si", "Si2.bands")
+        self.si_cell = os.path.join(ilr_files("tests"), "data", "Si", "Si2.cell")
         self.si_cell_alt = os.path.join(
             ilr_files("tests"), "data", "Si", "Si2-alt.cell"
         )
@@ -185,16 +174,12 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
     def test_castep_bands_read_eigenvalues(self):
         with open(self.si_header_ref) as f:
             ref_header = json.load(f)
-        kpoints, weights, eigenvals = read_bands_eigenvalues(
-            self.si_bands, ref_header
-        )
+        kpoints, weights, eigenvals = read_bands_eigenvalues(self.si_bands, ref_header)
 
         for i, k in enumerate([0.5, 0.36111111, 0.63888889]):
             self.assertAlmostEqual(kpoints[4][i], k)
 
-        self.assertAlmostEqual(
-            eigenvals[Spin.up][2, 4], 0.09500443 * _ry_to_ev * 2
-        )
+        self.assertAlmostEqual(eigenvals[Spin.up][2, 4], 0.09500443 * _ry_to_ev * 2)
 
         for weight in weights:
             self.assertAlmostEqual(weight, 0.02272727)
@@ -212,9 +197,7 @@ class CastepBandStructureTestCaseNoSpin(unittest.TestCase):
 
 class CastepBandStructureTestCaseNickel(unittest.TestCase):
     def setUp(self):
-        self.ni_cell = os.path.join(
-            ilr_files("tests"), "data", "Ni", "ni-band.cell"
-        )
+        self.ni_cell = os.path.join(ilr_files("tests"), "data", "Ni", "ni-band.cell")
 
         self.ref_labels = {
             r"\Gamma": (0.0, 0.0, 0.0),
@@ -232,13 +215,9 @@ class CastepBandStructureTestCaseNickel(unittest.TestCase):
 
 class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
     def setUp(self):
-        self.fe_bands = os.path.join(
-            ilr_files("tests"), "data", "Fe", "Fe.bands"
-        )
+        self.fe_bands = os.path.join(ilr_files("tests"), "data", "Fe", "Fe.bands")
 
-        self.fe_cell = os.path.join(
-            ilr_files("tests"), "data", "Fe", "Fe.cell"
-        )
+        self.fe_cell = os.path.join(ilr_files("tests"), "data", "Fe", "Fe.cell")
         self.fe_header_ref = os.path.join(
             ilr_files("tests"), "data", "Fe", "Fe.bands_header.json"
         )
@@ -252,9 +231,7 @@ class CastepBandStructureTestCaseWithSpin(unittest.TestCase):
 
 class BandStructureTestCasePathBreak(unittest.TestCase):
     def setUp(self):
-        self.pt_cell = os.path.join(
-            ilr_files("tests"), "data", "Pt", "Pt.cell"
-        )
+        self.pt_cell = os.path.join(ilr_files("tests"), "data", "Pt", "Pt.cell")
         self.ref_labels = {
             r"\Gamma": (0.0, 0.0, 0.0),
             "X": (0.5, 0.0, 0.5),
@@ -275,12 +252,8 @@ class BandStructureTestCasePathBreak(unittest.TestCase):
 #   sumo-phonon-bandplot -f zns.phonon --units cm-1 --to-json zns_phonon.json
 class CastepPhononTestCaseZincblende(unittest.TestCase):
     def setUp(self):
-        self.zns_phonon = os.path.join(
-            ilr_files("tests"), "data", "ZnS", "zns.phonon"
-        )
-        self.zns_cell = os.path.join(
-            ilr_files("tests"), "data", "ZnS", "zns.cell"
-        )
+        self.zns_phonon = os.path.join(ilr_files("tests"), "data", "ZnS", "zns.phonon")
+        self.zns_cell = os.path.join(ilr_files("tests"), "data", "ZnS", "zns.cell")
         self.zns_phonon_ref = os.path.join(
             ilr_files("tests"), "data", "ZnS", "zns_phonon.json"
         )
@@ -304,9 +277,7 @@ class CastepPhononTestCaseZincblende(unittest.TestCase):
         )
         assert_array_almost_equal(bs_dict["qpoints"], ref_dict["qpoints"])
         self.assertEqual(bs_dict["labels_dict"], ref_dict["labels_dict"])
-        self.assertEqual(
-            bs_dict["structure"]["sites"], ref_dict["structure"]["sites"]
-        )
+        self.assertEqual(bs_dict["structure"]["sites"], ref_dict["structure"]["sites"])
         assert_array_almost_equal(
             bs_dict["structure"]["lattice"]["matrix"],
             ref_dict["structure"]["lattice"]["matrix"],
