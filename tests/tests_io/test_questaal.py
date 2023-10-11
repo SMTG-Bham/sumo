@@ -1,8 +1,11 @@
 import unittest
-from os.path import join as path_join
+import os
 
+try:
+    from importlib.resources import files as ilr_files
+except ImportError:  # Python < 3.9
+    from importlib_resources import files as ilr_files
 import numpy as np
-from pkg_resources import resource_filename
 from pymatgen.core.lattice import Lattice
 
 from sumo.io.questaal import QuestaalInit, dielectric_from_file
@@ -10,8 +13,8 @@ from sumo.io.questaal import QuestaalInit, dielectric_from_file
 
 class QuestaalOpticsTestCase(unittest.TestCase):
     def setUp(self):
-        self.bse_path = resource_filename(
-            __name__, path_join("..", "data", "SnO2", "eps_BSE.out")
+        self.bse_path = os.path.join(
+            ilr_files("tests"), "data", "SnO2", "eps_BSE.out"
         )
 
     def test_optics_from_bethesalpeter(self):
@@ -25,7 +28,11 @@ class QuestaalOpticsTestCase(unittest.TestCase):
 class QuestaalInitTestCase(unittest.TestCase):
     def setUp(self):
         self.ref_lat = np.array(
-            [[1.59205, -2.757511, 0.0], [1.59205, 2.757511, 0.0], [0.0, 0.0, 5.1551]]
+            [
+                [1.59205, -2.757511, 0.0],
+                [1.59205, 2.757511, 0.0],
+                [0.0, 0.0, 5.1551],
+            ]
         )
 
         self.ref_pmg_lat = Lattice(self.ref_lat)
@@ -33,7 +40,13 @@ class QuestaalInitTestCase(unittest.TestCase):
     def test_init_from_python(self):
         """Check Questaal input object"""
         # spcgroup example
-        lattice = {"SPCGRP": 186, "A": 3.18409958, "C": 5.1551, "UNITS": "A", "ALAT": 1}
+        lattice = {
+            "SPCGRP": 186,
+            "A": 3.18409958,
+            "C": 5.1551,
+            "UNITS": "A",
+            "ALAT": 1,
+        }
         site = [
             {"ATOM": "Zn", "X": (0.6666670, 0.3333330, 0.5000000)},
             {"ATOM": "O", "X": (0.6666670, 0.3333330, 0.8803100)},
@@ -46,7 +59,13 @@ class QuestaalInitTestCase(unittest.TestCase):
 
         # Check ALAT ok
         init_sym_alat = QuestaalInit(
-            {"SPCGRP": 186, "A": 0.318409958, "C": 0.51551, "UNITS": "A", "ALAT": 10},
+            {
+                "SPCGRP": 186,
+                "A": 0.318409958,
+                "C": 0.51551,
+                "UNITS": "A",
+                "ALAT": 10,
+            },
             site,
         )
         self.assertEqual(init_sym.structure, init_sym_alat.structure)
@@ -74,7 +93,9 @@ class QuestaalInitTestCase(unittest.TestCase):
         self.assertFalse(init_plat.cartesian)
 
         init_plat_alat = QuestaalInit(lattice, site)
-        init_plat_alat.lattice["PLAT"] = np.array(init_plat_alat.lattice["PLAT"]) * 0.1
+        init_plat_alat.lattice["PLAT"] = (
+            np.array(init_plat_alat.lattice["PLAT"]) * 0.1
+        )
         init_plat_alat.lattice["ALAT"] = 10
         self.assertEqual(init_plat.structure, init_plat_alat.structure)
 
@@ -122,14 +143,22 @@ class QuestaalInitTestCase(unittest.TestCase):
         bohr_init_noconvert = QuestaalInit(
             bohr_lattice, bohr_cart_sites, ignore_units=True
         )
-        self.assertAlmostEqual(bohr_init_noconvert.structure.lattice.abc[2], 9.74172715)
+        self.assertAlmostEqual(
+            bohr_init_noconvert.structure.lattice.abc[2], 9.74172715
+        )
         self.assertAlmostEqual(
             bohr_init_noconvert.structure.distance_matrix[0, -1], 3.66441077
         )
 
     def test_init_coordinate_safety(self):
         """Check illegal Questaal input caught"""
-        lattice = {"SPCGRP": 186, "A": 3.18409958, "C": 5.1551, "UNITS": "A", "ALAT": 1}
+        lattice = {
+            "SPCGRP": 186,
+            "A": 3.18409958,
+            "C": 5.1551,
+            "UNITS": "A",
+            "ALAT": 1,
+        }
         site = [
             {"ATOM": "Zn", "X": (0.6666670, 0.3333330, 0.5000000)},
             {"ATOM": "O", "POS": (0.6666670, 0.3333330, 0.8803100)},
@@ -146,12 +175,13 @@ class QuestaalInitTestCase(unittest.TestCase):
             QuestaalInit(lattice, site)
 
     def test_init_from_file(self):
-        zno_path = resource_filename(__name__, path_join("..", "data", "ZnO"))
+        zno_path = os.path.join(ilr_files("tests"), "data", "ZnO")
+
         init1 = QuestaalInit.from_file(
-            path_join(zno_path, "init.zno_nosym"), preprocessor=False
+            os.path.join(zno_path, "init.zno_nosym"), preprocessor=False
         )
         init2 = QuestaalInit.from_file(
-            path_join(zno_path, "init.zno_sym"), preprocessor=False
+            os.path.join(zno_path, "init.zno_sym"), preprocessor=False
         )
         nosym_structure = init1.structure
         sym_structure = init2.structure
@@ -178,7 +208,8 @@ class QuestaalInitTestCase(unittest.TestCase):
         self.assertLess(
             (
                 abs(
-                    np.array(self.ref_pmg_lat.abc) - np.array(sym_structure.lattice.abc)
+                    np.array(self.ref_pmg_lat.abc)
+                    - np.array(sym_structure.lattice.abc)
                 )
             ).max(),
             1e-5,

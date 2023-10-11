@@ -1,25 +1,31 @@
 import json
 import unittest
-from os.path import join as path_join
+import os
 
+try:
+    from importlib.resources import files as ilr_files
+except ImportError:  # Python < 3.9
+    from importlib_resources import files as ilr_files
 import numpy as np
 from numpy.testing import assert_almost_equal
-from pkg_resources import resource_filename
 from pymatgen.io.vasp import Vasprun
 
-from sumo.electronic_structure.optics import calculate_dielectric_properties, kkr
+from sumo.electronic_structure.optics import (
+    calculate_dielectric_properties,
+    kkr,
+)
 
 
 class AbsorptionTestCase(unittest.TestCase):
     def setUp(self):
-        diel_path = resource_filename(
-            __name__, path_join("..", "data", "Ge", "ge_diel.json")
+        diel_path = os.path.join(
+            ilr_files("tests"), "data", "Ge", "ge_diel.json"
         )
         with open(diel_path) as f:
             self.ge_diel = json.load(f)
 
-        absorption_path = resource_filename(
-            __name__, path_join("..", "data", "Ge", "ge_alpha.json")
+        absorption_path = os.path.join(
+            ilr_files("tests"), "data", "Ge", "ge_alpha.json"
         )
         with open(absorption_path) as f:
             self.ge_abs = json.load(f)
@@ -29,18 +35,20 @@ class AbsorptionTestCase(unittest.TestCase):
             self.ge_diel,
             {"absorption"},
         )
-        self.assertIsNone(assert_almost_equal(properties["absorption"], self.ge_abs))
+        self.assertIsNone(
+            assert_almost_equal(properties["absorption"], self.ge_abs)
+        )
 
 
 class KramersKronigTestCase(unittest.TestCase):
     def setUp(self):
-        ge_vasprun_path = resource_filename(
-            __name__, path_join("..", "data", "Ge", "vasprun.xml.gz")
+        ge_vasprun_path = os.path.join(
+            ilr_files("tests"), "data", "Ge", "vasprun.xml.gz"
         )
         self.ge_vasprun = Vasprun(ge_vasprun_path)
 
-        self.ge_text_file = resource_filename(
-            __name__, path_join("..", "data", "Ge", "optics.txt")
+        self.ge_text_file = ge_vasprun_path = os.path.join(
+            ilr_files("tests"), "data", "Ge", "optics.txt"
         )
 
     def test_kkr(self):

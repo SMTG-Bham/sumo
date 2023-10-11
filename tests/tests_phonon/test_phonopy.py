@@ -1,9 +1,12 @@
 import unittest
-from os.path import join as path_join
+import os
 
+try:
+    from importlib.resources import files as ilr_files
+except ImportError:  # Python < 3.9
+    from importlib_resources import files as ilr_files
 import numpy as np
 from phonopy import Phonopy
-from pkg_resources import resource_filename
 from pymatgen.io.vasp.inputs import Poscar
 
 import sumo.phonon.phonopy
@@ -11,11 +14,11 @@ import sumo.phonon.phonopy
 
 class PhonopyTestCase(unittest.TestCase):
     def setUp(self):
-        self.phonon_data = resource_filename(
-            __name__, path_join("..", "data", "RbSnI6", "phonopy", "FORCE_SETS")
+        self.phonon_data = os.path.join(
+            ilr_files("tests"), "data", "RbSnI6", "phonopy", "FORCE_SETS"
         )
-        poscar_path = resource_filename(
-            __name__, path_join("..", "data", "RbSnI6", "phonopy", "POSCAR")
+        poscar_path = os.path.join(
+            ilr_files("tests"), "data", "RbSnI6", "phonopy", "POSCAR"
         )
         phonon_poscar = Poscar.from_file(poscar_path)
         self.phonon_structure = phonon_poscar.structure

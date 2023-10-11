@@ -29,7 +29,7 @@ setup(
         "Topic :: Scientific/Engineering :: Physics",
     ],
     keywords="chemistry pymatgen dft vasp dos band",
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests"]),
     python_requires=">=3.8",
     install_requires=[
         "spglib",
@@ -42,6 +42,7 @@ setup(
         "seekpath",
         "castepxbin<1.0",
         "colormath",
+        "importlib-resources",
     ],
     extras_require={
         "docs": ["sphinx", "sphinx-argparse"],
