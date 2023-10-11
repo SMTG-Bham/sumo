@@ -218,9 +218,6 @@ class SBSPlotter(BSPlotter):
             style (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib
                 style specifications, to be composed on top of Sumo base
                 style.
-                no_base_style (:obj:`bool`, optional): Prevent use of sumo base
-                style. This can make alternative styles behave more
-                predictably.
             no_base_style (:obj:`bool`, optional): Prevent use of sumo base
                 style. This can make alternative styles behave more
                 predictably.

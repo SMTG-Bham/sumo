@@ -326,13 +326,16 @@ def get_interpolated_colors(color1, color2, color3, weights, colorspace="lab"):
     return np.minimum(rgb_colors, 1)
 
 
-def draw_themed_line(y, ax, orientation="horizontal"):
+def draw_themed_line(y, ax, orientation="horizontal", **kwargs):
     """Draw a horizontal line using the theme settings
 
     Args:
         y (float): Position of line in data coordinates
         ax (Axes): Matplotlib Axes on which line is drawn
-
+        orientation (str, optional): Orientation of line. Options are
+            ``"horizontal"`` or ``"vertical"``.
+        **kwargs: Additional keyword arguments passed to ``ax.axhline`` or
+            ``ax.axvline``, which can be used to override the theme settings.
     """
 
     # Note to future developers: feel free to add plenty more optional
@@ -346,6 +349,7 @@ def draw_themed_line(y, ax, orientation="horizontal"):
         zorder=0,
         linewidth=rcParams["ytick.major.width"],
     )
+    themed_line_options.update(kwargs)
 
     if orientation == "horizontal":
         ax.axhline(y, **themed_line_options)
