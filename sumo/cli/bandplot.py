@@ -762,24 +762,20 @@ def _get_parser():
         "--orbitals",
         type=_el_orb,
         metavar="O",
-        help=(
-            "orbitals to split into lm-decomposed "
-            'contributions (e.g. "Ru.d")'
-        ),
+        help="orbitals to split into lm-decomposed contributions (e.g. 'Ru.d')",
     )
     parser.add_argument(
         "--atoms",
         type=_atoms,
         metavar="A",
-        help=('atoms to include (e.g. "O.1.2.3,Ru.1.2.3")'),
+        help='atoms to include (e.g. "O.1.2.3,Ru.1.2.3")',
     )
     parser.add_argument(
         "--spin",
         type=str,
         default=None,
         help=(
-            "select only one spin channel for a "
-            "spin-polarised calculation "
+            "select only one spin channel for a spin-polarised calculation "
             "(options: up, 1; down, -1)"
         ),
     )
@@ -883,9 +879,7 @@ def main():
     logging.getLogger("").addHandler(console)
 
     if args.config is None:
-        config_path = os.path.join(
-            ilr_files("sumo.plotting"), "orbital_colours.conf"
-        )
+        config_path = ilr_files("sumo.plotting") / "orbital_colours.conf"
     else:
         config_path = args.config
     colours = configparser.ConfigParser()

@@ -85,7 +85,7 @@ class BradCrackKpath(Kpath):
                'path': [['\Gamma', 'X', ..., 'P'], ['H', 'N', ...]]}
 
         """
-        json_file = os.path.join(ilr_files("sumo.symmetry"), "bradcrack.json")
+        json_file = ilr_files("sumo.symmetry") / "bradcrack.json"
         with open(json_file) as f:
             bradcrack_data = load_json(f)
             return bradcrack_data[bravais]

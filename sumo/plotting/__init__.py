@@ -19,15 +19,11 @@ except ImportError:  # Python < 3.9
 
 colour_cache = {}
 
-sumo_base_style = os.path.join(ilr_files("sumo.plotting"), "sumo_base.mplstyle")
-sumo_dos_style = os.path.join(ilr_files("sumo.plotting"), "sumo_dos.mplstyle")
-sumo_bs_style = os.path.join(ilr_files("sumo.plotting"), "sumo_bs.mplstyle")
-sumo_phonon_style = os.path.join(
-    ilr_files("sumo.plotting"), "sumo_phonon.mplstyle"
-)
-sumo_optics_style = os.path.join(
-    ilr_files("sumo.plotting"), "sumo_optics.mplstyle"
-)
+sumo_base_style = ilr_files("sumo.plotting") / "sumo_base.mplstyle"
+sumo_dos_style = ilr_files("sumo.plotting") / "sumo_dos.mplstyle"
+sumo_bs_style = ilr_files("sumo.plotting") / "sumo_bs.mplstyle"
+sumo_phonon_style = ilr_files("sumo.plotting") / "sumo_phonon.mplstyle"
+sumo_optics_style = ilr_files("sumo.plotting") / "sumo_optics.mplstyle"
 
 
 def styled_plot(*style_sheets):
