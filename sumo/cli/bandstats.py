@@ -248,6 +248,7 @@ def _log_band_edge_information(bs, edge_data):
     kpoint = edge_data["kpoint"]
     kpoint_str = kpt_str.format(k=kpoint.frac_coords)
     k_indices = ", ".join(map(str, edge_data["kpoint_index"]))
+    k_degen = bs.get_kpoint_degeneracy(kpoint=kpoint.frac_coords)
 
     if kpoint.label:
         k_loc = kpoint.label
@@ -259,6 +260,7 @@ def _log_band_edge_information(bs, edge_data):
     logging.info(f"  k-point: {kpoint_str}")
     logging.info(f"  k-point location: {k_loc}")
     logging.info(f"  k-point indices: {k_indices}")
+    logging.info(f"  k-point degeneracy: {k_degen}")
     logging.info(f"  Band indices: {b_indices}")
 
 
