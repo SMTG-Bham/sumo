@@ -164,6 +164,7 @@
         <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object of the band structure.</span>
 
@@ -350,6 +351,7 @@
             <span class="n">dos_label</span><span class="o">=</span><span class="n">dos_label</span><span class="p">,</span>
             <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span>
             <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">plt</span></div>
 
@@ -390,6 +392,7 @@
         <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` of the projected band structure.</span>
 
@@ -724,6 +727,7 @@
             <span class="n">plot_dos_legend</span><span class="o">=</span><span class="n">plot_dos_legend</span><span class="p">,</span>
             <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span>
             <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">plt</span></div>
 
@@ -746,6 +750,7 @@
         <span class="n">plot_dos_legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">spin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Tidy the band structure &amp; add the density of states if required.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">zero_line</span><span class="p">:</span>
@@ -768,6 +773,9 @@
                 <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">cbm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cbm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">vbm</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;vbm&quot;</span><span class="p">]:</span>
                 <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">vbm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vbm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C3&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dos_plotter</span><span class="p">:</span>
             <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
