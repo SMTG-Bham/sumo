@@ -1,10 +1,11 @@
-import unittest
 import os
+import unittest
 
 try:
     from importlib.resources import files as ilr_files
 except ImportError:  # Python < 3.9
     from importlib_resources import files as ilr_files
+
 import numpy as np
 from phonopy import Phonopy
 from pymatgen.io.vasp.inputs import Poscar

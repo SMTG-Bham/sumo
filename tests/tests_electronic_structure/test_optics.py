@@ -1,26 +1,22 @@
 import json
-import unittest
 import os
+import unittest
 
 try:
     from importlib.resources import files as ilr_files
 except ImportError:  # Python < 3.9
     from importlib_resources import files as ilr_files
+
 import numpy as np
 from numpy.testing import assert_almost_equal
 from pymatgen.io.vasp import Vasprun
 
-from sumo.electronic_structure.optics import (
-    calculate_dielectric_properties,
-    kkr,
-)
+from sumo.electronic_structure.optics import calculate_dielectric_properties, kkr
 
 
 class AbsorptionTestCase(unittest.TestCase):
     def setUp(self):
-        diel_path = os.path.join(
-            ilr_files("tests"), "data", "Ge", "ge_diel.json"
-        )
+        diel_path = os.path.join(ilr_files("tests"), "data", "Ge", "ge_diel.json")
         with open(diel_path) as f:
             self.ge_diel = json.load(f)
 
@@ -35,9 +31,7 @@ class AbsorptionTestCase(unittest.TestCase):
             self.ge_diel,
             {"absorption"},
         )
-        self.assertIsNone(
-            assert_almost_equal(properties["absorption"], self.ge_abs)
-        )
+        self.assertIsNone(assert_almost_equal(properties["absorption"], self.ge_abs))
 
 
 class KramersKronigTestCase(unittest.TestCase):

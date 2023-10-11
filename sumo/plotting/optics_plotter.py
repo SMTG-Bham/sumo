@@ -8,7 +8,6 @@ This module provides a class for plotting optical absorption spectra.
 import numpy as np
 import scipy.constants as scpc
 from matplotlib import rcParams
-from matplotlib.font_manager import FontProperties, findfont
 from matplotlib.ticker import AutoMinorLocator, FuncFormatter, MaxNLocator
 
 from sumo.plotting import (
@@ -242,7 +241,6 @@ class SOpticsPlotter:
             ax.set_ylim(ymin, ymax)
 
             if spectrum_key == "absorption":
-                font = findfont(FontProperties(family=["sans-serif"]))
                 ax.yaxis.set_major_formatter(
                     FuncFormatter(curry_power_tick(times_sign=r"\times"))
                 )

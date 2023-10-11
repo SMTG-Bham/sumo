@@ -18,6 +18,7 @@ from glob import glob
 
 import matplotlib as mpl
 import numpy as np
+
 try:
     from importlib.resources import files as ilr_files
 except ImportError:  # Python < 3.9
@@ -554,9 +555,7 @@ def _get_parser():
     parser.add_argument(
         "--height", type=float, default=None, help="height of the graph"
     )
-    parser.add_argument(
-        "--width", type=float, default=None, help="width of the graph"
-    )
+    parser.add_argument("--width", type=float, default=None, help="width of the graph")
     parser.add_argument(
         "--xmin", type=float, default=-6.0, help="minimum energy on the x-axis"
     )
@@ -635,9 +634,7 @@ def main():
     colours.read(os.path.abspath(config_path))
 
     warnings.filterwarnings("ignore", category=UserWarning, module="matplotlib")
-    warnings.filterwarnings(
-        "ignore", category=UnicodeWarning, module="matplotlib"
-    )
+    warnings.filterwarnings("ignore", category=UnicodeWarning, module="matplotlib")
     warnings.filterwarnings("ignore", category=UserWarning, module="pymatgen")
 
     if args.zero_energy is not None:

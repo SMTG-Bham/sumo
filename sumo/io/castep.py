@@ -487,7 +487,7 @@ def labels_from_cell(cell_file, phonon=False):
         line = f.readline()  # Skip past block start line
         while blockend.match(line.lower()) is None:
             # Do not parse break lines
-            if 'break' not in line.lower():
+            if "break" not in line.lower():
                 kpt = tuple(map(float, line.split()[:3]))
                 if len(line.split()) > 3:
                     label = line.split()[-1]
