@@ -37,9 +37,14 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">load</span> <span class="k">as</span> <span class="n">load_json</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pkg_resources</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">importlib.resources</span> <span class="kn">import</span> <span class="n">files</span> <span class="k">as</span> <span class="n">ilr_files</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># Python &lt; 3.9</span>
+    <span class="kn">from</span> <span class="nn">importlib_resources</span> <span class="kn">import</span> <span class="n">files</span> <span class="k">as</span> <span class="n">ilr_files</span>
 
 <span class="kn">from</span> <span class="nn">sumo.symmetry</span> <span class="kn">import</span> <span class="n">Kpath</span>
 
@@ -94,7 +99,9 @@
             <span class="n">spg_symbol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spg_symbol</span>
             <span class="n">lattice_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lattice_type</span>
 
-        <span class="n">bravais</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bravais_lattice</span><span class="p">(</span><span class="n">spg_symbol</span><span class="p">,</span> <span class="n">lattice_type</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">unique</span><span class="p">)</span>
+        <span class="n">bravais</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bravais_lattice</span><span class="p">(</span>
+            <span class="n">spg_symbol</span><span class="p">,</span> <span class="n">lattice_type</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">unique</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bradcrack_data</span><span class="p">(</span><span class="n">bravais</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -111,7 +118,7 @@
 <span class="sd">               &#39;path&#39;: [[&#39;\Gamma&#39;, &#39;X&#39;, ..., &#39;P&#39;], [&#39;H&#39;, &#39;N&#39;, ...]]}</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">json_file</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;bradcrack.json&quot;</span><span class="p">)</span>
+        <span class="n">json_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ilr_files</span><span class="p">(</span><span class="s2">&quot;sumo.symmetry&quot;</span><span class="p">),</span> <span class="s2">&quot;bradcrack.json&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">bradcrack_data</span> <span class="o">=</span> <span class="n">load_json</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">bradcrack_data</span><span class="p">[</span><span class="n">bravais</span><span class="p">]</span>

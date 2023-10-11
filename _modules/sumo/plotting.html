@@ -36,20 +36,29 @@
 <span class="sd">Subpackage providing helper functions for generating publication ready plots.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
 <span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">LineCollection</span>
-<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">importlib.resources</span> <span class="kn">import</span> <span class="n">files</span> <span class="k">as</span> <span class="n">ilr_files</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># Python &lt; 3.9</span>
+    <span class="kn">from</span> <span class="nn">importlib_resources</span> <span class="kn">import</span> <span class="n">files</span> <span class="k">as</span> <span class="n">ilr_files</span>
 
 <span class="n">colour_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="n">sumo_base_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">,</span> <span class="s2">&quot;sumo_base.mplstyle&quot;</span><span class="p">)</span>
-<span class="n">sumo_dos_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">,</span> <span class="s2">&quot;sumo_dos.mplstyle&quot;</span><span class="p">)</span>
-<span class="n">sumo_bs_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">,</span> <span class="s2">&quot;sumo_bs.mplstyle&quot;</span><span class="p">)</span>
-<span class="n">sumo_phonon_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">,</span> <span class="s2">&quot;sumo_phonon.mplstyle&quot;</span><span class="p">)</span>
-<span class="n">sumo_optics_style</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">,</span> <span class="s2">&quot;sumo_optics.mplstyle&quot;</span><span class="p">)</span>
+<span class="n">sumo_base_style</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ilr_files</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">),</span> <span class="s2">&quot;sumo_base.mplstyle&quot;</span><span class="p">)</span>
+<span class="n">sumo_dos_style</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ilr_files</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">),</span> <span class="s2">&quot;sumo_dos.mplstyle&quot;</span><span class="p">)</span>
+<span class="n">sumo_bs_style</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ilr_files</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">),</span> <span class="s2">&quot;sumo_bs.mplstyle&quot;</span><span class="p">)</span>
+<span class="n">sumo_phonon_style</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">ilr_files</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">),</span> <span class="s2">&quot;sumo_phonon.mplstyle&quot;</span>
+<span class="p">)</span>
+<span class="n">sumo_optics_style</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">ilr_files</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">),</span> <span class="s2">&quot;sumo_optics.mplstyle&quot;</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="styled_plot">
@@ -71,8 +80,9 @@
 
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">get_plot</span><span class="p">):</span>
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">get_plot</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">):</span>
             <span class="k">if</span> <span class="n">no_base_style</span><span class="p">:</span>
                 <span class="n">list_style</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">else</span><span class="p">:</span>
@@ -85,7 +95,9 @@
                     <span class="n">list_style</span> <span class="o">+=</span> <span class="p">[</span><span class="n">style</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">fonts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">list_style</span> <span class="o">+=</span> <span class="p">[{</span><span class="s2">&quot;font.family&quot;</span><span class="p">:</span> <span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span> <span class="s2">&quot;font.sans-serif&quot;</span><span class="p">:</span> <span class="n">fonts</span><span class="p">}]</span>
+                <span class="n">list_style</span> <span class="o">+=</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;font.family&quot;</span><span class="p">:</span> <span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span> <span class="s2">&quot;font.sans-serif&quot;</span><span class="p">:</span> <span class="n">fonts</span><span class="p">}</span>
+                <span class="p">]</span>
 
             <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">list_style</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">get_plot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -236,14 +248,14 @@
 <span class="sd">    Args:</span>
 <span class="sd">        x (list): x-axis data.</span>
 <span class="sd">        y (list): y-axis data (can be multidimensional array).</span>
-<span class="sd">        weights (list): The weights of the color1, color2, and color3 channels. Given</span>
-<span class="sd">            as an array with the shape (n, 3), where n is the same length as the x and</span>
-<span class="sd">            y data.</span>
+<span class="sd">        weights (list): The weights of the color1, color2, and color3 channels.</span>
+<span class="sd">            Given as an array with the shape (n, 3), where n is the same length</span>
+<span class="sd">            as the x and y data.</span>
 <span class="sd">        color1 (str): A color specified in any way supported by matplotlib.</span>
 <span class="sd">        color2 (str): A color specified in any way supported by matplotlib.</span>
 <span class="sd">        color3 (str): A color specified in any way supported by matplotlib.</span>
-<span class="sd">        colorspace (str): The colorspace in which to perform the interpolation. The</span>
-<span class="sd">            allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.</span>
+<span class="sd">        colorspace (str): The colorspace in which to perform the interpolation.</span>
+<span class="sd">            The allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.</span>
 <span class="sd">        linestyles (:obj:`str`, optional): Linestyle for plot. Options are</span>
 <span class="sd">            ``&quot;solid&quot;`` or ``&quot;dotted&quot;``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -267,7 +279,11 @@
             <span class="n">colours</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
 
     <span class="n">lc</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span>
-        <span class="n">seg</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span> <span class="n">rasterized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span> <span class="n">linestyles</span><span class="o">=</span><span class="n">linestyles</span>
+        <span class="n">seg</span><span class="p">,</span>
+        <span class="n">colors</span><span class="o">=</span><span class="n">colours</span><span class="p">,</span>
+        <span class="n">rasterized</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span>
+        <span class="n">linestyles</span><span class="o">=</span><span class="n">linestyles</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">lc</span></div>
 
@@ -283,10 +299,11 @@
 <span class="sd">        color1 (str): A color specified in any way supported by matplotlib.</span>
 <span class="sd">        color2 (str): A color specified in any way supported by matplotlib.</span>
 <span class="sd">        color3 (str): A color specified in any way supported by matplotlib.</span>
-<span class="sd">        weights (list): A list of weights with the shape (n, 3). Where the 3 values of</span>
-<span class="sd">            the last axis give the amount of color1, color2, and color3.</span>
-<span class="sd">        colorspace (str): The colorspace in which to perform the interpolation. The</span>
-<span class="sd">            allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.</span>
+<span class="sd">        weights (list): A list of weights with the shape (n, 3).</span>
+<span class="sd">            Where the 3 values of the last axis give the amount of</span>
+<span class="sd">            color1, color2, and color3.</span>
+<span class="sd">        colorspace (str): The colorspace in which to perform the interpolation.</span>
+<span class="sd">            The allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of colors, specified in the rgb format as a (n, 3) array.</span>
@@ -311,7 +328,9 @@
         <span class="s2">&quot;xyz&quot;</span><span class="p">:</span> <span class="n">XYZColor</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="n">colorspace</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">colorspace_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;colorspace must be one of </span><span class="si">{</span><span class="n">colorspace_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;colorspace must be one of </span><span class="si">{</span><span class="n">colorspace_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
     <span class="n">colorspace</span> <span class="o">=</span> <span class="n">colorspace_mapping</span><span class="p">[</span><span class="n">colorspace</span><span class="p">]</span>
 
@@ -322,13 +341,19 @@
 
     <span class="c1"># now convert to the colorspace basis for interpolation</span>
     <span class="n">basis1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="n">convert_color</span><span class="p">(</span><span class="n">color1_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">&quot;d50&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
+        <span class="n">convert_color</span><span class="p">(</span>
+            <span class="n">color1_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">&quot;d50&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="n">basis2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="n">convert_color</span><span class="p">(</span><span class="n">color2_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">&quot;d50&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
+        <span class="n">convert_color</span><span class="p">(</span>
+            <span class="n">color2_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">&quot;d50&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="n">basis3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="n">convert_color</span><span class="p">(</span><span class="n">color3_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">&quot;d50&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
+        <span class="n">convert_color</span><span class="p">(</span>
+            <span class="n">color3_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">&quot;d50&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
     <span class="p">)</span>
 
     <span class="c1"># ensure weights is a numpy array</span>
@@ -343,11 +368,12 @@
 
     <span class="c1"># convert colors to RGB</span>
     <span class="n">rgb_colors</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">convert_color</span><span class="p">(</span><span class="n">colorspace</span><span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">),</span> <span class="n">sRGBColor</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colors</span>
+        <span class="n">convert_color</span><span class="p">(</span><span class="n">colorspace</span><span class="p">(</span><span class="o">*</span><span class="n">c</span><span class="p">),</span> <span class="n">sRGBColor</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">colors</span>
     <span class="p">]</span>
 
-    <span class="c1"># ensure all rgb values are less than 1 (sometimes issues in interpolation gives</span>
-    <span class="c1"># values slightly over 1)</span>
+    <span class="c1"># ensure all rgb values are less than 1 (sometimes issues in interpolation</span>
+    <span class="c1"># gives values slightly over 1)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">rgb_colors</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
