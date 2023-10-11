@@ -129,6 +129,7 @@ class SBSPlotter(BSPlotter):
         fonts=None,
         style=None,
         no_base_style=False,
+        title=None,
     ):
         """Get a :obj:`matplotlib.pyplot` object of the band structure.
 
@@ -315,6 +316,7 @@ class SBSPlotter(BSPlotter):
             dos_label=dos_label,
             aspect=aspect,
             spin=spin,
+            title=title,
         )
         return plt
 
@@ -352,6 +354,7 @@ class SBSPlotter(BSPlotter):
         style=None,
         no_base_style=False,
         spin=None,
+        title=None,
     ):
         """Get a :obj:`matplotlib.pyplot` of the projected band structure.
 
@@ -686,6 +689,7 @@ class SBSPlotter(BSPlotter):
             plot_dos_legend=plot_dos_legend,
             aspect=aspect,
             spin=spin,
+            title=title,
         )
         return plt
 
@@ -707,6 +711,7 @@ class SBSPlotter(BSPlotter):
         plot_dos_legend=True,
         aspect=None,
         spin=None,
+        title=None,
     ):
         """Tidy the band structure & add the density of states if required."""
         if zero_line:
@@ -729,6 +734,9 @@ class SBSPlotter(BSPlotter):
                 ax.scatter(cbm[0], cbm[1], color="C2", marker="o")
             for vbm in data["vbm"]:
                 ax.scatter(vbm[0], vbm[1], color="C3", marker="o")
+
+        if title:
+            fig.suptitle(title)
 
         if dos_plotter:
             ax = fig.axes[1]

@@ -91,6 +91,7 @@ def bandplot(
     dpi=400,
     plt=None,
     fonts=None,
+    title=None,
 ):
     """Plot electronic band structure diagrams from vasprun.xml files.
 
@@ -447,6 +448,7 @@ def bandplot(
             style=style,
             no_base_style=no_base_style,
             spin=spin,
+            title=title,
         )
     else:
         plt = plotter.get_plot(
@@ -467,6 +469,7 @@ def bandplot(
             style=style,
             no_base_style=no_base_style,
             spin=spin,
+            title=title,
         )
 
     if save_files:
@@ -863,6 +866,7 @@ def _get_parser():
         "--dpi", type=int, default=400, help="pixel density for image file"
     )
     parser.add_argument("--font", default=None, help="font to use")
+    parser.add_argument("--title", default=None, help="plot title")
     return parser
 
 
@@ -934,6 +938,7 @@ def main():
         image_format=args.image_format,
         dpi=args.dpi,
         fonts=args.font,
+        title=args.title,
     )
 
 
