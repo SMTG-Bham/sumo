@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sumo.plotting.bs_plotter &#8212; sumo 2.3.7 documentation</title>
+    <title>sumo.plotting.bs_plotter &#8212; sumo 2.3.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=039e1c02" />
-    <script src="../../../_static/documentation_options.js?v=08413e95"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
+    <script src="../../../_static/documentation_options.js?v=ac39ba8c"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -15,8 +15,9 @@
    
   <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -594,7 +595,6 @@
 
         <span class="c1"># nd is branch index</span>
         <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">nd</span> <span class="ow">in</span> <span class="n">it</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">spins</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">nbranches</span><span class="p">)):</span>
-
             <span class="c1"># mask data to reduce plotting load</span>
             <span class="n">bands</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">spin</span><span class="p">)][</span><span class="n">nd</span><span class="p">])</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
@@ -635,7 +635,6 @@
             <span class="n">weights</span><span class="p">[</span><span class="n">weights</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
             <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;rgb&quot;</span><span class="p">:</span>
-
                 <span class="c1"># colours aren&#39;t used now but needed later for legend</span>
                 <span class="n">colours</span> <span class="o">=</span> <span class="p">[</span><span class="n">color1</span><span class="p">,</span> <span class="n">color2</span><span class="p">,</span> <span class="n">color3</span><span class="p">]</span>
 
@@ -1011,11 +1010,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2018, Scanlon Materials Theory Group.
+      &#169;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
     </div>
 
