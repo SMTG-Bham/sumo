@@ -1,12 +1,23 @@
 Change Log
 ==========
 
-v2.3.7
+v2.3.8
 ------
 
 Bugfixes:
 
 - Fixed bug with sumo-phonon-bandplot and recent versions of pymatgen (@utf, #227)
+
+v2.3.7
+------
+
+* Added symprec functionality to load_phonon in cli/phonon_bandplot.py by @badw in https://github.com/SMTG-Bham/sumo/pull/207
+* Set band-edge marker size in style file by @ajjackson in https://github.com/SMTG-Bham/sumo/pull/193
+* Fix failing tests and migrate to importlib by @oashour in https://github.com/SMTG-Bham/sumo/pull/216
+* Update README.rst by @alexsquires in https://github.com/SMTG-Bham/sumo/pull/224
+* Add support for band structure titles by @oashour in https://github.com/SMTG-Bham/sumo/pull/215
+* Add ``**kwargs`` to ``draw_themed_line`` by @kavanase in https://github.com/SMTG-Bham/sumo/pull/212
+* Kpoint degeneracy by @kbspooner in https://github.com/SMTG-Bham/sumo/pull/213
 
 v2.3.6
 ------
