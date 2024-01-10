@@ -192,7 +192,7 @@
 
             <span class="c1"># nd is branch index, nb is band index, nk is kpoint index</span>
             <span class="k">for</span> <span class="n">nd</span><span class="p">,</span> <span class="n">nb</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span>
-                <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">])),</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_bands</span><span class="p">)</span>
+                <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">])),</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bs</span><span class="o">.</span><span class="n">nb_bands</span><span class="p">)</span>
             <span class="p">):</span>
                 <span class="n">f</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">nd</span><span class="p">][</span><span class="n">nb</span><span class="p">]</span>
 
@@ -212,7 +212,7 @@
                 <span class="c1"># raise Exception(bs.qpoints)</span>
             <span class="n">json_plotter</span> <span class="o">=</span> <span class="n">PhononBSPlotter</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
             <span class="n">json_data</span> <span class="o">=</span> <span class="n">json_plotter</span><span class="o">.</span><span class="n">bs_plot_data</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">json_plotter</span><span class="o">.</span><span class="n">n_bands</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_bands</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">json_plotter</span><span class="o">.</span><span class="n">n_bands</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bs</span><span class="o">.</span><span class="n">nb_bands</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Number of bands in </span><span class="si">{</span><span class="n">bs_json</span><span class="si">}</span><span class="s2"> does not match main plot&quot;</span>
                 <span class="p">)</span>
