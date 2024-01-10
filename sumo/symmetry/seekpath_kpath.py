@@ -78,7 +78,7 @@ class SeekpathKpath(Kpath):
         # convert from seekpath format e.g. [(l1, l2), (l2, l3), (l4, l5)]
         # to our preferred representation [[l1, l2, l3], [l4, l5]]
         path = [[seekpath[0][0]]]
-        for (k1, k2) in seekpath:
+        for k1, k2 in seekpath:
             if path[-1] and path[-1][-1] == k1:
                 path[-1].append(k2)
             else:

@@ -138,7 +138,6 @@ class CastepCell:
 
     @classmethod
     def from_file(cls, filename):
-
         with zopen(filename, "rt") as f:
             lines = [line.strip() for line in f]
 

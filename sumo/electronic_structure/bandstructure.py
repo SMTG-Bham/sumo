@@ -149,7 +149,6 @@ def get_projections(bs, selection, normalise=None):
 
     # store the projections for all elements and orbitals in a useable format
     for spin, element, orbital in it.product(spins, elements, all_orbitals):
-
         # convert data to [nb][nk]
         el_orb_proj = [
             [all_proj[spin][nb][nk][element][orbital] for nk in range(nkpts)]
@@ -164,7 +163,6 @@ def get_projections(bs, selection, normalise=None):
     # now go through the selected orbitals and extract what's needed
     spec_proj = []
     for spec in selection:
-
         if isinstance(spec, str):
             # spec is just an element type, therefore sum all orbitals
             element = spec

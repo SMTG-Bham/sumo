@@ -308,7 +308,6 @@ class QuestaalInit:
     def to_file(self, filename):
         """Write QuestaalInit object to init file"""
         with open(filename, "w") as f:
-
             f.write("LATTICE\n")
             for key, value in self.lattice.items():
                 if key == "PLAT":

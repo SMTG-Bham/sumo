@@ -556,7 +556,6 @@ class SBSPlotter(BSPlotter):
 
         # nd is branch index
         for spin, nd in it.product(spins, range(nbranches)):
-
             # mask data to reduce plotting load
             bands = np.array(data["energy"][str(spin)][nd])
             mask = np.where(
@@ -597,7 +596,6 @@ class SBSPlotter(BSPlotter):
             weights[weights < 0] = 0
 
             if mode == "rgb":
-
                 # colours aren't used now but needed later for legend
                 colours = [color1, color2, color3]
 

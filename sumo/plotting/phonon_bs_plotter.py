@@ -246,7 +246,6 @@ class SPhononBSPlotter(PhononBSPlotter):
         if dos is not None:
             self._plot_phonon_dos(dos, ax=fig.axes[1], color=color, dashline=dashline)
         else:
-
             # keep correct aspect ratio; match axis to canvas
             x0, x1 = ax.get_xlim()
             y0, y1 = ax.get_ylim()
