@@ -18,7 +18,6 @@ class SanitiseLabelTestCase(unittest.TestCase):
             ("@X", None),
             ("@HEX", None),
         ):
-
             self.assertEqual(SBSPlotter._sanitise_label(label_in), label_out)
 
     def test_sanitise_label_group(self):
@@ -45,5 +44,4 @@ class SanitiseLabelTestCase(unittest.TestCase):
             (r"X@$\mid$@Y", r"X"),
             (r"@X@$\mid$@Y", None),
         ):
-
             self.assertEqual(SBSPlotter._sanitise_label_group(label_in), label_out)

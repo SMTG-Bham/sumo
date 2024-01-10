@@ -156,7 +156,7 @@ class SPhononBSPlotter(PhononBSPlotter):
 
             # nd is branch index, nb is band index, nk is kpoint index
             for nd, nb in itertools.product(
-                range(len(data["distances"])), range(self._nb_bands)
+                range(len(data["distances"])), range(self.n_bands)
             ):
                 f = freqs[nd][nb]
 
@@ -176,7 +176,7 @@ class SPhononBSPlotter(PhononBSPlotter):
                 # raise Exception(bs.qpoints)
             json_plotter = PhononBSPlotter(bs)
             json_data = json_plotter.bs_plot_data()
-            if json_plotter._nb_bands != self._nb_bands:
+            if json_plotter.n_bands != self.n_bands:
                 raise Exception(
                     f"Number of bands in {bs_json} does not match main plot"
                 )
@@ -246,7 +246,6 @@ class SPhononBSPlotter(PhononBSPlotter):
         if dos is not None:
             self._plot_phonon_dos(dos, ax=fig.axes[1], color=color, dashline=dashline)
         else:
-
             # keep correct aspect ratio; match axis to canvas
             x0, x1 = ax.get_xlim()
             y0, y1 = ax.get_ylim()

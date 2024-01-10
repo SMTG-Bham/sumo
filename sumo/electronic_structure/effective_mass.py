@@ -61,7 +61,6 @@ def get_fitting_data(bs, spin, band_id, kpoint_id, num_sample_points=3):
     # check to see if there are enough points to sample from first
     # check in the forward direction
     if kpoint_id + num_sample_points <= branch_data["end_index"]:
-
         # calculate sampling limits
         start_id = kpoint_id
         end_id = kpoint_id + num_sample_points + 1
@@ -90,7 +89,6 @@ def get_fitting_data(bs, spin, band_id, kpoint_id, num_sample_points=3):
 
     # check in the backward direction
     if kpoint_id - num_sample_points >= branch_data["start_index"]:
-
         # calculate sampling limits
         start_id = kpoint_id - num_sample_points
         end_id = kpoint_id + 1
