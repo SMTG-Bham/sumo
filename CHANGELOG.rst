@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+v2.3.7
+------
+
+Bugfixes:
+
+- Fixed bug with sumo-phonon-bandplot and recent versions of pymatgen (@utf, #227)
+
 v2.3.6
 ------
 
