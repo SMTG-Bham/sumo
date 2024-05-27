@@ -537,7 +537,7 @@ def _get_parser():
         type=float,
         default=None,
         dest="zero_energy",
-        help="Plot vertical line at energy zero",
+        help="zero energy reference eigenvalue. Default is Fermi level from VASP."
     )
 
     parser.add_argument(
