@@ -537,7 +537,8 @@ def _get_parser():
         type=float,
         default=None,
         dest="zero_energy",
-        help="zero energy reference eigenvalue. Default is Fermi level from VASP."
+        help="Reference energy: energy will be shifted to place this energy "
+            "at zero. If not specified (and `--no-shift` not used), zero will be set to the VBM."
     )
 
     parser.add_argument(
