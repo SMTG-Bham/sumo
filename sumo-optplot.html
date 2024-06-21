@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
     <script src="_static/documentation_options.js?v=e05b9d57"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -72,7 +72,8 @@ and be can be accessed using the command:</p>
 <p>The plot will be written to a file named <code class="docutils literal notranslate"><span class="pre">absorption.pdf</span></code>, with the raw data written to <code class="docutils literal notranslate"><span class="pre">absorption.dat</span></code>.</p>
 <p>For example, if we run the command in the <code class="docutils literal notranslate"><span class="pre">sumo/tests/data/Cs2SnI6/optics</span></code> directory, the absorption
 spectra should look like:</p>
-<a class="reference internal image-reference" href="_images/absorption_basic.png"><img alt="_images/absorption_basic.png" class="align-center" src="_images/absorption_basic.png" style="height: 400px;" /></a>
+<a class="reference internal image-reference" href="_images/absorption_basic.png"><img alt="_images/absorption_basic.png" class="align-center" src="_images/absorption_basic.png" style="height: 400px;" />
+</a>
 <section id="basic-options">
 <h3>Basic Options<a class="headerlink" href="#basic-options" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-optplot</span></code> automatically searches for a <code class="docutils literal notranslate"><span class="pre">vasprun.xml</span></code> file in the current directory.
@@ -92,7 +93,8 @@ the anisotropic absorption spectra should look like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">optplot</span> <span class="o">--</span><span class="n">anisotropic</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/absorption_anisotropic.png"><img alt="_images/absorption_anisotropic.png" class="align-center" src="_images/absorption_anisotropic.png" style="height: 400px;" /></a>
+<a class="reference internal image-reference" href="_images/absorption_anisotropic.png"><img alt="_images/absorption_anisotropic.png" class="align-center" src="_images/absorption_anisotropic.png" style="height: 400px;" />
+</a>
 </section>
 <section id="displaying-band-gaps">
 <h3>Displaying Band Gaps<a class="headerlink" href="#displaying-band-gaps" title="Link to this heading">¶</a></h3>
@@ -110,7 +112,8 @@ the plot should look like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">optplot</span> <span class="o">--</span><span class="n">bandgap</span> <span class="o">../</span><span class="n">bandstructure</span><span class="o">/</span><span class="n">split</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">vasprun</span><span class="o">.</span><span class="n">xml</span><span class="o">.</span><span class="n">gz</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/absorption_bandgap.png"><img alt="_images/absorption_bandgap.png" class="align-center" src="_images/absorption_bandgap.png" style="height: 400px;" /></a>
+<a class="reference internal image-reference" href="_images/absorption_bandgap.png"><img alt="_images/absorption_bandgap.png" class="align-center" src="_images/absorption_bandgap.png" style="height: 400px;" />
+</a>
 </section>
 <section id="plotting-multiple-spectra">
 <h3>Plotting Multiple Spectra<a class="headerlink" href="#plotting-multiple-spectra" title="Link to this heading">¶</a></h3>
@@ -124,7 +127,8 @@ the plot should look like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">optplot</span> <span class="o">--</span><span class="n">filenames</span> <span class="n">vasprun</span><span class="o">.</span><span class="n">xml</span><span class="o">.</span><span class="n">gz</span> <span class="o">../../</span><span class="n">Cs2SnBr6</span><span class="o">/</span><span class="n">vasprun</span><span class="o">.</span><span class="n">xml</span><span class="o">.</span><span class="n">gz</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/absorption_multi.png"><img alt="_images/absorption_multi.png" class="align-center" src="_images/absorption_multi.png" style="height: 400px;" /></a>
+<a class="reference internal image-reference" href="_images/absorption_multi.png"><img alt="_images/absorption_multi.png" class="align-center" src="_images/absorption_multi.png" style="height: 400px;" />
+</a>
 <p>This mode also supports plotting the band gap of each compound using the <code class="docutils literal notranslate"><span class="pre">--bandgap</span></code> option.</p>
 </section>
 <section id="questaal">
@@ -163,7 +167,7 @@ somewhere in the filename.</p>
 <h3>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>M</kbd></dt>
-<dd><p>Possible choices: eps_real, n_real, n_imag, loss, absorption, eps_imag</p>
+<dd><p>Possible choices: eps_real, n_real, absorption, loss, eps_imag, n_imag</p>
 <p>Optical properties to plot. Multiple choices  will be displayed as subplots. Accepted values: “absorption” (optical absorption over distance), “loss” (energy-loss function -Im(1/eps)), “eps_real” and “eps_imag” (real and imaginary parts of the dielectric function), “n_real” (real part of complex refractive index)”n_imag” (imaginary part of RI, also known as the extinction coefficient kappa.)</p>
 <p>Default: “absorption”</p>
 </dd>
@@ -295,7 +299,7 @@ Last updated: Jan 10, 2018</p>
 </ul>
 
 
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
@@ -303,7 +307,7 @@ Last updated: Jan 10, 2018</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
 
 
@@ -321,7 +325,7 @@ Last updated: Jan 10, 2018</p>
       &#169;2018, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |
