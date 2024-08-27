@@ -65,8 +65,8 @@ def optplot(
     Args:
         modes (:obj:`list` or :obj:`tuple`):
             Ordered list of :obj:`str` determining properties to plot.
-            Accepted options are 'absorption' (default), 'eps', 'eps-real',
-            'eps-im', 'n', 'n-real', 'n-im', 'loss' (equivalent to n-im).
+            Accepted options are 'absorption' (default), 'eps_real',
+            'eps_imag', 'n_real', 'n_imag', 'loss' (equivalent to n_imag).
         filenames (:obj:`str` or :obj:`list`, optional): Path to data file.
             For VASP this is a *vasprun.xml* file (can be gzipped); for
             Questaal the *opt.ext* file from *lmf* or *eps_BSE.out* from
