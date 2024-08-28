@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+v2.3.9
+------
+
+* Minor docstring updates (@kavanase, #241)
+
 v2.3.8
 ------
 
