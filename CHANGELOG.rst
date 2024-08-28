@@ -4,14 +4,14 @@ Change Log
 v2.3.9
 ------
 
-* Minor docstring updates (@kavanase, #241)
+* Minor docstring updates (@kavanase, https://github.com/SMTG-Bham/sumo/pull/241)
 
 v2.3.8
 ------
 
 Bugfixes:
 
-- Fixed bug with sumo-phonon-bandplot and recent versions of pymatgen (@utf, #227)
+- Fixed bug with sumo-phonon-bandplot and recent versions of pymatgen (@utf, https://github.com/SMTG-Bham/sumo/pull/227)
 
 v2.3.7
 ------
