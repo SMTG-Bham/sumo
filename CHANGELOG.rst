@@ -4,7 +4,15 @@ Change Log
 Unreleased
 ----------
 
-* Minor docstring updates (@kavanase, https://github.com/SMTG-Bham/sumo/pull/241)
+Documentation:
+
+- Minor docstring updates (@kavanase, https://github.com/SMTG-Bham/sumo/pull/241)
+
+Bugfixes:
+
+- Castep lattice_abc format was broken in many cases; deal with a
+  Pymatgen deprecation and avoid incorrect truncation of data when no
+  units are provided. (@jryates, @ajjackson)
 
 v2.3.8
 ------
