@@ -1,8 +1,8 @@
 Change Log
 ==========
 
-v2.3.9
-------
+Unreleased
+----------
 
 * Minor docstring updates (@kavanase, https://github.com/SMTG-Bham/sumo/pull/241)
 
