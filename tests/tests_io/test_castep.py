@@ -17,6 +17,7 @@ from sumo.io.castep import (
     CastepCell,
     CastepPhonon,
     labels_from_cell,
+    logger,
     read_bands_eigenvalues,
     read_bands_header,
     read_dos,
@@ -31,12 +32,18 @@ class CastepCellTestCase(unittest.TestCase):
         self.si_cell_alt = os.path.join(
             ilr_files("tests"), "data", "Si", "Si2-alt.cell"
         )
+        si_structure_file = os.path.join(ilr_files("tests"), "data", "Si", "Si8.json")
+        self.si_structure = Structure.from_file(si_structure_file)
         self.zns_band_cell = os.path.join(ilr_files("tests"), "data", "ZnS", "zns.cell")
         self.zns_singlepoint_cell = os.path.join(
             ilr_files("tests"), "data", "ZnS", "zns-sp.cell"
         )
-        si_structure_file = os.path.join(ilr_files("tests"), "data", "Si", "Si8.json")
-        self.si_structure = Structure.from_file(si_structure_file)
+        self.nio_abc_cell = os.path.join(
+            ilr_files("tests"), "data", "NiO", "NiO_abc.cell"
+        )
+        self.nio_abc_units_cell = os.path.join(
+            ilr_files("tests"), "data", "NiO", "NiO_abc_units.cell"
+        )
 
     def test_castep_cell_null_init(self):
         null_cell = CastepCell()
@@ -71,6 +78,23 @@ class CastepCellTestCase(unittest.TestCase):
             structure.lattice.matrix,
             [[0.0, 2.71, 2.71], [2.71, 0.0, 2.71], [2.71, 2.71, 0.0]],
         )
+
+    def test_castep_cell_abc(self):
+        """Test .cell file using lattice_abc to define unit cell"""
+        for filename in self.nio_abc_cell, self.nio_abc_units_cell:
+            with self.assertLogs(logger) as log:
+                cc = CastepCell.from_file(filename)
+                structure = cc.structure
+                self.assertIn("Structure may not be consistent.", log.output[-1])
+
+            assert_array_almost_equal(
+                structure.lattice.matrix,
+                [
+                    [2.855724, 0.0, 0.862317],
+                    [-1.297582, 2.54391, -0.862313],
+                    [0.0, 0.0, 5.159941],
+                ],
+            )
 
     def test_castep_cell_from_structure(self):
         cell = CastepCell.from_structure(self.si_structure)
