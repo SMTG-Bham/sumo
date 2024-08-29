@@ -30,6 +30,8 @@ Block = collections.namedtuple("Block", "values comments")
 
 unsupported_dosplot_args = {"elements", "lm_orbitals", "atoms"}
 
+logger = logging.getLogger("io.castep")
+
 
 class CastepCell:
     """Structure information and more: CASTEP seedname.cell file
@@ -76,14 +78,16 @@ class CastepCell:
                 lengths_and_angles = lattice_abc[1:]
             else:
                 unit = "ang"
-                lengths_and_angles = lattice_abc[1:]
+                lengths_and_angles = lattice_abc
             if len(lengths_and_angles) != 2:
                 raise ValueError("lattice_abc should have two rows")
             lengths_and_angles = [list(map(float, row)) for row in lengths_and_angles]
             lengths_and_angles[0] = [
                 x * to_angstrom[unit] for x in lengths_and_angles[0]
             ]
-            lattice = Lattice.from_lengths_and_angles(*lengths_and_angles)
+            lattice = Lattice.from_parameters(
+                *lengths_and_angles[0], *lengths_and_angles[1]
+            )
         else:
             raise ValueError("Couldn't find a lattice in cell file")
 
@@ -95,6 +99,12 @@ class CastepCell:
             elements, coords = zip(*elements_coords)
             return Structure(lattice, elements, coords, coords_are_cartesian=False)
         elif "positions_abs" in self.blocks:
+            if "lattice_abc" in self.blocks:
+                logger.warning(
+                    "Positions are given in absolute coordinates and lattice "
+                    "in angles/lengths format. Structure may not be consistent."
+                )
+
             positions_abs = self.blocks["positions_abs"].values
             if positions_abs[0][0].lower() in ("ang", "nm", "cm", "m", "bohr", "a0"):
                 unit = positions_abs[0][0].lower()
