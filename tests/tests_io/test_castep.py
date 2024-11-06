@@ -38,12 +38,19 @@ class CastepCellTestCase(unittest.TestCase):
         self.zns_singlepoint_cell = os.path.join(
             ilr_files("tests"), "data", "ZnS", "zns-sp.cell"
         )
+        self.nio_cart_cell = os.path.join(
+            ilr_files("tests"), "data", "NiO", "NiO.cell"
+        )
         self.nio_abc_cell = os.path.join(
             ilr_files("tests"), "data", "NiO", "NiO_abc.cell"
         )
         self.nio_abc_units_cell = os.path.join(
             ilr_files("tests"), "data", "NiO", "NiO_abc_units.cell"
         )
+        self.nio_abc_cart_cell = os.path.join(
+            ilr_files("tests"), "data", "NiO", "NiO_abc_cart.cell"
+        )
+
 
     def test_castep_cell_null_init(self):
         null_cell = CastepCell()
@@ -82,19 +89,32 @@ class CastepCellTestCase(unittest.TestCase):
     def test_castep_cell_abc(self):
         """Test .cell file using lattice_abc to define unit cell"""
         for filename in self.nio_abc_cell, self.nio_abc_units_cell:
-            with self.assertLogs(logger) as log:
-                cc = CastepCell.from_file(filename)
-                structure = cc.structure
-                self.assertIn("Structure may not be consistent.", log.output[-1])
+            cc = CastepCell.from_file(filename)
+            structure = cc.structure
 
             assert_array_almost_equal(
-                structure.lattice.matrix,
-                [
-                    [2.855724, 0.0, 0.862317],
-                    [-1.297582, 2.54391, -0.862313],
-                    [0.0, 0.0, 5.159941],
-                ],
+                structure.lattice.abc,
+                [2.983077, 2.98308198, 5.15994087]
             )
+            assert_array_almost_equal(
+                structure.lattice.angles,
+                [106.80215981, 73.19772637, 119.99807072]
+            )
+
+    def test_castep_cell_consistent_frac_coords(self):
+        """Test fractional positions are consistent between .cell formats"""
+        cartesian_cell = CastepCell.from_file(self.nio_cart_cell)
+        frac_abc_cell = CastepCell.from_file(self.nio_abc_cell)
+
+        assert_array_almost_equal(
+            cartesian_cell.structure.frac_coords,
+            frac_abc_cell.structure.frac_coords
+        )
+
+    def test_castep_abc_cart_raises(self):
+        """Test that error is raised for incompatible vectors and positions"""
+        with self.assertRaisesRegex(ValueError, "Cartesian"):
+            CastepCell.from_file(self.nio_abc_cart_cell).structure
 
     def test_castep_cell_from_structure(self):
         cell = CastepCell.from_structure(self.si_structure)
