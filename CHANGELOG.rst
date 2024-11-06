@@ -12,7 +12,8 @@ Bugfixes:
 
 - Castep lattice_abc format was broken in many cases; deal with a
   Pymatgen deprecation and avoid incorrect truncation of data when no
-  units are provided. (@jryates, @ajjackson)
+  units are provided. Where structure is ambiguous due to mixed
+  lattice/cartesian conventions, raise an error. (@jryates, @ajjackson)
 
 v2.3.8
 ------
