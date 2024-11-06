@@ -100,9 +100,11 @@ class CastepCell:
             return Structure(lattice, elements, coords, coords_are_cartesian=False)
         elif "positions_abs" in self.blocks:
             if "lattice_abc" in self.blocks:
-                logger.warning(
-                    "Positions are given in absolute coordinates and lattice "
-                    "in angles/lengths format. Structure may not be consistent."
+                raise ValueError(
+                    "Positions are given in Cartesian coordinates and lattice "
+                    "in angles/lengths format. This structure cannot be "
+                    "interpreted reliably. Consider using c2x to convert to "
+                    "fractional coordinates and/or 3x3 lattice matrix."
                 )
 
             positions_abs = self.blocks["positions_abs"].values
