@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath("../../"))
 # -- Project information -----------------------------------------------------
 
 project = "sumo"
-copyright = "2018, Scanlon Materials Theory Group"
+copyright = "2024, Scanlon Materials Theory Group"
 author = "Alex Ganose, Adam Jackson"
 
 # The short X.Y version
@@ -93,7 +93,7 @@ html_theme = "alabaster"
 
 html_theme_options = {
     "description": "Heavy weight plotting tools",
-    "github_user": "SMTG-UCL",
+    "github_user": "SMTG-Bham",
     "github_repo": "sumo",
     "travis_button": False,
     "codecov_button": False,

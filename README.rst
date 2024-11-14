@@ -3,7 +3,7 @@ Sumo
 
 
 .. image:: https://img.shields.io/github/actions/workflow/status/smtg-ucl/sumo/tests.yml?branch=master
-    :target: https://github.com/SMTG-UCL/sumo/actions?query=workflow%3A%22Run+tests%22
+    :target: https://github.com/SMTG-Bham/sumo/actions?query=workflow%3A%22Run+tests%22
     :alt: Build Status
 
 .. image:: http://joss.theoj.org/papers/d12ca1f4198dffa2642a30b2ab01e16d/status.svg

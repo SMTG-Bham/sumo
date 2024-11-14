@@ -1,8 +1,8 @@
 Change Log
 ==========
 
-Unreleased
-----------
+v2.3.9
+------
 
 Documentation:
 
