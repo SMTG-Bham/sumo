@@ -53,7 +53,7 @@
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="sumo.electronic_structure.bandstructure.force_branches">
-<span class="sig-prename descclassname"><span class="pre">sumo.electronic_structure.bandstructure.</span></span><span class="sig-name descname"><span class="pre">force_branches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bandstructure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/electronic_structure/bandstructure.html#force_branches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.electronic_structure.bandstructure.force_branches" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">sumo.electronic_structure.bandstructure.</span></span><span class="sig-name descname"><span class="pre">force_branches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bandstructure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/electronic_structure/bandstructure.html#force_branches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.electronic_structure.bandstructure.force_branches" title="Link to this definition">¶</a></dt>
 <dd><p>Force a linemode band structure to contain branches.</p>
 <p>Branches give a specific portion of the path from one high-symmetry point
 to another. Branches are required for the plotting methods to function correctly.
@@ -63,10 +63,17 @@ computational expense, this function can reconstruct branches in band structures
 without the duplicate k-points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>bandstructure</strong> – A band structure object.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bandstructure</strong> – A band structure object.</p></li>
+<li><p><strong>return_mapping</strong> – If True, return a mapping of the new k-points (with branches)
+to the original k-points.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A band structure with brnaches.</p>
+<dd class="field-even"><p>A band structure with branches.
+If return_forced_branch_kpt_map is True, then a tuple is returned
+containing the band structure and the mapping from the new k-points
+to the original k-points.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -208,7 +215,7 @@ zeros is returned for each spin.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="sumo.electronic_structure.bandstructure.get_reconstructed_band_structure">
-<span class="sig-prename descclassname"><span class="pre">sumo.electronic_structure.bandstructure.</span></span><span class="sig-name descname"><span class="pre">get_reconstructed_band_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_bs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">efermi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_kpath_branches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/electronic_structure/bandstructure.html#get_reconstructed_band_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.electronic_structure.bandstructure.get_reconstructed_band_structure" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">sumo.electronic_structure.bandstructure.</span></span><span class="sig-name descname"><span class="pre">get_reconstructed_band_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_bs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">efermi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_kpath_branches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_forced_branch_kpt_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sumo/electronic_structure/bandstructure.html#get_reconstructed_band_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sumo.electronic_structure.bandstructure.get_reconstructed_band_structure" title="Link to this definition">¶</a></dt>
 <dd><p>Combine a list of band structures into a single band structure.</p>
 <p>This is typically very useful when you split non self consistent
 band structure runs in several independent jobs and want to merge back
@@ -224,11 +231,16 @@ band structure. If <cite>None</cite>, an average of all the Fermi energies
 across all band structures is used.</p></li>
 <li><p><strong>force_kpath_branches</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Force a linemode band structure to contain
 branches by adding repeated high-symmetry k-points in the path.</p></li>
+<li><p><strong>return_forced_branch_kpt_map</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – If True, return a mapping of the
+the new k-points to the original k-points.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A band structure object. The type depends on the type of the band
-structures in <code class="docutils literal notranslate"><span class="pre">list_bs</span></code>.</p>
+structures in <code class="docutils literal notranslate"><span class="pre">list_bs</span></code>.
+If return_forced_branch_kpt_map is True, then a tuple is returned
+containing the band structure and the mapping from the new k-points
+to the original k-points.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://pymatgen.org/pymatgen.electronic_structure.html#pymatgen.electronic_structure.bandstructure.BandStructure" title="(in pymatgen v2023.7.17)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.bandstructure.BandStructure</span></code></a> or         <code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.bandstructureBandStructureSymmLine</span></code></p>

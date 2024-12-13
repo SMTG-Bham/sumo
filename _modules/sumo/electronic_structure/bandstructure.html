@@ -230,7 +230,9 @@
 
 <div class="viewcode-block" id="get_reconstructed_band_structure">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.get_reconstructed_band_structure">[docs]</a>
-<span class="k">def</span> <span class="nf">get_reconstructed_band_structure</span><span class="p">(</span><span class="n">list_bs</span><span class="p">,</span> <span class="n">efermi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_kpath_branches</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_reconstructed_band_structure</span><span class="p">(</span>
+    <span class="n">list_bs</span><span class="p">,</span> <span class="n">efermi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_kpath_branches</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_forced_branch_kpt_map</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Combine a list of band structures into a single band structure.</span>
 
 <span class="sd">    This is typically very useful when you split non self consistent</span>
@@ -250,12 +252,17 @@
 <span class="sd">            across all band structures is used.</span>
 <span class="sd">        force_kpath_branches (bool): Force a linemode band structure to contain</span>
 <span class="sd">            branches by adding repeated high-symmetry k-points in the path.</span>
+<span class="sd">        return_forced_branch_kpt_map (bool): If True, return a mapping of the</span>
+<span class="sd">            the new k-points to the original k-points.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        :obj:`pymatgen.electronic_structure.bandstructure.BandStructure` or \</span>
 <span class="sd">        :obj:`pymatgen.electronic_structure.bandstructureBandStructureSymmLine`:</span>
 <span class="sd">        A band structure object. The type depends on the type of the band</span>
 <span class="sd">        structures in ``list_bs``.</span>
+<span class="sd">        If return_forced_branch_kpt_map is True, then a tuple is returned</span>
+<span class="sd">        containing the band structure and the mapping from the new k-points</span>
+<span class="sd">        to the original k-points.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">efermi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">efermi</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">efermi</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">list_bs</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_bs</span><span class="p">)</span>
@@ -284,16 +291,20 @@
         <span class="n">structure</span><span class="o">=</span><span class="n">list_bs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span>
         <span class="n">projections</span><span class="o">=</span><span class="n">projections</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">force_kpath_branches</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">force_branches</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">bs</span></div>
+    <span class="n">branch_bs</span><span class="p">,</span> <span class="n">mapping</span> <span class="o">=</span> <span class="n">force_branches</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">return_mapping</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">force_kpath_branches</span> <span class="ow">and</span> <span class="n">return_forced_branch_kpt_map</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">branch_bs</span><span class="p">,</span> <span class="n">mapping</span>
+    <span class="k">elif</span> <span class="n">force_kpath_branches</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">branch_bs</span>
+    <span class="k">elif</span> <span class="n">return_forced_branch_kpt_map</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">bs</span><span class="p">,</span> <span class="n">mapping</span>
+    <span class="k">return</span> <span class="n">bs</span></div>
 
 
 
 <div class="viewcode-block" id="force_branches">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.force_branches">[docs]</a>
-<span class="k">def</span> <span class="nf">force_branches</span><span class="p">(</span><span class="n">bandstructure</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">force_branches</span><span class="p">(</span><span class="n">bandstructure</span><span class="p">,</span> <span class="n">return_mapping</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Force a linemode band structure to contain branches.</span>
 
 <span class="sd">    Branches give a specific portion of the path from one high-symmetry point</span>
@@ -305,9 +316,14 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        bandstructure: A band structure object.</span>
+<span class="sd">        return_mapping: If True, return a mapping of the new k-points (with branches)</span>
+<span class="sd">            to the original k-points.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A band structure with brnaches.</span>
+<span class="sd">        A band structure with branches.</span>
+<span class="sd">        If return_forced_branch_kpt_map is True, then a tuple is returned</span>
+<span class="sd">        containing the band structure and the mapping from the new k-points</span>
+<span class="sd">        to the original k-points.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">kpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">k</span><span class="o">.</span><span class="n">frac_coords</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">bandstructure</span><span class="o">.</span><span class="n">kpoints</span><span class="p">])</span>
     <span class="n">labels_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">frac_coords</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bandstructure</span><span class="o">.</span><span class="n">labels_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -318,6 +334,7 @@
     <span class="c1"># already.</span>
     <span class="n">dup_ids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">high_sym_kpoints</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">labels_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kpoints</span><span class="p">):</span>
         <span class="n">dup_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -330,6 +347,7 @@
             <span class="p">)</span>
         <span class="p">):</span>
             <span class="n">dup_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">mapping</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">dup_ids</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
 
     <span class="n">kpoints</span> <span class="o">=</span> <span class="n">kpoints</span><span class="p">[</span><span class="n">dup_ids</span><span class="p">]</span>
 
@@ -340,7 +358,7 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bandstructure</span><span class="o">.</span><span class="n">projections</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">projections</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">=</span> <span class="n">bandstructure</span><span class="o">.</span><span class="n">projections</span><span class="p">[</span><span class="n">spin</span><span class="p">][:,</span> <span class="n">dup_ids</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">bandstructure</span><span class="p">)(</span>
+    <span class="n">bs</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">bandstructure</span><span class="p">)(</span>
         <span class="n">kpoints</span><span class="p">,</span>
         <span class="n">eigenvals</span><span class="p">,</span>
         <span class="n">bandstructure</span><span class="o">.</span><span class="n">lattice_rec</span><span class="p">,</span>
@@ -348,7 +366,10 @@
         <span class="n">labels_dict</span><span class="p">,</span>
         <span class="n">structure</span><span class="o">=</span><span class="n">bandstructure</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span>
         <span class="n">projections</span><span class="o">=</span><span class="n">projections</span><span class="p">,</span>
-    <span class="p">)</span></div>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_mapping</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">bs</span><span class="p">,</span> <span class="n">mapping</span>
+    <span class="k">return</span> <span class="n">bs</span></div>
 
 
 

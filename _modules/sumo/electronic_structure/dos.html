@@ -133,7 +133,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">vr</span> <span class="o">=</span> <span class="n">vasprun</span>
 
-    <span class="n">band</span> <span class="o">=</span> <span class="n">vr</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">()</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">vr</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">(</span><span class="n">efermi</span><span class="o">=</span><span class="s2">&quot;smart&quot;</span><span class="p">)</span>
     <span class="n">dos</span> <span class="o">=</span> <span class="n">vr</span><span class="o">.</span><span class="n">complete_dos</span>
 
     <span class="n">dos</span><span class="p">,</span> <span class="n">band</span> <span class="o">=</span> <span class="n">_scissor_dos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">scissor</span><span class="p">)</span>

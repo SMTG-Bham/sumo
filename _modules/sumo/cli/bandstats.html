@@ -128,24 +128,26 @@
     <span class="n">bandstructures</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">vr_file</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
         <span class="n">vr</span> <span class="o">=</span> <span class="n">BSVasprun</span><span class="p">(</span><span class="n">vr_file</span><span class="p">,</span> <span class="n">parse_projected_eigen</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">bs</span> <span class="o">=</span> <span class="n">vr</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">(</span><span class="n">line_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">bs</span> <span class="o">=</span> <span class="n">vr</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">(</span><span class="n">line_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">efermi</span><span class="o">=</span><span class="s2">&quot;smart&quot;</span><span class="p">)</span>
         <span class="n">bandstructures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
-    <span class="n">bs</span> <span class="o">=</span> <span class="n">get_reconstructed_band_structure</span><span class="p">(</span><span class="n">bandstructures</span><span class="p">,</span> <span class="n">force_kpath_branches</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">bs</span><span class="p">,</span> <span class="n">kpt_mapping</span> <span class="o">=</span> <span class="n">get_reconstructed_band_structure</span><span class="p">(</span>
+        <span class="n">bandstructures</span><span class="p">,</span> <span class="n">force_kpath_branches</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_forced_branch_kpt_map</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">bs</span><span class="o">.</span><span class="n">is_metal</span><span class="p">():</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: System is metallic!&quot;</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
-    <span class="n">_log_band_gap_information</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
+    <span class="n">_log_band_gap_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="o">=</span><span class="n">kpt_mapping</span><span class="p">)</span>
 
     <span class="n">vbm_data</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()</span>
     <span class="n">cbm_data</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_cbm</span><span class="p">()</span>
 
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Valence band maximum:&quot;</span><span class="p">)</span>
-    <span class="n">_log_band_edge_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">vbm_data</span><span class="p">)</span>
+    <span class="n">_log_band_edge_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">vbm_data</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="o">=</span><span class="n">kpt_mapping</span><span class="p">)</span>
 
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Conduction band minimum:&quot;</span><span class="p">)</span>
-    <span class="n">_log_band_edge_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">cbm_data</span><span class="p">)</span>
+    <span class="n">_log_band_edge_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">cbm_data</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="o">=</span><span class="n">kpt_mapping</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">parabolic</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Using parabolic fitting of the band edges&quot;</span><span class="p">)</span>
@@ -214,11 +216,14 @@
 
 
 
-<span class="k">def</span> <span class="nf">_log_band_gap_information</span><span class="p">(</span><span class="n">bs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_log_band_gap_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log data about the direct and indirect band gaps.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):</span>
+<span class="sd">        kpt_mapping (:obj:`dict`, optional): A mapping of k-point indicies from the</span>
+<span class="sd">            band structure with forced branches to the original band structure.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bg_data</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_band_gap</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">bg_data</span><span class="p">[</span><span class="s2">&quot;direct&quot;</span><span class="p">]:</span>
@@ -234,6 +239,7 @@
             <span class="n">direct_kpoint</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[</span><span class="n">direct_kindex</span><span class="p">]</span><span class="o">.</span><span class="n">frac_coords</span>
             <span class="n">direct_kpoint</span> <span class="o">=</span> <span class="n">kpt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">direct_kpoint</span><span class="p">)</span>
             <span class="n">eq_kpoints</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_equivalent_kpoints</span><span class="p">(</span><span class="n">direct_kindex</span><span class="p">)</span>
+            <span class="n">eq_kpoints</span> <span class="o">=</span> <span class="n">_map_kpoints</span><span class="p">(</span><span class="n">eq_kpoints</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="p">)</span>
             <span class="n">k_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">eq_kpoints</span><span class="p">))</span>
 
             <span class="c1"># add 1 to band indices to be consistent with VASP band numbers.</span>
@@ -250,7 +256,9 @@
 
         <span class="n">direct_kindex</span> <span class="o">=</span> <span class="n">direct_data</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">][</span><span class="s2">&quot;kpoint_index&quot;</span><span class="p">]</span>
         <span class="n">direct_kpoint</span> <span class="o">=</span> <span class="n">kpt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">bs</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[</span><span class="n">direct_kindex</span><span class="p">]</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">)</span>
-        <span class="n">k_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_equivalent_kpoints</span><span class="p">(</span><span class="n">direct_kindex</span><span class="p">)))</span>
+        <span class="n">eq_kpoints</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_equivalent_kpoints</span><span class="p">(</span><span class="n">direct_kindex</span><span class="p">)</span>
+        <span class="n">eq_kpoints</span> <span class="o">=</span> <span class="n">_map_kpoints</span><span class="p">(</span><span class="n">eq_kpoints</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="p">)</span>
+        <span class="n">k_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">eq_kpoints</span><span class="p">))</span>
         <span class="n">b_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">direct_data</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">][</span><span class="s2">&quot;band_indices&quot;</span><span class="p">]]</span>
         <span class="p">)</span>
@@ -260,7 +268,7 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Band indices: </span><span class="si">{</span><span class="n">b_indices</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_log_band_edge_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_log_band_edge_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log data about the valence band maximum or conduction band minimum.</span>
 
 <span class="sd">    Args:</span>
@@ -268,6 +276,8 @@
 <span class="sd">            The band structure.</span>
 <span class="sd">        edge_data (dict): The :obj:`dict` from ``bs.get_vbm()`` or</span>
 <span class="sd">            ``bs.get_cbm()``</span>
+<span class="sd">        kpt_mapping (:obj:`dict`, optional): A mapping of k-point indicies from the</span>
+<span class="sd">            band structure with forced branches to the original band structure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">bs</span><span class="o">.</span><span class="n">is_spin_polarized</span><span class="p">:</span>
         <span class="n">spins</span> <span class="o">=</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;band_index&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -282,7 +292,9 @@
 
     <span class="n">kpoint</span> <span class="o">=</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;kpoint&quot;</span><span class="p">]</span>
     <span class="n">kpoint_str</span> <span class="o">=</span> <span class="n">kpt_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">kpoint</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">)</span>
-    <span class="n">k_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;kpoint_index&quot;</span><span class="p">]))</span>
+    <span class="n">k_indices</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">_map_kpoints</span><span class="p">(</span><span class="n">edge_data</span><span class="p">[</span><span class="s2">&quot;kpoint_index&quot;</span><span class="p">],</span> <span class="n">kpt_mapping</span><span class="p">))</span>
+    <span class="p">)</span>
     <span class="n">k_degen</span> <span class="o">=</span> <span class="n">bs</span><span class="o">.</span><span class="n">get_kpoint_degeneracy</span><span class="p">(</span><span class="n">kpoint</span><span class="o">=</span><span class="n">kpoint</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">kpoint</span><span class="o">.</span><span class="n">label</span><span class="p">:</span>
@@ -344,6 +356,13 @@
         <span class="n">kpoint_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">end_kpoint</span><span class="o">.</span><span class="n">label</span><span class="si">}</span><span class="s2">)&quot;</span>
 
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">mass_type</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">eff_mass</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">band_str</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">kpoint_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_map_kpoints</span><span class="p">(</span><span class="n">kpt_idxs</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map k-point indices to the original band structure.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">kpt_mapping</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">kpt_idxs</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">kpt_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kpt_idxs</span><span class="p">]))</span>
 
 
 <span class="k">def</span> <span class="nf">_get_parser</span><span class="p">():</span>
