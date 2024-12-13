@@ -190,7 +190,9 @@ def get_projections(bs, selection, normalise=None):
     return spec_proj
 
 
-def get_reconstructed_band_structure(list_bs, efermi=None, force_kpath_branches=True):
+def get_reconstructed_band_structure(
+    list_bs, efermi=None, force_kpath_branches=True, return_forced_branch_kpt_map=False
+):
     """Combine a list of band structures into a single band structure.
 
     This is typically very useful when you split non self consistent
@@ -210,12 +212,17 @@ def get_reconstructed_band_structure(list_bs, efermi=None, force_kpath_branches=
             across all band structures is used.
         force_kpath_branches (bool): Force a linemode band structure to contain
             branches by adding repeated high-symmetry k-points in the path.
+        return_forced_branch_kpt_map (bool): If True, return a mapping of the
+            the new k-points to the original k-points.
 
     Returns:
         :obj:`pymatgen.electronic_structure.bandstructure.BandStructure` or \
         :obj:`pymatgen.electronic_structure.bandstructureBandStructureSymmLine`:
         A band structure object. The type depends on the type of the band
         structures in ``list_bs``.
+        If return_forced_branch_kpt_map is True, then a tuple is returned
+        containing the band structure and the mapping from the new k-points
+        to the original k-points.
     """
     if efermi is None:
         efermi = sum(b.efermi for b in list_bs) / len(list_bs)
@@ -244,13 +251,17 @@ def get_reconstructed_band_structure(list_bs, efermi=None, force_kpath_branches=
         structure=list_bs[0].structure,
         projections=projections,
     )
-    if force_kpath_branches:
-        return force_branches(bs)
-    else:
-        return bs
+    branch_bs, mapping = force_branches(bs, return_mapping=True)
+    if force_kpath_branches and return_forced_branch_kpt_map:
+        return branch_bs, mapping
+    elif force_kpath_branches:
+        return branch_bs
+    elif return_forced_branch_kpt_map:
+        return bs, mapping
+    return bs
 
 
-def force_branches(bandstructure):
+def force_branches(bandstructure, return_mapping=False):
     """Force a linemode band structure to contain branches.
 
     Branches give a specific portion of the path from one high-symmetry point
@@ -262,9 +273,14 @@ def force_branches(bandstructure):
 
     Args:
         bandstructure: A band structure object.
+        return_mapping: If True, return a mapping of the new k-points (with branches)
+            to the original k-points.
 
     Returns:
-        A band structure with brnaches.
+        A band structure with branches.
+        If return_forced_branch_kpt_map is True, then a tuple is returned
+        containing the band structure and the mapping from the new k-points
+        to the original k-points.
     """
     kpoints = np.array([k.frac_coords for k in bandstructure.kpoints])
     labels_dict = {k: v.frac_coords for k, v in bandstructure.labels_dict.items()}
@@ -275,6 +291,7 @@ def force_branches(bandstructure):
     # already.
     dup_ids = []
     high_sym_kpoints = tuple(map(tuple, labels_dict.values()))
+    mapping = {}
     for i, k in enumerate(kpoints):
         dup_ids.append(i)
         if (
@@ -287,6 +304,7 @@ def force_branches(bandstructure):
             )
         ):
             dup_ids.append(i)
+        mapping[len(dup_ids) - 1] = i
 
     kpoints = kpoints[dup_ids]
 
@@ -297,7 +315,7 @@ def force_branches(bandstructure):
         if len(bandstructure.projections) != 0:
             projections[spin] = bandstructure.projections[spin][:, dup_ids]
 
-    return type(bandstructure)(
+    bs = type(bandstructure)(
         kpoints,
         eigenvals,
         bandstructure.lattice_rec,
@@ -306,6 +324,9 @@ def force_branches(bandstructure):
         structure=bandstructure.structure,
         projections=projections,
     )
+    if return_mapping:
+        return bs, mapping
+    return bs
 
 
 def string_to_spin(spin_string):

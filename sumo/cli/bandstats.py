@@ -94,24 +94,26 @@ def bandstats(
     bandstructures = []
     for vr_file in filenames:
         vr = BSVasprun(vr_file, parse_projected_eigen=False)
-        bs = vr.get_band_structure(line_mode=True)
+        bs = vr.get_band_structure(line_mode=True, efermi="smart")
         bandstructures.append(bs)
-    bs = get_reconstructed_band_structure(bandstructures, force_kpath_branches=False)
+    bs, kpt_mapping = get_reconstructed_band_structure(
+        bandstructures, force_kpath_branches=True, return_forced_branch_kpt_map=True
+    )
 
     if bs.is_metal():
         logging.error("ERROR: System is metallic!")
         sys.exit()
 
-    _log_band_gap_information(bs)
+    _log_band_gap_information(bs, kpt_mapping=kpt_mapping)
 
     vbm_data = bs.get_vbm()
     cbm_data = bs.get_cbm()
 
     logging.info("\nValence band maximum:")
-    _log_band_edge_information(bs, vbm_data)
+    _log_band_edge_information(bs, vbm_data, kpt_mapping=kpt_mapping)
 
     logging.info("\nConduction band minimum:")
-    _log_band_edge_information(bs, cbm_data)
+    _log_band_edge_information(bs, cbm_data, kpt_mapping=kpt_mapping)
 
     if parabolic:
         logging.info("\nUsing parabolic fitting of the band edges")
@@ -179,11 +181,14 @@ def bandstats(
     return {"hole_data": hole_data, "electron_data": elec_data}
 
 
-def _log_band_gap_information(bs):
+def _log_band_gap_information(bs, kpt_mapping=None):
     """Log data about the direct and indirect band gaps.
 
     Args:
         bs (:obj:`~pymatgen.electronic_structure.bandstructure.BandStructureSymmLine`):
+        kpt_mapping (:obj:`dict`, optional): A mapping of k-point indicies from the
+            band structure with forced branches to the original band structure.
+
     """
     bg_data = bs.get_band_gap()
     if not bg_data["direct"]:
@@ -199,6 +204,7 @@ def _log_band_gap_information(bs):
             direct_kpoint = bs.kpoints[direct_kindex].frac_coords
             direct_kpoint = kpt_str.format(k=direct_kpoint)
             eq_kpoints = bs.get_equivalent_kpoints(direct_kindex)
+            eq_kpoints = _map_kpoints(eq_kpoints, kpt_mapping)
             k_indices = ", ".join(map(str, eq_kpoints))
 
             # add 1 to band indices to be consistent with VASP band numbers.
@@ -215,7 +221,9 @@ def _log_band_gap_information(bs):
 
         direct_kindex = direct_data[Spin.up]["kpoint_index"]
         direct_kpoint = kpt_str.format(k=bs.kpoints[direct_kindex].frac_coords)
-        k_indices = ", ".join(map(str, bs.get_equivalent_kpoints(direct_kindex)))
+        eq_kpoints = bs.get_equivalent_kpoints(direct_kindex)
+        eq_kpoints = _map_kpoints(eq_kpoints, kpt_mapping)
+        k_indices = ", ".join(map(str, eq_kpoints))
         b_indices = ", ".join(
             [str(i + 1) for i in direct_data[Spin.up]["band_indices"]]
         )
@@ -225,7 +233,7 @@ def _log_band_gap_information(bs):
         logging.info(f"  Band indices: {b_indices}")
 
 
-def _log_band_edge_information(bs, edge_data):
+def _log_band_edge_information(bs, edge_data, kpt_mapping=None):
     """Log data about the valence band maximum or conduction band minimum.
 
     Args:
@@ -233,6 +241,8 @@ def _log_band_edge_information(bs, edge_data):
             The band structure.
         edge_data (dict): The :obj:`dict` from ``bs.get_vbm()`` or
             ``bs.get_cbm()``
+        kpt_mapping (:obj:`dict`, optional): A mapping of k-point indicies from the
+            band structure with forced branches to the original band structure.
     """
     if bs.is_spin_polarized:
         spins = edge_data["band_index"].keys()
@@ -247,7 +257,9 @@ def _log_band_edge_information(bs, edge_data):
 
     kpoint = edge_data["kpoint"]
     kpoint_str = kpt_str.format(k=kpoint.frac_coords)
-    k_indices = ", ".join(map(str, edge_data["kpoint_index"]))
+    k_indices = ", ".join(
+        map(str, _map_kpoints(edge_data["kpoint_index"], kpt_mapping))
+    )
     k_degen = bs.get_kpoint_degeneracy(kpoint=kpoint.frac_coords)
 
     if kpoint.label:
@@ -309,6 +321,13 @@ def _log_effective_mass_data(data, is_spin_polarized, mass_type="m_e"):
         kpoint_str += f" ({end_kpoint.label})"
 
     logging.info(f"  {mass_type}: {eff_mass:.3f} | {band_str} | {kpoint_str}")
+
+
+def _map_kpoints(kpt_idxs, kpt_mapping):
+    """Map k-point indices to the original band structure."""
+    if not kpt_mapping:
+        return kpt_idxs
+    return sorted(set([kpt_mapping.get(k, k) for k in kpt_idxs]))
 
 
 def _get_parser():

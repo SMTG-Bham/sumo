@@ -99,7 +99,7 @@ def load_dos(
     else:
         vr = vasprun
 
-    band = vr.get_band_structure()
+    band = vr.get_band_structure(efermi="smart")
     dos = vr.complete_dos
 
     dos, band = _scissor_dos(dos, band, scissor)

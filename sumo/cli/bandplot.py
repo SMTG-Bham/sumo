@@ -295,7 +295,7 @@ def bandplot(
     if code == "vasp":
         for vr_file in filenames:
             vr = BSVasprun(vr_file, parse_projected_eigen=parse_projected)
-            bs = vr.get_band_structure(line_mode=True)
+            bs = vr.get_band_structure(line_mode=True, efermi="smart")
             bandstructures.append(bs)
         bs = get_reconstructed_band_structure(bandstructures)
     elif code == "castep":
