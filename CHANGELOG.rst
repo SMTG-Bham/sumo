@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+v2.3.10
+-------
+
+Bugfixes:
+
+- Fixed the k-point labels for effective mass directions in ``sumo-bandstats``.
+- Workaround for VASP bug where sometimes the Fermi level gets placed just inside the VBM
+  or CBM with ``ISMEAR = -5``.
+
 v2.3.9
 ------
 
