@@ -125,7 +125,7 @@ def load_dos(
                     site, orbital
                 ).get_smeared_densities(gaussian)
 
-    if vr.parameters["LSORBIT"]:
+    if vr.parameters["LSORBIT"] and Spin.down in dos.densities:
         # pymatgen includes the spin down channel for SOC calculations, even
         # though there is no density here. We remove this channel so the
         # plotting is easier later on.
