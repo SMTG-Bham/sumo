@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.electronic_structure.bandstructure &#8212; sumo 2.3.10 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
     <script src="../../../_static/documentation_options.js?v=7a828971"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -40,17 +40,17 @@
 <span class="sd">  * Extend get projections to allow specifying lm orbitals and atomic sites.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">it</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Spin</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.electronic_structure.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spin</span>
 
 
 <div class="viewcode-block" id="get_projections_by_branches">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.get_projections_by_branches">[docs]</a>
-<span class="k">def</span> <span class="nf">get_projections_by_branches</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">normalise</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_projections_by_branches</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">normalise</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns orbital projections for each branch in a band structure.</span>
 
 <span class="sd">    Args:</span>
@@ -117,7 +117,7 @@
 
 <div class="viewcode-block" id="get_projections">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.get_projections">[docs]</a>
-<span class="k">def</span> <span class="nf">get_projections</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">normalise</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_projections</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">selection</span><span class="p">,</span> <span class="n">normalise</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns orbital projections from a band structure.</span>
 
 <span class="sd">    Args:</span>
@@ -230,7 +230,7 @@
 
 <div class="viewcode-block" id="get_reconstructed_band_structure">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.get_reconstructed_band_structure">[docs]</a>
-<span class="k">def</span> <span class="nf">get_reconstructed_band_structure</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_reconstructed_band_structure</span><span class="p">(</span>
     <span class="n">list_bs</span><span class="p">,</span> <span class="n">efermi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_kpath_branches</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_forced_branch_kpt_map</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Combine a list of band structures into a single band structure.</span>
@@ -304,7 +304,7 @@
 
 <div class="viewcode-block" id="force_branches">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.force_branches">[docs]</a>
-<span class="k">def</span> <span class="nf">force_branches</span><span class="p">(</span><span class="n">bandstructure</span><span class="p">,</span> <span class="n">return_mapping</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">force_branches</span><span class="p">(</span><span class="n">bandstructure</span><span class="p">,</span> <span class="n">return_mapping</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Force a linemode band structure to contain branches.</span>
 
 <span class="sd">    Branches give a specific portion of the path from one high-symmetry point</span>
@@ -375,7 +375,7 @@
 
 <div class="viewcode-block" id="string_to_spin">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.bandstructure.string_to_spin">[docs]</a>
-<span class="k">def</span> <span class="nf">string_to_spin</span><span class="p">(</span><span class="n">spin_string</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">string_to_spin</span><span class="p">(</span><span class="n">spin_string</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to convert &#39;spin&#39; cli argument to pymatgen Spin object&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">spin_string</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="s2">&quot;Up&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;+1&quot;</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">Spin</span><span class="o">.</span><span class="n">up</span>

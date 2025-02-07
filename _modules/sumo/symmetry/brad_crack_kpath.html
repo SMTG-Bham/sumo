@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.symmetry.brad_crack_kpath &#8212; sumo 2.3.10 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
     <script src="../../../_static/documentation_options.js?v=7a828971"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -37,21 +37,21 @@
 <span class="sd">Module containing class for generating Bradley and Cracknell k-point paths.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">load</span> <span class="k">as</span> <span class="n">load_json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">json</span><span class="w"> </span><span class="kn">import</span> <span class="n">load</span> <span class="k">as</span> <span class="n">load_json</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">importlib.resources</span> <span class="kn">import</span> <span class="n">files</span> <span class="k">as</span> <span class="n">ilr_files</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">importlib.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span> <span class="k">as</span> <span class="n">ilr_files</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># Python &lt; 3.9</span>
-    <span class="kn">from</span> <span class="nn">importlib_resources</span> <span class="kn">import</span> <span class="n">files</span> <span class="k">as</span> <span class="n">ilr_files</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">importlib_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span> <span class="k">as</span> <span class="n">ilr_files</span>
 
-<span class="kn">from</span> <span class="nn">sumo.symmetry</span> <span class="kn">import</span> <span class="n">Kpath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sumo.symmetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Kpath</span>
 
 
 <div class="viewcode-block" id="BradCrackKpath">
 <a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.brad_crack_kpath.BradCrackKpath">[docs]</a>
-<span class="k">class</span> <span class="nc">BradCrackKpath</span><span class="p">(</span><span class="n">Kpath</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BradCrackKpath</span><span class="p">(</span><span class="n">Kpath</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Class to generate k-points along paths from Bradley and Cracknell.</span>
 
 <span class="sd">    The paths used are based on Brillouin zones depicted in reference [brad]_.</span>
@@ -83,7 +83,7 @@
 <span class="sd">            conventional cell structure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">spg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">Kpath</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
 
         <span class="n">angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">angles</span>
@@ -103,7 +103,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bradcrack_data</span><span class="p">(</span><span class="n">bravais</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_bradcrack_data</span><span class="p">(</span><span class="n">bravais</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_bradcrack_data</span><span class="p">(</span><span class="n">bravais</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Read Bradley--Cracknell k-points path from data file</span>
 
 <span class="sd">        Args:</span>
@@ -122,7 +122,7 @@
             <span class="k">return</span> <span class="n">bradcrack_data</span><span class="p">[</span><span class="n">bravais</span><span class="p">]</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_bravais_lattice</span><span class="p">(</span><span class="n">spg_symbol</span><span class="p">,</span> <span class="n">lattice_type</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">unique</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_bravais_lattice</span><span class="p">(</span><span class="n">spg_symbol</span><span class="p">,</span> <span class="n">lattice_type</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">unique</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get Bravais lattice symbol from symmetry data&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">lattice_type</span> <span class="o">==</span> <span class="s2">&quot;triclinic&quot;</span><span class="p">:</span>

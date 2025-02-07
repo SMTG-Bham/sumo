@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.plotting.bs_plotter &#8212; sumo 2.3.10 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
     <script src="../../../_static/documentation_options.js?v=7a828971"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -37,22 +37,22 @@
 <span class="sd">This module provides a class for plotting electronic band structure diagrams.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">it</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cycler</span><span class="p">,</span> <span class="n">rcParams</span>
-<span class="kn">from</span> <span class="nn">matplotlib.style</span> <span class="kn">import</span> <span class="n">context</span>
-<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">AutoMinorLocator</span><span class="p">,</span> <span class="n">MaxNLocator</span>
-<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Spin</span>
-<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.plotter</span> <span class="kn">import</span> <span class="n">BSPlotter</span>
-<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">cycler</span><span class="p">,</span> <span class="n">rcParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.style</span><span class="w"> </span><span class="kn">import</span> <span class="n">context</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.ticker</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutoMinorLocator</span><span class="p">,</span> <span class="n">MaxNLocator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.electronic_structure.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.electronic_structure.plotter</span><span class="w"> </span><span class="kn">import</span> <span class="n">BSPlotter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">interp1d</span>
 
-<span class="kn">from</span> <span class="nn">sumo.electronic_structure.bandstructure</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sumo.electronic_structure.bandstructure</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">force_branches</span><span class="p">,</span>
     <span class="n">get_projections_by_branches</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">sumo.plotting</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sumo.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">colorline</span><span class="p">,</span>
     <span class="n">draw_themed_line</span><span class="p">,</span>
     <span class="n">pretty_plot</span><span class="p">,</span>
@@ -67,7 +67,7 @@
 
 <div class="viewcode-block" id="SBSPlotter">
 <a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.bs_plotter.SBSPlotter">[docs]</a>
-<span class="k">class</span> <span class="nc">SBSPlotter</span><span class="p">(</span><span class="n">BSPlotter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SBSPlotter</span><span class="p">(</span><span class="n">BSPlotter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for plotting electronic band structures.</span>
 
 <span class="sd">    This class is similar to the pymatgen</span>
@@ -82,7 +82,7 @@
 <span class="sd">            The band structure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bs</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">bs</span> <span class="o">=</span> <span class="p">[</span><span class="n">force_branches</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bs</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -99,7 +99,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">nbands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nb_bands</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_reset_zero_energy</span><span class="p">(</span><span class="n">bs_plot_data</span><span class="p">,</span> <span class="n">zero_energy</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reset_zero_energy</span><span class="p">(</span><span class="n">bs_plot_data</span><span class="p">,</span> <span class="n">zero_energy</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Modify reference energy of data from bs_plot_data</span>
 
 <span class="sd">        This method is defined in Pymatgen and obtains plotting data with zero</span>
@@ -142,7 +142,7 @@
 <div class="viewcode-block" id="SBSPlotter.get_plot">
 <a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.bs_plotter.SBSPlotter.get_plot">[docs]</a>
     <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_plot</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">zero_line</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -357,7 +357,7 @@
 <div class="viewcode-block" id="SBSPlotter.get_projected_plot">
 <a class="viewcode-back" href="../../../sumo.plotting.html#sumo.plotting.bs_plotter.SBSPlotter.get_projected_plot">[docs]</a>
     <span class="nd">@styled_plot</span><span class="p">(</span><span class="n">sumo_base_style</span><span class="p">,</span> <span class="n">sumo_bs_style</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_projected_plot</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_projected_plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">selection</span><span class="p">,</span>
         <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;rgb&quot;</span><span class="p">,</span>
@@ -728,7 +728,7 @@
         <span class="k">return</span> <span class="n">plt</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_makeplot</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_makeplot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ax</span><span class="p">,</span>
         <span class="n">fig</span><span class="p">,</span>
@@ -812,7 +812,7 @@
                 <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="n">aspect</span> <span class="o">*</span> <span class="p">((</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span><span class="p">)))</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_makedos</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_makedos</span><span class="p">(</span>
         <span class="n">ax</span><span class="p">,</span>
         <span class="n">dos_plotter</span><span class="p">,</span>
         <span class="n">dos_options</span><span class="p">,</span>
@@ -877,10 +877,10 @@
             <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_sanitise_label</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sanitise_label</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @&quot;&quot;&quot;</span>
 
-        <span class="kn">import</span> <span class="nn">re</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^@.*$&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -888,7 +888,7 @@
             <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;@+$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_sanitise_label_group</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">labelgroup</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sanitise_label_group</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">labelgroup</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implement label hacks: Hide trailing @, remove label with leading @</span>
 
 <span class="sd">        Labels split with $\mid$ symbol will be treated for each part.</span>
@@ -906,7 +906,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_sanitise_label</span><span class="p">(</span><span class="n">labelgroup</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_maketicks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_maketicks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Utility method to add tick marks to a band structure.&quot;&quot;&quot;</span>
         <span class="c1"># set y-ticks</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="mi">6</span><span class="p">))</span>

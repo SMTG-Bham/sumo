@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.electronic_structure.dos &#8212; sumo 2.3.10 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
     <script src="../../../_static/documentation_options.js?v=7a828971"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -40,18 +40,18 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pymatgen.core.periodic_table</span> <span class="kn">import</span> <span class="n">get_el_sp</span>
-<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Orbital</span><span class="p">,</span> <span class="n">Spin</span>
-<span class="kn">from</span> <span class="nn">pymatgen.io.vasp.outputs</span> <span class="kn">import</span> <span class="n">Vasprun</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.core.periodic_table</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_el_sp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.electronic_structure.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Orbital</span><span class="p">,</span> <span class="n">Spin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.io.vasp.outputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vasprun</span>
 
 
 <div class="viewcode-block" id="load_dos">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.dos.load_dos">[docs]</a>
-<span class="k">def</span> <span class="nf">load_dos</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_dos</span><span class="p">(</span>
     <span class="n">vasprun</span><span class="p">,</span>
     <span class="n">elements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -160,13 +160,13 @@
                 <span class="p">)</span><span class="o">.</span><span class="n">get_smeared_densities</span><span class="p">(</span><span class="n">gaussian</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">vr</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;LSORBIT&quot;</span><span class="p">]:</span>
-        <span class="c1"># pymatgen includes the spin down channel for SOC calculations, even</span>
-        <span class="c1"># though there is no density here. We remove this channel so the</span>
-        <span class="c1"># plotting is easier later on.</span>
-        <span class="k">del</span> <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">]</span>
+        <span class="c1"># pymatgen&lt;2025 includes the Spin.down channel for SOC calculations in the </span>
+        <span class="c1"># dos/pdos, even though there is no density here. We remove this channel (if</span>
+        <span class="c1"># present) so the plotting is easier later on:</span>
+        <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">dos</span><span class="o">.</span><span class="n">pdos</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">orbital</span> <span class="ow">in</span> <span class="n">dos</span><span class="o">.</span><span class="n">pdos</span><span class="p">[</span><span class="n">site</span><span class="p">]:</span>
-                <span class="k">del</span> <span class="n">dos</span><span class="o">.</span><span class="n">pdos</span><span class="p">[</span><span class="n">site</span><span class="p">][</span><span class="n">orbital</span><span class="p">][</span><span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">]</span>
+                <span class="n">dos</span><span class="o">.</span><span class="n">pdos</span><span class="p">[</span><span class="n">site</span><span class="p">][</span><span class="n">orbital</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="n">pdos</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">total_only</span><span class="p">:</span>
@@ -177,7 +177,7 @@
 
 <div class="viewcode-block" id="get_pdos">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.dos.get_pdos">[docs]</a>
-<span class="k">def</span> <span class="nf">get_pdos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_pdos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the projected density of states from a CompleteDos object.</span>
 
 <span class="sd">    Args:</span>
@@ -260,7 +260,7 @@
 
 <div class="viewcode-block" id="get_element_pdos">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.dos.get_element_pdos">[docs]</a>
-<span class="k">def</span> <span class="nf">get_element_pdos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">sites</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_element_pdos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">sites</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the projected density of states for an element.</span>
 
 <span class="sd">    Args:</span>
@@ -320,7 +320,7 @@
 
 <div class="viewcode-block" id="write_files">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.dos.write_files">[docs]</a>
-<span class="k">def</span> <span class="nf">write_files</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_files</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the density of states data to disk.</span>
 
 <span class="sd">    Args:</span>
@@ -382,7 +382,7 @@
 
 <div class="viewcode-block" id="sort_orbitals">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.dos.sort_orbitals">[docs]</a>
-<span class="k">def</span> <span class="nf">sort_orbitals</span><span class="p">(</span><span class="n">element_pdos</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sort_orbitals</span><span class="p">(</span><span class="n">element_pdos</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort the orbitals of an element&#39;s projected density of states.</span>
 
 <span class="sd">    Sorts the orbitals based on a standard format. E.g. s &lt; p &lt; d.</span>
@@ -430,7 +430,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_scissor_dos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">scissor</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_scissor_dos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">scissor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply scissor to DOS by inserting zeros at the midgap point.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">scissor</span> <span class="ow">and</span> <span class="n">band</span><span class="o">.</span><span class="n">is_metal</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot apply scissor to metallic DOS.&quot;</span><span class="p">)</span>

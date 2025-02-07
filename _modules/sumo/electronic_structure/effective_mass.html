@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.electronic_structure.effective_mass &#8212; sumo 2.3.10 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
     <script src="../../../_static/documentation_options.js?v=7a828971"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -37,9 +37,9 @@
 <span class="sd">Module containing helper functions for calculating band effective masses.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.constants</span> <span class="kn">import</span> <span class="n">physical_constants</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">physical_constants</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
 
 <span class="n">eV_to_hartree</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;electron volt-hartree relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">bohr_to_m</span> <span class="o">=</span> <span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;Bohr radius&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
@@ -48,7 +48,7 @@
 
 <div class="viewcode-block" id="get_fitting_data">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.effective_mass.get_fitting_data">[docs]</a>
-<span class="k">def</span> <span class="nf">get_fitting_data</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">spin</span><span class="p">,</span> <span class="n">band_id</span><span class="p">,</span> <span class="n">kpoint_id</span><span class="p">,</span> <span class="n">num_sample_points</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fitting_data</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">spin</span><span class="p">,</span> <span class="n">band_id</span><span class="p">,</span> <span class="n">kpoint_id</span><span class="p">,</span> <span class="n">num_sample_points</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract fitting data for band extrema based on spin, kpoint and band.</span>
 
 <span class="sd">    Searches forward and backward from the extrema point, but will only sample</span>
@@ -155,7 +155,7 @@
 
 <div class="viewcode-block" id="fit_effective_mass">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.effective_mass.fit_effective_mass">[docs]</a>
-<span class="k">def</span> <span class="nf">fit_effective_mass</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">energies</span><span class="p">,</span> <span class="n">parabolic</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fit_effective_mass</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">energies</span><span class="p">,</span> <span class="n">parabolic</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit the effective masses using either a parabolic or nonparabolic fit.</span>
 
 <span class="sd">    Args:</span>
@@ -176,7 +176,7 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Use non parabolic description of the bands</span>
-        <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
             <span class="n">top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="n">bot</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">alpha</span>
             <span class="k">return</span> <span class="n">top</span> <span class="o">/</span> <span class="n">bot</span>

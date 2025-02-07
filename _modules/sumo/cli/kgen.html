@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.cli.kgen &#8212; sumo 2.3.10 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
     <script src="../../../_static/documentation_options.js?v=7a828971"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -43,19 +43,19 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pymatgen.io.vasp.inputs</span> <span class="kn">import</span> <span class="n">Kpoints</span><span class="p">,</span> <span class="n">Poscar</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.io.vasp.inputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Kpoints</span><span class="p">,</span> <span class="n">Poscar</span>
 
-<span class="kn">import</span> <span class="nn">sumo.io.questaal</span>
-<span class="kn">import</span> <span class="nn">sumo.io.vasp</span>
-<span class="kn">from</span> <span class="nn">sumo.io.castep</span> <span class="kn">import</span> <span class="n">CastepCell</span>
-<span class="kn">from</span> <span class="nn">sumo.io.questaal</span> <span class="kn">import</span> <span class="n">QuestaalInit</span><span class="p">,</span> <span class="n">QuestaalSite</span>
-<span class="kn">from</span> <span class="nn">sumo.symmetry.kpoints</span> <span class="kn">import</span> <span class="n">get_path_data</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sumo.io.questaal</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sumo.io.vasp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sumo.io.castep</span><span class="w"> </span><span class="kn">import</span> <span class="n">CastepCell</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sumo.io.questaal</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuestaalInit</span><span class="p">,</span> <span class="n">QuestaalSite</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sumo.symmetry.kpoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_path_data</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Alex Ganose&quot;</span>
 <span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
@@ -71,7 +71,7 @@
 
 <div class="viewcode-block" id="kgen">
 <a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.kgen.kgen">[docs]</a>
-<span class="k">def</span> <span class="nf">kgen</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">kgen</span><span class="p">(</span>
     <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;POSCAR&quot;</span><span class="p">,</span>
     <span class="n">code</span><span class="o">=</span><span class="s2">&quot;vasp&quot;</span><span class="p">,</span>
     <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -286,7 +286,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_parse_ibzkpt</span><span class="p">(</span><span class="n">ibzkpt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_ibzkpt</span><span class="p">(</span><span class="n">ibzkpt</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">ibzkpt</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ibz</span> <span class="o">=</span> <span class="n">Kpoints</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">ibzkpt</span><span class="p">)</span>
@@ -301,7 +301,7 @@
     <span class="k">return</span> <span class="n">ibz</span>
 
 
-<span class="k">def</span> <span class="nf">_get_parser</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_parser</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    kgen generates KPOINTS files for running band structure calculations in</span>
@@ -407,7 +407,7 @@
     <span class="k">return</span> <span class="n">parser</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">_get_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>

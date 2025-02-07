@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.symmetry.custom_kpath &#8212; sumo 2.3.10 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
     <script src="../../../_static/documentation_options.js?v=7a828971"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -37,14 +37,14 @@
 <span class="sd">Module containing class for generating custom k-point paths.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">chain</span>
 
-<span class="kn">from</span> <span class="nn">sumo.symmetry</span> <span class="kn">import</span> <span class="n">Kpath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sumo.symmetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Kpath</span>
 
 
 <div class="viewcode-block" id="CustomKpath">
 <a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.custom_kpath.CustomKpath">[docs]</a>
-<span class="k">class</span> <span class="nc">CustomKpath</span><span class="p">(</span><span class="n">Kpath</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomKpath</span><span class="p">(</span><span class="n">Kpath</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to generate k-points along custom k-point paths.</span>
 
 <span class="sd">    Args:</span>
@@ -77,7 +77,7 @@
 <span class="sd">            conventional cell structure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">kpt_list</span><span class="p">,</span> <span class="n">path_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">kpt_list</span><span class="p">,</span> <span class="n">path_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
         <span class="n">Kpath</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">path_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -97,7 +97,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;kpoints&quot;</span><span class="p">:</span> <span class="n">kpt_dict</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path_labels</span><span class="p">}</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_auto_kpath_labels</span><span class="p">(</span><span class="n">kpt_list</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_auto_kpath_labels</span><span class="p">(</span><span class="n">kpt_list</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a default set of labels (1), (2), (3)... for a k-point path</span>
 
 <span class="sd">        Repeated points will be identified and the labels re-used.</span>

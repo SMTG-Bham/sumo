@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.cli.bandstats &#8212; sumo 2.3.10 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
     <script src="../../../_static/documentation_options.js?v=7a828971"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -42,16 +42,16 @@
 <span class="sd"> - Sample custom k-point, band, spin combinations.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
-<span class="kn">from</span> <span class="nn">pymatgen.electronic_structure.core</span> <span class="kn">import</span> <span class="n">Spin</span>
-<span class="kn">from</span> <span class="nn">pymatgen.io.vasp.outputs</span> <span class="kn">import</span> <span class="n">BSVasprun</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.electronic_structure.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.io.vasp.outputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">BSVasprun</span>
 
-<span class="kn">from</span> <span class="nn">sumo.cli.bandplot</span> <span class="kn">import</span> <span class="n">find_vasprun_files</span>
-<span class="kn">from</span> <span class="nn">sumo.electronic_structure.bandstructure</span> <span class="kn">import</span> <span class="n">get_reconstructed_band_structure</span>
-<span class="kn">from</span> <span class="nn">sumo.electronic_structure.effective_mass</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sumo.cli.bandplot</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_vasprun_files</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sumo.electronic_structure.bandstructure</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_reconstructed_band_structure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sumo.electronic_structure.effective_mass</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">fit_effective_mass</span><span class="p">,</span>
     <span class="n">get_fitting_data</span><span class="p">,</span>
 <span class="p">)</span>
@@ -68,7 +68,7 @@
 
 <div class="viewcode-block" id="bandstats">
 <a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.bandstats.bandstats">[docs]</a>
-<span class="k">def</span> <span class="nf">bandstats</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bandstats</span><span class="p">(</span>
     <span class="n">filenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">num_sample_points</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
     <span class="n">temperature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -216,7 +216,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_log_band_gap_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_band_gap_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log data about the direct and indirect band gaps.</span>
 
 <span class="sd">    Args:</span>
@@ -268,7 +268,7 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Band indices: </span><span class="si">{</span><span class="n">b_indices</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_log_band_edge_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_band_edge_information</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">edge_data</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log data about the valence band maximum or conduction band minimum.</span>
 
 <span class="sd">    Args:</span>
@@ -311,7 +311,7 @@
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Band indices: </span><span class="si">{</span><span class="n">b_indices</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_log_effective_mass_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">is_spin_polarized</span><span class="p">,</span> <span class="n">mass_type</span><span class="o">=</span><span class="s2">&quot;m_e&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_log_effective_mass_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">is_spin_polarized</span><span class="p">,</span> <span class="n">mass_type</span><span class="o">=</span><span class="s2">&quot;m_e&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log data about the effective masses and their directions.</span>
 
 <span class="sd">    Args:</span>
@@ -358,14 +358,14 @@
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">mass_type</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">eff_mass</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">band_str</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">kpoint_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_map_kpoints</span><span class="p">(</span><span class="n">kpt_idxs</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_map_kpoints</span><span class="p">(</span><span class="n">kpt_idxs</span><span class="p">,</span> <span class="n">kpt_mapping</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Map k-point indices to the original band structure.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">kpt_mapping</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">kpt_idxs</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">kpt_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kpt_idxs</span><span class="p">]))</span>
 
 
-<span class="k">def</span> <span class="nf">_get_parser</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_parser</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    bandstats provides information on the band gap and effective</span>
@@ -403,7 +403,7 @@
     <span class="k">return</span> <span class="n">parser</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">_get_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
         <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;sumo-bandstats.log&quot;</span><span class="p">,</span>

@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sumo.symmetry.kpath &#8212; sumo 2.3.10 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
     <script src="../../../_static/documentation_options.js?v=7a828971"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -37,16 +37,16 @@
 <span class="sd">Module containing the base class for high-symmetry k-point path determination.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">seekpath</span>
-<span class="kn">import</span> <span class="nn">spglib</span>
-<span class="kn">from</span> <span class="nn">pymatgen.core.structure</span> <span class="kn">import</span> <span class="n">Structure</span>
-<span class="kn">from</span> <span class="nn">pymatgen.symmetry.analyzer</span> <span class="kn">import</span> <span class="n">SpacegroupAnalyzer</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seekpath</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">spglib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.core.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Structure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.symmetry.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpacegroupAnalyzer</span>
 
 
 <div class="viewcode-block" id="Kpath">
 <a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath">[docs]</a>
-<span class="k">class</span> <span class="nc">Kpath</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Kpath</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class providing helper functions for generating k-point paths.</span>
 
 <span class="sd">    This class should not be used directly. Instead, one of the</span>
@@ -69,7 +69,7 @@
 <span class="sd">            conventional cell structure.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">structure</span>
 
         <span class="c1"># use sym as a quick way to access the cell data</span>
@@ -94,7 +94,7 @@
 
 <div class="viewcode-block" id="Kpath.correct_structure">
 <a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.correct_structure">[docs]</a>
-    <span class="k">def</span> <span class="nf">correct_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">correct_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine if the structure matches the standard primitive structure.</span>
 
 <span class="sd">        The standard primitive will be different between seekpath and pymatgen</span>
@@ -115,7 +115,7 @@
 
 <div class="viewcode-block" id="Kpath.get_kpoints">
 <a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.get_kpoints">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_kpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line_density</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cart_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">phonopy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_kpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line_density</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cart_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">phonopy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a list of k-points and labels along the high-symmetry path.</span>
 
 <span class="sd">        The format of the returned data will be different if phonopy is</span>
@@ -236,7 +236,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">kpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;dict: The high-symmetry k-point labels and their fractional</span>
 <span class="sd">        coordinates. Formatted as ``{label: coords}``. For example::</span>
 
@@ -245,7 +245,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span><span class="p">[</span><span class="s2">&quot;kpoints&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;list: The high-symmetry k-point path. Each subpath is provided</span>
 <span class="sd">        as a list. For example, the following covers the path ``\Gamma -&gt;</span>
 <span class="sd">        X -&gt; C | \Gamma -&gt; Y``::</span>
@@ -255,24 +255,24 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">lattice_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lattice_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;str: The Bravais lattice system. Hexagonal cells are separated into</span>
 <span class="sd">        rhombohedral and hexagonal lattices.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lattice_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spg_number</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">spg_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spg_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;str: The international space group symbol.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spg_data</span><span class="p">[</span><span class="s2">&quot;international&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">spg_number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spg_number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;int: The international space group number.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spg_data</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">path_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">path_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;str: The high-symmetry k-point path formatted with arrows and</span>
 <span class="sd">        showing disconnections between subpaths. For example::</span>
 
@@ -283,7 +283,7 @@
 <div class="viewcode-block" id="Kpath.get_lattice_type">
 <a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.get_lattice_type">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_lattice_type</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_lattice_type</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the lattice crystal system.</span>
 
 <span class="sd">        Hexagonal cells are differentiated into rhombohedral and hexagonal</span>
@@ -296,7 +296,7 @@
 <span class="sd">            str: The lattice crystal system.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">number</span> <span class="o">&lt;=</span> <span class="n">j</span>
 
         <span class="n">cs</span> <span class="o">=</span> <span class="p">{</span>
