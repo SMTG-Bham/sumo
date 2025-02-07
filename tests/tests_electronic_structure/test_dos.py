@@ -12,6 +12,7 @@ from pymatgen.electronic_structure.core import Spin
 
 class DosTestCase(unittest.TestCase):
     def setUp(self):
+        # SOC DOS calculation:
         self.vr_path = os.path.join(ilr_files("tests"), "data", "Cs2SnBr6", "vasprun.xml.gz")
 
     def test_load_dos(self):
