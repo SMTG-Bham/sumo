@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Unreleased
+----------
+
+- Update SOC DOS handling for ``pymatgen>=2025`` and add tests
+  (@kavanase, https://github.com/SMTG-Bham/sumo/pull/256)
+
 v2.3.10
 -------
 
