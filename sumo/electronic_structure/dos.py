@@ -125,14 +125,14 @@ def load_dos(
                     site, orbital
                 ).get_smeared_densities(gaussian)
 
-    if vr.parameters["LSORBIT"] and Spin.down in dos.densities:
-        # pymatgen includes the spin down channel for SOC calculations, even
-        # though there is no density here. We remove this channel so the
-        # plotting is easier later on.
-        del dos.densities[Spin.down]
+    if vr.parameters["LSORBIT"]:
+        # pymatgen<2025 includes the Spin.down channel for SOC calculations in the 
+        # dos/pdos, even though there is no density here. We remove this channel (if
+        # present) so the plotting is easier later on:
+        dos.densities.pop(Spin.down, None)
         for site in dos.pdos:
             for orbital in dos.pdos[site]:
-                del dos.pdos[site][orbital][Spin.down]
+                dos.pdos[site][orbital].pop(Spin.down, None)
 
     pdos = {}
     if not total_only:
