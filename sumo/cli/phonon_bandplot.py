@@ -28,7 +28,17 @@ import matplotlib as mpl
 
 mpl.use("Agg")
 from matplotlib import rcParams
-from phonopy.units import CmToEv, THzToCm, VaspToCm, VaspToEv, VaspToTHz
+from phonopy.units import (
+    AMU,
+    EV,
+    Angstrom,
+    CmToEv,
+    PlanckConstant,
+    THzToCm,
+    VaspToTHz,
+    pi,
+    sqrt,
+)
 from pymatgen.io.phonopy import get_ph_bs_symm_line
 from pymatgen.io.vasp.inputs import Poscar
 from pymatgen.phonon.bandstructure import PhononBandStructureSymmLine
@@ -43,6 +53,9 @@ __version__ = "1.0"
 __maintainer__ = "Alex Ganose"
 __email__ = "alexganose@googlemail.com"
 __date__ = "Jan 17, 2018"
+
+VaspToEv = sqrt(EV / AMU) / Angstrom / (2 * pi) * PlanckConstant  # [eV] 6.46541380e-2
+VaspToCm = VaspToTHz * THzToCm  # [cm^-1] 521.47083
 
 
 def phonon_bandplot(
