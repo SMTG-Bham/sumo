@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+v2.3.12
+-------
+
+- Fix compatability with latest phonopy version.
+
 v2.3.11
 -------
 
