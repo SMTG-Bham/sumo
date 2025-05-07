@@ -60,7 +60,17 @@
 
 <span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rcParams</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">phonopy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmToEv</span><span class="p">,</span> <span class="n">THzToCm</span><span class="p">,</span> <span class="n">VaspToCm</span><span class="p">,</span> <span class="n">VaspToEv</span><span class="p">,</span> <span class="n">VaspToTHz</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">phonopy.units</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AMU</span><span class="p">,</span>
+    <span class="n">EV</span><span class="p">,</span>
+    <span class="n">Angstrom</span><span class="p">,</span>
+    <span class="n">CmToEv</span><span class="p">,</span>
+    <span class="n">PlanckConstant</span><span class="p">,</span>
+    <span class="n">THzToCm</span><span class="p">,</span>
+    <span class="n">VaspToTHz</span><span class="p">,</span>
+    <span class="n">pi</span><span class="p">,</span>
+    <span class="n">sqrt</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.io.phonopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ph_bs_symm_line</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.io.vasp.inputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Poscar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.phonon.bandstructure</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhononBandStructureSymmLine</span>
@@ -75,6 +85,9 @@
 <span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Alex Ganose&quot;</span>
 <span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;alexganose@googlemail.com&quot;</span>
 <span class="n">__date__</span> <span class="o">=</span> <span class="s2">&quot;Jan 17, 2018&quot;</span>
+
+<span class="n">VaspToEv</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">EV</span> <span class="o">/</span> <span class="n">AMU</span><span class="p">)</span> <span class="o">/</span> <span class="n">Angstrom</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">PlanckConstant</span>  <span class="c1"># [eV] 6.46541380e-2</span>
+<span class="n">VaspToCm</span> <span class="o">=</span> <span class="n">VaspToTHz</span> <span class="o">*</span> <span class="n">THzToCm</span>  <span class="c1"># [cm^-1] 521.47083</span>
 
 
 <div class="viewcode-block" id="phonon_bandplot">
