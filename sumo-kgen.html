@@ -7,10 +7,11 @@
 
     <title>sumo-kgen &#8212; sumo 2.3.11 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
     <script src="_static/documentation_options.js?v=defa0d68"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="sumo-dosplot" href="sumo-dosplot.html" />
@@ -58,7 +59,7 @@ literature, <code class="docutils literal notranslate"><span class="pre">sumo-kg
 </li>
 <li><p><a class="reference internal" href="#command-line-interface" id="id12">Command-Line Interface</a></p>
 <ul>
-<li><p><a class="reference internal" href="#named-arguments" id="id13">Named Arguments</a></p></li>
+<li><p><a class="reference internal" href="#sumo.cli.kgen-_get_parser-named-arguments" id="id13">Named Arguments</a></p></li>
 </ul>
 </li>
 </ul>
@@ -223,16 +224,16 @@ VASP</p>
                  <span class="p">[</span><span class="o">--</span><span class="n">kpoints</span> <span class="n">KPOINTS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">labels</span> <span class="n">LABELS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">phonon</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
+<section id="sumo.cli.kgen-_get_parser-named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#sumo.cli.kgen-_get_parser-named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-p, --poscar</kbd></dt>
 <dd><p>input structure file (default: POSCAR)</p>
-<p>Default: “POSCAR”</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'POSCAR'</span></code></p>
 </dd>
 <dt><kbd>-c, --code</kbd></dt>
 <dd><p>Electronic structure code (default: vasp).”questaal” also supported.</p>
-<p>Default: “vasp”</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'vasp'</span></code></p>
 </dd>
 <dt><kbd>-d, --directory</kbd></dt>
 <dd><p>output directory for files</p>
@@ -242,38 +243,38 @@ VASP</p>
 </dd>
 <dt><kbd>-f, --folders</kbd></dt>
 <dd><p>create folders and copy in necessary files</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>-y, --hybrid</kbd></dt>
 <dd><p>append k-points to IBZKPT file with zero weight</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--symprec</kbd></dt>
 <dd><p>tolerance for finding symmetry (default: 0.01)</p>
-<p>Default: 0.01</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0.01</span></code></p>
 </dd>
 <dt><kbd>--spg</kbd></dt>
 <dd><p>space group number or symbol</p>
 </dd>
 <dt><kbd>--density</kbd></dt>
 <dd><p>k-point density along high-symmetry path</p>
-<p>Default: 60</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">60</span></code></p>
 </dd>
 <dt><kbd>--seekpath</kbd></dt>
 <dd><p>use seekpath to generate the high-symmetry path</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--pymatgen</kbd></dt>
 <dd><p>use pymatgen to generate the high-symmetry path</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--latimer-munro</kbd></dt>
 <dd><p>use Latimer &amp; Munro method to generate the high-symmetry path</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--cartesian</kbd></dt>
 <dd><p>use cartesian k-point coordinates</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--kpoints</kbd></dt>
 <dd><p>specify a list of kpoints (e.g. “0 0 0, 0.5 0 0”)</p>
@@ -283,7 +284,7 @@ VASP</p>
 </dd>
 <dt><kbd>--phonon</kbd></dt>
 <dd><p>Write k-points as phonon band structure path</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 </dl>
 </section>
@@ -365,8 +366,8 @@ Last updated: July 6, 2017</p>
       &#169;2024, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/sumo-kgen.rst.txt"

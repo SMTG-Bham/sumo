@@ -7,10 +7,11 @@
 
     <title>sumo-phonon-bandplot &#8212; sumo 2.3.11 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
     <script src="_static/documentation_options.js?v=defa0d68"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Customising Sumo Plots" href="customising-plots.html" />
@@ -49,7 +50,7 @@ structure diagrams based on <code class="docutils literal notranslate"><span cla
 </li>
 <li><p><a class="reference internal" href="#command-line-interface" id="id9">Command-Line Interface</a></p>
 <ul>
-<li><p><a class="reference internal" href="#named-arguments" id="id10">Named Arguments</a></p></li>
+<li><p><a class="reference internal" href="#sumo.cli.phonon_bandplot-_get_parser-named-arguments" id="id10">Named Arguments</a></p></li>
 </ul>
 </li>
 </ul>
@@ -148,21 +149,22 @@ structure diagrams</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">q</span> <span class="n">N</span> <span class="n">N</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">B</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span><span class="p">]</span>
                             <span class="p">[</span><span class="o">--</span><span class="n">dim</span> <span class="n">N</span> <span class="p">[</span><span class="n">N</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">poscar</span> <span class="n">POS</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">primitive</span><span class="o">-</span><span class="n">axis</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="o">|</span> <span class="o">--</span><span class="n">primitive</span><span class="o">-</span><span class="n">auto</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">symprec</span> <span class="n">SYMPREC</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">units</span> <span class="n">UNITS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spg</span> <span class="n">SPG</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">density</span> <span class="n">DENSITY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">seekpath</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pymatgen</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">kpoints</span> <span class="n">KPOINTS</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">labels</span> <span class="n">LABELS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">height</span> <span class="n">HEIGHT</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">width</span> <span class="n">WIDTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ymin</span> <span class="n">YMIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ymax</span> <span class="n">YMAX</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">style</span> <span class="n">STYLE</span> <span class="p">[</span><span class="n">STYLE</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">style</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">format</span> <span class="n">FORMAT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dpi</span> <span class="n">DPI</span><span class="p">]</span>
-                            <span class="p">[</span><span class="o">--</span><span class="n">font</span> <span class="n">FONT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dos</span> <span class="p">[</span><span class="n">DOS</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">to</span><span class="o">-</span><span class="n">json</span> <span class="n">TO_JSON</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">primitive</span><span class="o">-</span><span class="n">axis</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="o">|</span>
+                            <span class="o">--</span><span class="n">primitive</span><span class="o">-</span><span class="n">auto</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">symprec</span> <span class="n">SYMPREC</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">units</span> <span class="n">UNITS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spg</span> <span class="n">SPG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">density</span> <span class="n">DENSITY</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">seekpath</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pymatgen</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">kpoints</span> <span class="n">KPOINTS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">labels</span> <span class="n">LABELS</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">height</span> <span class="n">HEIGHT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">width</span> <span class="n">WIDTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ymin</span> <span class="n">YMIN</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">ymax</span> <span class="n">YMAX</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">style</span> <span class="n">STYLE</span> <span class="p">[</span><span class="n">STYLE</span> <span class="o">...</span><span class="p">]]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">base</span><span class="o">-</span><span class="n">style</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">CONFIG</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="nb">format</span> <span class="n">FORMAT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dpi</span> <span class="n">DPI</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">font</span> <span class="n">FONT</span><span class="p">]</span>
+                            <span class="p">[</span><span class="o">--</span><span class="n">dos</span> <span class="p">[</span><span class="n">DOS</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">to</span><span class="o">-</span><span class="n">json</span> <span class="n">TO_JSON</span><span class="p">]</span>
                             <span class="p">[</span><span class="o">--</span><span class="n">from</span><span class="o">-</span><span class="n">json</span> <span class="n">FROM_JSON</span> <span class="p">[</span><span class="n">FROM_JSON</span> <span class="o">...</span><span class="p">]]</span>
                             <span class="p">[</span><span class="o">--</span><span class="n">to</span><span class="o">-</span><span class="n">web</span> <span class="n">TO_WEB</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">legend</span> <span class="p">[</span><span class="n">LEGEND</span> <span class="o">...</span><span class="p">]]</span>
 </pre></div>
 </div>
-<section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
+<section id="sumo.cli.phonon_bandplot-_get_parser-named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#sumo.cli.phonon_bandplot-_get_parser-named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filename</kbd></dt>
 <dd><p>FORCE_SETS, FORCE_CONSTANTS or band.yaml file</p>
@@ -175,7 +177,7 @@ structure diagrams</p>
 </dd>
 <dt><kbd>-q, --qmesh</kbd></dt>
 <dd><p>q-mesh to use for phonon DOS</p>
-<p>Default: (8, 8, 8)</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">(8,</span> <span class="pre">8,</span> <span class="pre">8)</span></code></p>
 </dd>
 <dt><kbd>-b, --born</kbd></dt>
 <dd><p>born effective charge file</p>
@@ -197,31 +199,31 @@ structure diagrams</p>
 </dd>
 <dt><kbd>--symprec</kbd></dt>
 <dd><p>tolerance for finding symmetry (default: 0.01)</p>
-<p>Default: 0.01</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0.01</span></code></p>
 </dd>
 <dt><kbd>--units, -u</kbd></dt>
 <dd><p>Possible choices: THz, thz, cm-1, eV, ev, meV, mev</p>
 <p>choose units of phonon frequency (THz, cm-1, eV, meV)</p>
-<p>Default: “THz”</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'THz'</span></code></p>
 </dd>
 <dt><kbd>--spg</kbd></dt>
 <dd><p>space group number or symbol</p>
 </dd>
 <dt><kbd>--density</kbd></dt>
 <dd><p>k-point density along high-symmetry path</p>
-<p>Default: 60</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">60</span></code></p>
 </dd>
 <dt><kbd>--seekpath</kbd></dt>
 <dd><p>use seekpath to generate the high-symmetry path</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--pymatgen</kbd></dt>
 <dd><p>use pymatgen to generate the high-symmetry path</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--cartesian</kbd></dt>
 <dd><p>use cartesian k-point coordinates</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--kpoints</kbd></dt>
 <dd><p>specify a list of kpoints (e.g. “0 0 0, 0.5 0 0”)</p>
@@ -246,14 +248,14 @@ structure diagrams</p>
 </dd>
 <dt><kbd>--no-base-style</kbd></dt>
 <dd><p>prevent use of sumo base style</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--config</kbd></dt>
 <dd><p>colour configuration file</p>
 </dd>
 <dt><kbd>--format</kbd></dt>
 <dd><p>image file format (options: pdf, svg, jpg, png)</p>
-<p>Default: “pdf”</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'pdf'</span></code></p>
 </dd>
 <dt><kbd>--dpi</kbd></dt>
 <dd><p>pixel density for image file</p>
@@ -356,8 +358,8 @@ Last updated: Jan 17, 2018</p>
       &#169;2024, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/sumo-phonon-bandplot.rst.txt"

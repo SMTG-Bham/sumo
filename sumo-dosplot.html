@@ -7,10 +7,11 @@
 
     <title>sumo-dosplot &#8212; sumo 2.3.11 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
     <script src="_static/documentation_options.js?v=defa0d68"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="sumo-bandplot" href="sumo-bandplot.html" />
@@ -54,7 +55,7 @@ orbitals, and atoms.</p>
 </li>
 <li><p><a class="reference internal" href="#command-line-interface" id="id13">Command-Line Interface</a></p>
 <ul>
-<li><p><a class="reference internal" href="#named-arguments" id="id14">Named Arguments</a></p></li>
+<li><p><a class="reference internal" href="#sumo.cli.dosplot-_get_parser-named-arguments" id="id14">Named Arguments</a></p></li>
 </ul>
 </li>
 </ul>
@@ -265,15 +266,15 @@ states diagrams</p>
                     <span class="p">[</span><span class="o">--</span><span class="n">zero</span><span class="o">-</span><span class="n">line</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">format</span> <span class="n">FORMAT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dpi</span> <span class="n">DPI</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">font</span> <span class="n">FONT</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h3>
+<section id="sumo.cli.dosplot-_get_parser-named-arguments">
+<h3>Named Arguments<a class="headerlink" href="#sumo.cli.dosplot-_get_parser-named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filename</kbd></dt>
 <dd><p>vasprun.xml file to plot</p>
 </dd>
 <dt><kbd>-c, --code</kbd></dt>
 <dd><p>Input file format: “vasp” (vasprun.xml) or “questaal” (opt.ext)</p>
-<p>Default: “vasp”</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'vasp'</span></code></p>
 </dd>
 <dt><kbd>-p, --prefix</kbd></dt>
 <dd><p>prefix for the files generated</p>
@@ -295,41 +296,41 @@ states diagrams</p>
 </dd>
 <dt><kbd>-s, --subplot</kbd></dt>
 <dd><p>plot each element on separate subplots</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>-g, --gaussian</kbd></dt>
 <dd><p>standard deviation of gaussian broadening</p>
 </dd>
 <dt><kbd>--columns</kbd></dt>
 <dd><p>number of columns in the legend</p>
-<p>Default: 2</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">2</span></code></p>
 </dd>
 <dt><kbd>--legend-cutoff</kbd></dt>
 <dd><p>cut-off in % of total DOS that determines if a line is given a label (default: 3)</p>
-<p>Default: 3</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">3</span></code></p>
 </dd>
 <dt><kbd>--no-legend</kbd></dt>
 <dd><p>hide the plot legend</p>
-<p>Default: True</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 <dt><kbd>--legend-frame</kbd></dt>
 <dd><p>display a box around the legend</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--no-shift</kbd></dt>
 <dd><p>don’t shift the VBM/Fermi level to 0 eV</p>
-<p>Default: True</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 <dt><kbd>--zero-energy</kbd></dt>
 <dd><p>Reference energy: energy will be shifted to place this energy at zero. If not specified (and <cite>–no-shift</cite> not used), zero will be set to the VBM.</p>
 </dd>
 <dt><kbd>--total-only</kbd></dt>
 <dd><p>only plot the total density of states</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--no-total</kbd></dt>
 <dd><p>don’t plot the total density of states</p>
-<p>Default: True</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 <dt><kbd>--height</kbd></dt>
 <dd><p>height of the graph</p>
@@ -339,11 +340,11 @@ states diagrams</p>
 </dd>
 <dt><kbd>--xmin</kbd></dt>
 <dd><p>minimum energy on the x-axis</p>
-<p>Default: -6.0</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">-6.0</span></code></p>
 </dd>
 <dt><kbd>--xmax</kbd></dt>
 <dd><p>maximum energy on the x-axis</p>
-<p>Default: 6.0</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">6.0</span></code></p>
 </dd>
 <dt><kbd>--config</kbd></dt>
 <dd><p>colour configuration file</p>
@@ -353,31 +354,31 @@ states diagrams</p>
 </dd>
 <dt><kbd>--no-base-style</kbd></dt>
 <dd><p>prevent use of sumo base style</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--xlabel</kbd></dt>
 <dd><p>x-axis (i.e. energy) label/units</p>
-<p>Default: “Energy (eV)”</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'Energy</span> <span class="pre">(eV)'</span></code></p>
 </dd>
 <dt><kbd>--ylabel</kbd></dt>
 <dd><p>y-axis (i.e. DOS) label/units</p>
-<p>Default: “DOS”</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'DOS'</span></code></p>
 </dd>
 <dt><kbd>--yscale</kbd></dt>
 <dd><p>scaling factor for the y-axis</p>
-<p>Default: 1</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">1</span></code></p>
 </dd>
 <dt><kbd>--zero-line</kbd></dt>
 <dd><p>Plot vertical line at energy zero</p>
-<p>Default: False</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--format</kbd></dt>
 <dd><p>image file format (options: pdf, svg, jpg, png)</p>
-<p>Default: “pdf”</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'pdf'</span></code></p>
 </dd>
 <dt><kbd>--dpi</kbd></dt>
 <dd><p>pixel density for image file</p>
-<p>Default: 400</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">400</span></code></p>
 </dd>
 <dt><kbd>--font</kbd></dt>
 <dd><p>font to use</p>
@@ -462,8 +463,8 @@ Last updated: April 9, 2018</p>
       &#169;2024, Scanlon Materials Theory Group.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/sumo-dosplot.rst.txt"
