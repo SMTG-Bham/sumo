@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sumo.phonon.phonopy &#8212; sumo 2.3.12 documentation</title>
+    <title>sumo.phonon.phonopy &#8212; sumo 2.3.11 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=12dfc556" />
-    <script src="../../../_static/documentation_options.js?v=e9028702"></script>
+    <script src="../../../_static/documentation_options.js?v=defa0d68"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -88,8 +88,7 @@
 <span class="sd">            ``False`` (force constants not written).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">unitcell</span> <span class="o">=</span> <span class="n">get_phonopy_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
-    <span class="n">num_atom</span> <span class="o">=</span> <span class="n">unitcell</span><span class="o">.</span><span class="n">get_number_of_atoms</span><span class="p">()</span>
-    <span class="n">num_satom</span> <span class="o">=</span> <span class="n">determinant</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span> <span class="o">*</span> <span class="n">num_atom</span>
+    <span class="n">num_satom</span> <span class="o">=</span> <span class="n">determinant</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">unitcell</span><span class="p">)</span>
 
     <span class="n">phonon</span> <span class="o">=</span> <span class="n">Phonopy</span><span class="p">(</span>
         <span class="n">unitcell</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">primitive_matrix</span><span class="o">=</span><span class="n">primitive_matrix</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span>
