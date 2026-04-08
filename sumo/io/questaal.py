@@ -380,7 +380,7 @@ class QuestaalInit:
             #  seem likely that Questaal would support unicode?
             lines = [line.decode("ascii") for line in lines]
         else:
-            with zopen(filename, "r") as f:
+            with zopen(filename, "rt") as f:
                 lines = f.readlines()
 
         categories = {"LATTICE", "SITE", "SPEC"}
@@ -896,7 +896,7 @@ def band_structure(bnds_file, lattice, labels=None, alat=1, coords_are_cartesian
     # then convert to a numpy array (i.e. with each row for a kpoint)
     # and then transpose the array to obtain desired formats
 
-    with zopen(bnds_file, "r") as f:
+    with zopen(bnds_file, "rt") as f:
         kpoints = []
 
         # Read heading, get metadata and check no orbital projections used
@@ -944,7 +944,7 @@ def band_structure(bnds_file, lattice, labels=None, alat=1, coords_are_cartesian
         # stored to a list
         return list(map(float, chain(*(line.split() for line in lines))))
 
-    with zopen(bnds_file, "r") as f:
+    with zopen(bnds_file, "rt") as f:
         _ = f.readline()
         if spin_pol:  # Need to read two spin channels
             block_nkpts = int(f.readline().strip()) // 2
