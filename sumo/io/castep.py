@@ -487,7 +487,7 @@ def labels_from_cell(cell_file, phonon=False):
         blockstart = re.compile(r"^%block\s+(bs|spectral)_kpoint(s)?_(path|list)")
         blockend = re.compile(r"^%endblock\s+(bs|spectral)_kpoint(s)?_(path|list)")
 
-    with zopen(cell_file, "r") as f:
+    with zopen(cell_file, "rt") as f:
         line = ""
         while blockstart.match(line.lower()) is None:
             line = f.readline()
@@ -561,7 +561,7 @@ def read_bands_header(bands_file):
     """
 
     header = {}
-    with zopen(bands_file, "r") as f:
+    with zopen(bands_file, "rt") as f:
         # Read in header information a line at a time
 
         header["n_kpoints"] = int(f.readline().split()[-1])
@@ -623,7 +623,7 @@ def read_bands_eigenvalues(bands_file, header):
     else:
         eigenvals = {Spin.up: [], Spin.down: []}
 
-    with zopen(bands_file, "r") as f:
+    with zopen(bands_file, "rt") as f:
         for _ in range(9):
             f.readline()  # Skip header
 
