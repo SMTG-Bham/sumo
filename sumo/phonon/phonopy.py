@@ -54,8 +54,7 @@ def load_phonopy(
             ``False`` (force constants not written).
     """
     unitcell = get_phonopy_structure(structure)
-    num_atom = unitcell.get_number_of_atoms()
-    num_satom = determinant(dim) * num_atom
+    num_satom = determinant(dim) * len(unitcell)
 
     phonon = Phonopy(
         unitcell, dim, primitive_matrix=primitive_matrix, factor=factor, symprec=symprec
