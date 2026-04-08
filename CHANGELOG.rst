@@ -4,10 +4,16 @@ Change Log
 Unreleased
 ----------
 
+Requirements:
+
 - Bump minimum supported Python version to 3.10, in line with upstream Python support. (https://devguide.python.org/versions/)
 
 - Bump minimum phonopy version to 2.7.0 (July 2020) to cleanly replace
   deprecated/removed PhonopyAtoms.get_number_of_atoms()
+
+Bugfixes:
+
+- Handle API changes in Phonopy, Monty
 
 v2.3.11
 -------
