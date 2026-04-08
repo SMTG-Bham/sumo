@@ -9,10 +9,7 @@ from json import load as load_json
 
 import numpy as np
 
-try:
-    from importlib.resources import files as ilr_files
-except ImportError:  # Python < 3.9
-    from importlib_resources import files as ilr_files
+from importlib.resources import files as ilr_files
 
 from sumo.symmetry import Kpath
 

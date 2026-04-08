@@ -5,10 +5,8 @@ try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
-try:
-    from importlib.resources import files as ilr_files
-except ImportError:  # Python < 3.9
-    from importlib_resources import files as ilr_files
+
+from importlib.resources import files as ilr_files
 
 import matplotlib.pyplot
 
