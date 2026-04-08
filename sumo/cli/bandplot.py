@@ -13,10 +13,7 @@ import os
 import sys
 import warnings
 
-try:
-    from importlib.resources import files as ilr_files
-except ImportError:  # Python < 3.9
-    from importlib_resources import files as ilr_files
+from importlib.resources import files as ilr_files
 
 import matplotlib as mpl
 from pymatgen.electronic_structure.bandstructure import get_reconstructed_band_structure

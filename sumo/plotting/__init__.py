@@ -12,10 +12,7 @@ import numpy as np
 from matplotlib import rcParams
 from matplotlib.collections import LineCollection
 
-try:
-    from importlib.resources import files as ilr_files
-except ImportError:  # Python < 3.9
-    from importlib_resources import files as ilr_files
+from importlib.resources import files as ilr_files
 
 colour_cache = {}
 

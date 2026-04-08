@@ -2,10 +2,7 @@ import os
 import unittest
 import warnings
 
-try:
-    from importlib.resources import files as ilr_files
-except ImportError:  # Python < 3.9
-    from importlib_resources import files as ilr_files
+from importlib.resources import files as ilr_files
 
 from pymatgen.core.structure import Structure
 

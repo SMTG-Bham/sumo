@@ -2,10 +2,7 @@ import json
 import os
 import unittest
 
-try:
-    from importlib.resources import files as ilr_files
-except ImportError:  # Python < 3.9
-    from importlib_resources import files as ilr_files
+from importlib.resources import files as ilr_files
 
 from monty.io import gzip
 from monty.json import MontyDecoder

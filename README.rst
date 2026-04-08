@@ -204,10 +204,10 @@ Sumo is made available under the MIT License.
 Detailed requirements
 ---------------------
 
-Sumo is currently compatible with Python 3.5+ and relies on a number of
+Sumo is currently compatible with Python 3.10+ and relies on a number of
 open-source python packages, specifically:
 
-- Pymatgen_ (version >= 2017.12.30)
+- Pymatgen_
 - Numpy_
 - Scipy_
 - Matplotlib_
