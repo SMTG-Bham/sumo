@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Unreleased
+----------
+
+- Bump minimum phonopy version to 2.7.0 (July 2020) to cleanly replace
+  deprecated/removed PhonopyAtoms.get_number_of_atoms()
+
 v2.3.11
 -------
 

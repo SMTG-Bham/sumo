@@ -37,7 +37,7 @@ setup(
         "scipy",
         "h5py",
         "pymatgen>=2020.10.20",
-        "phonopy>=2.1.3",
+        "phonopy>=2.7.0",
         "matplotlib>=3.2.0",
         "seekpath",
         "castepxbin<1.0",
