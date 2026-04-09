@@ -132,7 +132,7 @@ in <code class="docutils literal notranslate"><span class="pre">selection</span>
 </pre></div>
 </div>
 <p>Where spin is a <code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.core.Spin</span></code>
-object and projections is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code></a> of:</p>
+object and projections is a <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code> of:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">projections</span><span class="p">[</span><span class="n">band_index</span><span class="p">][</span><span class="n">kpoint_index</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -200,7 +200,7 @@ the format:</p>
 </pre></div>
 </div>
 <p>Where spin is a <code class="xref py py-obj docutils literal notranslate"><span class="pre">pymatgen.electronic_structure.core.Spin</span></code>
-object and projections is a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code></a> of:</p>
+object and projections is a <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code> of:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">projections</span><span class="p">[</span><span class="n">band_index</span><span class="p">][</span><span class="n">kpoint_index</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -520,9 +520,9 @@ that the Fermi level is set as 0 eV.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>distances</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – The x-distances between k-points in
+<li><p><strong>distances</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The x-distances between k-points in
 reciprocal Angstroms, normalised to the band extrema.</p></li>
-<li><p><strong>energies</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – The band eigenvalues normalised to the
+<li><p><strong>energies</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The band eigenvalues normalised to the
 eigenvalue of the band extrema.</p></li>
 <li><p><strong>parabolic</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>, optional) – Use a parabolic fit of the band
 edges. If <code class="docutils literal notranslate"><span class="pre">False</span></code> then nonparabolic fitting will be attempted.
@@ -559,9 +559,9 @@ channel to sample.</p></li>
 some metadata. Formatted as a <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#list" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>, each with the
 keys:</p>
 <dl class="simple">
-<dt>’energies’ (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>)</dt><dd><p>Band eigenvalues in eV.</p>
+<dt>’energies’ (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>)</dt><dd><p>Band eigenvalues in eV.</p>
 </dd>
-<dt>’distances’ (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>)</dt><dd><p>Distances of the k-points in reciprocal space.</p>
+<dt>’distances’ (<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>)</dt><dd><p>Distances of the k-points in reciprocal space.</p>
 </dd>
 <dt>’band_id’ (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>)</dt><dd><p>The index of the band,</p>
 </dd>
@@ -732,7 +732,7 @@ sensitive)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>(<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code></a>) Real part of frequency-dependent dielectric function
+<dd class="field-even"><p>(<code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array</span></code>) Real part of frequency-dependent dielectric function
 corresponding to eps_imag. Array shape (NEDOS, 3, 3)</p>
 </dd>
 </dl>
