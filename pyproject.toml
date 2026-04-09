@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools ~= 82.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sumo"
+dynamic = ["version"]
+authors = [
+  {name = "Alex Ganose"},
+  {name = "Adam J. Jackson"},
+  {name = "David Scanlon", email = "d.o.scanlon@bham.ac.uk"},
+]
+description = "Heavy weight plotting tools for ab initio solid-state calculations"
+readme = "README.rst"
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Topic :: Scientific/Engineering :: Chemistry",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+keywords = [
+  "chemistry",
+  "pymatgen",
+  "dft",
+  "vasp",
+  "dos",
+  "band",
+]
+
+requires-python = ">=3.10"
+dependencies = [
+  "spglib",
+  "numpy",
+  "scipy",
+  "h5py",
+  "pymatgen>=2020.10.20",
+  "phonopy>=2.7.0",
+  "matplotlib>=3.2.0",
+  "seekpath",
+  "castepxbin<1.0",
+  "colormath",
+]
+
+[project.urls]
+Repository = "https://github.com/SMTG-Bham/sumo"
+"Bug Tracker" = "https://github.com/SMTG-Bham/sumo/issues"
+Documentation = "https://smtg-bham.github.io/sumo/"
+
+[project.optional-dependencies]
+docs = ["sphinx", "sphinx-argparse"]
+tests = ["pytest"]
+dev = ["pre-commit"]
+
+[project.scripts]
+  sumo-bandplot = "sumo.cli.bandplot:main"
+  sumo-bandstats = "sumo.cli.bandstats:main"
+  sumo-dosplot = "sumo.cli.dosplot:main"
+  sumo-kgen = "sumo.cli.kgen:main"
+  sumo-phonon-bandplot = "sumo.cli.phonon_bandplot:main"
+  sumo-optplot = "sumo.cli.optplot:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+sumo = [
+  "symmetry/bradcrack.json",
+  "plotting/orbital_colours.conf",
+  "plotting/*.mplstyle",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "sumo.__version__"}
