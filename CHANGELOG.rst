@@ -1,10 +1,12 @@
 Change Log
 ==========
 
-Unreleased
-----------
+v2.4.0
+------
 
 Requirements:
+
+- New build system requires a recent Setuptools: this should be managed at build-time by any reasonably modern Pip or equivalent.
 
 - Bump minimum supported Python version to 3.10, in line with upstream Python support. (https://devguide.python.org/versions/)
 
@@ -14,6 +16,11 @@ Requirements:
 Bugfixes:
 
 - Handle API changes in Phonopy, Monty
+
+Maintenance:
+
+- Modernised build system, replacing *setup.py* with *pyproject.toml*
+- Update CI pipelines to test with Python 3.10, 3.11, 3.14
 
 v2.3.11
 -------
