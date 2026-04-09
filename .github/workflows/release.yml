@@ -11,8 +11,7 @@ jobs:
     environment:
       name: pypi
       url: https://pypi.org/p/sumo
-    permissions:
-      id-token: write
+    permissions: write-all
 
     steps:
       - uses: actions/checkout@v6
