@@ -250,8 +250,7 @@ class SBSPlotter(BSPlotter):
 
         if spin is not None and not self.bs.is_spin_polarized:
             raise ValueError(
-                "Spin-selection only possible with spin-polarised "
-                "calculation results"
+                "Spin-selection only possible with spin-polarised calculation results"
             )
         elif self.bs.is_metal() or (self.bs.is_spin_polarized and not spin):
             # if metal or spin polarized and spin not specified
@@ -543,8 +542,7 @@ class SBSPlotter(BSPlotter):
         spins = sorted(self.bs.bands.keys(), key=lambda s: -s.value)
         if spin is not None and len(spins) == 1:
             raise ValueError(
-                "Spin-selection only possible with spin-polarised "
-                "calculation results"
+                "Spin-selection only possible with spin-polarised calculation results"
             )
 
         if spin is Spin.up:

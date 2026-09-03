@@ -8,18 +8,16 @@ TODO:
     * Add ability to scale an orbitals density of states
 """
 
-
 import argparse
 import logging
 import os
 import sys
 import warnings
 from glob import glob
+from importlib.resources import files as ilr_files
 
 import matplotlib as mpl
 import numpy as np
-
-from importlib.resources import files as ilr_files
 
 mpl.use("Agg")
 
@@ -535,7 +533,7 @@ def _get_parser():
         default=None,
         dest="zero_energy",
         help="Reference energy: energy will be shifted to place this energy "
-            "at zero. If not specified (and `--no-shift` not used), zero will be set to the VBM."
+        "at zero. If not specified (and `--no-shift` not used), zero will be set to the VBM.",
     )
 
     parser.add_argument(

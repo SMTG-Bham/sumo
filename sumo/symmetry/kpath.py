@@ -133,26 +133,20 @@ class Kpath:
         recip_lattice = self.structure.lattice.reciprocal_lattice
         for b in self.path:
             for i in range(1, len(b)):
-                start = np.array(self.kpoints[b[i - 1]])
-                end = np.array(self.kpoints[b[i]])
-                distance = np.linalg.norm(
-                    recip_lattice.get_cartesian_coords(start)
-                    - recip_lattice.get_cartesian_coords(end)
-                )
+                start = np.asarray(self.kpoints[b[i - 1]])
+                end = np.asarray(self.kpoints[b[i]])
+                start_cart = recip_lattice.get_cartesian_coords(start)
+                end_cart = recip_lattice.get_cartesian_coords(end)
+                distance = np.linalg.norm(start_cart - end_cart)
                 nb = int(np.ceil(distance * line_density))
                 sym_point_labels.extend([b[i - 1]] + [""] * (nb - 1))
 
+                # phonopy wants the branch endpoint included, VASP does not
                 limit = nb + 1 if phonopy else nb
-                kpts = [
-                    recip_lattice.get_cartesian_coords(start)
-                    + float(i)
-                    / float(nb)
-                    * (
-                        recip_lattice.get_cartesian_coords(end)
-                        - recip_lattice.get_cartesian_coords(start)
-                    )
-                    for i in range(0, limit)
-                ]
+                # keeps the original i/nb arithmetic, so generated k-points are
+                # bit-identical to previous releases
+                fractions = np.arange(limit) / nb
+                kpts = list(start_cart + fractions[:, None] * (end_cart - start_cart))
 
                 if phonopy:
                     list_k_points.append(kpts)

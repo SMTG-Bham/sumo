@@ -328,7 +328,7 @@ def _get_parser():
         metavar="C",
         default="vasp",
         nargs="+",
-        help=("Original calculator. Accepted values are " '"vasp" and "questaal".'),
+        help=('Original calculator. Accepted values are "vasp" and "questaal".'),
     )
     parser.add_argument(
         "-g",

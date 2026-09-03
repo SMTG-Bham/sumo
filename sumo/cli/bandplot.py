@@ -5,14 +5,12 @@ TODO:
  - Replace the elements and project formats with the dream syntax
 """
 
-
 import argparse
 import glob
 import logging
 import os
 import sys
 import warnings
-
 from importlib.resources import files as ilr_files
 
 import matplotlib as mpl
@@ -27,9 +25,8 @@ from sumo.electronic_structure.bandstructure import string_to_spin
 from sumo.electronic_structure.dos import load_dos
 from sumo.io.castep import band_structure as castep_band_structure
 from sumo.io.castep import read_dos as read_castep_dos
-from sumo.io.questaal import QuestaalSite
+from sumo.io.questaal import QuestaalSite, labels_from_syml
 from sumo.io.questaal import band_structure as questaal_band_structure
-from sumo.io.questaal import labels_from_syml
 from sumo.plotting.bs_plotter import SBSPlotter
 from sumo.plotting.dos_plotter import SDOSPlotter
 
@@ -384,8 +381,7 @@ def bandplot(
                 if not os.path.isfile(pdos_file):
                     pdos_file = None
                     logging.info(
-                        f"PDOS file {pdos_file} does not exist, "
-                        "falling back to TDOS."
+                        f"PDOS file {pdos_file} does not exist, falling back to TDOS."
                     )
                 else:
                     logging.info(f"Found PDOS file {pdos_file}")
@@ -614,7 +610,7 @@ def _get_parser():
         "-c",
         "--code",
         default="vasp",
-        help="Electronic structure code (default: vasp)." '"questaal" also supported.',
+        help='Electronic structure code (default: vasp)."questaal" also supported.',
     )
     parser.add_argument(
         "-p", "--prefix", metavar="P", help="prefix for the files generated"

@@ -1,7 +1,6 @@
 import json
 import os
 import unittest
-
 from importlib.resources import files as ilr_files
 
 from monty.io import gzip
@@ -14,7 +13,6 @@ from sumo.io.castep import (
     CastepCell,
     CastepPhonon,
     labels_from_cell,
-    logger,
     read_bands_eigenvalues,
     read_bands_header,
     read_dos,
@@ -35,9 +33,7 @@ class CastepCellTestCase(unittest.TestCase):
         self.zns_singlepoint_cell = os.path.join(
             ilr_files("tests"), "data", "ZnS", "zns-sp.cell"
         )
-        self.nio_cart_cell = os.path.join(
-            ilr_files("tests"), "data", "NiO", "NiO.cell"
-        )
+        self.nio_cart_cell = os.path.join(ilr_files("tests"), "data", "NiO", "NiO.cell")
         self.nio_abc_cell = os.path.join(
             ilr_files("tests"), "data", "NiO", "NiO_abc.cell"
         )
@@ -47,7 +43,6 @@ class CastepCellTestCase(unittest.TestCase):
         self.nio_abc_cart_cell = os.path.join(
             ilr_files("tests"), "data", "NiO", "NiO_abc_cart.cell"
         )
-
 
     def test_castep_cell_null_init(self):
         null_cell = CastepCell()
@@ -90,12 +85,10 @@ class CastepCellTestCase(unittest.TestCase):
             structure = cc.structure
 
             assert_array_almost_equal(
-                structure.lattice.abc,
-                [2.983077, 2.98308198, 5.15994087]
+                structure.lattice.abc, [2.983077, 2.98308198, 5.15994087]
             )
             assert_array_almost_equal(
-                structure.lattice.angles,
-                [106.80215981, 73.19772637, 119.99807072]
+                structure.lattice.angles, [106.80215981, 73.19772637, 119.99807072]
             )
 
     def test_castep_cell_consistent_frac_coords(self):
@@ -104,8 +97,7 @@ class CastepCellTestCase(unittest.TestCase):
         frac_abc_cell = CastepCell.from_file(self.nio_abc_cell)
 
         assert_array_almost_equal(
-            cartesian_cell.structure.frac_coords,
-            frac_abc_cell.structure.frac_coords
+            cartesian_cell.structure.frac_coords, frac_abc_cell.structure.frac_coords
         )
 
     def test_castep_abc_cart_raises(self):

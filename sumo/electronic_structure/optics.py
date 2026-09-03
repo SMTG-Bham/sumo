@@ -11,7 +11,7 @@ TODO:
 import os
 
 import numpy as np
-from scipy.ndimage.filters import gaussian_filter1d
+from scipy.ndimage import gaussian_filter1d
 
 
 def broaden_eps(dielectric, sigma):
@@ -46,18 +46,13 @@ def broaden_eps(dielectric, sigma):
             )
     """
     e = dielectric[0]
-    diff = [e[i + 1] - e[i] for i in range(len(e) - 1)]
-    diff_avg = sum(diff) / len(diff)
-    real = [
-        gaussian_filter1d(np.array(dielectric[1])[:, x], sigma / diff_avg)
-        for x in range(6)
-    ]
-    imag = [
-        gaussian_filter1d(np.array(dielectric[2])[:, x], sigma / diff_avg)
-        for x in range(6)
-    ]
+    diff_avg = np.diff(e).mean()
 
-    return e, np.array(real).T, np.array(imag).T
+    # Filter along the energy axis, broadening all six tensor components at once
+    real = gaussian_filter1d(np.asarray(dielectric[1]), sigma / diff_avg, axis=0)
+    imag = gaussian_filter1d(np.asarray(dielectric[2]), sigma / diff_avg, axis=0)
+
+    return e, real, imag
 
 
 def calculate_dielectric_properties(dielectric, properties, mode="average"):
@@ -137,14 +132,14 @@ def calculate_dielectric_properties(dielectric, properties, mode="average"):
 
             {'absorption': [absorption], 'eps_real': [eps_real]}
     """
-    energies = np.array(dielectric[0])
+    energies = np.asarray(dielectric[0])
 
     # Work with eps as complex numbers in Nx3x3 matrix
     # First interpret 6-column data as symmetric matrix
     # Input form xx yy zz xy yz xz
     # Indices     0  1  2  3  4  5
-    real_eps = np.array(dielectric[1])[:, [[0, 3, 5], [3, 1, 4], [5, 4, 2]]]
-    imag_eps = np.array(dielectric[2])[:, [[0, 3, 5], [3, 1, 4], [5, 4, 2]]]
+    real_eps = np.asarray(dielectric[1])[:, [[0, 3, 5], [3, 1, 4], [5, 4, 2]]]
+    imag_eps = np.asarray(dielectric[2])[:, [[0, 3, 5], [3, 1, 4], [5, 4, 2]]]
     eps_full = real_eps + 1j * imag_eps
 
     # take sqrt of eps matrix; if eps = V S V^-1; then eps^1/2 = V S^{1/2} V^-1;
@@ -226,7 +221,7 @@ def write_files(abs_data, basename="absorption", prefix=None, directory=None):
             filename = os.path.join(directory, filename)
 
         header = "energy(eV)"
-        if len(absorption[1].shape) == 2:
+        if absorption[1].ndim == 2:
             header += " alpha_xx alpha_yy alpha_zz"
             data = np.concatenate((absorption[0][:, None], absorption[1]), axis=1)
         else:
@@ -253,15 +248,17 @@ def kkr(de, eps_imag, cshift=1e-6):
         (:obj:`numpy.array`) Real part of frequency-dependent dielectric function
         corresponding to eps_imag. Array shape (NEDOS, 3, 3)
     """
-    eps_imag = np.array(eps_imag)
+    eps_imag = np.asarray(eps_imag)
     nedos = eps_imag.shape[0]
-    cshift = complex(0, cshift)
-    w_i = np.arange(0, (nedos - 0.5) * de, de, dtype=np.complex128)
-    w_i = np.reshape(w_i, (nedos, 1, 1))
+    w = np.arange(nedos) * de
 
-    def integration_element(w_r):
-        factor = w_i / (w_i**2 - w_r**2 + cshift)
-        total = np.sum(eps_imag * factor, axis=0)
-        return total * (2 / np.pi) * de + np.diag([1, 1, 1])
+    # Integration kernel for every (response, source) energy pair at once.
+    # Rows index the response energy w_r, columns the source energy w_i; the
+    # imaginary shift is what keeps the w_i == w_r pole finite.
+    kernel = w / (w**2 - w[:, None] ** 2 + complex(0, cshift))
 
-    return np.real([integration_element(w_r) for w_r in w_i[:, 0, 0]])
+    # Contracting over the source-energy axis is a plain matrix product, so the
+    # whole transform is one BLAS call rather than a Python loop over energies.
+    integral = (kernel @ eps_imag.reshape(nedos, -1)).reshape(nedos, 3, 3)
+
+    return np.real(integral * (2 / np.pi) * de + np.eye(3))

@@ -20,6 +20,10 @@ classifiers = [
   "Natural Language :: English",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Scientific/Engineering :: Chemistry",
   "Topic :: Scientific/Engineering :: Physics",
 ]
@@ -35,14 +39,14 @@ keywords = [
 requires-python = ">=3.10"
 dependencies = [
   "spglib",
-  "numpy",
-  "scipy",
+  "numpy>=2.0",
+  "scipy>=1.13",
   "h5py",
   "pymatgen>=2020.10.20",
   "phonopy>=2.7.0",
   "matplotlib>=3.2.0",
   "seekpath",
-  "castepxbin<1.0",
+  "castepxbin>=0.3.1",
   "colormath",
 ]
 
@@ -76,3 +80,28 @@ sumo = [
 
 [tool.setuptools.dynamic]
 version = {attr = "sumo.__version__"}
+
+[tool.ruff]
+# Matches the black default the codebase was formatted with
+line-length = 88
+
+[tool.ruff.lint]
+# NPY is the point of this config: it keeps the codebase free of NumPy APIs
+# removed in 2.0, which was previously only guaranteed by a one-off manual run.
+select = ["E", "W", "F", "I", "NPY"]
+ignore = ["E203", "E402"]
+
+[tool.ruff.lint.per-file-ignores]
+# __init__.py imports are re-exports, not dead code
+"__init__.py" = ["F401"]
+# sumo.symmetry re-exports Kpath first on purpose: the subclass modules do
+# "from sumo.symmetry import Kpath", so the name must be bound before they load
+"sumo/symmetry/__init__.py" = ["F401", "I001"]
+
+[tool.ruff.lint.pycodestyle]
+# The old flake8 config tolerated 125; keep that for lines the formatter
+# cannot split (long URLs, docstring tables) rather than reflowing the code.
+max-line-length = 125
+
+[tool.ruff.lint.isort]
+known-first-party = ["sumo"]

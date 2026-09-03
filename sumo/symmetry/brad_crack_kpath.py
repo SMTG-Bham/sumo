@@ -5,11 +5,10 @@
 Module containing class for generating Bradley and Cracknell k-point paths.
 """
 
+from importlib.resources import files as ilr_files
 from json import load as load_json
 
 import numpy as np
-
-from importlib.resources import files as ilr_files
 
 from sumo.symmetry import Kpath
 

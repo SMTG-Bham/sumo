@@ -1,12 +1,12 @@
 import os
+import tempfile
 import unittest
-
 from importlib.resources import files as ilr_files
 
 import numpy as np
 from pymatgen.core.lattice import Lattice
 
-from sumo.io.questaal import QuestaalInit, dielectric_from_file
+from sumo.io.questaal import QuestaalInit, dielectric_from_file, dielectric_from_opt
 
 
 class QuestaalOpticsTestCase(unittest.TestCase):
@@ -214,3 +214,66 @@ class QuestaalInitTestCase(unittest.TestCase):
             ).max(),
             1e-3,
         )
+
+
+class QuestaalSpinPolarisedOptTestCase(unittest.TestCase):
+    """opt.ext files may carry one column trio per spin channel.
+
+    The two channels are summed to give the observable response, so a
+    spin-polarised file must give the same answer as an equivalent file
+    where the caller has already done the addition.
+    """
+
+    energies = [0.0, 0.01, 0.02, 0.03, 0.04, 0.05]
+    up = [
+        (0.10, 0.20, 0.30),
+        (0.15, 0.25, 0.35),
+        (0.20, 0.30, 0.40),
+        (0.25, 0.35, 0.45),
+        (0.30, 0.40, 0.50),
+        (0.35, 0.45, 0.55),
+    ]
+    down = [
+        (0.01, 0.02, 0.03),
+        (0.02, 0.03, 0.04),
+        (0.03, 0.04, 0.05),
+        (0.04, 0.05, 0.06),
+        (0.05, 0.06, 0.07),
+        (0.06, 0.07, 0.08),
+    ]
+
+    def _write(self, directory, name, rows):
+        path = os.path.join(directory, name)
+        with open(path, "w") as f:
+            f.write("# synthetic opt.ext\n")
+            for row in rows:
+                f.write(" ".join(f"{value:.8f}" for value in row) + "\n")
+        return path
+
+    def test_spin_channels_are_summed(self):
+        seven = [(e, *u, *d) for e, u, d in zip(self.energies, self.up, self.down)]
+        four = [
+            (e, u[0] + d[0], u[1] + d[1], u[2] + d[2])
+            for e, u, d in zip(self.energies, self.up, self.down)
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            spin = dielectric_from_opt(self._write(tmp, "opt.spin", seven))
+            combined = dielectric_from_opt(self._write(tmp, "opt.combined", four))
+
+        for from_spin, from_combined in zip(spin, combined):
+            np.testing.assert_allclose(from_spin, from_combined)
+
+        # the summed channel must differ from either channel alone, otherwise
+        # the test would pass even if only one trio of columns were read
+        with tempfile.TemporaryDirectory() as tmp:
+            up_rows = [(e, *u) for e, u in zip(self.energies, self.up)]
+            up_only = dielectric_from_opt(self._write(tmp, "opt.up", up_rows))
+        self.assertFalse(np.allclose(spin[2], up_only[2]))
+
+    def test_unexpected_column_count_raises(self):
+        rows = [(e, 0.1, 0.2) for e in self.energies]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._write(tmp, "opt.bad", rows)
+            with self.assertRaises(ValueError):
+                dielectric_from_opt(path)

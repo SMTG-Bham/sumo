@@ -1,7 +1,6 @@
 import os
 import unittest
 import warnings
-
 from importlib.resources import files as ilr_files
 
 from pymatgen.core.structure import Structure

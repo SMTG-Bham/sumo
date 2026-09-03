@@ -7,7 +7,6 @@ Module containing helper functions for dealing with
 :obj:`~pymatgen.electronic_structure.dos.CompleteDos` objects.
 """
 
-
 import logging
 import os
 
@@ -126,7 +125,7 @@ def load_dos(
                 ).get_smeared_densities(gaussian)
 
     if vr.parameters["LSORBIT"]:
-        # pymatgen<2025 includes the Spin.down channel for SOC calculations in the 
+        # pymatgen<2025 includes the Spin.down channel for SOC calculations in the
         # dos/pdos, even though there is no density here. We remove this channel (if
         # present) so the plotting is easier later on:
         dos.densities.pop(Spin.down, None)

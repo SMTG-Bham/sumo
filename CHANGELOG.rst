@@ -1,6 +1,45 @@
 Change Log
 ==========
 
+Unreleased
+----------
+
+Requirements:
+
+- Remove the ``castepxbin<1.0`` upper bound on the castepxbin dependency;
+  ``castepxbin>=0.3.1`` is now required.
+  (@LouieSlocombe, https://github.com/SMTG-Bham/sumo/pull/280, closes #279)
+- Bump minimum NumPy version to 2.0 and minimum SciPy version to 1.13.
+  NumPy 1.x is no longer supported. (@LouieSlocombe, #280)
+
+Bugfixes:
+
+- Fix a ``TypeError`` when reading spin-polarised (seven-column) Questaal
+  ``opt`` files with ``dielectric_from_opt()``: the two spin channels are now
+  summed correctly and the energy column is retained. Regression tests added
+  for spin-polarised files, for equivalence with pre-summed input, and for
+  files with an unexpected number of columns. (@LouieSlocombe, #280)
+
+Maintenance:
+
+- Modernise NumPy and SciPy usage in the effective-mass, optics, CASTEP and
+  k-point generation code: parabolic effective-mass fitting uses
+  ``numpy.polynomial.Polynomial``, dielectric broadening and the
+  Kramers-Kronig transformation are vectorised, k-point interpolation and
+  array conversions are simplified, and the deprecated
+  ``scipy.ndimage.filters`` import is replaced with ``scipy.ndimage``.
+  (@LouieSlocombe, #280)
+- Replace the Black, Flake8, isort and autoflake pre-commit hooks with Ruff
+  (check and format), enabling Ruff's NumPy-specific rules so that APIs
+  removed in NumPy 2 are not reintroduced. Apply the resulting formatting and
+  import clean-up across the source and test files. (@LouieSlocombe, #280)
+- CI: add a dedicated lint job running the pre-commit hooks, expand the test
+  matrix to Python 3.10-3.14, add a job testing against the minimum supported
+  NumPy and SciPy versions, and update the GitHub Actions versions and pip
+  cache configuration. (@LouieSlocombe, #280)
+- Add Python 3.11-3.14 classifiers to the packaging metadata and update the
+  intersphinx links in the documentation. (@LouieSlocombe, #280)
+
 v2.4.0
 ------
 

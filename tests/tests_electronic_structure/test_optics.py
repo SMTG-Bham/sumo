@@ -1,7 +1,6 @@
 import json
 import os
 import unittest
-
 from importlib.resources import files as ilr_files
 
 import numpy as np

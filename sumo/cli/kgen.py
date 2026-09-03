@@ -10,7 +10,6 @@ TODO:
   * Return a list of filenames/folders
 """
 
-
 import argparse
 import logging
 import os
@@ -158,8 +157,7 @@ def kgen(
 
     if phonon and (code.lower() not in phonon_supported_codes):
         logging.error(
-            "Cannot write phonon path for {code}. "
-            "Supported codes: {supported}".format(
+            "Cannot write phonon path for {code}. Supported codes: {supported}".format(
                 code=code, supported=", ".join(phonon_supported_codes)
             )
         )
@@ -288,7 +286,7 @@ def _get_parser():
         "-c",
         "--code",
         default="vasp",
-        help="Electronic structure code (default: vasp)." '"questaal" also supported.',
+        help='Electronic structure code (default: vasp). "questaal" also supported.',
     )
     parser.add_argument(
         "-d",
@@ -356,7 +354,7 @@ def _get_parser():
         "--kpoints",
         type=str,
         default=None,
-        help=("specify a list of kpoints " '(e.g. "0 0 0, 0.5 0 0")'),
+        help=('specify a list of kpoints (e.g. "0 0 0, 0.5 0 0")'),
     )
     parser.add_argument(
         "--labels",

@@ -170,8 +170,7 @@ class SDOSPlotter:
         spins = dos.densities.keys()
         if spin is not None and len(spins) == 1:
             raise ValueError(
-                "Spin-selection only possible with spin-polarised "
-                "calculation results"
+                "Spin-selection only possible with spin-polarised calculation results"
             )
 
         # Visibility cutoff based on scale of total plot even if it is hidden
@@ -477,8 +476,7 @@ def get_cached_colour(element, orbital, colours=None, cache=None):
                     break
             else:
                 raise Exception(
-                    "Not enough colours available for orbitals! "
-                    "Try a different theme."
+                    "Not enough colours available for orbitals! Try a different theme."
                 )
 
             if element not in cache:
@@ -504,4 +502,4 @@ def get_cached_colour(element, orbital, colours=None, cache=None):
         return _get_colour_with_cache(element, orbital, cache, colour_series)
 
     else:
-        raise TypeError('Argument "colours" should be dict, ' "ConfigParser or None.")
+        raise TypeError('Argument "colours" should be dict, ConfigParser or None.')

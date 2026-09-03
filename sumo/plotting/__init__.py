@@ -4,15 +4,15 @@
 """
 Subpackage providing helper functions for generating publication ready plots.
 """
+
 import os
 from functools import wraps
+from importlib.resources import files as ilr_files
 
 import matplotlib.pyplot
 import numpy as np
 from matplotlib import rcParams
 from matplotlib.collections import LineCollection
-
-from importlib.resources import files as ilr_files
 
 colour_cache = {}
 

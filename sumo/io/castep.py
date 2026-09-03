@@ -65,7 +65,7 @@ class CastepCell:
             else:
                 unit = "ang"
                 vectors = lattice_cart
-            vectors = np.array([list(map(float, row)) for row in vectors])
+            vectors = np.asarray(vectors, dtype=float)
             if vectors.shape != (3, 3):
                 raise ValueError("lattice_cart should contain a 3x3 matrix")
 

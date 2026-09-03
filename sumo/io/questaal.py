@@ -243,8 +243,7 @@ class QuestaalInit:
                 spcgrp_number = 0
             if 167 < spcgrp_number < 195:
                 logging.info(
-                    "Lattice angle GAMMA not given, "
-                    "hexagonal space group, assume 120"
+                    "Lattice angle GAMMA not given, hexagonal space group, assume 120"
                 )
                 self.lattice["GAMMA"] = 120
             else:
@@ -1120,7 +1119,8 @@ def dielectric_from_opt(filename, cshift=1e-6, out_filename=None):
     if data.shape[1] == 4:
         pass
     elif data.shape[1] == 7:
-        data = np.hstack(data[:, :1], data[1:4] + data[4:7])
+        # Sum the two spin channels, keeping the energy column
+        data = np.hstack((data[:, :1], data[:, 1:4] + data[:, 4:7]))
     else:
         raise ValueError(
             f"Not sure how to interpret {filename}; expected 4 or 7 columns."
