@@ -5,4 +5,4 @@
 Sumo is a set of tools for plotting electronic structure calculations.
 """
 
-__version__ = "2.4.0.post1"
+__version__ = "3.0.0"
