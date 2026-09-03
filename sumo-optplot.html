@@ -52,8 +52,8 @@ spectra simultaneously.</p>
 </li>
 <li><p><a class="reference internal" href="#command-line-interface" id="id7">Command-Line Interface</a></p>
 <ul>
-<li><p><a class="reference internal" href="#sumo.cli.optplot-_get_parser-positional-arguments" id="id8">Positional Arguments</a></p></li>
-<li><p><a class="reference internal" href="#sumo.cli.optplot-_get_parser-named-arguments" id="id9">Named Arguments</a></p></li>
+<li><p><a class="reference internal" href="#sumo-optplot-positional-arguments" id="id8">Positional Arguments</a></p></li>
+<li><p><a class="reference internal" href="#sumo-optplot-named-arguments" id="id9">Named Arguments</a></p></li>
 </ul>
 </li>
 </ul>
@@ -154,7 +154,7 @@ somewhere in the filename.</p>
 <div><p>optplot is a script to produce optical absorption spectra diagrams</p>
 </div></blockquote>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">optplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span> <span class="p">[</span><span class="n">F</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">C</span> <span class="p">[</span><span class="n">C</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">g</span> <span class="n">G</span><span class="p">]</span>
+<div class="highlight-default notranslate" id="id0"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">optplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span> <span class="p">[</span><span class="n">F</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">C</span> <span class="p">[</span><span class="n">C</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">g</span> <span class="n">G</span><span class="p">]</span>
                     <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="p">[</span><span class="n">E</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">l</span> <span class="n">L</span> <span class="p">[</span><span class="n">L</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">height</span> <span class="n">HEIGHT</span><span class="p">]</span>
                     <span class="p">[</span><span class="o">--</span><span class="n">width</span> <span class="n">WIDTH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">xmin</span> <span class="n">XMIN</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">xmax</span> <span class="n">XMAX</span><span class="p">]</span>
                     <span class="p">[</span><span class="o">--</span><span class="n">ymin</span> <span class="n">YMIN</span> <span class="p">[</span><span class="n">YMIN</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">ymax</span> <span class="n">YMAX</span> <span class="p">[</span><span class="n">YMAX</span> <span class="o">...</span><span class="p">]]</span>
@@ -164,18 +164,18 @@ somewhere in the filename.</p>
                     <span class="p">[</span><span class="n">M</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="sumo.cli.optplot-_get_parser-positional-arguments">
-<h3>Positional Arguments<a class="headerlink" href="#sumo.cli.optplot-_get_parser-positional-arguments" title="Link to this heading">¶</a></h3>
+<section id="sumo-optplot-positional-arguments">
+<span id="sumo.cli.optplot-_get_parser-positional-arguments"></span><h3>Positional Arguments<a class="headerlink" href="#sumo-optplot-positional-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>M</kbd></dt>
-<dd><p>Possible choices: eps_imag, absorption, n_imag, n_real, eps_real, loss</p>
+<dd><p>Possible choices: n_real, loss, eps_imag, n_imag, absorption, eps_real</p>
 <p>Optical properties to plot. Multiple choices  will be displayed as subplots. Accepted values: “absorption” (optical absorption over distance), “loss” (energy-loss function -Im(1/eps)), “eps_real” and “eps_imag” (real and imaginary parts of the dielectric function), “n_real” (real part of complex refractive index)”n_imag” (imaginary part of RI, also known as the extinction coefficient kappa.)</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">'absorption'</span></code></p>
 </dd>
 </dl>
 </section>
-<section id="sumo.cli.optplot-_get_parser-named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#sumo.cli.optplot-_get_parser-named-arguments" title="Link to this heading">¶</a></h3>
+<section id="sumo-optplot-named-arguments">
+<span id="sumo.cli.optplot-_get_parser-named-arguments"></span><h3>Named Arguments<a class="headerlink" href="#sumo-optplot-named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filenames</kbd></dt>
 <dd><p>path to one or more vasprun.xml files</p>

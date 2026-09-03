@@ -34,12 +34,11 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Module containing helper functions for dealing with</span>
 <span class="sd">:obj:`~pymatgen.electronic_structure.dos.Dos` and</span>
 <span class="sd">:obj:`~pymatgen.electronic_structure.dos.CompleteDos` objects.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -63,7 +62,7 @@
     <span class="n">adjust_fermi</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">scissor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a vasprun and extract the total and projected density of states.</span>
+<span class="w">    </span><span class="sd">"""Load a vasprun and extract the total and projected density of states.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        vasprun (str): Path to a vasprun.xml or vasprun.xml.gz file or</span>
@@ -74,7 +73,7 @@
 <span class="sd">            values as a :obj:`tuple` of orbitals. For example, the following</span>
 <span class="sd">            would extract the Bi s, px, py and d orbitals::</span>
 
-<span class="sd">                {&#39;Bi&#39;: (&#39;s&#39;, &#39;px&#39;, &#39;py&#39;, &#39;d&#39;)}</span>
+<span class="sd">                {'Bi': ('s', 'px', 'py', 'd')}</span>
 
 <span class="sd">            If an element is included with an empty :obj:`tuple`, all orbitals</span>
 <span class="sd">            for that species will be extracted. If ``elements`` is not set or</span>
@@ -86,7 +85,7 @@
 <span class="sd">            the following would be used to decompose the oxygen p and d</span>
 <span class="sd">            orbitals::</span>
 
-<span class="sd">                {&#39;O&#39;: (&#39;p&#39;, &#39;d&#39;)}</span>
+<span class="sd">                {'O': ('p', 'd')}</span>
 
 <span class="sd">        atoms (:obj:`dict`, optional): Which atomic sites to use when</span>
 <span class="sd">            calculating the projected density of states. Should be provided as</span>
@@ -100,7 +99,7 @@
 <span class="sd">            of states for the first 4 Sn atoms and all O atoms in the</span>
 <span class="sd">            structure::</span>
 
-<span class="sd">                {&#39;Sn&#39;: (1, 2, 3, 4), &#39;O&#39;: (, )}</span>
+<span class="sd">                {'Sn': (1, 2, 3, 4), 'O': (, )}</span>
 
 <span class="sd">            If ``atoms`` is not set or set to ``None`` then all atomic sites</span>
 <span class="sd">            for all elements will be considered.</span>
@@ -125,29 +124,29 @@
 <span class="sd">        :obj:`~pymatgen.electronic_structure.dos.Dos` objects. For example::</span>
 
 <span class="sd">            {</span>
-<span class="sd">                &#39;Bi&#39;: {&#39;s&#39;: Dos, &#39;p&#39;: Dos ... },</span>
-<span class="sd">                &#39;S&#39;: {&#39;s&#39;: Dos}</span>
+<span class="sd">                'Bi': {'s': Dos, 'p': Dos ... },</span>
+<span class="sd">                'S': {'s': Dos}</span>
 <span class="sd">            }</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vasprun</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">vr</span> <span class="o">=</span> <span class="n">Vasprun</span><span class="p">(</span><span class="n">vasprun</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">vr</span> <span class="o">=</span> <span class="n">vasprun</span>
 
-    <span class="n">band</span> <span class="o">=</span> <span class="n">vr</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">(</span><span class="n">efermi</span><span class="o">=</span><span class="s2">&quot;smart&quot;</span><span class="p">)</span>
+    <span class="n">band</span> <span class="o">=</span> <span class="n">vr</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">(</span><span class="n">efermi</span><span class="o">=</span><span class="s2">"smart"</span><span class="p">)</span>
     <span class="n">dos</span> <span class="o">=</span> <span class="n">vr</span><span class="o">.</span><span class="n">complete_dos</span>
 
     <span class="n">dos</span><span class="p">,</span> <span class="n">band</span> <span class="o">=</span> <span class="n">_scissor_dos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">scissor</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">band</span><span class="o">.</span><span class="n">is_metal</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;System is metallic&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"System is metallic"</span><span class="p">)</span>
         <span class="n">zero_point</span> <span class="o">=</span> <span class="n">vr</span><span class="o">.</span><span class="n">efermi</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Band gap: </span><span class="si">{</span><span class="n">band</span><span class="o">.</span><span class="n">get_band_gap</span><span class="p">()[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DOS band gap: </span><span class="si">{</span><span class="n">dos</span><span class="o">.</span><span class="n">get_gap</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">zero_point</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Band gap: </span><span class="si">{</span><span class="n">band</span><span class="o">.</span><span class="n">get_band_gap</span><span class="p">()[</span><span class="s1">'energy'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"DOS band gap: </span><span class="si">{</span><span class="n">dos</span><span class="o">.</span><span class="n">get_gap</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">zero_point</span> <span class="o">=</span> <span class="n">band</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()[</span><span class="s2">"energy"</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">adjust_fermi</span><span class="p">:</span>
         <span class="n">dos</span><span class="o">.</span><span class="n">efermi</span> <span class="o">-=</span> <span class="n">dos</span><span class="o">.</span><span class="n">efermi</span> <span class="o">-</span> <span class="n">zero_point</span>
@@ -160,8 +159,8 @@
                     <span class="n">site</span><span class="p">,</span> <span class="n">orbital</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">get_smeared_densities</span><span class="p">(</span><span class="n">gaussian</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">vr</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">&quot;LSORBIT&quot;</span><span class="p">]:</span>
-        <span class="c1"># pymatgen&lt;2025 includes the Spin.down channel for SOC calculations in the </span>
+    <span class="k">if</span> <span class="n">vr</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s2">"LSORBIT"</span><span class="p">]:</span>
+        <span class="c1"># pymatgen&lt;2025 includes the Spin.down channel for SOC calculations in the</span>
         <span class="c1"># dos/pdos, even though there is no density here. We remove this channel (if</span>
         <span class="c1"># present) so the plotting is easier later on:</span>
         <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -179,7 +178,7 @@
 <div class="viewcode-block" id="get_pdos">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.dos.get_pdos">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_pdos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atoms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the projected density of states from a CompleteDos object.</span>
+<span class="w">    </span><span class="sd">"""Extract the projected density of states from a CompleteDos object.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        dos (:obj:`~pymatgen.electronic_structure.dos.CompleteDos`): The</span>
@@ -190,7 +189,7 @@
 <span class="sd">            values as a :obj:`tuple` of orbitals. For example, the following</span>
 <span class="sd">            would extract the Bi s, px, py and d orbitals::</span>
 
-<span class="sd">                {&#39;Bi&#39;: (&#39;s&#39;, &#39;px&#39;, &#39;py&#39;, &#39;d&#39;)}</span>
+<span class="sd">                {'Bi': ('s', 'px', 'py', 'd')}</span>
 
 <span class="sd">            If an element is included with an empty :obj:`tuple`, all orbitals</span>
 <span class="sd">            for that species will be extracted. If ``elements`` is not set or</span>
@@ -202,7 +201,7 @@
 <span class="sd">            the following would be used to decompose the oxygen p and d</span>
 <span class="sd">            orbitals::</span>
 
-<span class="sd">                {&#39;O&#39;: (&#39;p&#39;, &#39;d&#39;)}</span>
+<span class="sd">                {'O': ('p', 'd')}</span>
 
 <span class="sd">        atoms (:obj:`dict`, optional): Which atomic sites to use when</span>
 <span class="sd">            calculating the projected density of states. Should be provided as</span>
@@ -216,7 +215,7 @@
 <span class="sd">            of states for the first 4 Sn atoms and all O atoms in the</span>
 <span class="sd">            structure::</span>
 
-<span class="sd">                {&#39;Sn&#39;: (1, 2, 3, 4), &#39;O&#39;: (, )}</span>
+<span class="sd">                {'Sn': (1, 2, 3, 4), 'O': (, )}</span>
 
 <span class="sd">            If ``atoms`` is not set or set to ``None`` then all atomic sites</span>
 <span class="sd">            for all elements will be considered.</span>
@@ -227,10 +226,10 @@
 <span class="sd">        :obj:`~pymatgen.electronic_structure.dos.Dos` objects. For example::</span>
 
 <span class="sd">            {</span>
-<span class="sd">                &#39;Bi&#39;: {&#39;s&#39;: Dos, &#39;p&#39;: Dos ... },</span>
-<span class="sd">                &#39;S&#39;: {&#39;s&#39;: Dos}</span>
+<span class="sd">                'Bi': {'s': Dos, 'p': Dos ... },</span>
+<span class="sd">                'S': {'s': Dos}</span>
 <span class="sd">            }</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">elements</span><span class="p">:</span>
         <span class="n">symbols</span> <span class="o">=</span> <span class="n">dos</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">symbol_set</span>
         <span class="n">elements</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">symbols</span><span class="p">,</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)))</span>
@@ -262,24 +261,24 @@
 <div class="viewcode-block" id="get_element_pdos">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.dos.get_element_pdos">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_element_pdos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">sites</span><span class="p">,</span> <span class="n">lm_orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">orbitals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the projected density of states for an element.</span>
+<span class="w">    </span><span class="sd">"""Get the projected density of states for an element.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        dos (:obj:`~pymatgen.electronic_structure.dos.CompleteDos`): The</span>
 <span class="sd">            density of states.</span>
-<span class="sd">        element (str): Element symbol. E.g. &#39;Zn&#39;.</span>
+<span class="sd">        element (str): Element symbol. E.g. 'Zn'.</span>
 <span class="sd">        sites (tuple): The atomic indices over which to sum the density of</span>
 <span class="sd">            states, as a :obj:`tuple`. Indices are zero based for each</span>
 <span class="sd">            element. For example, ``(0, 1, 2)`` will sum the density of states</span>
 <span class="sd">            for the 1st, 2nd and 3rd sites of the element specified.</span>
 <span class="sd">        lm_orbitals (:obj:`tuple`, optional): The orbitals to decompose into</span>
 <span class="sd">            their lm contributions (e.g. p -&gt; px, py, pz). Should be provided</span>
-<span class="sd">            as a :obj:`tuple` of :obj:`str`. For example, ``(&#39;p&#39;)``, will</span>
+<span class="sd">            as a :obj:`tuple` of :obj:`str`. For example, ``('p')``, will</span>
 <span class="sd">            extract the projected density of states for the px, py, and pz</span>
 <span class="sd">            orbitals. Defaults to ``None``.</span>
 <span class="sd">        orbitals (:obj:`tuple`, optional): The orbitals to extract from the</span>
 <span class="sd">            projected density of states. Should be provided as a :obj:`tuple`</span>
-<span class="sd">            of :obj:`str`. For example, ``(&#39;s&#39;, &#39;px&#39;, &#39;dx2&#39;)`` will extract the</span>
+<span class="sd">            of :obj:`str`. For example, ``('s', 'px', 'dx2')`` will extract the</span>
 <span class="sd">            s, px, and dx2 orbitals, only. If ``None``, all orbitals will be</span>
 <span class="sd">            extracted. Defaults to ``None``.</span>
 
@@ -289,10 +288,10 @@
 <span class="sd">        objects. For example::</span>
 
 <span class="sd">            {</span>
-<span class="sd">                &#39;s&#39;: Dos,</span>
-<span class="sd">                &#39;p&#39;: Dos</span>
+<span class="sd">                's': Dos,</span>
+<span class="sd">                'p': Dos</span>
 <span class="sd">            }</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">el_dos</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">sites</span><span class="p">:</span>
         <span class="c1"># build a list of which orbitals we are after</span>
@@ -322,7 +321,7 @@
 <div class="viewcode-block" id="write_files">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.dos.write_files">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">write_files</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">pdos</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zero_to_efermi</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the density of states data to disk.</span>
+<span class="w">    </span><span class="sd">"""Write the density of states data to disk.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        dos (:obj:`~pymatgen.electronic_structure.dos.Dos` or \</span>
@@ -334,91 +333,91 @@
 <span class="sd">            example::</span>
 
 <span class="sd">                {</span>
-<span class="sd">                    &#39;Bi&#39;: {&#39;s&#39;: Dos, &#39;p&#39;: Dos},</span>
-<span class="sd">                    &#39;S&#39;: {&#39;s&#39;: Dos}</span>
+<span class="sd">                    'Bi': {'s': Dos, 'p': Dos},</span>
+<span class="sd">                    'S': {'s': Dos}</span>
 <span class="sd">                }</span>
 
 <span class="sd">        prefix (:obj:`str`, optional): A prefix for file names.</span>
 <span class="sd">        directory (:obj:`str`, optional): The directory in which to save files.</span>
 <span class="sd">        zero_to_efermi (:obj:`bool`, optional): Normalise the energy such</span>
 <span class="sd">             that the Fermi level is set as 0 eV.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># defining these cryptic lists makes formatting the data much easier later</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">sdata</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]]</span>
+        <span class="n">sdata</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">""</span><span class="p">]]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">sdata</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;(up)&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;(down)&quot;</span><span class="p">]]</span>
+        <span class="n">sdata</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Spin</span><span class="o">.</span><span class="n">up</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"(up)"</span><span class="p">],</span> <span class="p">[</span><span class="n">Spin</span><span class="o">.</span><span class="n">down</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">"(down)"</span><span class="p">]]</span>
 
-    <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"energy"</span><span class="p">]</span>
     <span class="n">eners</span> <span class="o">=</span> <span class="n">dos</span><span class="o">.</span><span class="n">energies</span> <span class="o">-</span> <span class="n">dos</span><span class="o">.</span><span class="n">efermi</span> <span class="k">if</span> <span class="n">zero_to_efermi</span> <span class="k">else</span> <span class="n">dos</span><span class="o">.</span><span class="n">energies</span>
     <span class="n">tdos_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">eners</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">sign</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">sdata</span><span class="p">:</span>
-        <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dos</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"dos</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">tdos_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">*</span> <span class="n">sign</span><span class="p">)</span>
     <span class="n">tdos_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">tdos_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_total_dos.dat&quot;</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="s2">&quot;total_dos.dat&quot;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_total_dos.dat"</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="s2">"total_dos.dat"</span>
     <span class="k">if</span> <span class="n">directory</span><span class="p">:</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">tdos_data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header</span><span class="p">))</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">tdos_data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">el</span><span class="p">,</span> <span class="n">el_pdos</span> <span class="ow">in</span> <span class="n">pdos</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"energy"</span><span class="p">]</span>
         <span class="n">pdos_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">eners</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">orb</span> <span class="ow">in</span> <span class="n">sort_orbitals</span><span class="p">(</span><span class="n">el_pdos</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">sign</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">sdata</span><span class="p">:</span>
-                <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">orb</span><span class="si">}{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">orb</span><span class="si">}{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">pdos_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el_pdos</span><span class="p">[</span><span class="n">orb</span><span class="p">]</span><span class="o">.</span><span class="n">densities</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">*</span> <span class="n">sign</span><span class="p">)</span>
         <span class="n">pdos_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">pdos_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">el</span><span class="si">}</span><span class="s2">_dos.dat&quot;</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">el</span><span class="si">}</span><span class="s2">_dos.dat"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">el</span><span class="si">}</span><span class="s2">_dos.dat&quot;</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">el</span><span class="si">}</span><span class="s2">_dos.dat"</span>
         <span class="k">if</span> <span class="n">directory</span><span class="p">:</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">pdos_data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header</span><span class="p">))</span></div>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">pdos_data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header</span><span class="p">))</span></div>
 
 
 
 <div class="viewcode-block" id="sort_orbitals">
 <a class="viewcode-back" href="../../../sumo.electronic_structure.html#sumo.electronic_structure.dos.sort_orbitals">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sort_orbitals</span><span class="p">(</span><span class="n">element_pdos</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort the orbitals of an element&#39;s projected density of states.</span>
+<span class="w">    </span><span class="sd">"""Sort the orbitals of an element's projected density of states.</span>
 
 <span class="sd">    Sorts the orbitals based on a standard format. E.g. s &lt; p &lt; d.</span>
 <span class="sd">    Will also sort lm decomposed orbitals. This is useful for plotting/saving.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        element_pdos (dict): An element&#39;s pdos. Should be formatted as a</span>
+<span class="sd">        element_pdos (dict): An element's pdos. Should be formatted as a</span>
 <span class="sd">            :obj:`dict` of ``{orbital: dos}``. Where dos is a</span>
 <span class="sd">            :obj:`~pymatgen.electronic_structure.dos.Dos` object. For example::</span>
 
-<span class="sd">                {&#39;s&#39;: dos, &#39;px&#39;: dos}</span>
+<span class="sd">                {'s': dos, 'px': dos}</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list: The sorted orbitals.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">sorted_orbitals</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;s&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;p&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;py&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;px&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;d&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;dxy&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;dyz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;dz2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;dxz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;dx2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;f&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;f_3&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;f_2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;f_1&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;f0&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;f1&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;f2&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;f3&quot;</span><span class="p">,</span>
+        <span class="s2">"s"</span><span class="p">,</span>
+        <span class="s2">"p"</span><span class="p">,</span>
+        <span class="s2">"py"</span><span class="p">,</span>
+        <span class="s2">"pz"</span><span class="p">,</span>
+        <span class="s2">"px"</span><span class="p">,</span>
+        <span class="s2">"d"</span><span class="p">,</span>
+        <span class="s2">"dxy"</span><span class="p">,</span>
+        <span class="s2">"dyz"</span><span class="p">,</span>
+        <span class="s2">"dz2"</span><span class="p">,</span>
+        <span class="s2">"dxz"</span><span class="p">,</span>
+        <span class="s2">"dx2"</span><span class="p">,</span>
+        <span class="s2">"f"</span><span class="p">,</span>
+        <span class="s2">"f_3"</span><span class="p">,</span>
+        <span class="s2">"f_2"</span><span class="p">,</span>
+        <span class="s2">"f_1"</span><span class="p">,</span>
+        <span class="s2">"f0"</span><span class="p">,</span>
+        <span class="s2">"f1"</span><span class="p">,</span>
+        <span class="s2">"f2"</span><span class="p">,</span>
+        <span class="s2">"f3"</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">unsorted_keys</span> <span class="o">=</span> <span class="n">element_pdos</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
@@ -432,12 +431,12 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_scissor_dos</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">band</span><span class="p">,</span> <span class="n">scissor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply scissor to DOS by inserting zeros at the midgap point.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Apply scissor to DOS by inserting zeros at the midgap point."""</span>
     <span class="k">if</span> <span class="n">scissor</span> <span class="ow">and</span> <span class="n">band</span><span class="o">.</span><span class="n">is_metal</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot apply scissor to metallic DOS.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Cannot apply scissor to metallic DOS."</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">scissor</span><span class="p">:</span>
-        <span class="n">mid_gap</span> <span class="o">=</span> <span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">band</span><span class="o">.</span><span class="n">get_cbm</span><span class="p">()[</span><span class="s2">&quot;energy&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
-        <span class="n">shift</span> <span class="o">=</span> <span class="n">scissor</span> <span class="o">-</span> <span class="n">band</span><span class="o">.</span><span class="n">get_band_gap</span><span class="p">()[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
+        <span class="n">mid_gap</span> <span class="o">=</span> <span class="p">(</span><span class="n">band</span><span class="o">.</span><span class="n">get_vbm</span><span class="p">()[</span><span class="s2">"energy"</span><span class="p">]</span> <span class="o">+</span> <span class="n">band</span><span class="o">.</span><span class="n">get_cbm</span><span class="p">()[</span><span class="s2">"energy"</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="n">scissor</span> <span class="o">-</span> <span class="n">band</span><span class="o">.</span><span class="n">get_band_gap</span><span class="p">()[</span><span class="s2">"energy"</span><span class="p">]</span>
 
         <span class="c1"># apply scissor to band structure</span>
         <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">bands</span> <span class="ow">in</span> <span class="n">band</span><span class="o">.</span><span class="n">bands</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -456,7 +455,7 @@
         <span class="p">)</span>
         <span class="n">insert_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dos</span><span class="o">.</span><span class="n">energies</span> <span class="o">-</span> <span class="n">mid_gap</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
 
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Applying scissor to DOS (shift = </span><span class="si">{</span><span class="n">shift</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> eV)&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Applying scissor to DOS (shift = </span><span class="si">{</span><span class="n">shift</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> eV)"</span><span class="p">)</span>
         <span class="n">dos</span><span class="o">.</span><span class="n">energies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">dos</span><span class="o">.</span><span class="n">energies</span><span class="p">,</span> <span class="n">energy_fill</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">spin</span><span class="p">,</span> <span class="n">densities</span> <span class="ow">in</span> <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">dos</span><span class="o">.</span><span class="n">densities</span><span class="p">[</span><span class="n">spin</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">densities</span><span class="p">,</span> <span class="n">insert_point</span><span class="p">,</span> <span class="n">dos_fill</span><span class="p">)</span>

@@ -59,7 +59,7 @@ literature, <code class="docutils literal notranslate"><span class="pre">sumo-kg
 </li>
 <li><p><a class="reference internal" href="#command-line-interface" id="id12">Command-Line Interface</a></p>
 <ul>
-<li><p><a class="reference internal" href="#sumo.cli.kgen-_get_parser-named-arguments" id="id13">Named Arguments</a></p></li>
+<li><p><a class="reference internal" href="#sumo-kgen-named-arguments" id="id13">Named Arguments</a></p></li>
 </ul>
 </li>
 </ul>
@@ -150,17 +150,17 @@ reconstruct the full band structure from the individual splits.</p>
 <p><code class="docutils literal notranslate"><span class="pre">sumo-kgen</span></code> also supports generating k-points along custom k-point paths. This is controlled using the
 <code class="docutils literal notranslate"><span class="pre">--kpoints</span></code> option. The custom k-point path is specified as a string with commas separating the k-points.
 For example, to generate the k-points along <code class="docutils literal notranslate"><span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">-&gt;</span> <span class="pre">0.5</span> <span class="pre">0.5</span> <span class="pre">0.5</span></code>, the usage is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">kgen</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">&quot;0 0 0, 0.5 0.5 0.5&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">kgen</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">"0 0 0, 0.5 0.5 0.5"</span>
 </pre></div>
 </div>
 <p>Breaks in the band structure can be indicated using the pipe character.
 For example, the path <code class="docutils literal notranslate"><span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">-&gt;</span> <span class="pre">0.5</span> <span class="pre">0.5</span> <span class="pre">0.5</span> <span class="pre">|</span> <span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">-&gt;</span> <span class="pre">0.5</span> <span class="pre">0.</span> <span class="pre">0.</span></code>, is specified as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">kgen</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">&quot;0 0 0, 0.5 0.5 0.5 | 0 0 0, 0.5 0 0&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">kgen</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">"0 0 0, 0.5 0.5 0.5 | 0 0 0, 0.5 0 0"</span>
 </pre></div>
 </div>
 <p>Custom labels can also be provided using the <code class="docutils literal notranslate"><span class="pre">--labels</span></code> option. The syntax is the same as for the
 <code class="docutils literal notranslate"><span class="pre">--kpoints</span></code> option. For example, the labels for the above path are written as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">kgen</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">&quot;0 0 0, 0.5 0.5 0.5 | 0 0 0, 0.5 0 0&quot;</span> <span class="o">--</span><span class="n">labels</span> <span class="s2">&quot;\Gamma, M | \Gamma, X&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">kgen</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">"0 0 0, 0.5 0.5 0.5 | 0 0 0, 0.5 0 0"</span> <span class="o">--</span><span class="n">labels</span> <span class="s2">"\Gamma, M | \Gamma, X"</span>
 </pre></div>
 </div>
 <p>Note: in all cases the arguments are surrounded in parentheses.</p>
@@ -218,21 +218,21 @@ and Bohr units it can get a bit confusing.</p>
 VASP</p>
 </div></blockquote>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">kgen</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">y</span><span class="p">]</span>
+<div class="highlight-default notranslate" id="id0"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">kgen</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">y</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">symprec</span> <span class="n">SYMPREC</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">spg</span> <span class="n">SPG</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">density</span> <span class="n">DENSITY</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">seekpath</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pymatgen</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">latimer</span><span class="o">-</span><span class="n">munro</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">kpoints</span> <span class="n">KPOINTS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">labels</span> <span class="n">LABELS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">phonon</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="sumo.cli.kgen-_get_parser-named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#sumo.cli.kgen-_get_parser-named-arguments" title="Link to this heading">¶</a></h3>
+<section id="sumo-kgen-named-arguments">
+<span id="sumo.cli.kgen-_get_parser-named-arguments"></span><h3>Named Arguments<a class="headerlink" href="#sumo-kgen-named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-p, --poscar</kbd></dt>
 <dd><p>input structure file (default: POSCAR)</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">'POSCAR'</span></code></p>
 </dd>
 <dt><kbd>-c, --code</kbd></dt>
-<dd><p>Electronic structure code (default: vasp).”questaal” also supported.</p>
+<dd><p>Electronic structure code (default: vasp). “questaal” also supported.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">'vasp'</span></code></p>
 </dd>
 <dt><kbd>-d, --directory</kbd></dt>

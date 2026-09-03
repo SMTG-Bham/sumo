@@ -55,7 +55,7 @@ orbitals, and atoms.</p>
 </li>
 <li><p><a class="reference internal" href="#command-line-interface" id="id13">Command-Line Interface</a></p>
 <ul>
-<li><p><a class="reference internal" href="#sumo.cli.dosplot-_get_parser-named-arguments" id="id14">Named Arguments</a></p></li>
+<li><p><a class="reference internal" href="#sumo-dosplot-named-arguments" id="id14">Named Arguments</a></p></li>
 </ul>
 </li>
 </ul>
@@ -255,7 +255,7 @@ summing over the eigenvalue data in the <em>.bands</em> file.</p>
 states diagrams</p>
 </div></blockquote>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">O</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">A</span><span class="p">]</span>
+<div class="highlight-default notranslate" id="id0"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">dosplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span> <span class="n">E</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">O</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">A</span><span class="p">]</span>
                     <span class="p">[</span><span class="o">--</span><span class="n">spin</span> <span class="n">SPIN</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">g</span> <span class="n">G</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">columns</span> <span class="n">N</span><span class="p">]</span>
                     <span class="p">[</span><span class="o">--</span><span class="n">legend</span><span class="o">-</span><span class="n">cutoff</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">legend</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">legend</span><span class="o">-</span><span class="n">frame</span><span class="p">]</span>
                     <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">shift</span> <span class="o">|</span> <span class="o">--</span><span class="n">zero</span><span class="o">-</span><span class="n">energy</span> <span class="n">ZERO_ENERGY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">total</span><span class="o">-</span><span class="n">only</span><span class="p">]</span>
@@ -266,8 +266,8 @@ states diagrams</p>
                     <span class="p">[</span><span class="o">--</span><span class="n">zero</span><span class="o">-</span><span class="n">line</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">format</span> <span class="n">FORMAT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dpi</span> <span class="n">DPI</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">font</span> <span class="n">FONT</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="sumo.cli.dosplot-_get_parser-named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#sumo.cli.dosplot-_get_parser-named-arguments" title="Link to this heading">¶</a></h3>
+<section id="sumo-dosplot-named-arguments">
+<span id="sumo.cli.dosplot-_get_parser-named-arguments"></span><h3>Named Arguments<a class="headerlink" href="#sumo-dosplot-named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filename</kbd></dt>
 <dd><p>vasprun.xml file to plot</p>

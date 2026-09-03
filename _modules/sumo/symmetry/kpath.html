@@ -34,9 +34,9 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Module containing the base class for high-symmetry k-point path determination.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">seekpath</span>
@@ -48,7 +48,7 @@
 <div class="viewcode-block" id="Kpath">
 <a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Kpath</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Base class providing helper functions for generating k-point paths.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Base class providing helper functions for generating k-point paths.</span>
 
 <span class="sd">    This class should not be used directly. Instead, one of the</span>
 <span class="sd">    :obj:`~sumo.symmetry.brad_crack_kpath.BradCrackKpath`,</span>
@@ -68,7 +68,7 @@
 <span class="sd">            primitive cell structure for the generated k-point path.</span>
 <span class="sd">        conv (:obj:`~pymatgen.core.structure.Structure`): The standardised</span>
 <span class="sd">            conventional cell structure.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">structure</span>
@@ -81,22 +81,22 @@
         <span class="n">std</span> <span class="o">=</span> <span class="n">spglib</span><span class="o">.</span><span class="n">refine_cell</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">_cell</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span> <span class="o">=</span> <span class="n">seekpath</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="n">std</span><span class="p">)</span>
 
-        <span class="n">prim_lattice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">&quot;primitive_lattice&quot;</span><span class="p">]</span>
-        <span class="n">prim_scaled_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">&quot;primitive_positions&quot;</span><span class="p">]</span>
-        <span class="n">prim_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">&quot;primitive_types&quot;</span><span class="p">]</span>
+        <span class="n">prim_lattice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">"primitive_lattice"</span><span class="p">]</span>
+        <span class="n">prim_scaled_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">"primitive_positions"</span><span class="p">]</span>
+        <span class="n">prim_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">"primitive_types"</span><span class="p">]</span>
         <span class="n">prim_atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">sym</span><span class="o">.</span><span class="n">_unique_species</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prim_numbers</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prim</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">(</span><span class="n">prim_lattice</span><span class="p">,</span> <span class="n">prim_atoms</span><span class="p">,</span> <span class="n">prim_scaled_positions</span><span class="p">)</span>
 
-        <span class="n">conv_lattice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">&quot;conv_lattice&quot;</span><span class="p">]</span>
-        <span class="n">conv_scaled_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">&quot;conv_positions&quot;</span><span class="p">]</span>
-        <span class="n">conv_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">&quot;conv_types&quot;</span><span class="p">]</span>
+        <span class="n">conv_lattice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">"conv_lattice"</span><span class="p">]</span>
+        <span class="n">conv_scaled_positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">"conv_positions"</span><span class="p">]</span>
+        <span class="n">conv_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seek_data</span><span class="p">[</span><span class="s2">"conv_types"</span><span class="p">]</span>
         <span class="n">conv_atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">sym</span><span class="o">.</span><span class="n">_unique_species</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">conv_numbers</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conv</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">(</span><span class="n">conv_lattice</span><span class="p">,</span> <span class="n">conv_atoms</span><span class="p">,</span> <span class="n">conv_scaled_positions</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Kpath.correct_structure">
 <a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.correct_structure">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">correct_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine if the structure matches the standard primitive structure.</span>
+<span class="w">        </span><span class="sd">"""Determine if the structure matches the standard primitive structure.</span>
 
 <span class="sd">        The standard primitive will be different between seekpath and pymatgen</span>
 <span class="sd">        high-symmetry paths, but this is handled by the specific subclasses.</span>
@@ -108,7 +108,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: ``True`` if the structure is the same as the standard</span>
 <span class="sd">            primitive, otherwise ``False``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prim</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span>
         <span class="p">)</span></div>
@@ -117,7 +117,7 @@
 <div class="viewcode-block" id="Kpath.get_kpoints">
 <a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.get_kpoints">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_kpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line_density</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">cart_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">phonopy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a list of k-points and labels along the high-symmetry path.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Return a list of k-points and labels along the high-symmetry path.</span>
 
 <span class="sd">        The format of the returned data will be different if phonopy is</span>
 <span class="sd">        ``True`` or ``False``. This is because phonopy requires the labels and</span>
@@ -151,7 +151,7 @@
 <span class="sd">                  each k-point (will be an empty :obj:`str` if the k-point has</span>
 <span class="sd">                  no label). For example::</span>
 
-<span class="sd">                      [&#39;\Gamma&#39;, &#39;&#39;, &#39;X&#39;, &#39;&#39;, &#39;Y&#39;]</span>
+<span class="sd">                      ['\Gamma', '', 'X', '', 'Y']</span>
 
 <span class="sd">            If ``phonopy == True``, then:</span>
 
@@ -166,33 +166,27 @@
 <span class="sd">                * ``labels`` is a :obj:`list` of the high symmetry labels.</span>
 <span class="sd">                  For example::</span>
 
-<span class="sd">                      [&#39;\Gamma&#39;, &#39;X&#39;, &#39;Y&#39;]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">                      ['\Gamma', 'X', 'Y']</span>
+<span class="sd">        """</span>
         <span class="n">list_k_points</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">sym_point_labels</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">recip_lattice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">reciprocal_lattice</span>
         <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)):</span>
-                <span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[</span><span class="n">b</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]])</span>
-                <span class="n">end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
-                <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span>
-                    <span class="n">recip_lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
-                    <span class="o">-</span> <span class="n">recip_lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[</span><span class="n">b</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]])</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+                <span class="n">start_cart</span> <span class="o">=</span> <span class="n">recip_lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+                <span class="n">end_cart</span> <span class="o">=</span> <span class="n">recip_lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+                <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">start_cart</span> <span class="o">-</span> <span class="n">end_cart</span><span class="p">)</span>
                 <span class="n">nb</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">distance</span> <span class="o">*</span> <span class="n">line_density</span><span class="p">))</span>
-                <span class="n">sym_point_labels</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">b</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">nb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="n">sym_point_labels</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">b</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">""</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">nb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
 
+                <span class="c1"># phonopy wants the branch endpoint included, VASP does not</span>
                 <span class="n">limit</span> <span class="o">=</span> <span class="n">nb</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">phonopy</span> <span class="k">else</span> <span class="n">nb</span>
-                <span class="n">kpts</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">recip_lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
-                    <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-                    <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">nb</span><span class="p">)</span>
-                    <span class="o">*</span> <span class="p">(</span>
-                        <span class="n">recip_lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
-                        <span class="o">-</span> <span class="n">recip_lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
-                    <span class="p">)</span>
-                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
-                <span class="p">]</span>
+                <span class="c1"># keeps the original i/nb arithmetic, so generated k-points are</span>
+                <span class="c1"># bit-identical to previous releases</span>
+                <span class="n">fractions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span> <span class="o">/</span> <span class="n">nb</span>
+                <span class="n">kpts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">start_cart</span> <span class="o">+</span> <span class="n">fractions</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">end_cart</span> <span class="o">-</span> <span class="n">start_cart</span><span class="p">))</span>
 
                 <span class="k">if</span> <span class="n">phonopy</span><span class="p">:</span>
                     <span class="n">list_k_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kpts</span><span class="p">)</span>
@@ -209,14 +203,14 @@
         <span class="k">if</span> <span class="n">phonopy</span><span class="p">:</span>
             <span class="c1"># For phonopy, the labels for any discontinuities should be</span>
             <span class="c1"># combined. For example if the route is  X -&gt; Y | Z -&gt; R, the path</span>
-            <span class="c1"># will be [[&#39;X&#39;, &#39;Y&#39;], [&#39;Z&#39;, &#39;R&#39;]], and the labels should be</span>
-            <span class="c1"># [&#39;X&#39;, &#39;Z&#39;, &#39;R&#39;]</span>
+            <span class="c1"># will be [['X', 'Y'], ['Z', 'R']], and the labels should be</span>
+            <span class="c1"># ['X', 'Z', 'R']</span>
 
             <span class="n">sym_point_labels</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">path_branch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">path_branch</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="n">sym_point_labels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; | </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">sym_point_labels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" | </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">"</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">sym_point_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
 
@@ -238,54 +232,54 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">kpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;dict: The high-symmetry k-point labels and their fractional</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""dict: The high-symmetry k-point labels and their fractional</span>
 <span class="sd">        coordinates. Formatted as ``{label: coords}``. For example::</span>
 
-<span class="sd">            {&#39;\Gamma&#39;: [0., 0., 0.], &#39;X&#39;: [0.5, 0. 0.]}</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span><span class="p">[</span><span class="s2">&quot;kpoints&quot;</span><span class="p">]</span>
+<span class="sd">            {'\Gamma': [0., 0., 0.], 'X': [0.5, 0. 0.]}</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span><span class="p">[</span><span class="s2">"kpoints"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;list: The high-symmetry k-point path. Each subpath is provided</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""list: The high-symmetry k-point path. Each subpath is provided</span>
 <span class="sd">        as a list. For example, the following covers the path ``\Gamma -&gt;</span>
 <span class="sd">        X -&gt; C | \Gamma -&gt; Y``::</span>
 
-<span class="sd">            [[&#39;\Gamma&#39;, &#39;X&#39;, &#39;C&#39;], [&#39;\Gamma&#39;, &#39;Y&#39;]].</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
+<span class="sd">            [['\Gamma', 'X', 'C'], ['\Gamma', 'Y']].</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kpath</span><span class="p">[</span><span class="s2">"path"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">lattice_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;str: The Bravais lattice system. Hexagonal cells are separated into</span>
+<span class="w">        </span><span class="sd">"""str: The Bravais lattice system. Hexagonal cells are separated into</span>
 <span class="sd">        rhombohedral and hexagonal lattices.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_lattice_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spg_number</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">spg_symbol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;str: The international space group symbol.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spg_data</span><span class="p">[</span><span class="s2">&quot;international&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">"""str: The international space group symbol."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spg_data</span><span class="p">[</span><span class="s2">"international"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">spg_number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;int: The international space group number.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spg_data</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">"""int: The international space group number."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spg_data</span><span class="p">[</span><span class="s2">"number"</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">path_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;str: The high-symmetry k-point path formatted with arrows and</span>
+<span class="w">        </span><span class="sd">"""str: The high-symmetry k-point path formatted with arrows and</span>
 <span class="sd">        showing disconnections between subpaths. For example::</span>
 
-<span class="sd">            &quot;X -&gt; Gamma | Y -&gt; Z&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot; | &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot; -&gt; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subpath</span><span class="p">)</span> <span class="k">for</span> <span class="n">subpath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">])</span>
+<span class="sd">            "X -&gt; Gamma | Y -&gt; Z"</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s2">" | "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">" -&gt; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subpath</span><span class="p">)</span> <span class="k">for</span> <span class="n">subpath</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">])</span>
 
 <div class="viewcode-block" id="Kpath.get_lattice_type">
 <a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpath.Kpath.get_lattice_type">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_lattice_type</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the lattice crystal system.</span>
+<span class="w">        </span><span class="sd">"""Return the lattice crystal system.</span>
 
 <span class="sd">        Hexagonal cells are differentiated into rhombohedral and hexagonal</span>
 <span class="sd">        lattices.</span>
@@ -295,19 +289,19 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The lattice crystal system.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">number</span> <span class="o">&lt;=</span> <span class="n">j</span>
 
         <span class="n">cs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;triclinic&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-            <span class="s2">&quot;monoclinic&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>
-            <span class="s2">&quot;orthorhombic&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">74</span><span class="p">),</span>
-            <span class="s2">&quot;tetragonal&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">75</span><span class="p">,</span> <span class="mi">142</span><span class="p">),</span>
-            <span class="s2">&quot;trigonal&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">143</span><span class="p">,</span> <span class="mi">167</span><span class="p">),</span>
-            <span class="s2">&quot;hexagonal&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">168</span><span class="p">,</span> <span class="mi">194</span><span class="p">),</span>
-            <span class="s2">&quot;cubic&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">195</span><span class="p">,</span> <span class="mi">230</span><span class="p">),</span>
+            <span class="s2">"triclinic"</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="s2">"monoclinic"</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span>
+            <span class="s2">"orthorhombic"</span><span class="p">:</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">74</span><span class="p">),</span>
+            <span class="s2">"tetragonal"</span><span class="p">:</span> <span class="p">(</span><span class="mi">75</span><span class="p">,</span> <span class="mi">142</span><span class="p">),</span>
+            <span class="s2">"trigonal"</span><span class="p">:</span> <span class="p">(</span><span class="mi">143</span><span class="p">,</span> <span class="mi">167</span><span class="p">),</span>
+            <span class="s2">"hexagonal"</span><span class="p">:</span> <span class="p">(</span><span class="mi">168</span><span class="p">,</span> <span class="mi">194</span><span class="p">),</span>
+            <span class="s2">"cubic"</span><span class="p">:</span> <span class="p">(</span><span class="mi">195</span><span class="p">,</span> <span class="mi">230</span><span class="p">),</span>
         <span class="p">}</span>
 
         <span class="n">crystal_system</span> <span class="o">=</span> <span class="kc">None</span>
@@ -317,9 +311,9 @@
                 <span class="k">break</span>
 
         <span class="k">if</span> <span class="n">number</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">146</span><span class="p">,</span> <span class="mi">148</span><span class="p">,</span> <span class="mi">155</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">161</span><span class="p">,</span> <span class="mi">166</span><span class="p">,</span> <span class="mi">167</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="s2">&quot;rhombohedral&quot;</span>
-        <span class="k">elif</span> <span class="n">crystal_system</span> <span class="o">==</span> <span class="s2">&quot;trigonal&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;hexagonal&quot;</span>
+            <span class="k">return</span> <span class="s2">"rhombohedral"</span>
+        <span class="k">elif</span> <span class="n">crystal_system</span> <span class="o">==</span> <span class="s2">"trigonal"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"hexagonal"</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">crystal_system</span></div>
 </div>

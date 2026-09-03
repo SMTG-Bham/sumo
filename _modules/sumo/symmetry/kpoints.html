@@ -34,9 +34,9 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Module providing helper functions for generating k-points along a path.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
@@ -46,7 +46,7 @@
 <a class="viewcode-back" href="../../../sumo.symmetry.html#sumo.symmetry.kpoints.get_path_data">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_path_data</span><span class="p">(</span>
     <span class="n">structure</span><span class="p">,</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bradcrack&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"bradcrack"</span><span class="p">,</span>
     <span class="n">symprec</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
     <span class="n">spg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">line_density</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
@@ -55,7 +55,7 @@
     <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">phonopy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the k-point path, coordinates and symmetry labels for a structure.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Get the k-point path, coordinates and symmetry labels for a structure.</span>
 
 <span class="sd">    If a manual :obj:`list` of kpoints is supplied using the ``kpt_list``</span>
 <span class="sd">    variable, the ``mode`` option will be ignored.</span>
@@ -86,7 +86,7 @@
 <span class="sd">        spg (:obj:`~pymatgen.symmetry.groups.SpaceGroup`, optional): Space</span>
 <span class="sd">            group used to override the symmetry determined by spglib. This is</span>
 <span class="sd">            not recommended and only provided for testing purposes.</span>
-<span class="sd">            This option will only take effect when ``mode = &#39;bradcrack&#39;``.</span>
+<span class="sd">            This option will only take effect when ``mode = 'bradcrack'``.</span>
 <span class="sd">        line_density (:obj:`int`, optional): Density of k-points along the</span>
 <span class="sd">            path.</span>
 <span class="sd">        cart_coords (:obj:`bool`, optional): Whether the k-points are returned</span>
@@ -105,7 +105,7 @@
 <span class="sd">            be provided as a :obj:`list` of :obj:`str` for each subpath of the</span>
 <span class="sd">            overall path. For example::</span>
 
-<span class="sd">                [ [&#39;Gamma&#39;, &#39;Z&#39;], [&#39;X&#39;, &#39;M&#39;] ]</span>
+<span class="sd">                [ ['Gamma', 'Z'], ['X', 'M'] ]</span>
 
 <span class="sd">            combined with the above example for ``kpt_list`` would indicate the</span>
 <span class="sd">            path: Gamma -&gt; Z | X -&gt; M. If no labels are provided, letters from</span>
@@ -133,7 +133,7 @@
 <span class="sd">                each k-point (will be an empty :obj:`str` if the k-point has</span>
 <span class="sd">                no label). For example::</span>
 
-<span class="sd">                    [&#39;\Gamma&#39;, &#39;&#39;, &#39;X&#39;, &#39;&#39;, &#39;Y&#39;]</span>
+<span class="sd">                    ['\Gamma', '', 'X', '', 'Y']</span>
 
 <span class="sd">        If ``phonopy == True``, then:</span>
 
@@ -148,8 +148,8 @@
 <span class="sd">            * ``labels`` is a :obj:`list` of the high symmetry labels.</span>
 <span class="sd">                For example::</span>
 
-<span class="sd">                    [&#39;\Gamma&#39;, &#39;X&#39;, &#39;Y&#39;]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">                    ['\Gamma', 'X', 'Y']</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">sumo.symmetry</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
         <span class="n">BradCrackKpath</span><span class="p">,</span>
         <span class="n">CustomKpath</span><span class="p">,</span>
@@ -162,13 +162,13 @@
 
     <span class="k">if</span> <span class="n">kpt_list</span><span class="p">:</span>
         <span class="n">kpath</span> <span class="o">=</span> <span class="n">CustomKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">kpt_list</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;bradcrack&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"bradcrack"</span><span class="p">:</span>
         <span class="n">kpath</span> <span class="o">=</span> <span class="n">BradCrackKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">,</span> <span class="n">spg</span><span class="o">=</span><span class="n">spg</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;seekpath&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"seekpath"</span><span class="p">:</span>
         <span class="n">kpath</span> <span class="o">=</span> <span class="n">SeekpathKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;pymatgen&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"pymatgen"</span><span class="p">:</span>
         <span class="n">kpath</span> <span class="o">=</span> <span class="n">PymatgenKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;latimer-munro&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"latimer-munro"</span><span class="p">:</span>
         <span class="n">kpath</span> <span class="o">=</span> <span class="n">LatimerKpath</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">)</span>
 
     <span class="n">kpoints</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">kpath</span><span class="o">.</span><span class="n">get_kpoints</span><span class="p">(</span>
@@ -177,18 +177,18 @@
     <span class="n">path_str</span> <span class="o">=</span> <span class="n">kpath</span><span class="o">.</span><span class="n">path_string</span>
     <span class="n">kpt_dict</span> <span class="o">=</span> <span class="n">kpath</span><span class="o">.</span><span class="n">kpoints</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Structure information:&quot;</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Space group number: </span><span class="si">{</span><span class="n">kpath</span><span class="o">.</span><span class="n">_spg_data</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Structure information:"</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\t</span><span class="s2">Space group number: </span><span class="si">{</span><span class="n">kpath</span><span class="o">.</span><span class="n">_spg_data</span><span class="p">[</span><span class="s1">'number'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">International symbol: </span><span class="si">{</span><span class="n">kpath</span><span class="o">.</span><span class="n">spg_symbol</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Lattice type: </span><span class="si">{</span><span class="n">kpath</span><span class="o">.</span><span class="n">lattice_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\t</span><span class="s2">International symbol: </span><span class="si">{</span><span class="n">kpath</span><span class="o">.</span><span class="n">spg_symbol</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\t</span><span class="s2">Lattice type: </span><span class="si">{</span><span class="n">kpath</span><span class="o">.</span><span class="n">lattice_type</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">k-point path:</span><span class="se">\n\t</span><span class="si">{</span><span class="n">path_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">k-points:&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">k-point path:</span><span class="se">\n\t</span><span class="si">{</span><span class="n">path_str</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">k-points:"</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="n">kpt_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-        <span class="n">coord_str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">kpoint</span><span class="p">])</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">coord_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">coord_str</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">kpoint</span><span class="p">])</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\t</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">coord_str</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">kpath</span><span class="p">,</span> <span class="n">kpoints</span><span class="p">,</span> <span class="n">labels</span></div>
 
@@ -197,10 +197,10 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_space_group_object</span><span class="p">(</span><span class="n">spg</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.symmetry.groups</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpaceGroup</span>
 
-    <span class="k">if</span> <span class="n">spg</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;bradcrack&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">spg</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">"bradcrack"</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-            <span class="s2">&quot;ERROR: Specifying symmetry only supported using &quot;</span>
-            <span class="s2">&quot;Bradley and Cracknell path.&quot;</span>
+            <span class="s2">"ERROR: Specifying symmetry only supported using "</span>
+            <span class="s2">"Bradley and Cracknell path."</span>
         <span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
     <span class="k">elif</span> <span class="n">spg</span><span class="p">:</span>
@@ -210,11 +210,11 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">spg</span> <span class="o">=</span> <span class="n">SpaceGroup</span><span class="p">(</span><span class="n">spg</span><span class="p">)</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;WARNING: Forcing space group not recommended, the &quot;</span>
-                <span class="s2">&quot;path is likely</span><span class="se">\n</span><span class="s2">incorrect. Use at your own risk.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">"WARNING: Forcing space group not recommended, the "</span>
+                <span class="s2">"path is likely</span><span class="se">\n</span><span class="s2">incorrect. Use at your own risk.</span><span class="se">\n</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: Space group not recognised.&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"ERROR: Space group not recognised."</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">spg</span>
 </pre></div>

@@ -50,7 +50,7 @@ structure diagrams based on <code class="docutils literal notranslate"><span cla
 </li>
 <li><p><a class="reference internal" href="#command-line-interface" id="id9">Command-Line Interface</a></p>
 <ul>
-<li><p><a class="reference internal" href="#sumo.cli.phonon_bandplot-_get_parser-named-arguments" id="id10">Named Arguments</a></p></li>
+<li><p><a class="reference internal" href="#sumo-phonon-bandplot-named-arguments" id="id10">Named Arguments</a></p></li>
 </ul>
 </li>
 </ul>
@@ -123,18 +123,18 @@ SeeK-path <a class="reference internal" href="sumo.symmetry.html#seek" id="id2">
 This is controlled using the <code class="docutils literal notranslate"><span class="pre">--kpoints</span></code> option. The custom k-point path is specified
 as a string with commas separating the k-points.
 For example, to plot the band structure along <code class="docutils literal notranslate"><span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">-&gt;</span> <span class="pre">0.5</span> <span class="pre">0.5</span> <span class="pre">0.5</span></code>, the usage is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">&quot;0 0 0, 0.5 0.5 0.5&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">"0 0 0, 0.5 0.5 0.5"</span>
 </pre></div>
 </div>
 <p>Breaks in the band structure can be indicated using the pipe character.
 For example, the path <code class="docutils literal notranslate"><span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">-&gt;</span> <span class="pre">0.5</span> <span class="pre">0.5</span> <span class="pre">0.5</span> <span class="pre">|</span> <span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">0.</span> <span class="pre">-&gt;</span> <span class="pre">0.5</span> <span class="pre">0.</span> <span class="pre">0.</span></code>, is specified as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">&quot;0 0 0, 0.5 0.5 0.5 | 0 0 0, 0.5 0 0&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">"0 0 0, 0.5 0.5 0.5 | 0 0 0, 0.5 0 0"</span>
 </pre></div>
 </div>
 <p>Custom labels can also be provided using the <code class="docutils literal notranslate"><span class="pre">--labels</span></code> option. The syntax is the same as for the
 <code class="docutils literal notranslate"><span class="pre">--kpoints</span></code> option. For example, the labels for the above path are written as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">&quot;0 0 0, 0.5 0.5 0.5 | 0 0 0, 0.5 0 0&quot;</span> \
-                      <span class="o">--</span><span class="n">labels</span> <span class="s2">&quot;\Gamma, M | \Gamma, X&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">kpoints</span> <span class="s2">"0 0 0, 0.5 0.5 0.5 | 0 0 0, 0.5 0 0"</span> \
+                      <span class="o">--</span><span class="n">labels</span> <span class="s2">"\Gamma, M | \Gamma, X"</span>
 </pre></div>
 </div>
 <p>Note: in all cases the arguments are surrounded in parentheses.</p>
@@ -147,7 +147,7 @@ For example, the path <code class="docutils literal notranslate"><span class="pr
 structure diagrams</p>
 </div></blockquote>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">q</span> <span class="n">N</span> <span class="n">N</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">B</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span><span class="p">]</span>
+<div class="highlight-default notranslate" id="id0"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">phonon</span><span class="o">-</span><span class="n">bandplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">q</span> <span class="n">N</span> <span class="n">N</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">B</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span><span class="p">]</span>
                             <span class="p">[</span><span class="o">--</span><span class="n">dim</span> <span class="n">N</span> <span class="p">[</span><span class="n">N</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">poscar</span> <span class="n">POS</span><span class="p">]</span>
                             <span class="p">[</span><span class="o">--</span><span class="n">primitive</span><span class="o">-</span><span class="n">axis</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="n">M</span> <span class="o">|</span>
                             <span class="o">--</span><span class="n">primitive</span><span class="o">-</span><span class="n">auto</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">symprec</span> <span class="n">SYMPREC</span><span class="p">]</span>
@@ -163,8 +163,8 @@ structure diagrams</p>
                             <span class="p">[</span><span class="o">--</span><span class="n">to</span><span class="o">-</span><span class="n">web</span> <span class="n">TO_WEB</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">legend</span> <span class="p">[</span><span class="n">LEGEND</span> <span class="o">...</span><span class="p">]]</span>
 </pre></div>
 </div>
-<section id="sumo.cli.phonon_bandplot-_get_parser-named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#sumo.cli.phonon_bandplot-_get_parser-named-arguments" title="Link to this heading">¶</a></h3>
+<section id="sumo-phonon-bandplot-named-arguments">
+<span id="sumo.cli.phonon_bandplot-_get_parser-named-arguments"></span><h3>Named Arguments<a class="headerlink" href="#sumo-phonon-bandplot-named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filename</kbd></dt>
 <dd><p>FORCE_SETS, FORCE_CONSTANTS or band.yaml file</p>

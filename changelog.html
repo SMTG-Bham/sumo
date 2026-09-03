@@ -35,6 +35,45 @@
             
   <section id="change-log">
 <h1>Change Log<a class="headerlink" href="#change-log" title="Link to this heading">¶</a></h1>
+<section id="unreleased">
+<h2>Unreleased<a class="headerlink" href="#unreleased" title="Link to this heading">¶</a></h2>
+<p>Requirements:</p>
+<ul class="simple">
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">castepxbin&lt;1.0</span></code> upper bound on the castepxbin dependency;
+<code class="docutils literal notranslate"><span class="pre">castepxbin&gt;=0.3.1</span></code> is now required.
+(&#64;LouieSlocombe, <a class="reference external" href="https://github.com/SMTG-Bham/sumo/pull/280">https://github.com/SMTG-Bham/sumo/pull/280</a>, closes #279)</p></li>
+<li><p>Bump minimum NumPy version to 2.0 and minimum SciPy version to 1.13.
+NumPy 1.x is no longer supported. (&#64;LouieSlocombe, #280)</p></li>
+</ul>
+<p>Bugfixes:</p>
+<ul class="simple">
+<li><p>Fix a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> when reading spin-polarised (seven-column) Questaal
+<code class="docutils literal notranslate"><span class="pre">opt</span></code> files with <code class="docutils literal notranslate"><span class="pre">dielectric_from_opt()</span></code>: the two spin channels are now
+summed correctly and the energy column is retained. Regression tests added
+for spin-polarised files, for equivalence with pre-summed input, and for
+files with an unexpected number of columns. (&#64;LouieSlocombe, #280)</p></li>
+</ul>
+<p>Maintenance:</p>
+<ul class="simple">
+<li><p>Modernise NumPy and SciPy usage in the effective-mass, optics, CASTEP and
+k-point generation code: parabolic effective-mass fitting uses
+<code class="docutils literal notranslate"><span class="pre">numpy.polynomial.Polynomial</span></code>, dielectric broadening and the
+Kramers-Kronig transformation are vectorised, k-point interpolation and
+array conversions are simplified, and the deprecated
+<code class="docutils literal notranslate"><span class="pre">scipy.ndimage.filters</span></code> import is replaced with <code class="docutils literal notranslate"><span class="pre">scipy.ndimage</span></code>.
+(&#64;LouieSlocombe, #280)</p></li>
+<li><p>Replace the Black, Flake8, isort and autoflake pre-commit hooks with Ruff
+(check and format), enabling Ruff’s NumPy-specific rules so that APIs
+removed in NumPy 2 are not reintroduced. Apply the resulting formatting and
+import clean-up across the source and test files. (&#64;LouieSlocombe, #280)</p></li>
+<li><p>CI: add a dedicated lint job running the pre-commit hooks, expand the test
+matrix to Python 3.10-3.14, add a job testing against the minimum supported
+NumPy and SciPy versions, and update the GitHub Actions versions and pip
+cache configuration. (&#64;LouieSlocombe, #280)</p></li>
+<li><p>Add Python 3.11-3.14 classifiers to the packaging metadata and update the
+intersphinx links in the documentation. (&#64;LouieSlocombe, #280)</p></li>
+</ul>
+</section>
 <section id="v2-4-0">
 <h2>v2.4.0<a class="headerlink" href="#v2-4-0" title="Link to this heading">¶</a></h2>
 <p>Requirements:</p>
@@ -464,6 +503,7 @@ Enables plots to be customised based on user settings.</p>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-4-0">v2.4.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-3-11">v2.3.11</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v2-3-10">v2.3.10</a></li>

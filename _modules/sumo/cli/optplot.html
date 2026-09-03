@@ -34,9 +34,9 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">A script to calculate and plot optical spectra from ab initio calculations.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -48,7 +48,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
 
-<span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">"Agg"</span><span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.io.vasp</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vasprun</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pymatgen.util.string</span><span class="w"> </span><span class="kn">import</span> <span class="n">latexify</span>
@@ -61,19 +61,19 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">sumo.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">questaal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sumo.plotting.optics_plotter</span><span class="w"> </span><span class="kn">import</span> <span class="n">SOpticsPlotter</span>
 
-<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Alex Ganose&quot;</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
-<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Alex Ganose&quot;</span>
-<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;alexganose@googlemail.com&quot;</span>
-<span class="n">__date__</span> <span class="o">=</span> <span class="s2">&quot;Jan 10, 2018&quot;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">"Alex Ganose"</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">"1.0"</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">"Alex Ganose"</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">"alexganose@googlemail.com"</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s2">"Jan 10, 2018"</span>
 
 
 <div class="viewcode-block" id="optplot">
 <a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.optplot.optplot">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">optplot</span><span class="p">(</span>
-    <span class="n">modes</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;absorption&quot;</span><span class="p">,),</span>
+    <span class="n">modes</span><span class="o">=</span><span class="p">(</span><span class="s2">"absorption"</span><span class="p">,),</span>
     <span class="n">filenames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">codes</span><span class="o">=</span><span class="s2">&quot;vasp&quot;</span><span class="p">,</span>
+    <span class="n">codes</span><span class="o">=</span><span class="s2">"vasp"</span><span class="p">,</span>
     <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">gaussian</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -89,19 +89,19 @@
     <span class="n">colours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">no_base_style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">image_format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
+    <span class="n">image_format</span><span class="o">=</span><span class="s2">"pdf"</span><span class="p">,</span>
     <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
     <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;eV&quot;</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">"eV"</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A script to plot optical absorption spectra from VASP calculations.</span>
+<span class="w">    </span><span class="sd">"""A script to plot optical absorption spectra from VASP calculations.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        modes (:obj:`list` or :obj:`tuple`):</span>
 <span class="sd">            Ordered list of :obj:`str` determining properties to plot.</span>
-<span class="sd">            Accepted options are &#39;absorption&#39; (default), &#39;eps_real&#39;,</span>
-<span class="sd">            &#39;eps_imag&#39;, &#39;n_real&#39;, &#39;n_imag&#39;, &#39;loss&#39; (equivalent to n_imag).</span>
+<span class="sd">            Accepted options are 'absorption' (default), 'eps_real',</span>
+<span class="sd">            'eps_imag', 'n_real', 'n_imag', 'loss' (equivalent to n_imag).</span>
 <span class="sd">        filenames (:obj:`str` or :obj:`list`, optional): Path to data file.</span>
 <span class="sd">            For VASP this is a *vasprun.xml* file (can be gzipped); for</span>
 <span class="sd">            Questaal the *opt.ext* file from *lmf* or *eps_BSE.out* from</span>
@@ -110,7 +110,7 @@
 <span class="sd">            provided, in which case the absorption spectra for each will be</span>
 <span class="sd">            plotted concurrently.</span>
 <span class="sd">        codes (:obj:`str` or :obj:`list`, optional): Original</span>
-<span class="sd">            calculator. Accepted values are &#39;vasp&#39; and &#39;questaal&#39;. Items should</span>
+<span class="sd">            calculator. Accepted values are 'vasp' and 'questaal'. Items should</span>
 <span class="sd">            correspond to filenames.</span>
 <span class="sd">        prefix (:obj:`str`, optional): Prefix for file names.</span>
 <span class="sd">        directory (:obj:`str`, optional): The directory in which to save files.</span>
@@ -151,37 +151,37 @@
 <span class="sd">        fonts (:obj:`list`, optional): Fonts to use in the plot. Can be a</span>
 <span class="sd">            a single font, specified as a :obj:`str`, or several fonts,</span>
 <span class="sd">            specified as a :obj:`list` of :obj:`str`.</span>
-<span class="sd">        units (:obj:`str`, optional): X-axis units for the plot. &#39;eV&#39; for</span>
-<span class="sd">           energy in electronvolts or &#39;nm&#39; for wavelength in nanometers.</span>
-<span class="sd">           Defaults to &#39;eV&#39;.</span>
+<span class="sd">        units (:obj:`str`, optional): X-axis units for the plot. 'eV' for</span>
+<span class="sd">           energy in electronvolts or 'nm' for wavelength in nanometers.</span>
+<span class="sd">           Defaults to 'eV'.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A matplotlib pyplot object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="c1"># Don&#39;t write files if this is being done to manipulate existing plt</span>
+    <span class="c1"># Don't write files if this is being done to manipulate existing plt</span>
     <span class="n">save_files</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">plt</span> <span class="k">else</span> <span class="kc">True</span>
 
     <span class="c1"># BUILD LIST OF FILES AUTOMATICALLY IF NECESSARY</span>
 
-    <span class="k">if</span> <span class="n">codes</span> <span class="o">==</span> <span class="s2">&quot;vasp&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">codes</span> <span class="o">==</span> <span class="s2">"vasp"</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filenames</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;vasprun.xml&quot;</span><span class="p">):</span>
-                <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vasprun.xml&quot;</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;vasprun.xml.gz&quot;</span><span class="p">):</span>
-                <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vasprun.xml.gz&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">"vasprun.xml"</span><span class="p">):</span>
+                <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"vasprun.xml"</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">"vasprun.xml.gz"</span><span class="p">):</span>
+                <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"vasprun.xml.gz"</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: No vasprun.xml found!&quot;</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"ERROR: No vasprun.xml found!"</span><span class="p">)</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
-    <span class="k">elif</span> <span class="n">codes</span> <span class="o">==</span> <span class="s2">&quot;questaal&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">codes</span> <span class="o">==</span> <span class="s2">"questaal"</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">filenames</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;opt.*&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">filenames</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="s2">&quot;opt.*&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="s2">"opt.*"</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">filenames</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="s2">"opt.*"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found optics file: &quot;</span> <span class="o">+</span> <span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Found optics file: "</span> <span class="o">+</span> <span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Found optics files: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filenames</span><span class="p">))</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Found optics files: "</span> <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filenames</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">filenames</span><span class="p">]</span>
@@ -197,42 +197,42 @@
     <span class="n">auto_labels</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">auto_band_gaps</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="n">codes</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;vasp&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="s2">"vasp"</span><span class="p">:</span>
             <span class="n">vr</span> <span class="o">=</span> <span class="n">Vasprun</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
             <span class="n">dielectrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vr</span><span class="o">.</span><span class="n">dielectric</span><span class="p">)</span>
 
             <span class="n">auto_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">latexify</span><span class="p">(</span><span class="n">vr</span><span class="o">.</span><span class="n">final_structure</span><span class="o">.</span><span class="n">composition</span><span class="o">.</span><span class="n">reduced_formula</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                    <span class="s2">&quot;$_&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;$_\mathregular&quot;</span>
+                    <span class="s2">"$_"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">"$_\mathregular"</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">band_gaps</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">band_gaps</span><span class="p">:</span>
                 <span class="c1"># band_gaps = [], auto band gap requested</span>
-                <span class="n">auto_band_gaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vr</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">()</span><span class="o">.</span><span class="n">get_band_gap</span><span class="p">()[</span><span class="s2">&quot;energy&quot;</span><span class="p">])</span>
+                <span class="n">auto_band_gaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vr</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">()</span><span class="o">.</span><span class="n">get_band_gap</span><span class="p">()[</span><span class="s2">"energy"</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">auto_band_gaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="s2">&quot;questaal&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="s2">"questaal"</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">save_files</span><span class="p">:</span>
                 <span class="n">out_filename</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">out_filename</span> <span class="o">=</span> <span class="s2">&quot;dielectric.dat&quot;</span>
+                <span class="n">out_filename</span> <span class="o">=</span> <span class="s2">"dielectric.dat"</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">out_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;dielectric_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">.dat&quot;</span>
+                <span class="n">out_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"dielectric_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">.dat"</span>
 
             <span class="n">dielectrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">questaal</span><span class="o">.</span><span class="n">dielectric_from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">out_filename</span><span class="p">))</span>
 
             <span class="n">auto_band_gaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-            <span class="n">auto_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">auto_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">band_gaps</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">band_gaps</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="s2">&quot;Bandgap requested but not supported for Questaal&quot;</span>
-                    <span class="s2">&quot; file </span><span class="si">{}</span><span class="s2">: skipping...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                    <span class="s2">"Bandgap requested but not supported for Questaal"</span>
+                    <span class="s2">" file </span><span class="si">{}</span><span class="s2">: skipping..."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
                 <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Code selection &quot;</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s1">&quot; not recognised&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Code selection "</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s1">" not recognised'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">labels</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="n">auto_labels</span>
@@ -252,7 +252,7 @@
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dielectrics</span><span class="p">:</span>
         <span class="c1"># TODO: add support for other eigs and full modes</span>
         <span class="n">energies</span><span class="p">,</span> <span class="n">properties</span> <span class="o">=</span> <span class="n">calculate_dielectric_properties</span><span class="p">(</span>
-            <span class="n">d</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">modes</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;average&quot;</span> <span class="k">if</span> <span class="n">average</span> <span class="k">else</span> <span class="s2">&quot;trace&quot;</span>
+            <span class="n">d</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">modes</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"average"</span> <span class="k">if</span> <span class="n">average</span> <span class="k">else</span> <span class="s2">"trace"</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">mode</span><span class="p">,</span> <span class="n">spectrum</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">abs_data</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">energies</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">))</span>
@@ -267,12 +267,12 @@
                 <span class="k">pass</span>
             <span class="k">elif</span> <span class="n">_floatable</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
                 <span class="n">band_gaps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="s2">&quot;vasprun&quot;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="s2">"vasprun"</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
                 <span class="n">band_gaps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">Vasprun</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">()</span><span class="o">.</span><span class="n">get_band_gap</span><span class="p">()[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
+                    <span class="n">Vasprun</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">()</span><span class="o">.</span><span class="n">get_band_gap</span><span class="p">()[</span><span class="s2">"energy"</span><span class="p">]</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Format not recognised for auto bandgap: </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Format not recognised for auto bandgap: </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 
     <span class="n">plotter</span> <span class="o">=</span> <span class="n">SOpticsPlotter</span><span class="p">(</span><span class="n">abs_data</span><span class="p">,</span> <span class="n">band_gap</span><span class="o">=</span><span class="n">band_gaps</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
     <span class="n">plt</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">get_plot</span><span class="p">(</span>
@@ -292,16 +292,16 @@
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">save_files</span><span class="p">:</span>
-        <span class="n">basename</span> <span class="o">=</span> <span class="s2">&quot;absorption&quot;</span>
+        <span class="n">basename</span> <span class="o">=</span> <span class="s2">"absorption"</span>
         <span class="k">if</span> <span class="n">prefix</span><span class="p">:</span>
-            <span class="n">basename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">image_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">image_format</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">basename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">image_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">image_format</span><span class="si">}</span><span class="s2">"</span>
 
         <span class="k">if</span> <span class="n">directory</span><span class="p">:</span>
             <span class="n">image_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">image_filename</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">image_filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">image_format</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">mode</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">abs_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">basename</span> <span class="o">=</span> <span class="s2">&quot;absorption&quot;</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;abs&quot;</span> <span class="k">else</span> <span class="n">mode</span>
+            <span class="n">basename</span> <span class="o">=</span> <span class="s2">"absorption"</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">"abs"</span> <span class="k">else</span> <span class="n">mode</span>
             <span class="n">write_files</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">basename</span><span class="o">=</span><span class="n">basename</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">directory</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">plt</span></div>
@@ -309,7 +309,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_floatable</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if an item can be intepreted with float()&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Check if an item can be intepreted with float()"""</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -319,142 +319,142 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_parser</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    optplot is a script to produce optical absorption spectra diagrams&quot;&quot;&quot;</span><span class="p">,</span>
-        <span class="n">epilog</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"""</span>
+<span class="s2">    optplot is a script to produce optical absorption spectra diagrams"""</span><span class="p">,</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">    Author: </span><span class="si">{</span><span class="n">__author__</span><span class="si">}</span>
 <span class="s2">    Version: </span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span>
-<span class="s2">    Last updated: </span><span class="si">{</span><span class="n">__date__</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="s2">    Last updated: </span><span class="si">{</span><span class="n">__date__</span><span class="si">}</span><span class="s2">"""</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;mode&quot;</span><span class="p">,</span>
+        <span class="s2">"mode"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;absorption&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;M&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;absorption&quot;</span><span class="p">,</span> <span class="s2">&quot;loss&quot;</span><span class="p">,</span> <span class="s2">&quot;eps_real&quot;</span><span class="p">,</span> <span class="s2">&quot;eps_imag&quot;</span><span class="p">,</span> <span class="s2">&quot;n_real&quot;</span><span class="p">,</span> <span class="s2">&quot;n_imag&quot;</span><span class="p">},</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optical properties to plot. Multiple choices &quot;</span>
-        <span class="s2">&quot; will be displayed as subplots. Accepted values:&quot;</span>
-        <span class="s1">&#39; &quot;absorption&quot; (optical absorption over distance)&#39;</span>
-        <span class="s1">&#39;, &quot;loss&quot; (energy-loss function -Im(1/eps)), &#39;</span>
-        <span class="s1">&#39;&quot;eps_real&quot; and &quot;eps_imag&quot; (real and imaginary &#39;</span>
-        <span class="s2">&quot;parts of the dielectric function), &quot;</span>
-        <span class="s1">&#39;&quot;n_real&quot; (real part of complex refractive index)&#39;</span>
-        <span class="s1">&#39;&quot;n_imag&quot; (imaginary part of RI, also known as &#39;</span>
-        <span class="s2">&quot;the extinction coefficient kappa.)&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"*"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"absorption"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"M"</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">{</span><span class="s2">"absorption"</span><span class="p">,</span> <span class="s2">"loss"</span><span class="p">,</span> <span class="s2">"eps_real"</span><span class="p">,</span> <span class="s2">"eps_imag"</span><span class="p">,</span> <span class="s2">"n_real"</span><span class="p">,</span> <span class="s2">"n_imag"</span><span class="p">},</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Optical properties to plot. Multiple choices "</span>
+        <span class="s2">" will be displayed as subplots. Accepted values:"</span>
+        <span class="s1">' "absorption" (optical absorption over distance)'</span>
+        <span class="s1">', "loss" (energy-loss function -Im(1/eps)), '</span>
+        <span class="s1">'"eps_real" and "eps_imag" (real and imaginary '</span>
+        <span class="s2">"parts of the dielectric function), "</span>
+        <span class="s1">'"n_real" (real part of complex refractive index)'</span>
+        <span class="s1">'"n_imag" (imaginary part of RI, also known as '</span>
+        <span class="s2">"the extinction coefficient kappa.)"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--filenames&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to one or more vasprun.xml files&quot;</span><span class="p">,</span>
+        <span class="s2">"-f"</span><span class="p">,</span>
+        <span class="s2">"--filenames"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"F"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"path to one or more vasprun.xml files"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--prefix&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;prefix for the files generated&quot;</span>
+        <span class="s2">"-p"</span><span class="p">,</span> <span class="s2">"--prefix"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"P"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"prefix for the files generated"</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--directory&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output directory for files&quot;</span>
+        <span class="s2">"-d"</span><span class="p">,</span> <span class="s2">"--directory"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"output directory for files"</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--code&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;vasp&quot;</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Original calculator. Accepted values are &quot;</span> <span class="s1">&#39;&quot;vasp&quot; and &quot;questaal&quot;.&#39;</span><span class="p">),</span>
+        <span class="s2">"-c"</span><span class="p">,</span>
+        <span class="s2">"--code"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"C"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"vasp"</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">'Original calculator. Accepted values are "vasp" and "questaal".'</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-g&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--gaussian&quot;</span><span class="p">,</span>
+        <span class="s2">"-g"</span><span class="p">,</span>
+        <span class="s2">"--gaussian"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;G&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;standard deviation of gaussian broadening&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"G"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"standard deviation of gaussian broadening"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-b&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--bandgaps&quot;</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;E&quot;</span><span class="p">,</span>
+        <span class="s2">"-b"</span><span class="p">,</span>
+        <span class="s2">"--bandgaps"</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"*"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"E"</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;indicate the fundamental band gap (options: &quot;</span>
-            <span class="s2">&quot;nothing, vasprun.xml file, or float). A &quot;</span>
-            <span class="s2">&quot;sequence of files and values may be provided, &quot;</span>
-            <span class="s2">&quot;corresponding to the optical data files. &quot;</span>
-            <span class="s2">&quot;To skip a line, set a value outside the plot &quot;</span>
-            <span class="s2">&quot;range (e.g. -1).&quot;</span>
+            <span class="s2">"indicate the fundamental band gap (options: "</span>
+            <span class="s2">"nothing, vasprun.xml file, or float). A "</span>
+            <span class="s2">"sequence of files and values may be provided, "</span>
+            <span class="s2">"corresponding to the optical data files. "</span>
+            <span class="s2">"To skip a line, set a value outside the plot "</span>
+            <span class="s2">"range (e.g. -1)."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-l&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--labels&quot;</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;labels for the absorption specta&quot;</span><span class="p">,</span>
+        <span class="s2">"-l"</span><span class="p">,</span>
+        <span class="s2">"--labels"</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"L"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"labels for the absorption specta"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-a&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--anisotropic&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_false&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;separate spectra into to x, y, and z directions&quot;</span><span class="p">,</span>
+        <span class="s2">"-a"</span><span class="p">,</span>
+        <span class="s2">"--anisotropic"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_false"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"separate spectra into to x, y, and z directions"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--height&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;height of the graph&quot;</span>
+        <span class="s2">"--height"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"height of the graph"</span>
     <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--width&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;width of the graph&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--width"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"width of the graph"</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--xmin&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;minimum energy on the x-axis&quot;</span>
-    <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--xmax&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;maximum energy on the x-axis&quot;</span>
+        <span class="s2">"--xmin"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"minimum energy on the x-axis"</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--ymin&quot;</span><span class="p">,</span>
+        <span class="s2">"--xmax"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"maximum energy on the x-axis"</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"--ymin"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">],</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;minimum intensity on the y-axis; may specify &quot;</span>
-        <span class="s2">&quot;multiple values if plotting more than one axis. &quot;</span>
-        <span class="s1">&#39;Use &quot;auto&quot; or &quot;_&quot; for automatic value.&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">"auto"</span><span class="p">],</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"minimum intensity on the y-axis; may specify "</span>
+        <span class="s2">"multiple values if plotting more than one axis. "</span>
+        <span class="s1">'Use "auto" or "_" for automatic value.'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--ymax&quot;</span><span class="p">,</span>
+        <span class="s2">"--ymax"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">],</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;maximum intensity on the y-axis; may specify&quot;</span>
-        <span class="s2">&quot;multiple values if plotting more than one axis. &quot;</span>
-        <span class="s1">&#39;Use &quot;auto&quot; or &quot;_&quot; for automatic value.&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">"auto"</span><span class="p">],</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"maximum intensity on the y-axis; may specify"</span>
+        <span class="s2">"multiple values if plotting more than one axis. "</span>
+        <span class="s1">'Use "auto" or "_" for automatic value.'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--style&quot;</span><span class="p">,</span>
+        <span class="s2">"--style"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;matplotlib style specifications&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"matplotlib style specifications"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--no-base-style&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;no_base_style&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;prevent use of sumo base style&quot;</span><span class="p">,</span>
+        <span class="s2">"--no-base-style"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">"no_base_style"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"prevent use of sumo base style"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--format&quot;</span><span class="p">,</span>
+        <span class="s2">"--format"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;image_format&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FORMAT&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;image file format (options: pdf, svg, jpg, png)&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"pdf"</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">"image_format"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"FORMAT"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"image file format (options: pdf, svg, jpg, png)"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--dpi&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;pixel density for image file&quot;</span>
+        <span class="s2">"--dpi"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"pixel density for image file"</span>
     <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--font&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;font to use&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--font"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"font to use"</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--units&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;eV&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;x-axis units (options: eV or nm)&quot;</span>
+        <span class="s2">"--units"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"eV"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"x-axis units (options: eV or nm)"</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span>
 
@@ -463,26 +463,26 @@
     <span class="n">args</span> <span class="o">=</span> <span class="n">_get_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
-        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;sumo-optplot.log&quot;</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">"sumo-optplot.log"</span><span class="p">,</span>
         <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
-        <span class="n">filemode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">filemode</span><span class="o">=</span><span class="s2">"w"</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">console</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[:]))</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[:]))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
 
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">)</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UnicodeWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">)</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;pymatgen&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">"matplotlib"</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UnicodeWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">"matplotlib"</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">"pymatgen"</span><span class="p">)</span>
 
     <span class="c1"># Wrap mode into list if necessary</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">args</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="p">]</span>
 
     <span class="c1"># Replace text placeholders with preferred Python representation: None</span>
-    <span class="n">ymin</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">))</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">ymin</span><span class="p">]</span>
-    <span class="n">ymax</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">))</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">ymax</span><span class="p">]</span>
+    <span class="n">ymin</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"auto"</span><span class="p">,</span> <span class="s2">"_"</span><span class="p">))</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">ymin</span><span class="p">]</span>
+    <span class="n">ymax</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">if</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"auto"</span><span class="p">,</span> <span class="s2">"_"</span><span class="p">))</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">ymax</span><span class="p">]</span>
 
     <span class="c1"># Settings should be list corresponding to n_plots, or value for all</span>
     <span class="n">ymin</span> <span class="o">=</span> <span class="n">ymin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ymin</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">ymin</span>
@@ -514,7 +514,7 @@
     <span class="p">)</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 

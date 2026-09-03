@@ -34,7 +34,7 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">A script to plot phonon band structure diagrams.</span>
 
 <span class="sd">TODO:</span>
@@ -44,7 +44,7 @@
 <span class="sd"> * Read force_constants.hdf5</span>
 <span class="sd"> * read settings from phonopy config file</span>
 <span class="sd"> * prefix file names</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
@@ -56,10 +56,10 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;h5py&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">"h5py"</span><span class="p">)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
 
-<span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">"Agg"</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rcParams</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">phonopy.units</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AMU</span><span class="p">,</span>
@@ -81,11 +81,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">sumo.plotting.phonon_bs_plotter</span><span class="w"> </span><span class="kn">import</span> <span class="n">SPhononBSPlotter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sumo.symmetry.kpoints</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_path_data</span>
 
-<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Alex Ganose&quot;</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
-<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">&quot;Alex Ganose&quot;</span>
-<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;alexganose@googlemail.com&quot;</span>
-<span class="n">__date__</span> <span class="o">=</span> <span class="s2">&quot;Jan 17, 2018&quot;</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">"Alex Ganose"</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">"1.0"</span>
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s2">"Alex Ganose"</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">"alexganose@googlemail.com"</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s2">"Jan 17, 2018"</span>
 
 <span class="n">VaspToEv</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">EV</span> <span class="o">/</span> <span class="n">AMU</span><span class="p">)</span> <span class="o">/</span> <span class="n">Angstrom</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">PlanckConstant</span>  <span class="c1"># [eV] 6.46541380e-2</span>
 <span class="n">VaspToCm</span> <span class="o">=</span> <span class="n">VaspToTHz</span> <span class="o">*</span> <span class="n">THzToCm</span>  <span class="c1"># [cm^-1] 521.47083</span>
@@ -104,9 +104,9 @@
     <span class="n">spg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">primitive_axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">line_density</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
-    <span class="n">units</span><span class="o">=</span><span class="s2">&quot;THz&quot;</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="s2">"THz"</span><span class="p">,</span>
     <span class="n">symprec</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bradcrack&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"bradcrack"</span><span class="p">,</span>
     <span class="n">kpt_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">eigenvectors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -116,7 +116,7 @@
     <span class="n">no_base_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">ymin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">ymax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">image_format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
+    <span class="n">image_format</span><span class="o">=</span><span class="s2">"pdf"</span><span class="p">,</span>
     <span class="n">dpi</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
     <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">fonts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -126,7 +126,7 @@
     <span class="n">to_web</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A script to plot phonon band structure diagrams.</span>
+<span class="w">    </span><span class="sd">"""A script to plot phonon band structure diagrams.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        filename (str): Path to phonopy output. Can be a band structure yaml</span>
@@ -148,12 +148,12 @@
 <span class="sd">        spg (:obj:`str` or :obj:`int`, optional): The space group international</span>
 <span class="sd">            number or symbol to override the symmetry determined by spglib.</span>
 <span class="sd">            This is not recommended and only provided for testing purposes.</span>
-<span class="sd">            This option will only take effect when ``mode = &#39;bradcrack&#39;``.</span>
+<span class="sd">            This option will only take effect when ``mode = 'bradcrack'``.</span>
 <span class="sd">        primitive_axis (:obj:`list` or :obj:`str`, optional): The</span>
 <span class="sd">            transformation matrix from the conventional to primitive cell. Only</span>
 <span class="sd">            required when the conventional cell was used as the starting</span>
 <span class="sd">            structure. Should be provided as a 3x3 :obj:`list` of</span>
-<span class="sd">            :obj:`float`. Alternatively the string &#39;auto&#39; may be used to</span>
+<span class="sd">            :obj:`float`. Alternatively the string 'auto' may be used to</span>
 <span class="sd">            request that a primitive matrix is determined automatically.</span>
 <span class="sd">        line_density (:obj:`int`, optional): Density of k-points along the</span>
 <span class="sd">            path.</span>
@@ -186,7 +186,7 @@
 <span class="sd">            be provided as a :obj:`list` of :obj:`str` for each subpath of the</span>
 <span class="sd">            overall path. For example::</span>
 
-<span class="sd">                [ [&#39;Gamma&#39;, &#39;Z&#39;], [&#39;X&#39;, &#39;M&#39;] ]</span>
+<span class="sd">                [ ['Gamma', 'Z'], ['X', 'M'] ]</span>
 
 <span class="sd">            combined with the above example for ``kpt_list`` would indicate the</span>
 <span class="sd">            path: Gamma -&gt; Z | X -&gt; M. If no labels are provided, letters from</span>
@@ -219,14 +219,14 @@
 <span class="sd">        to_web (:obj:`str`, optional): JSON file to write data for</span>
 <span class="sd">            visualisation with http://henriquemiranda.github.io/phononwebsite</span>
 <span class="sd">        legend (:obj:`list` or :obj:`None`, optional): Legend labels. If None,</span>
-<span class="sd">            don&#39;t add a legend. With a list length equal to from_json, label</span>
+<span class="sd">            don't add a legend. With a list length equal to from_json, label</span>
 <span class="sd">            json inputs only. With one extra list entry, label all lines</span>
 <span class="sd">            beginning with new plot.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A matplotlib pyplot object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">save_files</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">plt</span> <span class="k">else</span> <span class="kc">True</span>  <span class="c1"># don&#39;t save if pyplot object provided</span>
+<span class="sd">    """</span>
+    <span class="n">save_files</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">plt</span> <span class="k">else</span> <span class="kc">True</span>  <span class="c1"># don't save if pyplot object provided</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">from_json</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">from_json</span> <span class="o">=</span> <span class="p">[</span><span class="n">from_json</span><span class="p">]</span>
 
@@ -236,11 +236,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">eigenvectors</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="n">eigenvectors</span> <span class="ow">and</span> <span class="n">to_web</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot set eigenvectors=False and write web JSON&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Cannot set eigenvectors=False and write web JSON"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">from_json</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;FORCE_SETS&quot;</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s2">"FORCE_SETS"</span>
             <span class="n">bs</span><span class="p">,</span> <span class="n">phonon</span> <span class="o">=</span> <span class="n">_bs_from_filename</span><span class="p">(</span>
                 <span class="n">filename</span><span class="p">,</span>
                 <span class="n">poscar</span><span class="p">,</span>
@@ -258,7 +258,7 @@
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No input data, using file </span><span class="si">{</span><span class="n">from_json</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> to construct plot&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No input data, using file </span><span class="si">{</span><span class="n">from_json</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> to construct plot"</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">from_json</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">bs</span> <span class="o">=</span> <span class="n">PhononBandStructureSymmLine</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
             <span class="n">from_json</span> <span class="o">=</span> <span class="n">from_json</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
@@ -281,22 +281,22 @@
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">to_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing symmetry lines to </span><span class="si">{</span><span class="n">to_json</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">to_json</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Writing symmetry lines to </span><span class="si">{</span><span class="n">to_json</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">to_json</span><span class="p">,</span> <span class="s2">"wt"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bs</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
 
     <span class="k">if</span> <span class="n">to_web</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing visualisation JSON to </span><span class="si">{</span><span class="n">to_web</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Writing visualisation JSON to </span><span class="si">{</span><span class="n">to_web</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">bs</span><span class="o">.</span><span class="n">write_phononwebsite</span><span class="p">(</span><span class="n">to_web</span><span class="p">)</span>
 
     <span class="c1"># Replace dos filename with data array</span>
     <span class="k">if</span> <span class="n">dos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">phonon</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot use phonon DOS without Phonopy&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Cannot use phonon DOS without Phonopy"</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">dos</span><span class="p">):</span>
-            <span class="n">dos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+            <span class="n">dos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">dos</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="s2">"#"</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">dos</span><span class="p">:</span>
             <span class="n">phonon</span><span class="o">.</span><span class="n">set_mesh</span><span class="p">(</span>
                 <span class="n">qmesh</span><span class="p">,</span>
@@ -326,15 +326,15 @@
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">save_files</span><span class="p">:</span>
-        <span class="n">basename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;phonon_band.</span><span class="si">{</span><span class="n">image_format</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="n">basename</span>
+        <span class="n">basename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"phonon_band.</span><span class="si">{</span><span class="n">image_format</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="n">basename</span>
 
         <span class="k">if</span> <span class="n">directory</span><span class="p">:</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dpi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">dpi</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.dpi&quot;</span><span class="p">]</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">image_format</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+            <span class="n">dpi</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.dpi"</span><span class="p">]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">image_format</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">"tight"</span><span class="p">)</span>
 
         <span class="n">filename</span> <span class="o">=</span> <span class="n">save_data_files</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">directory</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">filename</span>
@@ -346,7 +346,7 @@
 <div class="viewcode-block" id="save_data_files">
 <a class="viewcode-back" href="../../../sumo.cli.html#sumo.cli.phonon_bandplot.save_data_files">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">save_data_files</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the phonon band structure data files to disk.</span>
+<span class="w">    </span><span class="sd">"""Write the phonon band structure data files to disk.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        bs (:obj:`~pymatgen.phonon.bandstructure.PhononBandStructureSymmLine`):</span>
@@ -356,20 +356,20 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: The filename of the written data file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;phonon_band.dat&quot;</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_phonon_band.dat&quot;</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="n">filename</span>
-    <span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span> <span class="k">if</span> <span class="n">directory</span> <span class="k">else</span> <span class="s2">&quot;.&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s2">"phonon_band.dat"</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_phonon_band.dat"</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="n">filename</span>
+    <span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span> <span class="k">if</span> <span class="n">directory</span> <span class="k">else</span> <span class="s2">"."</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;#k-distance frequency[THz]</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">"#k-distance frequency[THz]</span><span class="se">\n</span><span class="s2">"</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">bs</span><span class="o">.</span><span class="n">bands</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bs</span><span class="o">.</span><span class="n">distance</span><span class="p">,</span> <span class="n">band</span><span class="p">):</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">d</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">e</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">d</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">e</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">filename</span></div>
 
@@ -390,45 +390,45 @@
     <span class="n">eigenvectors</span><span class="p">,</span>
     <span class="n">line_density</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analyse input files to create band structure&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Analyse input files to create band structure"""</span>
 
-    <span class="k">if</span> <span class="s2">&quot;.yaml&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">".yaml"</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Reading pre-computed band structure from </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">. &quot;</span>
-            <span class="s2">&quot;Be aware that many phonon-bandplot options will not &quot;</span>
-            <span class="s2">&quot;be relevant.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Reading pre-computed band structure from </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">. "</span>
+            <span class="s2">"Be aware that many phonon-bandplot options will not "</span>
+            <span class="s2">"be relevant."</span>
         <span class="p">)</span>
         <span class="n">yaml_file</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="n">phonon</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">poscar</span> <span class="o">=</span> <span class="n">poscar</span> <span class="k">if</span> <span class="n">poscar</span> <span class="k">else</span> <span class="s2">&quot;POSCAR&quot;</span>
+            <span class="n">poscar</span> <span class="o">=</span> <span class="n">poscar</span> <span class="k">if</span> <span class="n">poscar</span> <span class="k">else</span> <span class="s2">"POSCAR"</span>
             <span class="n">poscar</span> <span class="o">=</span> <span class="n">Poscar</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">poscar</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Cannot find POSCAR file, cannot generate symmetry path.&quot;</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Cannot find POSCAR file, cannot generate symmetry path."</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
     <span class="k">elif</span> <span class="p">(</span>
-        <span class="s2">&quot;FORCE_SETS&quot;</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s2">&quot;FORCE_CONSTANTS&quot;</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s2">&quot;.hdf5&quot;</span> <span class="ow">in</span> <span class="n">filename</span>
+        <span class="s2">"FORCE_SETS"</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s2">"FORCE_CONSTANTS"</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s2">".hdf5"</span> <span class="ow">in</span> <span class="n">filename</span>
     <span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">poscar</span> <span class="o">=</span> <span class="n">poscar</span> <span class="k">if</span> <span class="n">poscar</span> <span class="k">else</span> <span class="s2">&quot;POSCAR&quot;</span>
+            <span class="n">poscar</span> <span class="o">=</span> <span class="n">poscar</span> <span class="k">if</span> <span class="n">poscar</span> <span class="k">else</span> <span class="s2">"POSCAR"</span>
             <span class="n">poscar</span> <span class="o">=</span> <span class="n">Poscar</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">poscar</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Cannot find POSCAR file, cannot generate symmetry path.&quot;</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Cannot find POSCAR file, cannot generate symmetry path."</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dim</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="s2">&quot;Supercell size (--dim option) not provided.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot;Attempting to guess supercell dimensions.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">"Supercell size (--dim option) not provided.</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="s2">"Attempting to guess supercell dimensions.</span><span class="se">\n</span><span class="s2">"</span>
             <span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">sposcar</span> <span class="o">=</span> <span class="n">Poscar</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;SPOSCAR&quot;</span><span class="p">)</span>
+                <span class="n">sposcar</span> <span class="o">=</span> <span class="n">Poscar</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">"SPOSCAR"</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Could not determine supercell size (use --dim flag).&quot;</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">"Could not determine supercell size (use --dim flag)."</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
             <span class="n">dim</span> <span class="o">=</span> <span class="n">sposcar</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span> <span class="o">@</span> <span class="n">poscar</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">inv_matrix</span>
@@ -442,14 +442,14 @@
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
             <span class="n">dim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diagflat</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
 
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using supercell with dimensions:&quot;</span><span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Using supercell with dimensions:"</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="se">\t</span><span class="s2">"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"</span><span class="se">\n\t</span><span class="s2">"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">factors</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;ev&quot;</span><span class="p">:</span> <span class="n">VaspToEv</span><span class="p">,</span>
-            <span class="s2">&quot;thz&quot;</span><span class="p">:</span> <span class="n">VaspToTHz</span><span class="p">,</span>
-            <span class="s2">&quot;mev&quot;</span><span class="p">:</span> <span class="n">VaspToEv</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
-            <span class="s2">&quot;cm-1&quot;</span><span class="p">:</span> <span class="n">VaspToCm</span><span class="p">,</span>
+            <span class="s2">"ev"</span><span class="p">:</span> <span class="n">VaspToEv</span><span class="p">,</span>
+            <span class="s2">"thz"</span><span class="p">:</span> <span class="n">VaspToTHz</span><span class="p">,</span>
+            <span class="s2">"mev"</span><span class="p">:</span> <span class="n">VaspToEv</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+            <span class="s2">"cm-1"</span><span class="p">:</span> <span class="n">VaspToCm</span><span class="p">,</span>
         <span class="p">}</span>
 
         <span class="n">phonon</span> <span class="o">=</span> <span class="n">load_phonopy</span><span class="p">(</span>
@@ -463,29 +463,29 @@
             <span class="n">born</span><span class="o">=</span><span class="n">born</span><span class="p">,</span>
             <span class="n">write_fc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="k">elif</span> <span class="s2">&quot;.phonon&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="s2">".phonon"</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s2">&quot;Reading pre-computed band structure from CASTEP. &quot;</span>
-            <span class="s2">&quot;Be aware that many phonon-bandplot options will not &quot;</span>
-            <span class="s2">&quot;be relevant.&quot;</span>
+            <span class="s2">"Reading pre-computed band structure from CASTEP. "</span>
+            <span class="s2">"Be aware that many phonon-bandplot options will not "</span>
+            <span class="s2">"be relevant."</span>
         <span class="p">)</span>
         <span class="n">castep_phonon</span> <span class="o">=</span> <span class="n">CastepPhonon</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
-        <span class="n">cell_file</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;cell&quot;</span><span class="p">])</span>
+        <span class="n">cell_file</span> <span class="o">=</span> <span class="s2">"."</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"cell"</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">cell_file</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found .cell file, reading x-axis labels from </span><span class="si">{</span><span class="n">cell_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Found .cell file, reading x-axis labels from </span><span class="si">{</span><span class="n">cell_file</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">castep_phonon</span><span class="o">.</span><span class="n">set_labels_from_file</span><span class="p">(</span><span class="n">cell_file</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No .cell file found, cannot read x-axis labels.&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"No .cell file found, cannot read x-axis labels."</span><span class="p">)</span>
 
-        <span class="n">factors</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;cm-1&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;thz&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">THzToCm</span><span class="p">,</span> <span class="s2">&quot;ev&quot;</span><span class="p">:</span> <span class="n">CmToEv</span><span class="p">,</span> <span class="s2">&quot;mev&quot;</span><span class="p">:</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">CmToEv</span><span class="p">}</span>
+        <span class="n">factors</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"cm-1"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">"thz"</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">THzToCm</span><span class="p">,</span> <span class="s2">"ev"</span><span class="p">:</span> <span class="n">CmToEv</span><span class="p">,</span> <span class="s2">"mev"</span><span class="p">:</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">CmToEv</span><span class="p">}</span>
         <span class="n">castep_phonon</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">*=</span> <span class="n">factors</span><span class="p">[</span><span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
         <span class="n">bs</span> <span class="o">=</span> <span class="n">castep_phonon</span><span class="o">.</span><span class="n">get_band_structure</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">bs</span><span class="p">,</span> <span class="kc">None</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Do not recognise file type of </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Do not recognise file type of </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 
     <span class="c1"># calculate band structure</span>
@@ -505,11 +505,11 @@
     <span class="c1">#                 is_mesh_symmetry=False)</span>
     <span class="c1"># phonon.set_partial_DOS()</span>
 
-    <span class="k">if</span> <span class="s2">&quot;.yaml&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">".yaml"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
         <span class="n">phonon</span><span class="o">.</span><span class="n">run_band_structure</span><span class="p">(</span>
             <span class="n">kpoints</span><span class="p">,</span> <span class="n">with_eigenvectors</span><span class="o">=</span><span class="n">eigenvectors</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span>
         <span class="p">)</span>
-        <span class="n">yaml_file</span> <span class="o">=</span> <span class="s2">&quot;sumo_band.yaml&quot;</span>
+        <span class="n">yaml_file</span> <span class="o">=</span> <span class="s2">"sumo_band.yaml"</span>
         <span class="n">phonon</span><span class="o">.</span><span class="n">band_structure</span><span class="o">.</span><span class="n">write_yaml</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">yaml_file</span><span class="p">)</span>
 
     <span class="n">bs</span> <span class="o">=</span> <span class="n">get_ph_bs_symm_line</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">,</span> <span class="n">has_nac</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">labels_dict</span><span class="o">=</span><span class="n">kpath</span><span class="o">.</span><span class="n">kpoints</span><span class="p">)</span>
@@ -518,192 +518,192 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_parser</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"""</span>
 <span class="s2">    phonon-bandplot is a script to produce publication ready phonon band</span>
-<span class="s2">    structure diagrams&quot;&quot;&quot;</span><span class="p">,</span>
-        <span class="n">epilog</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    structure diagrams"""</span><span class="p">,</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="sa">f</span><span class="s2">"""</span>
 <span class="s2">    Author: </span><span class="si">{</span><span class="n">__author__</span><span class="si">}</span>
 <span class="s2">    Version: </span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span>
-<span class="s2">    Last updated: </span><span class="si">{</span><span class="n">__date__</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="s2">    Last updated: </span><span class="si">{</span><span class="n">__date__</span><span class="si">}</span><span class="s2">"""</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--filename&quot;</span><span class="p">,</span>
+        <span class="s2">"-f"</span><span class="p">,</span>
+        <span class="s2">"--filename"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;FORCE_SETS, FORCE_CONSTANTS or band.yaml file&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"F"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"FORCE_SETS, FORCE_CONSTANTS or band.yaml file"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--prefix&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;prefix for the files generated.&quot;</span>
+        <span class="s2">"-p"</span><span class="p">,</span> <span class="s2">"--prefix"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"P"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"prefix for the files generated."</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--directory&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;output directory for files&quot;</span>
+        <span class="s2">"-d"</span><span class="p">,</span> <span class="s2">"--directory"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"D"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"output directory for files"</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-q&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--qmesh&quot;</span><span class="p">,</span>
+        <span class="s2">"-q"</span><span class="p">,</span>
+        <span class="s2">"--qmesh"</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"N"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;q-mesh to use for phonon DOS&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"q-mesh to use for phonon DOS"</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-b&quot;</span><span class="p">,</span> <span class="s2">&quot;--born&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;born effective charge file&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"-b"</span><span class="p">,</span> <span class="s2">"--born"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"B"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"born effective charge file"</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-e&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--eigenvectors&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="s2">"-e"</span><span class="p">,</span>
+        <span class="s2">"--eigenvectors"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;write the phonon eigenvectors to yaml file&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"write the phonon eigenvectors to yaml file"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--dim&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;supercell matrix dimensions&quot;</span>
+        <span class="s2">"--dim"</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">"N"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"supercell matrix dimensions"</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--poscar&quot;</span><span class="p">,</span>
+        <span class="s2">"--poscar"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;POS&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to POSCAR file (if FORCE_SETS used)&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"POS"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"path to POSCAR file (if FORCE_SETS used)"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">prim_axis</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
     <span class="n">prim_axis</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--primitive-axis&quot;</span><span class="p">,</span>
+        <span class="s2">"--primitive-axis"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;M&quot;</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;primitive_axis&quot;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"M"</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">"primitive_axis"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;conventional to primitive cell transformation matrix&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"conventional to primitive cell transformation matrix"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">prim_axis</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--primitive-auto&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_const&quot;</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;primitive_axis&quot;</span><span class="p">,</span>
-        <span class="n">const</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Let phonopy automatically determine primitive cell transformation&quot;</span><span class="p">,</span>
+        <span class="s2">"--primitive-auto"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_const"</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">"primitive_axis"</span><span class="p">,</span>
+        <span class="n">const</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Let phonopy automatically determine primitive cell transformation"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--symprec&quot;</span><span class="p">,</span>
+        <span class="s2">"--symprec"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;tolerance for finding symmetry (default: 0.01)&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"tolerance for finding symmetry (default: 0.01)"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--units&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;-u&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;UNITS&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;THz&quot;</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;THz&quot;</span><span class="p">,</span> <span class="s2">&quot;thz&quot;</span><span class="p">,</span> <span class="s2">&quot;cm-1&quot;</span><span class="p">,</span> <span class="s2">&quot;eV&quot;</span><span class="p">,</span> <span class="s2">&quot;ev&quot;</span><span class="p">,</span> <span class="s2">&quot;meV&quot;</span><span class="p">,</span> <span class="s2">&quot;mev&quot;</span><span class="p">),</span>
-        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;choose units of phonon frequency (THz, cm-1, eV, meV)&quot;</span><span class="p">),</span>
+        <span class="s2">"--units"</span><span class="p">,</span>
+        <span class="s2">"-u"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"UNITS"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"THz"</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">"THz"</span><span class="p">,</span> <span class="s2">"thz"</span><span class="p">,</span> <span class="s2">"cm-1"</span><span class="p">,</span> <span class="s2">"eV"</span><span class="p">,</span> <span class="s2">"ev"</span><span class="p">,</span> <span class="s2">"meV"</span><span class="p">,</span> <span class="s2">"mev"</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">"choose units of phonon frequency (THz, cm-1, eV, meV)"</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--spg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;space group number or symbol&quot;</span>
+        <span class="s2">"--spg"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"space group number or symbol"</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--density&quot;</span><span class="p">,</span>
+        <span class="s2">"--density"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;k-point density along high-symmetry path&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"k-point density along high-symmetry path"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--seekpath&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use seekpath to generate the high-symmetry path&quot;</span><span class="p">,</span>
+        <span class="s2">"--seekpath"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"use seekpath to generate the high-symmetry path"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--pymatgen&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use pymatgen to generate the high-symmetry path&quot;</span><span class="p">,</span>
+        <span class="s2">"--pymatgen"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"use pymatgen to generate the high-symmetry path"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--cartesian&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use cartesian k-point coordinates&quot;</span>
+        <span class="s2">"--cartesian"</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"use cartesian k-point coordinates"</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--kpoints&quot;</span><span class="p">,</span>
+        <span class="s2">"--kpoints"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;specify a list of kpoints (e.g. &quot;0 0 0, 0.5 0 0&quot;)&#39;</span><span class="p">),</span>
+        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s1">'specify a list of kpoints (e.g. "0 0 0, 0.5 0 0")'</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--labels&quot;</span><span class="p">,</span>
+        <span class="s2">"--labels"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;specify the labels for kpoints (e.g. &quot;\Gamma,X&quot;)&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">r</span><span class="s1">'specify the labels for kpoints (e.g. "\Gamma,X")'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--height&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;height of the graph&quot;</span>
+        <span class="s2">"--height"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"height of the graph"</span>
     <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--width&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;width of the graph&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--width"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"width of the graph"</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--ymin&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;minimum energy on the y-axis&quot;</span>
-    <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--ymax&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;maximum energy on the y-axis&quot;</span>
+        <span class="s2">"--ymin"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"minimum energy on the y-axis"</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--style&quot;</span><span class="p">,</span>
+        <span class="s2">"--ymax"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"maximum energy on the y-axis"</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"--style"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;matplotlib style specifications&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"matplotlib style specifications"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--no-base-style&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;no_base_style&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;prevent use of sumo base style&quot;</span><span class="p">,</span>
+        <span class="s2">"--no-base-style"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">"no_base_style"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"prevent use of sumo base style"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--config&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;colour configuration file&quot;</span>
+        <span class="s2">"--config"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"colour configuration file"</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--format&quot;</span><span class="p">,</span>
+        <span class="s2">"--format"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;image_format&quot;</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FORMAT&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;image file format (options: pdf, svg, jpg, png)&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"pdf"</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">"image_format"</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s2">"FORMAT"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"image file format (options: pdf, svg, jpg, png)"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--dpi&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;pixel density for image file&quot;</span>
+        <span class="s2">"--dpi"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"pixel density for image file"</span>
     <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--font&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;font to use&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"--font"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"font to use"</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--dos&quot;</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;?&quot;</span><span class="p">,</span>
+        <span class="s2">"--dos"</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"?"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">const</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Phonopy .dat file for phonon DOS&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Phonopy .dat file for phonon DOS"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--to-json&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output JSON file for band data&quot;</span>
+        <span class="s2">"--to-json"</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">"Output JSON file for band data"</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--from-json&quot;</span><span class="p">,</span>
+        <span class="s2">"--from-json"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"+"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;from_json&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Overlay band data from JSON files&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">"from_json"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Overlay band data from JSON files"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--to-web&quot;</span><span class="p">,</span>
+        <span class="s2">"--to-web"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;to_web&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;(Output JSON file for http://henriquemiranda.github.io/phononwebsite)&quot;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s2">"to_web"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"(Output JSON file for http://henriquemiranda.github.io/phononwebsite)"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--legend&quot;</span><span class="p">,</span>
+        <span class="s2">"--legend"</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">"*"</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Legend labels. With no args, label json inputs &quot;</span>
-            <span class="s2">&quot;with filenames. With one arg per json file, &quot;</span>
-            <span class="s2">&quot;label json inputs only. With one extra arg, &quot;</span>
-            <span class="s2">&quot;label all lines beginning with new plot.&quot;</span>
+            <span class="s2">"Legend labels. With no args, label json inputs "</span>
+            <span class="s2">"with filenames. With one arg per json file, "</span>
+            <span class="s2">"label json inputs only. With one extra arg, "</span>
+            <span class="s2">"label all lines beginning with new plot."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span>
@@ -712,20 +712,20 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">_get_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
-        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;sumo-phonon-bandplot.log&quot;</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">"sumo-phonon-bandplot.log"</span><span class="p">,</span>
         <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
-        <span class="n">filemode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">filemode</span><span class="o">=</span><span class="s2">"w"</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">console</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[:]))</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[:]))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console</span><span class="p">)</span>
 
-    <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;bradcrack&quot;</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="s2">"bradcrack"</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">seekpath</span><span class="p">:</span>
-        <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;seekpath&quot;</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s2">"seekpath"</span>
     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">pymatgen</span><span class="p">:</span>
-        <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;pymatgen&quot;</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s2">"pymatgen"</span>
 
     <span class="n">spg</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">spg</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">spg</span><span class="p">:</span>
@@ -737,27 +737,27 @@
     <span class="n">kpoints</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">kpoints</span><span class="p">:</span>
         <span class="n">kpoints</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">kpt</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span> <span class="k">for</span> <span class="n">kpt</span> <span class="ow">in</span> <span class="n">kpts</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
-            <span class="k">for</span> <span class="n">kpts</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
+            <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">kpt</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span> <span class="k">for</span> <span class="n">kpt</span> <span class="ow">in</span> <span class="n">kpts</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">kpts</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"|"</span><span class="p">)</span>
         <span class="p">]</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">labels</span><span class="p">:</span>
-        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"|"</span><span class="p">)]</span>
 
     <span class="n">dim</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dim</span> <span class="k">else</span> <span class="kc">None</span>
 
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">)</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UnicodeWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">)</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;pymatgen&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">"matplotlib"</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UnicodeWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">"matplotlib"</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">"pymatgen"</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">primitive_axis</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">primitive_axis</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">:</span>
         <span class="n">pa</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">primitive_axis</span>
     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">primitive_axis</span><span class="p">:</span>
         <span class="n">pa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">primitive_axis</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">pa</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="c1"># Detect &#39;const&#39; option for --legend and set filenames as legend</span>
+    <span class="c1"># Detect 'const' option for --legend and set filenames as legend</span>
     <span class="n">legend</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">legend</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">legend</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">legend</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -765,8 +765,8 @@
                 <span class="n">legend</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">from_json</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Can&#39;t generate automatic legend without&quot;</span>
-                    <span class="s2">&quot;--from-json; nothing to plot!&quot;</span>
+                    <span class="s2">"Can't generate automatic legend without"</span>
+                    <span class="s2">"--from-json; nothing to plot!"</span>
                 <span class="p">)</span>
 
     <span class="n">phonon_bandplot</span><span class="p">(</span>
@@ -803,7 +803,7 @@
     <span class="p">)</span>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 

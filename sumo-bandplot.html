@@ -53,7 +53,7 @@ contributions on to the band structure.</p>
 </li>
 <li><p><a class="reference internal" href="#command-line-interface" id="id8">Command-Line Interface</a></p>
 <ul>
-<li><p><a class="reference internal" href="#sumo.cli.bandplot-_get_parser-named-arguments" id="id9">Named Arguments</a></p></li>
+<li><p><a class="reference internal" href="#sumo-bandplot-named-arguments" id="id9">Named Arguments</a></p></li>
 </ul>
 </li>
 </ul>
@@ -171,7 +171,7 @@ colourspace for more natural transitions between colours. An alternative colours
 can be specified using the <code class="docutils literal notranslate"><span class="pre">--colourspace</span></code> option.</p>
 <p>For example, if the following command is run in the <code class="docutils literal notranslate"><span class="pre">sumo/tests/data/Cs2SnI6/bandstructure</span></code> directory,
 the output should look like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">project</span> <span class="n">Sn</span><span class="o">.</span><span class="n">s</span><span class="p">,</span><span class="n">Sn</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">I</span> <span class="o">--</span><span class="n">ymin</span> <span class="o">-</span><span class="mi">4</span> <span class="o">--</span><span class="n">width</span> <span class="mi">4</span> <span class="o">--</span><span class="n">colour1</span> <span class="s2">&quot;#CC33A7&quot;</span> <span class="o">--</span><span class="n">colour2</span> <span class="s2">&quot;#A7CC33&quot;</span> <span class="o">--</span><span class="n">colour3</span> <span class="s2">&quot;#33A7CC&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="o">--</span><span class="n">project</span> <span class="n">Sn</span><span class="o">.</span><span class="n">s</span><span class="p">,</span><span class="n">Sn</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">I</span> <span class="o">--</span><span class="n">ymin</span> <span class="o">-</span><span class="mi">4</span> <span class="o">--</span><span class="n">width</span> <span class="mi">4</span> <span class="o">--</span><span class="n">colour1</span> <span class="s2">"#CC33A7"</span> <span class="o">--</span><span class="n">colour2</span> <span class="s2">"#A7CC33"</span> <span class="o">--</span><span class="n">colour3</span> <span class="s2">"#33A7CC"</span>
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="_images/band_projected_rgb_colours.png"><img alt="_images/band_projected_rgb_colours.png" class="align-center" src="_images/band_projected_rgb_colours.png" style="height: 400px;" />
@@ -233,7 +233,7 @@ directory with the same <em>ext</em> identifier. You can then plot with Sumo:</p
 structure diagrams</p>
 </div></blockquote>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span> <span class="p">[</span><span class="n">F</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span><span class="p">]</span>
+<div class="highlight-default notranslate" id="id0"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sumo</span><span class="o">-</span><span class="n">bandplot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">F</span> <span class="p">[</span><span class="n">F</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">CODE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">p</span> <span class="n">P</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">D</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">b</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">project</span> <span class="n">S</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">mode</span> <span class="n">MODE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">normalise</span> <span class="n">NORMALISE</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">interpolate</span><span class="o">-</span><span class="n">factor</span> <span class="n">N</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cartesian</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">colour1</span> <span class="n">C</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">colour2</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">colour3</span> <span class="n">C</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">colourspace</span> <span class="n">C</span><span class="p">]</span>
@@ -248,8 +248,8 @@ structure diagrams</p>
                      <span class="p">[</span><span class="o">--</span><span class="n">dpi</span> <span class="n">DPI</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">font</span> <span class="n">FONT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span> <span class="n">TITLE</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="sumo.cli.bandplot-_get_parser-named-arguments">
-<h3>Named Arguments<a class="headerlink" href="#sumo.cli.bandplot-_get_parser-named-arguments" title="Link to this heading">¶</a></h3>
+<section id="sumo-bandplot-named-arguments">
+<span id="sumo.cli.bandplot-_get_parser-named-arguments"></span><h3>Named Arguments<a class="headerlink" href="#sumo-bandplot-named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-f, --filenames</kbd></dt>
 <dd><p>one or more vasprun.xml files to plot</p>

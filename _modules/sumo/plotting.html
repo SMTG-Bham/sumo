@@ -34,32 +34,32 @@
 <span></span><span class="c1"># Copyright (c) Scanlon Materials Theory Group</span>
 <span class="c1"># Distributed under the terms of the MIT License.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Subpackage providing helper functions for generating publication ready plots.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span> <span class="k">as</span> <span class="n">ilr_files</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">rcParams</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">LineCollection</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">importlib.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">files</span> <span class="k">as</span> <span class="n">ilr_files</span>
-
 <span class="n">colour_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="n">sumo_base_style</span> <span class="o">=</span> <span class="n">ilr_files</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;sumo_base.mplstyle&quot;</span>
-<span class="n">sumo_dos_style</span> <span class="o">=</span> <span class="n">ilr_files</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;sumo_dos.mplstyle&quot;</span>
-<span class="n">sumo_bs_style</span> <span class="o">=</span> <span class="n">ilr_files</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;sumo_bs.mplstyle&quot;</span>
-<span class="n">sumo_phonon_style</span> <span class="o">=</span> <span class="n">ilr_files</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;sumo_phonon.mplstyle&quot;</span>
-<span class="n">sumo_optics_style</span> <span class="o">=</span> <span class="n">ilr_files</span><span class="p">(</span><span class="s2">&quot;sumo.plotting&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;sumo_optics.mplstyle&quot;</span>
+<span class="n">sumo_base_style</span> <span class="o">=</span> <span class="n">ilr_files</span><span class="p">(</span><span class="s2">"sumo.plotting"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"sumo_base.mplstyle"</span>
+<span class="n">sumo_dos_style</span> <span class="o">=</span> <span class="n">ilr_files</span><span class="p">(</span><span class="s2">"sumo.plotting"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"sumo_dos.mplstyle"</span>
+<span class="n">sumo_bs_style</span> <span class="o">=</span> <span class="n">ilr_files</span><span class="p">(</span><span class="s2">"sumo.plotting"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"sumo_bs.mplstyle"</span>
+<span class="n">sumo_phonon_style</span> <span class="o">=</span> <span class="n">ilr_files</span><span class="p">(</span><span class="s2">"sumo.plotting"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"sumo_phonon.mplstyle"</span>
+<span class="n">sumo_optics_style</span> <span class="o">=</span> <span class="n">ilr_files</span><span class="p">(</span><span class="s2">"sumo.plotting"</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"sumo_optics.mplstyle"</span>
 
 
 <div class="viewcode-block" id="styled_plot">
 <a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.styled_plot">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">styled_plot</span><span class="p">(</span><span class="o">*</span><span class="n">style_sheets</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a decorator that will apply matplotlib style sheets to a plot.</span>
+<span class="w">    </span><span class="sd">"""Return a decorator that will apply matplotlib style sheets to a plot.</span>
 
 <span class="sd">    ``style_sheets`` is a base set of styles, which will be ignored if</span>
 <span class="sd">    ``no_base_style`` is set in the decorated function arguments.</span>
@@ -71,7 +71,7 @@
 <span class="sd">        style_sheets (:obj:`list`, :obj:`str`, or :obj:`dict`): Any matplotlib</span>
 <span class="sd">            supported definition of a style sheet. Can be a list of style of</span>
 <span class="sd">            style sheets.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">get_plot</span><span class="p">):</span>
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">get_plot</span><span class="p">)</span>
@@ -88,7 +88,7 @@
                     <span class="n">list_style</span> <span class="o">+=</span> <span class="p">[</span><span class="n">style</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">fonts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">list_style</span> <span class="o">+=</span> <span class="p">[{</span><span class="s2">&quot;font.family&quot;</span><span class="p">:</span> <span class="s2">&quot;sans-serif&quot;</span><span class="p">,</span> <span class="s2">&quot;font.sans-serif&quot;</span><span class="p">:</span> <span class="n">fonts</span><span class="p">}]</span>
+                <span class="n">list_style</span> <span class="o">+=</span> <span class="p">[{</span><span class="s2">"font.family"</span><span class="p">:</span> <span class="s2">"sans-serif"</span><span class="p">,</span> <span class="s2">"font.sans-serif"</span><span class="p">:</span> <span class="n">fonts</span><span class="p">}]</span>
 
             <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">list_style</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">get_plot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -102,7 +102,7 @@
 <div class="viewcode-block" id="pretty_plot">
 <a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.pretty_plot">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">pretty_plot</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` object with publication ready defaults.</span>
+<span class="w">    </span><span class="sd">"""Get a :obj:`matplotlib.pyplot` object with publication ready defaults.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        width (:obj:`float`, optional): The width of the plot.</span>
@@ -115,17 +115,17 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` object with</span>
 <span class="sd">        publication ready defaults set.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">plt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">plt</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">pyplot</span>
         <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">width</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.figsize"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">height</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.figsize"</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">dpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.dpi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpi</span>
+            <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.dpi"</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpi</span>
 
         <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -147,7 +147,7 @@
     <span class="n">plt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">gridspec_kw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a :obj:`matplotlib.pyplot` subplot object with pretty defaults.</span>
+<span class="w">    </span><span class="sd">"""Get a :obj:`matplotlib.pyplot` subplot object with pretty defaults.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        nrows (int): The number of rows in the subplot.</span>
@@ -169,12 +169,12 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        :obj:`matplotlib.pyplot`: A :obj:`matplotlib.pyplot` subplot object</span>
 <span class="sd">        with publication ready defaults set.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">width</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.figsize"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">height</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.figsize"</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="c1"># TODO: Make this work if plt is already set...</span>
     <span class="k">if</span> <span class="n">plt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -186,7 +186,7 @@
             <span class="n">sharey</span><span class="o">=</span><span class="n">sharey</span><span class="p">,</span>
             <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span>
             <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span>
-            <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="s2">"w"</span><span class="p">,</span>
             <span class="n">gridspec_kw</span><span class="o">=</span><span class="n">gridspec_kw</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -196,7 +196,7 @@
 
 <div class="viewcode-block" id="curry_power_tick">
 <a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.curry_power_tick">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">curry_power_tick</span><span class="p">(</span><span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\times&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">curry_power_tick</span><span class="p">(</span><span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s2">"\times"</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">power_tick</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">times_sign</span><span class="o">=</span><span class="n">times_sign</span><span class="p">)</span>
 
@@ -206,10 +206,10 @@
 
 <div class="viewcode-block" id="power_tick">
 <a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.power_tick">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">power_tick</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\times&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom power ticker function.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">power_tick</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">times_sign</span><span class="o">=</span><span class="sa">r</span><span class="s2">"\times"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Custom power ticker function."""</span>
     <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;$\mathregular</span><span class="si">{0}</span><span class="s2">$&quot;</span>
+        <span class="k">return</span> <span class="sa">r</span><span class="s2">"$\mathregular</span><span class="si">{0}</span><span class="s2">$"</span>
     <span class="k">elif</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">exponent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="o">-</span><span class="n">val</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
@@ -217,7 +217,7 @@
     <span class="n">coeff</span> <span class="o">=</span> <span class="n">val</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="n">exponent</span>
     <span class="n">prec</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">coeff</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
 
-    <span class="k">return</span> <span class="sa">rf</span><span class="s2">&quot;$</span><span class="si">{</span><span class="n">coeff</span><span class="si">:</span><span class="s2">.</span><span class="si">{</span><span class="n">prec</span><span class="si">}</span><span class="s2">f</span><span class="si">}</span><span class="s2">\mathrm</span><span class="se">{{</span><span class="si">{</span><span class="n">times_sign</span><span class="si">}</span><span class="se">}}</span><span class="s2">10^</span><span class="se">{{</span><span class="si">{</span><span class="n">exponent</span><span class="si">:</span><span class="s2">2d</span><span class="se">}}</span><span class="si">}</span><span class="s2">$&quot;</span></div>
+    <span class="k">return</span> <span class="sa">rf</span><span class="s2">"$</span><span class="si">{</span><span class="n">coeff</span><span class="si">:</span><span class="s2">.</span><span class="si">{</span><span class="n">prec</span><span class="si">}</span><span class="s2">f</span><span class="si">}</span><span class="s2">\mathrm</span><span class="se">{{</span><span class="si">{</span><span class="n">times_sign</span><span class="si">}</span><span class="se">}}</span><span class="s2">10^</span><span class="se">{{</span><span class="si">{</span><span class="n">exponent</span><span class="si">:</span><span class="s2">2d</span><span class="se">}}</span><span class="si">}</span><span class="s2">$"</span></div>
 
 
 
@@ -227,14 +227,14 @@
     <span class="n">x</span><span class="p">,</span>
     <span class="n">y</span><span class="p">,</span>
     <span class="n">weights</span><span class="p">,</span>
-    <span class="n">color1</span><span class="o">=</span><span class="s2">&quot;#FF0000&quot;</span><span class="p">,</span>
-    <span class="n">color2</span><span class="o">=</span><span class="s2">&quot;#00FF00&quot;</span><span class="p">,</span>
-    <span class="n">color3</span><span class="o">=</span><span class="s2">&quot;#0000FF&quot;</span><span class="p">,</span>
-    <span class="n">colorspace</span><span class="o">=</span><span class="s2">&quot;lab&quot;</span><span class="p">,</span>
-    <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;solid&quot;</span><span class="p">,</span>
+    <span class="n">color1</span><span class="o">=</span><span class="s2">"#FF0000"</span><span class="p">,</span>
+    <span class="n">color2</span><span class="o">=</span><span class="s2">"#00FF00"</span><span class="p">,</span>
+    <span class="n">color3</span><span class="o">=</span><span class="s2">"#0000FF"</span><span class="p">,</span>
+    <span class="n">colorspace</span><span class="o">=</span><span class="s2">"lab"</span><span class="p">,</span>
+    <span class="n">linestyles</span><span class="o">=</span><span class="s2">"solid"</span><span class="p">,</span>
     <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a RGB coloured line for plotting.</span>
+<span class="w">    </span><span class="sd">"""Get a RGB coloured line for plotting.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x (list): x-axis data.</span>
@@ -248,8 +248,8 @@
 <span class="sd">        colorspace (str): The colorspace in which to perform the interpolation.</span>
 <span class="sd">            The allowed values are rgb, hsv, lab, luvlc, lablch, and xyz.</span>
 <span class="sd">        linestyles (:obj:`str`, optional): Linestyle for plot. Options are</span>
-<span class="sd">            ``&quot;solid&quot;`` or ``&quot;dotted&quot;``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">            ``"solid"`` or ``"dotted"``.</span>
+<span class="sd">    """</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">y</span><span class="p">])</span>
@@ -282,8 +282,8 @@
 
 <div class="viewcode-block" id="get_interpolated_colors">
 <a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.get_interpolated_colors">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_interpolated_colors</span><span class="p">(</span><span class="n">color1</span><span class="p">,</span> <span class="n">color2</span><span class="p">,</span> <span class="n">color3</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">colorspace</span><span class="o">=</span><span class="s2">&quot;lab&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_interpolated_colors</span><span class="p">(</span><span class="n">color1</span><span class="p">,</span> <span class="n">color2</span><span class="p">,</span> <span class="n">color3</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">colorspace</span><span class="o">=</span><span class="s2">"lab"</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Interpolate colors at a number of points within a colorspace.</span>
 
 <span class="sd">    Args:</span>
@@ -298,7 +298,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of colors, specified in the rgb format as a (n, 3) array.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">colormath.color_conversions</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_color</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">colormath.color_objects</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
         <span class="n">HSVColor</span><span class="p">,</span>
@@ -311,15 +311,15 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_rgb</span>
 
     <span class="n">colorspace_mapping</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;rgb&quot;</span><span class="p">:</span> <span class="n">sRGBColor</span><span class="p">,</span>
-        <span class="s2">&quot;hsv&quot;</span><span class="p">:</span> <span class="n">HSVColor</span><span class="p">,</span>
-        <span class="s2">&quot;lab&quot;</span><span class="p">:</span> <span class="n">LabColor</span><span class="p">,</span>
-        <span class="s2">&quot;luvlch&quot;</span><span class="p">:</span> <span class="n">LCHuvColor</span><span class="p">,</span>
-        <span class="s2">&quot;lablch&quot;</span><span class="p">:</span> <span class="n">LCHabColor</span><span class="p">,</span>
-        <span class="s2">&quot;xyz&quot;</span><span class="p">:</span> <span class="n">XYZColor</span><span class="p">,</span>
+        <span class="s2">"rgb"</span><span class="p">:</span> <span class="n">sRGBColor</span><span class="p">,</span>
+        <span class="s2">"hsv"</span><span class="p">:</span> <span class="n">HSVColor</span><span class="p">,</span>
+        <span class="s2">"lab"</span><span class="p">:</span> <span class="n">LabColor</span><span class="p">,</span>
+        <span class="s2">"luvlch"</span><span class="p">:</span> <span class="n">LCHuvColor</span><span class="p">,</span>
+        <span class="s2">"lablch"</span><span class="p">:</span> <span class="n">LCHabColor</span><span class="p">,</span>
+        <span class="s2">"xyz"</span><span class="p">:</span> <span class="n">XYZColor</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="n">colorspace</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">colorspace_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;colorspace must be one of </span><span class="si">{</span><span class="n">colorspace_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"colorspace must be one of </span><span class="si">{</span><span class="n">colorspace_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">colorspace</span> <span class="o">=</span> <span class="n">colorspace_mapping</span><span class="p">[</span><span class="n">colorspace</span><span class="p">]</span>
 
@@ -330,13 +330,13 @@
 
     <span class="c1"># now convert to the colorspace basis for interpolation</span>
     <span class="n">basis1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="n">convert_color</span><span class="p">(</span><span class="n">color1_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">&quot;d50&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
+        <span class="n">convert_color</span><span class="p">(</span><span class="n">color1_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">"d50"</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="n">basis2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="n">convert_color</span><span class="p">(</span><span class="n">color2_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">&quot;d50&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
+        <span class="n">convert_color</span><span class="p">(</span><span class="n">color2_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">"d50"</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="n">basis3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="n">convert_color</span><span class="p">(</span><span class="n">color3_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">&quot;d50&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
+        <span class="n">convert_color</span><span class="p">(</span><span class="n">color3_rgb</span><span class="p">,</span> <span class="n">colorspace</span><span class="p">,</span> <span class="n">target_illuminant</span><span class="o">=</span><span class="s2">"d50"</span><span class="p">)</span><span class="o">.</span><span class="n">get_value_tuple</span><span class="p">()</span>
     <span class="p">)</span>
 
     <span class="c1"># ensure weights is a numpy array</span>
@@ -362,37 +362,37 @@
 
 <div class="viewcode-block" id="draw_themed_line">
 <a class="viewcode-back" href="../../sumo.plotting.html#sumo.plotting.draw_themed_line">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">draw_themed_line</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Draw a horizontal line using the theme settings</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">draw_themed_line</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">"horizontal"</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Draw a horizontal line using the theme settings</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        y (float): Position of line in data coordinates</span>
 <span class="sd">        ax (Axes): Matplotlib Axes on which line is drawn</span>
 <span class="sd">        orientation (str, optional): Orientation of line. Options are</span>
-<span class="sd">            ``&quot;horizontal&quot;`` or ``&quot;vertical&quot;``.</span>
+<span class="sd">            ``"horizontal"`` or ``"vertical"``.</span>
 <span class="sd">        **kwargs: Additional keyword arguments passed to ``ax.axhline`` or</span>
 <span class="sd">            ``ax.axvline``, which can be used to override the theme settings.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># Note to future developers: feel free to add plenty more optional</span>
     <span class="c1"># arguments to this to mess with linestyle, zorder etc.</span>
     <span class="c1"># Just .update() the options dict</span>
 
     <span class="n">themed_line_options</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">color</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;grid.color&quot;</span><span class="p">],</span>
-        <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"grid.color"</span><span class="p">],</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span>
         <span class="n">dashes</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
         <span class="n">zorder</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">linewidth</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;ytick.major.width&quot;</span><span class="p">],</span>
+        <span class="n">linewidth</span><span class="o">=</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"ytick.major.width"</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="n">themed_line_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">orientation</span> <span class="o">==</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">orientation</span> <span class="o">==</span> <span class="s2">"horizontal"</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">themed_line_options</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">orientation</span> <span class="o">==</span> <span class="s2">&quot;vertical&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">orientation</span> <span class="o">==</span> <span class="s2">"vertical"</span><span class="p">:</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">themed_line_options</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Line orientation &quot;</span><span class="si">{</span><span class="n">orientation</span><span class="si">}</span><span class="s1">&quot; not supported&#39;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Line orientation "</span><span class="si">{</span><span class="n">orientation</span><span class="si">}</span><span class="s1">" not supported'</span><span class="p">)</span></div>
 
 </pre></div>
 
