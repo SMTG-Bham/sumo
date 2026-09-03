@@ -1,8 +1,8 @@
 Change Log
 ==========
 
-Unreleased
-----------
+v3.0.0
+------
 
 Requirements:
 
